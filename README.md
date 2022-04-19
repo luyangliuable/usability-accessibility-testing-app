@@ -1,4 +1,4 @@
-# FIT3170_Usability_Accessibility_Testing_App
+# FIT3170 Usability Accessibility Testing App
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
@@ -15,7 +15,11 @@
 ## Detail of app
 Within this project, we developed a toolkit to automatically test the **usability and accessibility of the target Android apps**. Given an APK file, the app allows different screens of one app to be explored automatically. Once a list of screen screenshots and meta data obtained, the accessibility and usability of the app will be tested by implementing a list of algorithms [2, 3, 4, 5]. Based on detected bugs, you will develop the approach to auto-replay the bug [6] so that developers can fix them on time. 
 
-Note all algorithms will come previoius research works with initial source code and prototypes provided, so you will not start from scratch. You will work more as research engineers to integrate all separated research works into a system for practical usage. You will also get the help from researchers who are authors of research papers mentioned above.
+> Note all algorithms will come previoius research works with initial source code and prototypes provided, so you will not start from scratch.
+
+So we need to work more as research engineers to integrate all separated research works into a system for practical usage.
+
+We also got the help from researchers who are authors of research papers mentioned above.
 
 ## Team members
 

@@ -6,7 +6,7 @@ import os
 import xml.dom.minidom
 import shutil
 import commands
-
+from env import *
 
 result_folder = ''
 #keyPath = os.path.join(os.path.split(os.path.realpath(__file__))[0],"coolapk.keystore")  # pwd: 123456, private key path
@@ -18,7 +18,7 @@ def decompile(eachappPath):
         os.mkdir(apktooldecomplilePath)
 
     print "decompiling..."
-    cmd = "apktool d {0} -f -o {1}".format(eachappPath, apktooldecomplilePath)
+    cmd = apktool + " d {0} -f -o {1}".format(eachappPath, apktooldecomplilePath)
     os.system(cmd)
 
 def modifyManifestAgain(app, line_num):

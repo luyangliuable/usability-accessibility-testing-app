@@ -1,4 +1,4 @@
-'''
+'''app
 Authors: Sen Chen and Lingling Fan
 '''
 # coding=utf-8
@@ -8,11 +8,16 @@ import traverse_tree
 import get_act_method_code
 import run_rpk_explore_apk
 import create_json_withindent
+import sys
 import csv
 import os
 import sys
+from env import *
 
-#emulator = sys.argv[1]
+# import dotenv
+# from dotenv import *
+
+
 emulator = 'emulator-5554'
 
 launchActivity = ''
@@ -28,21 +33,37 @@ env_os = platform.system()
 
 print 'Current environment: ' + env_os
 
-if 'Linux' in env_os: # Ubuntu
-    java_home_path = '/usr/lib/jvm/jdk1.8.0_45'
-    sdk_platform_path = '/home/senchen/Engines/StoryDistiller/main-folder/config/libs/android-platforms/'
-    lib_home_path = '/home/senchen/Engines/StoryDistiller/main-folder/config/libs/'
-    callbacks_path = '/home/senchen/Engines/StoryDistiller/main-folder/config/AndroidCallbacks.txt'
-    jadx_path = '/home/senchen/Engines/StoryDistiller/jadx-master/'
-    ic3_path = '/home/senchen/Engines/StoryDistiller/IC3/'
+###############################################################################
+#                      Obsolete environment config method                     #
+###############################################################################
 
-if 'Darwin' in env_os: # Macbook
-    java_home_path = '/Library/Java/JavaVirtualMachines/jdk1.8.0_211.jdk/Contents/Home'
-    sdk_platform_path = '/Users/chensen/Tools/storydistiller/config/libs/android-platforms/'
-    lib_home_path = '/Users/chensen/Tools/storydistiller/config/libs/'
-    callbacks_path = '/Users/chensen/Tools/storydistiller/config/AndroidCallbacks.txt'
-    jadx_path = '/Users/chensen/Tools/storydroid_v1/jadx-master/'
-    ic3_path = '/Users/chensen/Tools/storydroid_v1/IC3/'
+# Instructions ################################################################
+# 1. Open up /FIT3170_Usability_Accessibility_Testing_App/server/distiller/code/env.py
+# 2. Install android commandline tools aapt and adb by install android studio
+# 3. Install jdk1.8.0_46
+# 4. Install APKTool
+# 3. Put your own file locations in each corresponding variable
+
+# if 'Linux' in env_os: # Ubuntu
+#     java_home_path = '/usr/lib/jvm/jdk1.8.0_45'
+#     sdk_platform_path = '/home/senchen/Engines/StoryDistiller/main-folder/config/libs/android-platforms/'
+#     lib_home_path = '/home/senchen/Engines/StoryDistiller/main-folder/config/libs/'
+#     callbacks_path = '/home/senchen/Engines/StoryDistiller/main-folder/config/AndroidCallbacks.txt'
+#     jadx_path = '/home/senchen/Engines/StoryDistiller/jadx-master/'
+#     ic3_path = '/home/senchen/Engines/StoryDistiller/IC3/'
+
+# if 'Darwin' in env_os: # Macbook
+#     # java_home_path = os.environ.get("JAVA_HOME_PATH")
+#     # java_home_path = '/Library/Java/JavaVirtualMachines/jdk1.8.0_211.jdk/Contents/Home'
+#     java_home_path = '/Users/rubber/Library/Java/JavaVirtualMachines/azul-1.8.0_332'
+#     sdk_platform_path = '/Users/rubber/Library/Android/sdk/platform-tools'
+#     # lib_home_path = '/Users/chensen/Tools/storydistiller/config/libs/'
+#     lib_home_path = '/Users/rubber/Documents/FIT3170_Usability_Accessibility_Testing_App/server/distiller/main-folder/config/libs'
+#     # callbacks_path = '/Users/chensen/Tools/storydistiller/config/AndroidCallbacks.txt'
+#     callbacks_path = '/Users/rubber/Documents/FIT3170_Usability_Accessibility_Testing_App/server/distiller/main-folder/config'
+#     # jadx_path = '/Users/chensen/Tools/storydroid_v1/jadx-master/'
+#     jadx_path = '/opt/homebrew/bin/jadx'
+#     ic3_path = '/Users/rubber/Documents/FIT3170_Usability_Accessibility_Testing_App/ic3-0.2.0'
 
 '''
 Rename the app name
@@ -50,8 +71,8 @@ Rename the app name
 def rename(apk_path, apk_dir):
     global defined_pkg_name
     global used_pkg_name
-    defined_pkg_name = commands.getoutput('aapt dump badging %s | grep package | awk \'{print $2}\' | sed s/name=//g | sed s/\\\'//g'%(apk_path))
-    launcher = commands.getoutput(r"aapt dump badging " + apk_path + " | grep launchable-activity | awk '{print $2}'")
+    defined_pkg_name = commands.getoutput(aapt + 'dump badging %s | grep package | awk \'{print $2}\' | sed s/name=//g | sed s/\\\'//g'%(apk_path))
+    launcher = commands.getoutput(aapt + r"dump badging " + apk_path + " | grep launchable-activity | awk '{print $2}'")
     # Sometimes launcher is empty or launcher starts with "."
     if launcher == '' or defined_pkg_name in launcher or launcher.startswith("."):
         used_pkg_name = defined_pkg_name
@@ -59,7 +80,7 @@ def rename(apk_path, apk_dir):
         used_pkg_name = launcher.replace('.' + launcher.split('.')[-1], '').split('\'')[1]
     print 'Rename pkg: ' + used_pkg_name
 
-    version = commands.getoutput('aapt dump badging %s | grep versionName | awk \'{print $3}\' | sed s/versionCode=//g | sed s/\\\'//g'%(apk_path))
+    version = commands.getoutput(aapt + 'dump badging %s | grep versionName | awk \'{print $3}\' | sed s/versionCode=//g | sed s/\\\'//g'%(apk_path))
     os.system('mv %s %s'%(apk_path, apk_dir + used_pkg_name + '_' + version + '.apk')) # used_pkg_name_version.apk
     global defined_app_name
     defined_app_name = defined_pkg_name + '_' + version
@@ -85,7 +106,10 @@ def decompile(apk_path, apk_name):
     global launchActivity
     #bin_path = output + 'jadx-master/build/jadx/bin/'
     bin_path = jadx_path + 'build/jadx/bin/'
-    results_visual = output + 'outputs/' + apk_name + '/'
+    # results_visual = os.path.join(output, 'output/' + apk_name)
+    results_visual = output + '/outputs/' + apk_name + '/'
+    print "results_visual folder " + results_visual
+    print "Apk name " + apk_name
     results_visual_icon = results_visual + 'icon/'
     if not os.path.exists(results_visual):
         os.mkdir(results_visual)
@@ -96,15 +120,15 @@ def decompile(apk_path, apk_name):
         os.mkdir(JavaCode_path)
     results_JavaCode = JavaCode_path + apk_name + '/'
     if not os.path.exists(results_JavaCode):
-        os.chdir(bin_path)
+        # os.chdir(bin_path)
         os.system('./jadx -d %s %s' % (results_JavaCode, apk_path))
 
     # Get icon
     get_icon(results_visual_icon)
 
-    launchActivity = commands.getoutput('aapt dump badging %s | grep launchable-activity | awk \'{print $2}\' | sed s/name=//g | sed s/\\\'//g'%apk_path)
+    launchActivity = commands.getoutput(aapt + 'dump badging %s | grep launchable-activity | awk \'{print $2}\' | sed s/name=//g | sed s/\\\'//g'%apk_path)
     if launchActivity == '':
-        launchActivity = commands.getoutput('aapt dump badging %s | grep Activity | awk \'{print $2}\' | sed s/name=//g | sed s/\\\'//g'%apk_path)
+        launchActivity = commands.getoutput(aapt + 'dump badging %s | grep Activity | awk \'{print $2}\' | sed s/name=//g | sed s/\\\'//g'%apk_path)
     result_launcher = output + 'outputs/' + apk_name + '/launcher.txt'
     launcher_file = open(result_launcher, 'wb')
     launcher_file.write(launchActivity)
@@ -280,7 +304,7 @@ def run_soot(output, apk_path, pkg_name, apk_name):
 
     '''
     Using jar
-    
+
     enhancedIC3_jar = output + 'config/run_soot.jar'
     os.chdir(output)
     os.system('java -jar %s %s %s %s %s %s %s' % (enhancedIC3_jar, output, apk_path, pkg_name, java_home_path, sdk_platform_path, lib_home_path))
@@ -396,16 +420,34 @@ def getSootOutput(apk_path, apk_name):
 
 if __name__ == '__main__':
 
-    # output = sys.argv[1] # Main folder path
-    output = '/home/senchen/Engines/StoryDistiller/main-folder/'
-    #output = '/Users/chensen/Tools/storydistiller/'
+    output = sys.argv[1] # Main folder path
+    # output = '/home/senchen/Engines/StoryDistiller/main-folder/'
+    # output = '/Users/chensen/Tools/storydistiller/'
+    # output = '/Users/chensen/Tools/storydistiller/'
+    # output = sys.argv[2]
     # adb = sys.argv[2] # adb emulator
 
-    adb = 'adb '
 
     apk_dir = os.path.join(output, 'apks/') # APK folder
 
     out_csv = os.path.join(output, 'log.csv') # Log file
+
+    ###############################################################################
+    #                         Display environment details                         #
+    ###############################################################################
+
+    print "output directory (main folder): " + output
+    print "apk directory:" + apk_dir
+    print "out_csv:" + out_csv
+    print "adb: " + adb
+
+    print "java home path: " + str(java_home_path)
+    print "sdk platform path" + str(sdk_platform_path)
+    print "lib_home_path" + str(lib_home_path)
+    print "callbacks path" + str(callbacks_path)
+    print "jadx path" + str(jadx_path)
+    print "ic3 path" + str(ic3_path)
+
     csv.writer(open(out_csv, 'a')).writerow(('apk_name', 'pkg_name', 'all_act_num', 'launched_act_num',
                                              'act_not_in_atg', 'act_not_launched', 'all_atg', 'soot_atg', 'new_atg'))
 

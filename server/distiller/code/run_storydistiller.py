@@ -420,7 +420,10 @@ def getSootOutput(apk_path, apk_name):
 
 if __name__ == '__main__':
 
-    output = sys.argv[1] # Main folder path
+    if main_folder is not None:
+        output = main_folder
+    else:
+        output = sys.argv[1] # Main folder path
     # output = '/home/senchen/Engines/StoryDistiller/main-folder/'
     # output = '/Users/chensen/Tools/storydistiller/'
     # output = '/Users/chensen/Tools/storydistiller/'
@@ -463,7 +466,7 @@ if __name__ == '__main__':
     for apk in os.listdir(apk_dir):
         if apk.endswith('.apk'):
 
-            root = 'adb -s %s root'%(emulator)  # root the emulator before running
+            root = adb + '-s %s root'%(emulator)  # root the emulator before running
             print commands.getoutput(root)
 
             apk_path = apk_dir + apk

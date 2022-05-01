@@ -1,24 +1,35 @@
 version: '3.8'
 
 services:
-  fit3170_usability_accessibility_testing_app:
-    build: .
-    image: web
-    container_name: web
-    ports:
-      - 5005:5000
-    command: flask run
-    volumes:
-      - .:/usr/src/app
-    environment:
-      - FLASK_DEBUG=1
-      - REDIS_URL=redis://redis:6379/0
-      - MONGO_URL=mongodb://username:password@mongodb
-      - CELERY_BROKER_URL=redis://redis:6379/0
-      - CELERY_RESULT_BACKEND=redis://redis:6379/0
-    depends_on:
-      - redis
-      - mongodb
+  # fit3170_usability_accessibility_testing_app:
+  #   build: .
+  #   image: web
+  #   container_name: web
+  #   ports:
+  #     - 5005:5000
+  #   command: python app.py
+  #   volumes:
+  #     - .:/usr/src/app
+  #   environment:
+  #     - FLASK_DEBUG=1
+  #     - REDIS_URL=redis://redis:6379/0
+  #     - MONGO_URL=mongodb://username:password@mongodb
+  #     - CELERY_BROKER_URL=redis://redis:6379/0
+  #     - CELERY_RESULT_BACKEND=redis://redis:6379/0
+  #   depends_on:
+  #     - redis
+  #     - mongodb
+
+  web:
+      build: .
+      privileged: true
+      ports:
+          - "5002:5002"
+      volumes:
+          - .:/usr/src/app
+      depends_on:
+          - redis
+          - mongodb
 
   worker:
     build: .
@@ -32,7 +43,7 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
-      - fit3170_usability_accessibility_testing_app
+      - web
       - redis
 
   redis:

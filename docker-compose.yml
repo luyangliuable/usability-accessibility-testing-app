@@ -13,16 +13,16 @@ services:
     environment:
       - FLASK_DEBUG=1
       - REDIS_URL=redis://redis:6379/0
-      - MONGO_URL=mongodb://mongo:27017/app_development
+      - MONGO_URL=mongodb://username:password@mongodb
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
     depends_on:
       - redis
-      - mongo
+      - mongodb
 
   worker:
     build: .
-    command: celery worker --app=project.server.tasks.celery --loglevel=info
+    command: celery worker #--app=project.server.tasks.celery --loglevel=info
     container_name: worker
     volumes:
       - .:/usr/src/app
@@ -37,7 +37,10 @@ services:
 
   redis:
     image: redis:6-alpine
-
     container_name: redis
-  mongo:
-    image: mongo
+
+  mongodb:
+    image: mongo:5.0
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=username
+      - MONGO_INITDB_ROOT_PASSWORD=password

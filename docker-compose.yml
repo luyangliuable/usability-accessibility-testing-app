@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  fit3170_usability_accessibility_testing_app:
+    build: .
+    image: web
+    container_name: web
+    ports:
+      - 5005:5000
+    command: flask run
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - FLASK_DEBUG=1
+      - REDIS_URL=redis://redis:6379/0
+      - MONGO_URL=mongodb://mongo:27017/app_development
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - redis
+      - mongo
+
+  worker:
+    build: .
+    command: celery worker --app=project.server.tasks.celery --loglevel=info
+    container_name: worker
+    volumes:
+      - .:/usr/src/app
+    environment:
+      - FLASK_DEBUG=1
+      - APP_SETTINGS=project.server.config.DevelopmentConfig
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+    depends_on:
+      - fit3170_usability_accessibility_testing_app
+      - redis
+
+  redis:
+    image: redis:6-alpine
+
+    container_name: redis
+  mongo:
+    image: mongo

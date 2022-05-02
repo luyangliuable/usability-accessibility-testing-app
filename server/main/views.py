@@ -1,15 +1,15 @@
 import os
-import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
-import pandas as pd
-import pymongo
+# import numpy as np
+# import matplotlib
+# import matplotlib.pyplot as plt
+# import pandas as pd
+# import pymongo
 from collections import Counter
-from redis import Redis
+# from redis import Redis
 from flask import render_template, Blueprint, jsonify, request, Response, send_file, redirect, url_for
-from celery.result import AsyncResult
+# from celery.result import AsyncResult
 
-matplotlib.use('Agg')
+# matplotlib.use('Agg')
 
 # main_blueprint = Blueprint("main", __name__) #, static_folder='static')
 ###############################################################################
@@ -24,20 +24,26 @@ matplotlib.use('Agg')
 # celery.conf.result_backend = os.environ['REDIS_URL']
 
 
+main_blueprint = Blueprint("main", __name__) #, static_folder='static')
+
 ###############################################################################
 #                                    Redis                                    #
 ###############################################################################
-print("Redis url is", os.environ['REDIS_URL'])
-redis = Redis.from_url(os.environ['REDIS_URL'])
+# print("Redis url is", os.environ['REDIS_URL'])
+# redis = Redis.from_url(os.environ['REDIS_URL'])
 
 
-###############################################################################
-#                                   Mongodb                                   #
-###############################################################################
-print("mongo url is", os.environ['MONGO_URL'])
-try:
-    mongo = pymongo.MongoClient(os.environ['MONGO_URL'])
-    db = mongo.flashcards
-    mongo.server_info() # Triger exception if connection fails to the database
-except Exception as ex:
-    print('failed to connect', ex)
+# ###############################################################################
+# #                                   Mongodb                                   #
+# ###############################################################################
+# print("mongo url is", os.environ['MONGO_URL'])
+# try:
+#     mongo = pymongo.MongoClient(os.environ['MONGO_URL'])
+#     db = mongo.flashcards
+#     mongo.server_info() # Triger exception if connection fails to the database
+# except Exception as ex:
+#     print('failed to connect', ex)
+
+@main_blueprint.route('/', methods=["GET", "POST"])
+def label():
+    return "Hello"

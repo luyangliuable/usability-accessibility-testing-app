@@ -1,40 +1,55 @@
 version: '3.8'
 
 services:
-  web:
+  web2:
     build: .
     image: web
     container_name: web
-    privileged: true
     ports:
       - 5005:5000
     command: python manage.py run -h 0.0.0.0
     volumes:
-      - .:/usr/src/app
+      - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
     environment:
       - FLASK_DEBUG=1
-      - APP_SETTINGS=project.server.config.DevelopmentConfig
+      - APP_SETTINGS=server.config.DevelopmentConfig
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379/0
+      - MONGO_URL=mongodb://username:password@mongodb
     depends_on:
       - redis
-      - mongodb
 
   worker:
     build: .
-    command: celery worker --app=server.tasks.celery --loglevel=info
-    container_name: worker
+    command: celery worker # --app=server.tasks.celery --loglevel=info
     volumes:
-      - .:/usr/src/app
+      - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
     environment:
       - FLASK_DEBUG=1
-      - APP_SETTINGS=project.server.config.DevelopmentConfig
+      - APP_SETTINGS=server.config.DevelopmentConfig
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379/0
+      - MONGO_URL=mongodb://username:password@mongodb
     depends_on:
-      - web
+      - web2
       - redis
 
+  # dashboard:
+  #   build: .
+  #   command:  flower --app=project.server.tasks.celery --port=5555 --broker=redis://redis:6379/0
+  #   ports:
+  #     - 5558:5555
+  #   environment:
+  #     - FLASK_DEBUG=1
+  #     - APP_SETTINGS=project.server.config.DevelopmentConfig
+  #     - CELERY_BROKER_URL=redis://redis:6379/0
+  #     - CELERY_RESULT_BACKEND=redis://redis:6379/0
+  #   depends_on:
+  #     - web2
+  #     - redis
+  #     - worker
 
   mongodb:
     image: mongo:5.0
@@ -42,6 +57,6 @@ services:
       - MONGO_INITDB_ROOT_USERNAME=username
       - MONGO_INITDB_ROOT_PASSWORD=password
 
+  
   redis:
     image: redis:6-alpine
-

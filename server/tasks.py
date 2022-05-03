@@ -1,4 +1,3 @@
-from project.machine_learning import app as machine_learning
 from flask import jsonify, send_file
 from celery import Celery
 import time

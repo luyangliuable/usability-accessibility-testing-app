@@ -6,8 +6,8 @@ WORKDIR /usr/src/app
 
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
-ENV REDIS_URL=redis://redis:6379/0
-ENV MONGO_URL=mongodb://username:password@mongodb
+# ENV REDIS_URL=redis://redis:6379/0
+# ENV MONGO_URL=mongodb://username:password@mongodb
 
 # set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1

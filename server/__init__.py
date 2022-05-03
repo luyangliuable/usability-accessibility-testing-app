@@ -1,5 +1,7 @@
 import os
 from flask import Flask
+from server.tasks import celery
+
 
 def create_app(script_info=None):
 

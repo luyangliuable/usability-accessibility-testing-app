@@ -46,7 +46,7 @@ services:
 
   worker:
     build: .
-    command: celery worker # --app=server.tasks.celery --loglevel=info
+    command: celery worker --app=server.tasks.celery --loglevel=info
     volumes:
       - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
     environment:

@@ -1,5 +1,4 @@
 version: '3.8'
-
 services:
   web2:
     build: .
@@ -19,6 +18,31 @@ services:
       - MONGO_URL=mongodb://username:password@mongodb
     depends_on:
       - redis
+      - mongodb
+
+  react-ui:
+    build:
+      context: ./Website
+    ports:
+      - "3001:3001"
+    container_name: react-ui
+    stdin_open: true
+    volumes:
+       - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/Website
+       - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/Website/node_modules
+
+  emulator:
+    build: .
+    container_name: android-container
+    privileged: true
+    image: budtmo/docker-android-x86-8.1
+    ports:
+      - 6080:6080
+      - 5554:5554
+      - 5555:5555
+    environment:
+      - DEVICE=Samsung Galaxy S6
+
 
   worker:
     build: .

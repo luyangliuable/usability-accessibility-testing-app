@@ -4,6 +4,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import './ToolBar/ToolBar.css';
 import './Home/Home.css';
 import './Login/Login.css';
+import './About/About.css';
 
 import ToolBar from './ToolBar/ToolBar';
 import Login from './Login/Login';

@@ -15,7 +15,8 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - REDIS_URL=redis://redis:6379/0
-      - MONGO_URL=mongodb://username:password@mongodb
+      - MONGO_URL=mongodb://localhost:27017/
+
     depends_on:
       - redis
       - mongodb
@@ -32,6 +33,7 @@ services:
        - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/Website/node_modules
 
   emulator:
+    tty: true
     build: .
     container_name: android-container
     privileged: true
@@ -76,7 +78,13 @@ services:
   #     - worker
 
   mongodb:
+    tty: true
     image: mongo:5.0
+    container_name: mongodb
+    ports:
+      - 27017:27017
+    volumes:
+      - .:/data/mongodb
     environment:
       - MONGO_INITDB_ROOT_USERNAME=username
       - MONGO_INITDB_ROOT_PASSWORD=password

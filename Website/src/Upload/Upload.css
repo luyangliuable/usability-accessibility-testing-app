@@ -4,9 +4,9 @@
     min-height: 100vh !important;
     min-width: 100vw !important;
     margin: 0px !important;
-    
+
     max-height: 100vh !important;
-    overflow-y: scroll;
+    overflow-y: auto;
 }  
   
   .upload-root{

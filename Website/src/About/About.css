@@ -1,14 +1,16 @@
 .container-nav {
     padding: 150px;
-    background-color: #2e2e2e;
+    background-color: #0d0d0d;
     min-height: 100vh !important;
     min-width: 100vw !important;
     margin: 0px !important;
+    
+    max-height: 100vh !important;
+    overflow-y: scroll;
 }  
   
-  .about-about {
-    height: 1083px;
-    width: 1187px;
+  .about-root{
+    width: 1224px;
     align-self: center;
     margin: auto;
   }
@@ -16,7 +18,9 @@
   .about-text-60 {
     text-align: center;
     vertical-align: top;
+    padding-bottom: 32px;
     font-size: 60px;
+    font-weight: 500;
     font-family: Lato;
     line-height: auto;
     color: #f2f2f2;
@@ -48,9 +52,9 @@
     color: #e5e5e5;
   }
 
-  .about-img-580-420 {
-    height: 420px;
-    width: 580px;
+  .about-img-600-440 {
+    height: 440px;
+    width: 600px;
   }
   .about-img-520-380 {
     height: 380px;

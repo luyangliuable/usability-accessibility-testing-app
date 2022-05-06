@@ -2,6 +2,8 @@ import React from "react";
 import { Row, Container, Col } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 
+import "./ToolBar.css"
+
 export default function ToolBar() {
   return (
       <Container className="nav-container" fluid='true'>

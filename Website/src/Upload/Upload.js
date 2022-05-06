@@ -5,9 +5,12 @@ import './Upload.css';
 
 import ResultBox from "./components/ResultBox"
 import UploadBox from "./components/UploadBox"
+import ReportsTable from "../Results/components/ReportsTable"
 
 export default class Upload extends Component {
   render() {
+    var reports = []  /* TODO link to backend */
+
     return (
       <Container className='container-nav'>
         <div className="upload-root">
@@ -54,12 +57,18 @@ export default class Upload extends Component {
           </div>
 
           <div className="upload-vspacing-40"> </div>
+          <div className="upload-vspacing-40"> </div>
 
           <div className="upload-div-full">
-            <p className="upload-text-48 upload-full-width">APK BUG REPORT</p>
+            <p className="upload-text-48 upload-full-width">APK BUG REPORTS</p>
 
-            {/* TODO Functional of bug reports*/}
-            <p className="upload-text-30 upload-full-width">There are no bug reports to display.</p>
+            {/* Display the actual table if there is data */}
+            { reports.length > 0 && 
+              <ReportsTable reports={reports}/> }
+
+            {/* Display message if table is empty*/ }
+            { reports.length == 0 &&
+              <p className="upload-text-30 upload-full-width">There are no bug reports to display.</p> }
           </div>
 
 

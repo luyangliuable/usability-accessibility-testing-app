@@ -1,12 +1,12 @@
-import os
 # import numpy as np
 # import matplotlib
 # import matplotlib.pyplot as plt
 # import pandas as pd
 # import pymongo
 from collections import Counter
-# from redis import Redis
 from flask import render_template, Blueprint, jsonify, request, Response, send_file, redirect, url_for
+# from redis import Redis
+import os
 # from celery.result import AsyncResult
 
 # matplotlib.use('Agg')

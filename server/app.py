@@ -1,6 +1,6 @@
 import os
 from flask import Flask
-from server.tasks import celery
+from tasks import celery
 
 
 def create_app(script_info=None):
@@ -13,8 +13,7 @@ def create_app(script_info=None):
     app.config.from_object(app_settings)
 
     # register blueprints
-    from server.main.views import main_blueprint
-
+    from main.views import main_blueprint
     app.register_blueprint(main_blueprint)
 
     # shell context for flask cli

@@ -1,9 +1,10 @@
 version: '3.8'
 services:
-  web2:
-    build: .
-    image: web
-    container_name: web
+  flask_backend:
+    build:
+      context: ./server/
+    image: bxer.flask_backend
+    container_name: bxer.flask_backend
     ports:
       - 5005:5000
     command: python manage.py run -h 0.0.0.0
@@ -11,7 +12,7 @@ services:
       - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
     environment:
       - FLASK_DEBUG=1
-      - APP_SETTINGS=server.config.DevelopmentConfig
+      - APP_SETTINGS=config.DevelopmentConfig
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - REDIS_URL=redis://redis:6379/0
@@ -24,9 +25,10 @@ services:
   react-ui:
     build:
       context: ./Website
+    container_name: react-ui
     ports:
       - "3001:3001"
-    container_name: react-ui
+    container_name: bxer.react-ui
     stdin_open: true
     volumes:
        - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/Website
@@ -35,7 +37,7 @@ services:
   emulator:
     tty: true
     build: .
-    container_name: android-container
+    container_name: android-emulator
     privileged: true
     image: budtmo/docker-android-x86-8.1
     ports:
@@ -44,11 +46,14 @@ services:
       - 5555:5555
     environment:
       - DEVICE=Samsung Galaxy S6
-
+    depends_on:
+      - flask_backend
 
   worker:
-    build: .
-    command: celery worker --app=server.tasks.celery --loglevel=info
+    build:
+      context: ./server/
+    command: celery worker --app=tasks.celery --loglevel=info
+    container_name: bxer.task_queue
     volumes:
       - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
     environment:
@@ -59,7 +64,6 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - MONGO_URL=mongodb://username:password@mongodb
     depends_on:
-      - web2
       - redis
 
   # dashboard:
@@ -73,14 +77,14 @@ services:
   #     - CELERY_BROKER_URL=redis://redis:6379/0
   #     - CELERY_RESULT_BACKEND=redis://redis:6379/0
   #   depends_on:
-  #     - web2
+  #     - flask_backend
   #     - redis
   #     - worker
 
   mongodb:
     tty: true
     image: mongo:5.0
-    container_name: mongodb
+    container_name: bxer.mongodb
     ports:
       - 27017:27017
     volumes:
@@ -91,4 +95,5 @@ services:
 
   
   redis:
+    container_name: bxer.redis
     image: redis:6-alpine

@@ -4,6 +4,9 @@
     min-height: 100vh !important;
     min-width: 100vw !important;
     margin: 0px !important;
+    
+    max-height: 100vh !important;
+    overflow-y: scroll;
 }
 
 .login-root {
@@ -13,10 +16,16 @@
     margin: auto;
 }
 
+.login-div-group-white {
+    
+    display: inline-flex;
+    background-color: #F2F2F2;
+    border-radius: 10px;
+    padding: 0px;
+}
 
 .login-col {
     display: flex;
-    background-color: #F2F2F2;
     padding: 50px;
 }
 
@@ -41,6 +50,9 @@
     justify-content: center;
     align-items: center;
     color: #F2F2F2;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    margin-right: -1px;
 }
 
 .login-title {

@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 export default function Login() {
     return (
 <Container className='container-nav'>
-      <Row>
+      <Row className="login-root">
         <Col className='login-col'>
           <div className='form-div-0'>
             <Col lg={12} className='login-title'><h2 className='login'>LOGIN</h2></Col>
@@ -14,8 +14,6 @@ export default function Login() {
               <div className='form-div-1'>
                   <Form.Group className="mb-3" controlId="formBasicEmail">
                       <Form.Control className='input' type="email" placeholder="Username" />
-                      </Form.Group>
-                      <Form.Group className="mb-3" controlId="formBasicEmail">
                       <Form.Control className='input' type="email" placeholder="Password" />
                       <Form.Text>
                           <p className="text-forgot-pd">Forgot Password?</p>
@@ -29,7 +27,7 @@ export default function Login() {
             </form>
             
             <Col lg={12}>
-              <Link to={"./signup"}>
+              <Link to={"/login/signup"}>
                 <p className='new-user'>New User? Create Account.</p>
               </Link>
             </Col>

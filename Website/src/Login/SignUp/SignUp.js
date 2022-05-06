@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 import { Row, Container, Form, Button, Col } from "react-bootstrap";
+import { Link } from 'react-router-dom';
 
 export default class SignUp extends Component {
   render() {
     return (
       <Container className='container-nav'>
-      <Row>
+      <Row className="login-root">
         <Col className='login-col'>
           <div className='form-div-0'>
             <Col lg={12} className='login-title'><h2 className='login'>SIGN UP</h2></Col>
@@ -14,11 +15,7 @@ export default class SignUp extends Component {
               <div className='form-div-1'>
                   <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Control className='input' type="email" placeholder="Name" />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Control className='input' type="email" placeholder="Email" />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Control className='input' type="email" placeholder="Password" />
                   </Form.Group>
                 </div>
@@ -27,6 +24,12 @@ export default class SignUp extends Component {
                  <Button className='button' type="submit">Sign Up</Button>
                 </div>
             </form>
+            
+            <Col lg={12}>
+              <Link to={"/login"}>
+                <p className='new-user'>Have an account? Log In.</p>
+              </Link>
+            </Col>
           </div>
         </Col>
 

@@ -4,11 +4,6 @@
     table-layout: fixed;
 }
 
-.reports-row {
-    display: inline-flexbox;
-    width: 100% !important;
-}
-
 .reports-table-header {
     background-color: rgba(28, 116, 151, 1.00);
 
@@ -20,16 +15,16 @@
     color: #ffffff;
 
     padding-left: 20px;
-    display: inline-block;
+    display: inline-flex;
     overflow: hidden;
+
+    padding-top: 8px;
+    padding-bottom: 8px;
+    margin-bottom: 10px;
 }
 
 .reports-table-cell {
     background-color: transparent;
-
-    border: #ffffff;
-    border-width: 0px 0px 2px 0px;
-
     text-align: left;
     vertical-align: middle;
     font-size: 36px;
@@ -39,7 +34,7 @@
     color: #ffffff;
 
     padding-left: 20px;
-    display: inline-block;
+    display: inline-flex;
     overflow: hidden;
 }
 
@@ -65,3 +60,13 @@
   line-height: auto;
   color: #ffffff;
 } 
+
+.reports-line-white {
+    display: inline-flex;
+    height: 2px;
+    background-color: #ffffff;
+
+    margin: 0px;
+    padding: 0px;
+
+}

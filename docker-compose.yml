@@ -17,6 +17,10 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - REDIS_URL=redis://redis:6379/0
       - MONGO_URL=mongodb://localhost:27017/
+      - jadx=/tools/jadx
+      - android_emulator=0.0.0.0:5555
+      - apk_tool=/tools/apktool_2.4.1.jar
+      - ic3=/tools/ic3-0.2.0.jar
 
     depends_on:
       - redis

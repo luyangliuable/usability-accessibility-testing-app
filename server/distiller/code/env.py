@@ -15,15 +15,15 @@ lib_home_path = '/Users/rubber/Documents/FIT3170_Usability_Accessibility_Testing
 
 callbacks_path = '/Users/rubber/Documents/FIT3170_Usability_Accessibility_Testing_App/server/distiller/main-folder/config'
 
-jadx_path = '/opt/homebrew/bin/jadx'
+jadx_path = '/tools/jadx'
 
-ic3_path = '/Users/rubber/Documents/FIT3170_Usability_Accessibility_Testing_App/server/distiller/main-folder/ic3-0.2.0.jar'
+ic3_path = '/tools/ic3-0.2.0.jar'
 
 ###############################################################################
 #                                  Commmands                                  #
 ###############################################################################
 
-apktool = '/Users/rubber/Documents/FIT3170_Usability_Accessibility_Testing_App/server/distiller/main-folder/apktool_2.4.1.jar'
+apktool = '/tools/apktool_2.4.1.jar'
 
 adb = '/Users/rubber/Library/Android/sdk/platform-tools/adb '
 aapt = '/Users/rubber/Library/Android/sdk/build-tools/30.0.3/aapt '

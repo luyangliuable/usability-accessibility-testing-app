@@ -7,7 +7,7 @@ services:
     container_name: bxer.flask_backend
     ports:
       - 5005:5000
-    command: python manage.py run -h 0.0.0.0
+    command: python3 manage.py run -h 0.0.0.0
     volumes:
       - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
     environment:
@@ -20,13 +20,36 @@ services:
       - jadx=/tools/jadx
       - android_emulator=0.0.0.0:5555
       - apk_tool=/tools/apktool_2.4.1.jar
-      - ic3=/tools/ic3-0.2.0.jar
-
+      - ic3=/tools/ic3-0.2.0
     depends_on:
       - redis
       - mongodb
 
-  react-ui:
+  story_distiller:
+    build:
+      context: ./server/distiller/
+    container_name: bxer.story_distiller
+    command: python2.7 app.py
+    ports:
+      - "3002:3002"
+    environment:
+      - FLASK_DEBUG=1
+      - APP_SETTINGS=config.DevelopmentConfig
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379/0
+      - MONGO_URL=mongodb://localhost:27017/
+      - jadx=/tools/jadx
+      - android_emulator=0.0.0.0:5555
+      - apk_tool=/tools/apktool_2.4.1.jar
+      - ic3=/tools/ic3-0.2.0.jar
+    volumes:
+      - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/server/distiller
+    depends_on:
+      - redis
+      - mongodb
+
+  react_ui:
     build:
       context: ./Website
     container_name: react-ui
@@ -68,6 +91,7 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - MONGO_URL=mongodb://username:password@mongodb
     depends_on:
+      - flask_backend
       - redis
 
   # dashboard:

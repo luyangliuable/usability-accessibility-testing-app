@@ -17,7 +17,7 @@ callbacks_path = '/Users/rubber/Documents/FIT3170_Usability_Accessibility_Testin
 
 jadx_path = '/tools/jadx'
 
-ic3_path = '/tools/ic3-0.2.0.jar'
+ic3_path = '/tools/ic3-0.2.0'
 
 ###############################################################################
 #                                  Commmands                                  #

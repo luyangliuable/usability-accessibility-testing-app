@@ -45,5 +45,5 @@ main_blueprint = Blueprint("main", __name__) #, static_folder='static')
 #     print('failed to connect', ex)
 
 @main_blueprint.route('/', methods=["GET", "POST"])
-def label():
-    return "Hello"
+def display_flask_working_state():
+    return "Flask back-end is online."

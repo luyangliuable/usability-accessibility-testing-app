@@ -16,6 +16,8 @@ RUN apt upgrade
 RUN apt install nvidia-cuda-toolkit -y
 RUN pip3 install torch==1.10.0+cpu torchvision==0.11.1+cpu torchaudio==0.10.0+cpu -f https://download.pytorch.org/whl/cpu/torch_stable.html
 
+# Copy local files
+COPY ./OwlEyeSourceCode ./root/OwlEyeSourceCode
 
 
 

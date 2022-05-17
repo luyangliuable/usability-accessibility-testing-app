@@ -1,14 +1,14 @@
-import React, { Component, useCallback, useRef, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useDropzone } from 'react-dropzone'
 import superagent from 'superagent'
 
 import "./ResultBox.css"
 
 export default function UploadBox() {
-  var [buttonState, setButtonState] = useState(false);
-  var [selectedFile, setSelectedFile] = useState(null);
+  const [buttonState, setButtonState] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
 
-  var canAccept = (file) => {
+  const canAccept = (file) => {
     /* TODO check file types */
     return null
   };
@@ -18,21 +18,20 @@ export default function UploadBox() {
     setSelectedFile(acceptedFiles[0])
 
     /* todo backend upload url */
-    var req = superagent.post('http://localhost/upload/');
+    const req = superagent.post('http://localhost/upload/');
     acceptedFiles.forEach(file => {
       req.attach(file.name, file);
     });
 
     req.end((resp) => console.log(resp));
-  });
+  }, []);
 
-  var { getRootProps, getInputProps, isDragActive } = useDropzone({
+  const {getRootProps, getInputProps} = useDropzone({
     onDropAccepted: onDropAccepted,
     maxFiles: 1,
     disabled: buttonState,
     validator: canAccept
   });
-
 
   return (
     <div className="result-box-root">
@@ -40,8 +39,8 @@ export default function UploadBox() {
           <input { ...getInputProps()} disabled={buttonState}/>
 
           <div className="result-box-full-width">
-              <img className="result-box-icon" src={require("./content/dummy_200x256.png")}  />
-              <img className="result-box-icon" src={require("./content/dummy_200x256.png")}  />
+              <img className="result-box-icon" src={require("./content/dummy_200x256.png")}   alt={""}/>
+              <img className="result-box-icon" src={require("./content/dummy_200x256.png")}   alt={""}/>
           </div>
 
           <div className="result-vspacing-10"> </div>

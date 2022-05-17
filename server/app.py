@@ -14,11 +14,13 @@ def create_app(script_info=None):
 
     # register blueprints
     from main.views import main_blueprint
+    from upload.app import upload_blueprint
+
     app.register_blueprint(main_blueprint)
+    app.register_blueprint(upload_blueprint)
     app.debug = True
 
     # shell context for flask cli
     app.shell_context_processor({"app": app})
 
     return app
-

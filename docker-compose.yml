@@ -1,0 +1,127 @@
+version: '3.8'
+services:
+  flask_backend:
+    build:
+      context: ./server/
+    image: bxer.flask_backend
+    container_name: bxer.flask_backend
+    ports:
+      - 5005:5000
+    command: python3 manage.py run -h 0.0.0.0
+    volumes:
+      - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
+    environment:
+      - FLASK_DEBUG=1
+      - APP_SETTINGS=config.DevelopmentConfig
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379/0
+      - MONGO_URL=mongodb://localhost:27017/
+      - jadx=/tools/jadx
+      - android_emulator=0.0.0.0:5555
+      - apk_tool=/tools/apktool_2.4.1.jar
+      - ic3=/tools/ic3-0.2.0
+    depends_on:
+      - redis
+      - mongodb
+
+  story_distiller:
+    build:
+      context: ./server/distiller/
+    container_name: bxer.story_distiller
+    command: python2.7 app.py
+    ports:
+      - "3002:3002"
+    environment:
+      - FLASK_DEBUG=1
+      - APP_SETTINGS=config.DevelopmentConfig
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379/0
+      - MONGO_URL=mongodb://localhost:27017/
+      - jadx=/tools/jadx
+      - android_emulator=0.0.0.0:5555
+      - apk_tool=/tools/apktool_2.4.1.jar
+      - ic3=/tools/ic3-0.2.0.jar
+    volumes:
+      - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/server/distiller
+    depends_on:
+      - redis
+      - mongodb
+
+  react_ui:
+    build:
+      context: ./Website
+    container_name: react-ui
+    ports:
+      - "3001:3001"
+    container_name: bxer.react-ui
+    stdin_open: true
+    volumes:
+       - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/Website
+       - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/Website/node_modules
+
+  emulator:
+    tty: true
+    build: .
+    container_name: android-emulator
+    privileged: true
+    image: budtmo/docker-android-x86-8.1
+    ports:
+      - 6080:6080
+      - 5554:5554
+      - 5555:5555
+    environment:
+      - DEVICE=Samsung Galaxy S6
+    depends_on:
+      - flask_backend
+
+  worker:
+    build:
+      context: ./server/
+    command: celery worker --app=tasks.celery --loglevel=info
+    container_name: bxer.task_queue
+    volumes:
+      - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
+    environment:
+      - FLASK_DEBUG=1
+      - APP_SETTINGS=server.config.DevelopmentConfig
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_RESULT_BACKEND=redis://redis:6379/0
+      - REDIS_URL=redis://redis:6379/0
+      - MONGO_URL=mongodb://username:password@mongodb
+    depends_on:
+      - flask_backend
+      - redis
+
+  # dashboard:
+  #   build: .
+  #   command:  flower --app=project.server.tasks.celery --port=5555 --broker=redis://redis:6379/0
+  #   ports:
+  #     - 5558:5555
+  #   environment:
+  #     - FLASK_DEBUG=1
+  #     - APP_SETTINGS=project.server.config.DevelopmentConfig
+  #     - CELERY_BROKER_URL=redis://redis:6379/0
+  #     - CELERY_RESULT_BACKEND=redis://redis:6379/0
+  #   depends_on:
+  #     - flask_backend
+  #     - redis
+  #     - worker
+
+  mongodb:
+    tty: true
+    image: mongo:5.0
+    container_name: bxer.mongodb
+    ports:
+      - 27017:27017
+    volumes:
+      - .:/data/mongodb
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=username
+      - MONGO_INITDB_ROOT_PASSWORD=password
+
+  
+  redis:
+    container_name: bxer.redis
+    image: redis:6-alpine

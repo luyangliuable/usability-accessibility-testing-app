@@ -1,10 +1,12 @@
 .container-nav {
-    padding: 150px;
+    padding: 0px;
+    padding-top: 150px;
     background-color: #0d0d0d;
     min-height: 100vh !important;
     min-width: 100vw !important;
-    margin: 0px !important;
-
+    margin-left: auto !important;
+    margin-right: auto !important;
+    display: block;
     max-height: 100vh !important;
     overflow-y: auto;
 }  

@@ -1,12 +1,12 @@
 from flask import Blueprint, request
 from redis import Redis
+import zlib
 import uuid
-import random
 import pickle
 import os
 
 upload_blueprint = Blueprint("upload", __name__)
-# r = Redis.from_url(os.environ.get('REDIS_URL'))
+r = Redis.from_url(os.environ.get('REDIS_URL'))
 
 def unique_id_generator():
     res = "apk_file_" + str( uuid.uuid4() )
@@ -14,8 +14,8 @@ def unique_id_generator():
 
 @upload_blueprint.route('/upload', methods=["GET", "POST"])
 def upload():
-    if len(request.form) > 0:
-        file = request.files.get('file')
+    if len(request.files) > 0:
+        file = request.files['file']
         pickle.dumps(file) #Serialises data to binary so we can store to redis
 
         #Store compressed file to redis to save space

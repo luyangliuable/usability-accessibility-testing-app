@@ -123,5 +123,7 @@ services:
 
   
   redis:
+    ports:
+      - 6379:6379
     container_name: bxer.redis
     image: redis:6-alpine

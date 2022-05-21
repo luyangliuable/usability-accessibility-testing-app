@@ -22,5 +22,5 @@ WORKDIR /home
 # Copy local files
 COPY ./OwlEyes .
 
-# Run
-CMD ["./python3","./OwlEyes/localization.py"]
+# Run auto
+ENTRYPOINT [ "python3","./OwlEyes/localization.py"]

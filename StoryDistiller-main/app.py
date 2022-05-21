@@ -1,6 +1,9 @@
 import sys
+import os
 from flask import Flask, request
 from redis import StrictRedis
+import shutil
+
 if __name__ == "__main__":
     ###############################################################################
     #            In order to make import works, must run in root folder           #
@@ -19,8 +22,26 @@ def home():
 @app.route("/send_uid", methods=["POST"])
 def send_uid_and_signal_run():
     if request.method == "POST":
+
+        target_apk_folder = "./storydistiller_main/apk_folder/"
+
+        ###############################################################################
+        #                             Get file from redis                             #
+        ###############################################################################
         uid = request.get("uid")
-        r.hget(str( uid ), "apk_file")
+
+
+        ##############################################################################################
+        # Assume that the redis database hash contains the file location not the actual file anymore #
+        ##############################################################################################
+        file_location = r.hget(str( uid ), "apk_file")
+        shutil.copy(file_location, os.path.join( target_apk_folder, "apk_file.apk" ))
+
+        ###############################################################################
+        #                      Run the code inside storydistiller                     #
+        ###############################################################################
+        run_everything()
+
 
     return "No HTTP POST method received for send_uid"
 

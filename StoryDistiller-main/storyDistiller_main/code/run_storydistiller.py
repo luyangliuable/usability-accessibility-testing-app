@@ -394,8 +394,7 @@ def getSootOutput(apk_path, apk_name):
     print '[3] Get SootOutput and Check Layout Type: DONE'
 
 
-if __name__ == '__main__':
-
+def run_everything():
     # output = sys.argv[1] # Main folder path
     output = '/home/StoryDistiller-main/main-folder/'
     #output = '/Users/chensen/Tools/storydistiller/'
@@ -577,3 +576,6 @@ if __name__ == '__main__':
 
             os.remove(os.path.join(result_apkfolder, apk_name + '.apk'))
             os.remove(apk_path)
+
+if __name__ == '__main__':
+    run_everything()

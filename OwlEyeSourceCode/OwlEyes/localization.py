@@ -8,7 +8,6 @@ from network import Net
 import torch.nn as nn
 import getdata
 import os
-import redis
 
 image_dir = './input_pic/'  
 model_dir = './model/model.pth'
@@ -114,10 +113,6 @@ def getImages():
     pass
 
 if __name__ == '__main__':
-    # Get Files From Redis Database and Insert them into image.dir
-    redis_db = redis.Redis( port=6379, db=0)
-
-    #
     files = os.listdir(image_dir)
 
     for file in files:

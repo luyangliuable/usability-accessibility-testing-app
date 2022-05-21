@@ -20,4 +20,7 @@ RUN pip3 install torch torchvision torchaudio --extra-index-url https://download
 
 WORKDIR /home
 # Copy local files
-COPY ./OwlEyeSourceCode .
+COPY ./OwlEyes .
+
+# Run
+CMD ["./python3","./OwlEyes/localization.py"]

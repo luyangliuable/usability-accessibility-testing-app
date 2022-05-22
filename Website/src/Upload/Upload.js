@@ -15,12 +15,12 @@ export default class Upload extends Component {
       <Container className='container-nav'>
         <div className="upload-root">
 
-          <p className="upload-text-60 upload-text-center">UPLOAD YOUR APK/MP4</p>
+          <p className="upload-text-60 upload-text-ceter">UPLOAD YOUR APK/MP4</p>
           <p className="upload-text-30 upload-text-center">Upload your APK or MP4 files to evaluated for bugs</p>
 
           <div className="upload-vspacing-40"> </div>
 
-          <div className="upload-div-group-white"> 
+          <div className="upload-div-group-white">
             <div className="upload-align-left">
               <UploadBox/>
             </div>
@@ -36,7 +36,7 @@ export default class Upload extends Component {
               <ResultBox className="upload-align-right"/>
             </div>
           </div>
-          
+
           <div className="upload-vspacing-40"> </div>
 
           <div className="upload-div-group-white">
@@ -63,15 +63,13 @@ export default class Upload extends Component {
             <p className="upload-text-48 upload-full-width">APK BUG REPORTS</p>
 
             {/* Display the actual table if there is data */}
-            { reports.length > 0 && 
+            { reports.length > 0 &&
               <ReportsTable reports={reports}/> }
 
             {/* Display message if table is empty*/ }
-            { reports.length == 0 &&
+            { reports.length === 0 &&
               <p className="upload-text-30 upload-full-width">There are no bug reports to display.</p> }
           </div>
-
-
 
         </div>
       </Container>

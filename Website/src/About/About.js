@@ -22,10 +22,10 @@ export default class About extends Component {
 
           <div>
             <div className="about-div-mid">
-              <img className="about-img-520-380" src={require("./content/dummy_520x380.png")} />
+              <img className="about-img-520-380" src={require("./content/dummy_520x380.png")}  alt={""}/>
             </div>
             <div className="about-div-mid">
-              <img className="about-img-600-440" src={require("./content/dummy_600x440.png")} />
+              <img className="about-img-600-440" src={require("./content/dummy_600x440.png")}  alt={""}/>
             </div>
             <div className="about-div-mid">
               <p className="about-text-20">Android phone home screen with multiple applications</p>

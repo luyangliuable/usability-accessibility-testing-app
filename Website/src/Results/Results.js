@@ -27,7 +27,7 @@ export default class Results extends Component {
               <ReportsTable reports={reports}/> }
 
             {/* Display message if table is empty*/ }
-            { reports.length == 0 &&
+            { reports.length === 0 &&
               <p className="results-text-30 results-full-width">There are no bug reports to display.</p> }
           </div>
         </div>

@@ -14,7 +14,7 @@ function App() {
   return (
     <BrowserRouter>
       <ToolBar />
-      
+
       <Routes>
         <Route path="" element={<Home />}></Route>
         <Route path="/login" element={<Login />}></Route>
@@ -24,7 +24,8 @@ function App() {
         <Route path="/upload" element={<Upload />}></Route>
       </Routes>
     </BrowserRouter>
-  )
+  );
 }
+
 
 export default App;

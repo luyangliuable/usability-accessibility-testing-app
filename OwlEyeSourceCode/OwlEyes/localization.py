@@ -269,7 +269,6 @@ def process_png_to_jpg():
     """
     raw_pics = os.listdir(raw_dir)
     for raw_png in raw_pics:
-        # print(raw_png)
         (filename, extension) = os.path.splitext(raw_png)
         if extension != ".txt":
             raw_png_dir = raw_dir + raw_png
@@ -299,7 +298,6 @@ if __name__ == '__main__':
         if extension != ".txt":
             image_num = filename
             image_name = image_dir + file
-            print(image_name)
             args = get_args()
 
             model = Net()

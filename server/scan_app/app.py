@@ -110,8 +110,7 @@ async def get(request: Request):
     ###############################################################################
     ###############################################################################
     #                     Once the websocket receives request update mongo db     #
-    ###############################################################################
-    mongo_db_file_id = request.get("file_id")
+
 
     # Assume the file is in bytes
     image_file = request.get("file_id")
@@ -122,7 +121,6 @@ async def get(request: Request):
     # If the file is image
     im = Image.open("./image.jpg")
     image_bytes = io.BytesIO()
-
     im.save(image_bytes, format='JPEG')
 
     image = {
@@ -139,7 +137,4 @@ p
 
     image_id = image_db.insert_one(image).inserted_id
 
-@scan_app_blueprint.route('/redis_file_manager')
-def home():
-    return "Redis file manager is online"
 

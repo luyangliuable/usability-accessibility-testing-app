@@ -11,7 +11,7 @@ export default function UploadBox() {
 
     const canAccept = (file) => {
         /* TODO check file types */
-        return null;
+        return ['apk'];
     };
 
     const onDropAccepted = useCallback(acceptedFiles => {
@@ -19,31 +19,26 @@ export default function UploadBox() {
         setButtonState(true);
         setSelectedFile(acceptedFiles[0]);
 
-        // todo backend upload url
-        // let req = superagent.post('http://127.0.0.1:5000/upload/apk/');
         acceptedFiles.forEach(file => {
             console.log(JSON.stringify(file));
         });
 
 
         // const file = document.getElementById('file_upload').files;
-
         // console.log(JSON.stringify(file));
+        // const req = superagent.post('http://localhost:5005/upload/apk');
 
-
-        const req = superagent.post('http://localhost:5001/upload/apk/');
         acceptedFiles.forEach(file => {
             console.log('sending ' + file.path);
-            fetch('http://localhost:5001/upload/apk', {
+            fetch('http://localhost:5005/upload/apk', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/vnd.android.package-archive',
                 },
-                body: JSON.stringify({ "mime-type": "apk", 'file': file }),
+                body: file,
             }).then(response => response.json()).then(data => {
                 console.log("done");
                 setButtonState(false);
-                // return data.task_id;
             });
         });
 

@@ -15,29 +15,30 @@ import os
 
 upload_blueprint = Blueprint("upload", __name__)
 # r = Redis.from_url(os.environ.get('REDIS_URL'))
-r = StrictRedis(decode_responses=True)
+# r = StrictRedis(decode_responses=True)
+r = Redis()
 
 def unique_id_generator():
     res = "apk_file_" + str( uuid.uuid4() )
     return res
 
 
-@upload_blueprint.route('/upload/apk', methods=["GET"])
-def check_uploaded_apk_files():
-    """
-    This blueprint method acts as an api file uploader. It must be uploaded using form-data.
-    The key in json for the apk file must be apk_file.
-    """
-    print("form", request.form)
+# @upload_blueprint.route('/upload/apk', methods=["GET"])
+# def check_uploaded_apk_files():
+#     """
+#     This blueprint method acts as an api file uploader. It must be uploaded using form-data.
+#     The key in json for the apk file must be apk_file.
+#     """
+#     print("form", request.form)
 
 
-    if request.method == "GET":
-        redis_result = r.keys("apk_file*")
-        print(redis_result)
+#     if request.method == "GET":
+#         redis_result = r.keys("apk_file*")
+#         print(redis_result)
 
-        return json.dumps({"uploaded_apk_files": redis_result } ), 200
+#         return json.dumps({"uploaded_apk_files": redis_result } ), 200
 
-    return "no valid http request received", 200
+#     return "no valid http request received", 200
 
 
 @upload_blueprint.route('/upload/apk', methods=["GET", "POST"])
@@ -47,39 +48,31 @@ def upload():
     The key in json for the apk file must be apk_file.
     """
     print("upload start")
+
+
+    print(request.get_data())
+
     if request.method == "POST":
         ###############################################################################
         #                        If post http request received                        #
         ###############################################################################
-        print("print request")
-        # print(str(dir( request )))
-        # print(str(request.files()))
-        # print(json.loads(request.get_json(), encoding='utf-8'))
-        # print(json.loads(str(request.file, encoding='utf-8')))
 
-        file = request.form.get('apk_file', "no file")
-        if 'file' not in request.get_json():
-            warnings.warn("No file is detected in POST request.")
-        else:
-            file = request.get_json()['file']
-            ###############################################################################
-            #                              Generate unique id                             #
-            ###############################################################################
+        file = request.get_data()
 
-            for i in range(100):
-                print(str( linecache.getline(file["path"], i) ))
+        ###############################################################################
+        #                              Generate unique id                             #
+        ###############################################################################
 
-            print(file)
+        file_key = "apk_file_" + unique_id_generator()
+        print(file_key)
 
-            file_key = "apk_file_" + unique_id_generator()
+        ###############################################################################
+        #                   Compress and byte serialise the apk file                  #
+        ###############################################################################
+        # r.set(file_key, zlib.compress(pickle.dumps(file)))
+        r.set(file_key, pickle.dumps( file ))
 
-            ###############################################################################
-            #                   Compress and byte serialise the apk file                  #
-            ###############################################################################
-            r.set(file_key, zlib.compress(pickle.dumps(file)))
-            # r.set(file_key, file)
-
-            return json.dumps({"file_key": str( file_key ) } ), 200
+        return json.dumps({"file_key": str( file_key ) } ), 200
 
 
     return "no request file received", 200

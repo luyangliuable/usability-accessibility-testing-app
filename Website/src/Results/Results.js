@@ -5,12 +5,13 @@ import "./Results.css"
 
 import ReportsTable from "../Results/components/ReportsTable"
 
-export default class Results extends Component {
-    render() {
-        /* TODO link to backend */
-        var reports = [["test_file.apk", "100 Mb", "21/04/22", "https://ourwebsite.com.au/results/dummyid1"],
-        ["test_file2.apk", "150 Mb", "21/04/22", "https://ourwebsite.com.au/results/dummyid2"],
-        ["test_file3.apk", "60 Mb", "20/04/22", "https://ourwebsite.com.au/results/dummyid3"]];
+// export default class Results extends Component {
+const Results = () => {
+
+    /* TODO link to backend */
+    var reports = [["test_file.apk", "100 Mb", "21/04/22", "https://ourwebsite.com.au/results/dummyid1"],
+    ["test_file2.apk", "150 Mb", "21/04/22", "https://ourwebsite.com.au/results/dummyid2"],
+    ["test_file3.apk", "60 Mb", "20/04/22", "https://ourwebsite.com.au/results/dummyid3"]];
 
         return (
             <Container className='container-nav'>
@@ -33,5 +34,6 @@ export default class Results extends Component {
                 </div>
             </Container>
         );
-    };
 };
+
+export default Results;

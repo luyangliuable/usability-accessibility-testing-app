@@ -4,3 +4,5 @@ celery==4.4.7
 flower==0.9.7
 redis==3.5.3
 python-dotenv
+fastapi==0.78.0
+# Pillow==9.1.1

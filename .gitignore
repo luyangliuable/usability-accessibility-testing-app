@@ -137,3 +137,5 @@ dmypy.json
 /test
 
 .localstack
+
+node_modules

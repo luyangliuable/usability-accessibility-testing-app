@@ -8,7 +8,6 @@ WORKDIR /home/app
 RUN pip3 install --upgrade pip
 RUN pip3 install Flask
 RUN pip3 install boto3
-RUN pip3 install Pillow
 
 # install aws 
 RUN pip3 install awscli

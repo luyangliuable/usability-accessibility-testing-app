@@ -12,7 +12,7 @@ import sys
 
 #emulator = sys.argv[1] # Emulator name
 #emulator = '192.168.57.106:5555' # Genymotion emulator
-emulator = '$XBOT_EMULATOR' # Android Studio emulator
+emulator = os.environ.get('XBOT_EMULATOR') # Android Studio emulator
 
 #apkPath = sys.argv[2] # APK folder
 apkPath = '/home/Xbot-main/main-folder/apks/'

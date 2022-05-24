@@ -13,7 +13,7 @@ import os
 import sys
 
 #emulator = sys.argv[1]
-emulator = '$STORYDISTILLER_EMULATOR'
+emulator = os.environ.get('STORYDISTILLER_EMULATOR')
 
 launchActivity = ''
 defined_pkg_name = ''

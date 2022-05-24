@@ -1,6 +1,7 @@
 import boto3
 import os
 import subprocess
+from PIL import Image
 
 
 AWS_REGION = 'us-west-2'
@@ -31,8 +32,25 @@ def service_execute(uuid, name):
 
 # get the inputs from s3
 def _get_data(uuid):
-    filepath = '/home/OwlEye-main/input_pic'
-    s3.download_file('storydistiller-bucket', uuid+'/screenshots', filepath)
+    raw_dir = '/home/OwlEye-main/png_pic/'
+    filepath = '/home/OwlEye-main/input_pic/'
+    s3.download_file('storydistiller-bucket', uuid+'/screenshots', raw_dir)
+    _process_png_to_jpg(raw_dir,filepath)
+
+# Process pictures from png to jpeg
+def _process_png_to_jpg(raw_dir, image_dir):
+    """
+    Using PIL converts images from png to jpg
+    """
+    raw_pics = os.listdir(raw_dir)
+    for raw_png in raw_pics:
+        (filename, extension) = os.path.splitext(raw_png)
+        if extension != ".txt":
+            raw_png_dir = raw_dir + raw_png
+            pil_jpg = Image.open(raw_png_dir, mode='r')
+
+            pil_jpg__dir = image_dir + filename+".jpg"
+            pil_jpg.convert('RGB').save(pil_jpg__dir,'JPEG')
 
 # run the algorithm
 def _process_result():
@@ -46,7 +64,7 @@ def _upload_result(uuid, name):
     bucketname = "owleye-bucket"
     folder_name = "%s/screenshots/" % uuid
 
-    dirpath = "/home/OwelEye-main/output_pics"
+    dirpath = "/home/OwlEye-main/output_pics"
     
     for (root, _, filenames) in os.walk(dirpath):
         for file in filenames:
@@ -65,6 +83,7 @@ def _upload_result(uuid, name):
 
 if __name__=='__main__':
     # test run
-    service_execute('a2dp.Vol_133.apk', 'a2dp.Vol_133.apk')
+    # service_execute('a2dp.Vol_133.apk', 'a2dp.Vol_133.apk')
+    _process_png_to_jpg('/home/OwlEye-main/png_pic/','/home/OwlEye-main/input_pic/')
 
 

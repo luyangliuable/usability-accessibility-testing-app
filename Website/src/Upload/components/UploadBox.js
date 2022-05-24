@@ -2,11 +2,11 @@ import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import superagent from 'superagent';
 
-
 import "./ResultBox.css";
 
-export default function UploadBox() {
+const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCurrentAppStatus}) => {
     const [buttonState, setButtonState] = useState(false);
+    const [buttonValue, setButtonValue] = useState("Upload File");
     const [selectedFile, setSelectedFile] = useState(null);
     const [taskId, setTaskId] = useState(['rand']);
 
@@ -16,7 +16,8 @@ export default function UploadBox() {
     };
 
     useEffect(() => {
-        console.log();
+        console.log("The current stored result files are" + resultFiles);
+        console.log("The current app status is " + currentAppStatus);
     }, []);
 
 
@@ -36,7 +37,11 @@ export default function UploadBox() {
 
                 const taskStatus = res.task_status;
 
-                if (taskStatus === 'SUCCESS' || taskStatus === 'FAILURE') return false;
+                if (taskStatus === 'SUCCESS' || taskStatus === 'FAILURE') {
+                    setButtonState(false);
+                    setButtonValue("Upload again");
+                    return false;
+                };
 
                 setTimeout(function() {
                     getStatus(res.task_id);
@@ -83,7 +88,8 @@ export default function UploadBox() {
                 //                       Restore button                      //
                 ///////////////////////////////////////////////////////////////
 
-                setButtonState(false);
+                // setButtonState(false);
+                setButtonValue("Getting Results");
 
                 console.log("getting status");
                 getStatus(data['task_id']);
@@ -127,10 +133,14 @@ export default function UploadBox() {
 
                 <div className="result-box-full-width">
                     {/* TODO functional button */}
-                    <button className={buttonState ? "result-box-view-button result-button-disabled" : "result-box-view-button result-button-enabled"}
-                        disabled={buttonState}>{buttonState ? 'Uploading...' : 'Upload File'}</button>
+                    <button
+                        className={buttonState ? "result-box-view-button result-button-disabled" : "result-box-view-button result-button-enabled"}
+                        disabled={buttonState}>{buttonValue}
+                    </button>
                 </div>
             </div>
         </div>
     );
 }
+
+export default UploadBox

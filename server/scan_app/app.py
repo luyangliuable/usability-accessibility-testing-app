@@ -17,7 +17,7 @@ import json
 ###############################################################################
 host_for_docker = "0.0.0.0"
 name = "scan_app"
-signal_start_api_url = "send_uid"_
+signal_start_api_url = "send_uid"
 
 ###############################################################################
 #                           Create flask blueprint                           #
@@ -104,7 +104,7 @@ def run_all_apps():
 
 # API which returns HTML file as response.
 @app.websocket("/scan_app/image")
-async def get(request: Request):
+async def get(request):
     ###############################################################################
     #                   TODO move this to results app if easier                   #
     ###############################################################################
@@ -132,7 +132,7 @@ async def get(request: Request):
     #                              Add file to mongo                              #
     ###############################################################################
     # SOURCE: https://stackoverflow.com/questions/47668507/how-to-store-images-in-mongodb-through-pymongo
-p
+
     dbResponse = db.files.insert_one(file)
 
     image_id = image_db.insert_one(image).inserted_id

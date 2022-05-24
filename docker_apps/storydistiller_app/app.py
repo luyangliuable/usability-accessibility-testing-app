@@ -27,9 +27,9 @@ def service_execute(uuid, name):
     _upload_result(uuid, name)
 
     # restore original source code
-    # subprocess.run(["rm", "-r", "/home/StoryDistiller-main"])
-    # subprocess.run(["cp", "-r", "/home/tmp/StoryDistiller-main", "/home/StoryDistiller-main"])
-    # subprocess.run(["rm", "-r", "/home/tmp/StoryDistiller-main"])
+    subprocess.run(["rm", "-r", "/home/StoryDistiller-main"])
+    subprocess.run(["cp", "-r", "/home/tmp/StoryDistiller-main", "/home/StoryDistiller-main"])
+    subprocess.run(["rm", "-r", "/home/tmp/StoryDistiller-main"])
 
 # get the inputs from s3
 def _get_data(uuid, name):
@@ -44,28 +44,29 @@ def _process_result():
 
 # upload results to s3
 def _upload_result(uuid, name):
-    _create_s3_result_dir(uuid)
 
     bucketname = "storydistiller-bucket"
-    folder_name = "/%s/screenshots/" % uuid
+    folder_name = "%s/screenshots/" % uuid
 
-    dirpath = "/home/StoryDistiller-main/main-folder/outputs/%s/screenshots" % name
+    dirpath = "/home/StoryDistiller-main/main-folder/outputs/%s/screenshots" % uuid
     
     for (root, _, filenames) in os.walk(dirpath):
         for file in filenames:
             filelocal = os.path.join(root,file)
             filebucket = os.path.join(folder_name, file)
+            print(filebucket)
             s3.upload_file(filelocal, bucketname, filebucket)
 
+            s3.generate_presigned_url(
+            'get_object',
+            Params = {'Bucket': bucketname, 'Key': filebucket},
+            ExpiresIn = 1000
+            )
+            
 
-def _create_s3_result_dir(uuid):
-    bucket_name = "storydistiller-bucket"
-    folder_name = "/%s/screenshots/" % uuid
-
-    # create s3 dir for screenshots
-    s3.put_object(Bucket=bucket_name, Key=(folder_name))
 
 if __name__=='__main__':
     # test run
     service_execute('a2dp.Vol_133.apk', 'a2dp.Vol_133.apk')
+
 

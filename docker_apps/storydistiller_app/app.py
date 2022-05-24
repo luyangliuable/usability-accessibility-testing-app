@@ -1,5 +1,4 @@
 
-import uu
 import boto3
 import os
 import subprocess

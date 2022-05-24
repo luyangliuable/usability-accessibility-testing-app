@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
 import superagent from 'superagent';
 
@@ -8,14 +8,44 @@ import "./ResultBox.css";
 export default function UploadBox() {
     const [buttonState, setButtonState] = useState(false);
     const [selectedFile, setSelectedFile] = useState(null);
+    const [taskId, setTaskId] = useState(['rand']);
 
     const canAccept = (file) => {
         /* TODO check file types */
         return ['apk'];
     };
 
+    useEffect(() => {
+        console.log();
+    }, []);
+
+
+    const getStatus = (taskID) => {
+        fetch(`http://localhost:5005/upload/${taskID}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(response => response.json())
+            .then(res => {
+                console.log(res);
+                ///////////////////////////////////////////////////////////////
+                //          Update frontend if receive request TODO          //
+                ///////////////////////////////////////////////////////////////
+
+                const taskStatus = res.task_status;
+
+                if (taskStatus === 'SUCCESS' || taskStatus === 'FAILURE') return false;
+
+                setTimeout(function() {
+                    getStatus(res.task_id);
+                }, 1000);
+            }).catch(err => console.log(err));
+    };
+
     const onDropAccepted = useCallback(acceptedFiles => {
-        console.log("upload");
+        console.log("[1] upload start.");
         setButtonState(true);
         setSelectedFile(acceptedFiles[0]);
 
@@ -37,8 +67,26 @@ export default function UploadBox() {
                 },
                 body: file,
             }).then(response => response.json()).then(data => {
+
                 console.log("done");
+
+                ///////////////////////////////////////////////////////////////
+                //          Update and save the task_id for backend          //
+                ///////////////////////////////////////////////////////////////
+                setTaskId(prev => {
+                    return [...prev, data['task_id']];
+                });
+
+                console.log(data['task_id']);
+
+                ///////////////////////////////////////////////////////////////
+                //                       Restore button                      //
+                ///////////////////////////////////////////////////////////////
+
                 setButtonState(false);
+
+                console.log("getting status");
+                getStatus(data['task_id']);
             });
         });
 

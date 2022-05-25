@@ -37,9 +37,15 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
 
                 const taskStatus = res.task_status;
 
-                if (taskStatus === 'SUCCESS' || taskStatus === 'FAILURE') {
+                if (taskStatus === 'SUCCESS'){
                     setButtonState(false);
                     setButtonValue("Upload again");
+                    updateCurrentAppStatus("RESULTS READY");
+                    return true;
+                } else if (taskStatus === 'FAILURE') {
+                    setButtonState(false);
+                    setButtonValue("Upload again");
+                    updateCurrentAppStatus("TASK FAILED");
                     return false;
                 };
 
@@ -89,7 +95,9 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
                 ///////////////////////////////////////////////////////////////
 
                 // setButtonState(false);
-                setButtonValue("Getting Results");
+                const status = "Getting Results";
+                setButtonValue(status);
+                updateCurrentAppStatus(status);
 
                 console.log("getting status");
                 getStatus(data['task_id']);

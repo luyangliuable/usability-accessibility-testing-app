@@ -10,7 +10,7 @@ import ReportsTable from "../Results/components/ReportsTable"
 
 // export default class Upload extends Component {
 
-const Upload = (props) => {
+const Upload = () => {
     const [resultFiles, updateResultFiles] = useState(["./dir_to_file/example_result_file.jpeg"]);
     const [currentAppStatus, updateCurrentAppStatus] = useState("READY");
     var reports = [];  /* TODO link to backend */

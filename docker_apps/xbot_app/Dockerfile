@@ -31,5 +31,9 @@ COPY .aws /root/.aws
 # temp directory for cache
 RUN mkdir /home/tmp
 
+EXPOSE 3003 
+
 # copy flask app
 COPY ./app.py /home/app/app.py
+
+CMD ["python3", "app.py"]

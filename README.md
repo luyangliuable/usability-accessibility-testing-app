@@ -3,12 +3,14 @@
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
 
-- [FIT3170_Usability_Accessibility_Testing_App](#fit3170_usability_accessibility_testing_app)
+- [FIT3170 Usability Accessibility Testing App](#fit3170-usability-accessibility-testing-app)
     - [Detail of app](#detail-of-app)
     - [Team members](#team-members)
         - [System Architecture](#system-architecture)
         - [RTE Scrum Masters or Product Managers](#rte-scrum-masters-or-product-managers)
-    - [Algorithms](#algorithms)
+    - [Sources](#sources)
+        - [Relevant git repositories](#relevant-git-repositories)
+    - [Algorithms and References](#algorithms-and-references)
 
 <!-- markdown-toc end -->
 
@@ -43,6 +45,16 @@ We also got the help from researchers who are authors of research papers mention
 * Joshua Jaden
 * Trevin Dilhan Wadugodapitiya
 * Benjamin Woang
+
+## Sources
+### Relevant git repositories
+https://github.com/sidongfeng/gifdroid
+https://github.com/tjusenchen/StoryDistiller
+https://github.com/20200501/OwlEye
+https://github.com/MulongXie/UIED
+https://github.com/chenjshnn/WAE
+https://github.com/GUIDesignResearch/GUIGAN
+https://github.com/budtmo/docker-android
 
 ## Algorithms and References
 

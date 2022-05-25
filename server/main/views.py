@@ -1,12 +1,12 @@
-import os
 # import numpy as np
 # import matplotlib
 # import matplotlib.pyplot as plt
 # import pandas as pd
 # import pymongo
 from collections import Counter
-# from redis import Redis
 from flask import render_template, Blueprint, jsonify, request, Response, send_file, redirect, url_for
+# from redis import Redis
+import os
 # from celery.result import AsyncResult
 
 # matplotlib.use('Agg')
@@ -45,5 +45,5 @@ main_blueprint = Blueprint("main", __name__) #, static_folder='static')
 #     print('failed to connect', ex)
 
 @main_blueprint.route('/', methods=["GET", "POST"])
-def label():
-    return "Hello"
+def display_flask_working_state():
+    return "Flask back-end is online."

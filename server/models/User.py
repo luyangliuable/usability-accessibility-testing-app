@@ -1,3 +1,4 @@
+import base64
 from flask import Flask, jsonify, request
 from app import db
 
@@ -9,7 +10,7 @@ class UserModel:
         new_user = {
             "name": json_response["name"],
             "email": json_response["email"],
-            "password": json_response["password"]
+            "password": base64.b64encode(json_response["password"].encode("utf-8"))
         }
 
         # Checking is user with email already exists
@@ -26,7 +27,7 @@ class UserModel:
 
         user_db = db.users.find_one({"email": json_response["email"]})
 
-        if user_db and user_db["password"] == json_response["password"]:
+        if user_db and base64.b64decode(user_db["password"]) == json_response["password"]:
             return jsonify({"Success": "User successfully logged in"}), 200
 
         return jsonify({

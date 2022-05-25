@@ -10,3 +10,4 @@ torch
 opencv
 PIL
 sklearn
+python-dotenv

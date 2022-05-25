@@ -89,28 +89,28 @@ services:
       - './.localstack:/tmp/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
 
-  # storydistiller:
-  #   image: trevinwadu/bxer:storydistiller
-  #   container_name: bxer.storydistiller
-  #   ports:
-  #     - '3002:3002'
-  #   environment:
-  #     - S3_URL=http://host.docker.internal:4566
-  #     - STORYDISTILLER_EMULATOR=host.docker.internal:5555
+  storydistiller:
+    image: trevinwadu/bxer:storydistiller
+    container_name: bxer.storydistiller
+    ports:
+      - '3002:3002'
+    environment:
+      - S3_URL=http://host.docker.internal:4566
+      - STORYDISTILLER_EMULATOR=host.docker.internal:5555
 
-  # xbot:
-  #   image: trevinwadu/bxer:xbot
-  #   container_name: bxer.xbot
-  #   ports:
-  #     - '3003:3003'
-  #   environment:
-  #     - S3_URL=http://host.docker.internal:4566
-  #     - XBOT_EMULATOR=host.docker.internal:5557
+  xbot:
+    image: trevinwadu/bxer:xbot
+    container_name: bxer.xbot
+    ports:
+      - '3003:3003'
+    environment:
+      - S3_URL=http://host.docker.internal:4566
+      - XBOT_EMULATOR=host.docker.internal:5557
 
-  # owleye:
-  #   image: trevinwadu/bxer:owleye
-  #   container_name: bxer.owleye
-  #   ports:
-  #     - '3004:3004'
-  #   environment:
-  #   - S3_URL=http://host.docker.internal:4566
+  owleye:
+    image: trevinwadu/bxer:owleye
+    container_name: bxer.owleye
+    ports:
+      - '3004:3004'
+    environment:
+    - S3_URL=http://host.docker.internal:4566

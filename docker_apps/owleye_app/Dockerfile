@@ -18,3 +18,5 @@ RUN mkdir /home/tmp
 
 # copy flask app
 COPY ./app.py /home/app/app.py
+
+CMD ["python3", "app.py"]

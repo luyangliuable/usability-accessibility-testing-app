@@ -4,6 +4,11 @@
     table-layout: fixed;
 }
 
+#report_img {
+    width: 200px;
+    height: 300px;
+}
+
 .reports-table-header {
     background-color: rgba(28, 116, 151, 1.00);
 
@@ -47,19 +52,20 @@
 }
 
 .reports-full-width {
-  min-width: 100%;
-  width: 100%;
-  max-width: 100%;
+    margin-top:10px;
+    min-width: 100%;
+    width: 100%;
+    max-width: 100%;
 }
-  
+
 .reports-text-36 {
-  text-align: left;
-  vertical-align: middle;
-  font-size: 36px;
-  font-family: Lato;
-  line-height: auto;
-  color: #ffffff;
-} 
+    text-align: left;
+    vertical-align: middle;
+    font-size: 36px;
+    font-family: Lato;
+    line-height: auto;
+    color: #ffffff;
+}
 
 .reports-line-white {
     display: inline-flex;
@@ -69,4 +75,15 @@
     margin: 0px;
     padding: 0px;
 
+}
+
+#report {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background: #ffffff;
+    box-shadow: 4px 4px 8px #EEAAB;
+    padding: 20px;
+    border-radius: 12px;
+    margin-bottom: 10px;
 }

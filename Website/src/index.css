@@ -21,7 +21,9 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* look into */ overflow: hidden;
+  vertial-overflow: hidden;
+  /* /\* look into *\/ overflow: hidden; */
+  overflow-x: hidden;
 }
 
 code {

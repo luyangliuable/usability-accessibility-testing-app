@@ -102,6 +102,7 @@ def run_all_apps():
         #                     Start polling for each and every app                    #
         ###############################################################################
 
+
 # API which returns HTML file as response.
 @app.websocket("/scan_app/image")
 async def get(request):

@@ -25,9 +25,9 @@ def service_execute(uuid):
     _upload_result(uuid)
 
     # restore original source code
-    # subprocess.run(["rm", "-r", "/home/OwlEye-main"])
-    # subprocess.run(["cp", "-r", "/home/tmp/OwlEye-main", "/home/OwlEye-main"])
-    # subprocess.run(["rm", "-r", "/home/tmp/OwlEye-main"])
+    subprocess.run(["rm", "-r", "/home/OwlEye-main"])
+    subprocess.run(["cp", "-r", "/home/tmp/OwlEye-main", "/home/OwlEye-main"])
+    subprocess.run(["rm", "-r", "/home/tmp/OwlEye-main"])
 
 # get the inputs from s3
 def _get_data(uuid):

@@ -60,19 +60,19 @@ def _upload_result(uuid, apk_name):
     os.system('zip -r %s %s' % (output_filename, apk_name))
 
     output_folder_path = output_root_path + output_filename
-    s3_output_path = 'output-full/%s' % uuid
+    s3_output_path = 'output-full/%s/%s' % (uuid, output_filename)
     s3_client.upload_file(output_folder_path, bucket, s3_output_path)
-    os.system('rm -r %s' (output_filename))
+    os.system('rm -r %s' % (output_filename))
     os.chdir("/home/app")
     
 
     # upload screenshots
     screenshots_path = output_root_path + apk_name + '/screenshots'
-    s3_screenshots_path = 'screenshots/%s' % uuid
+    s3_screenshots_path = 'screenshots/%s/' % uuid
 
     for (root, _, filenames) in os.walk(screenshots_path):
         for file in filenames:
-            s3_client.upload_file(os.path.join(root,file), bucket, s3_screenshots_path)
+            s3_client.upload_file(os.path.join(root,file), bucket, s3_screenshots_path+file)
 
 
 if __name__=='__main__':

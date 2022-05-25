@@ -9,33 +9,45 @@ AWS_PROFILE = 'localstack'
 ENDPOINT_URL = os.environ.get('S3_URL')
 
 boto3.setup_default_session(profile_name=AWS_PROFILE)
-
-s3 = boto3.client("s3", region_name=AWS_REGION,
+s3_client = boto3.client("s3", region_name=AWS_REGION,
                          endpoint_url=ENDPOINT_URL)
 
 
-def service_execute(uuid, name):
+def service_execute(uuid):
 
     # backup original source code
     subprocess.run(["cp", "-r", "/home/OwlEye-main", "/home/tmp/OwlEye-main"])
 
-    _get_data(uuid, name)
+    _get_data(uuid)
 
     _process_result()
 
-    _upload_result(uuid, name)
+    _upload_result(uuid)
 
     # restore original source code
-    subprocess.run(["rm", "-r", "/home/OwlEye-main"])
-    subprocess.run(["cp", "-r", "/home/tmp/OwlEye-main", "/home/OwlEye-main"])
-    subprocess.run(["rm", "-r", "/home/tmp/OwlEye-main"])
+    # subprocess.run(["rm", "-r", "/home/OwlEye-main"])
+    # subprocess.run(["cp", "-r", "/home/tmp/OwlEye-main", "/home/OwlEye-main"])
+    # subprocess.run(["rm", "-r", "/home/tmp/OwlEye-main"])
 
 # get the inputs from s3
 def _get_data(uuid):
-    raw_dir = '/home/OwlEye-main/png_pic/'
-    filepath = '/home/OwlEye-main/input_pic/'
-    s3.download_file('storydistiller-bucket', uuid+'/screenshots', raw_dir)
-    _process_png_to_jpg(raw_dir,filepath)
+    tmp_dir = '/home/OwlEye-main/tmp/input_png/'
+    os.system('mkdir -p %s' % tmp_dir)
+    dest_dir = '/home/OwlEye-main/input_pic/'
+
+    bucketname = 'storydistiller-bucket'
+    prefix = 'screenshots/%s/' % uuid
+    response = s3_client.list_objects_v2(Bucket=bucketname, Prefix=prefix)
+    for object in response['Contents']:
+        filename = object['Key'].replace(prefix, '')
+        print(filename)
+        print(bucketname)
+        print(prefix+filename)
+        print(tmp_dir+filename)
+        s3_client.download_file(bucketname, prefix+filename, tmp_dir+filename)
+
+    _process_png_to_jpg(tmp_dir, dest_dir)
+    os.system('rm -r %s' % tmp_dir)
 
 # Process pictures from png to jpeg
 def _process_png_to_jpg(raw_dir, image_dir):
@@ -59,31 +71,19 @@ def _process_result():
     os.chdir("/home/app")
 
 # upload results to s3
-def _upload_result(uuid, name):
+def _upload_result(uuid):
 
+    results_path = "/home/OwlEye-main/output_pic"
     bucketname = "owleye-bucket"
-    folder_name = "%s/screenshots/" % uuid
+    s3_results_path = "results/%s/" % uuid
 
-    dirpath = "/home/OwlEye-main/output_pics"
-    
-    for (root, _, filenames) in os.walk(dirpath):
+    for (root, _, filenames) in os.walk(results_path):
         for file in filenames:
-            filelocal = os.path.join(root,file)
-            filebucket = os.path.join(folder_name, file)
-            print(filebucket)
-            s3.upload_file(filelocal, bucketname, filebucket)
-
-            s3.generate_presigned_url(
-            'get_object',
-            Params = {'Bucket': bucketname, 'Key': filebucket},
-            ExpiresIn = 1000
-            )
+            print(file)
+            s3_client.upload_file(os.path.join(root,file), bucketname, s3_results_path+file)
             
 
 
 if __name__=='__main__':
     # test run
-    # service_execute('a2dp.Vol_133.apk', 'a2dp.Vol_133.apk')
-    _process_png_to_jpg('/home/OwlEye-main/png_pic/','/home/OwlEye-main/input_pic/')
-
-
+    service_execute('a2dp.Vol_133')

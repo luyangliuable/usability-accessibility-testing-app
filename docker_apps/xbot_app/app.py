@@ -61,7 +61,7 @@ def _upload_result(uuid, apk_name):
     os.system('zip -r %s %s' % (output_filename, apk_name))
 
     output_folder_path = output_root_path + output_filename
-    s3_output_path = 'output-full/%s' % uuid
+    s3_output_path = 'output-full/%s/%s' % (uuid, output_filename)
     s3_client.upload_file(output_folder_path, bucket, s3_output_path)
     os.system('rm -r %s' % (output_filename))
     os.chdir("/home/app")
@@ -75,9 +75,9 @@ def _upload_result(uuid, apk_name):
         for file in filenames:
             issue_name = file[:-4]
             if (pathlib.Path(file).suffix == '.png'):
-                s3_client.upload_file(os.path.join(root,file), bucket, s3_issues_path+'/image/%s' % issue_name)
+                s3_client.upload_file(os.path.join(root,file), bucket, s3_issues_path+'/%s/image/%s' % (issue_name, file))
             if (pathlib.Path(file).suffix == '.png'):
-                s3_client.upload_file(os.path.join(root,file), bucket, s3_issues_path+'/description/%s' % issue_name)
+                s3_client.upload_file(os.path.join(root,file), bucket, s3_issues_path+'%s/text/%s' % (issue_name, file))
 
 
 if __name__=='__main__':

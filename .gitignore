@@ -131,6 +131,11 @@ dmypy.json
 
 #vscode 
 .vscode
+.idea
 
 #local files - ben
 /test
+
+.localstack
+
+node_modules

@@ -33,6 +33,7 @@ def distiller():
     print "apk directory:" + apk_dir
     print "out_csv:" + out_csv
     print "adb: " + adb
+
     print "java home path: " + str(java_home_path)
     print "sdk platform path" + str(sdk_platform_path)
     print "lib_home_path" + str(lib_home_path)

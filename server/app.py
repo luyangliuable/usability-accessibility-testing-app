@@ -1,7 +1,7 @@
 import os
 from flask import Flask
 from tasks import celery
-from flask_cors import CORS
+from flask_cors import CORS, cross_origin
 
 def create_app(script_info=None):
 

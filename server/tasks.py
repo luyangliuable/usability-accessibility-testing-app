@@ -1,6 +1,6 @@
 from flask import jsonify, send_file
 from celery import Celery
-from scan_app.app import *
+# from scan_app.app import *
 import time
 import os
 
@@ -15,7 +15,7 @@ def create_task(info={}):
     #                           Create celery web tasks                           #
     ###############################################################################
 
-    time.sleep(35)
+    # time.sleep(1)
     print("task completed")
 
     ###############################################################################

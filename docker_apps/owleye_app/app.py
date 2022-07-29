@@ -49,11 +49,11 @@ def _service_execute(uuid):
     print('Downloading images from storydistiller')
     _get_data(uuid)
     print('Successfully Downloaded')
-    
+
     print('Running OwlEye')
     _process_result()
     print('Successfully ran')
-    
+
     print('Uploading results')
     _upload_result(uuid)
     print('Successfully uploaded')
@@ -117,11 +117,11 @@ def _upload_result(uuid):
         for file in filenames:
             print(file)
             s3_client.upload_file(os.path.join(root,file), bucketname, s3_results_path+file)
-            
+
 
 
 if __name__=='__main__':
     app.run(debug=True, host="0.0.0.0", port=3004)
-    
+
     # test run
     #service_execute('a2dp.Vol_133')

@@ -32,8 +32,6 @@ def unique_id_generator():
 #     The key in json for the apk file must be apk_file.
 #     """
 #     print("form", request.form)
-
-
 #     if request.method == "GET":
 #         redis_result = r.keys("apk_file*")
 #         print(redis_result)
@@ -82,6 +80,7 @@ def upload():
 
     return "no request file received", 200
 
+
 @upload_blueprint.route('/upload/apk')
 def home():
     return "Upload Is Online"
@@ -103,6 +102,7 @@ def get_status(task_id):
 
     return jsonify(result), 200
 
+
 @upload_blueprint.after_request
 def after_request(response):
     header = response.headers
@@ -116,6 +116,7 @@ def after_request(response):
     # response.headers.add('access-control-allow-headers', 'authorization')
     # response.headers.add('Access-Control-Allow-Methods', 'POST')
     return response
+
 
 if __name__ == "__main__":
     print(unique_id_generator())

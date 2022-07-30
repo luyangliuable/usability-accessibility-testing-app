@@ -76,18 +76,21 @@ services:
     image: redis:6-alpine
   
   localstack:
-    image: localstack/localstack:0.14.3
+    image: localstack/localstack:latest
     container_name: bxer.localstack
     ports:
       - '4563-4599:4563-4599'
       - '8055:8080'
     environment:
-      - SERVICES=s3
-      - DEBUG=1
-      - DATA_DIR=/tmp/localstack/data
+      - AWS_DEFAULT_REGION=ap-southeast-2
+      - SERVICES=lambda,s3
+      - EDGE_PORT=4566
+      # - AWS_DEFAULT_REGION=us-east-1
+      # - DATA_DIR=/tmp/localstack/data
     volumes:
       - './.localstack:/tmp/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
+
 
   storydistiller:
     image: trevinwadu/bxer:storydistiller

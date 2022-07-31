@@ -1,14 +1,15 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
 from tasks import create_task, celery
+import datetime
 import boto3
 import json
 import tempfile
 import json
 import uuid
 import os
-import pymongo
 from redis import Redis
+from models.Apk import ApkManager
 # from celery.result import AsyncResult
 # from werkzeug.datastructures import FileStorage
 # from werkzeug.utils import secure_filename
@@ -27,15 +28,10 @@ upload_blueprint = Blueprint("upload", __name__)
 ###############################################################################
 #                            Set Up Flask Blueprint                           #
 ###############################################################################
-try:
-    mongo = pymongo.MongoClient(os.environ.get('MONGO_URL'))
-    db = mongo.users_db
-    mongo.server_info()  # Triger exception if connection fails to the database
-except Exception as ex:
-    print('failed to connect', ex)
 
-print("Successfully connected to mongodb.")
-
+mongo = ApkManager.instance()
+mongo.create_collection("apk")
+# mongo.insert_document({"filename": "test.apk"}, mongo.get_database()["apk"])
 
 ###############################################################################
 #                                  Set Up AWS                                 #
@@ -49,7 +45,7 @@ boto3.setup_default_session(profile_name=AWS_PROFILE)
 s3_client = boto3.client("s3", region_name=AWS_REGION, endpoint_url=ENDPOINT_URL)
 
 def unique_id_generator():
-    res = "apk_file_" + str( uuid.uuid4() ) + ".apk"
+    res = str( uuid.uuid4() )
     return res
 
 
@@ -75,7 +71,8 @@ def upload():
         #                              Generate unique id                             #
         ###############################################################################
 
-        file_key = "apk_file_" + unique_id_generator()
+        unique_id = unique_id_generator()
+        file_key = unique_id + ".apk"
 
         ###############################################################################
         #                   Compress and byte serialise the apk file                  #
@@ -92,10 +89,13 @@ def upload():
         print("[2] Uploading to bucket")
         s3_client.upload_file(os.path.join(temp_dir, filename), bucketname, filename)
 
-        print("[3] creating celery task")
+        print("[3] Adding file data to mongodb")
+        mongo.insert_document({"type": "apk", "uuid": unique_id, "date": str( datetime.datetime.now() )}, mongo.get_database()["apk"])
+
+        print("[4] creating celery task")
         task = create_task.delay()
 
-        print("[4] return celery task id and file key")
+        print("[5] return celery task id and file key")
         return json.dumps({"file_key": str( file_key ), "task_id": task.id}), 200
 
     return json.dumps({"message": "failed to upload"}), 400

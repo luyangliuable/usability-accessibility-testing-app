@@ -1,17 +1,17 @@
 from flask import Blueprint, request, jsonify
-from redis import Redis
-# from celery.result import AsyncResult
 from flask_cors import cross_origin
-# from werkzeug.datastructures import FileStorage
-# from werkzeug.utils import secure_filename
 from tasks import create_task, celery
 import boto3
 import json
-import shutil
 import tempfile
 import json
 import uuid
 import os
+import pymongo
+from redis import Redis
+# from celery.result import AsyncResult
+# from werkzeug.datastructures import FileStorage
+# from werkzeug.utils import secure_filename
 # import warnings
 # import linecache
 # import codecs
@@ -22,6 +22,20 @@ import os
 #                            Set Up Flask Blueprint                           #
 ###############################################################################
 upload_blueprint = Blueprint("upload", __name__)
+
+
+###############################################################################
+#                            Set Up Flask Blueprint                           #
+###############################################################################
+try:
+    mongo = pymongo.MongoClient(os.environ.get('MONGO_URL'))
+    db = mongo.users_db
+    mongo.server_info()  # Triger exception if connection fails to the database
+except Exception as ex:
+    print('failed to connect', ex)
+
+print("Successfully connected to mongodb.")
+
 
 ###############################################################################
 #                                  Set Up AWS                                 #
@@ -88,7 +102,7 @@ def upload():
 
 
 @upload_blueprint.route('/upload/health')
-def _check_health():
+def check_health():
     return "Upload Is Online"
 
 

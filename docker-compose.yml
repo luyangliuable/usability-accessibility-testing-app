@@ -51,7 +51,7 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - REDIS_URL=redis://redis:6379/0
-      - MONGO_URL=mongodb://username:password@mongodb
+      # - MONGO_URL=mongodb://username:password@mongodb
     depends_on:
       - flask_backend
       - redis

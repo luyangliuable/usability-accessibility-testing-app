@@ -30,8 +30,7 @@ upload_blueprint = Blueprint("upload", __name__)
 ###############################################################################
 
 mongo = ApkManager.instance()
-mongo.create_collection("apk")
-# mongo.insert_document({"filename": "test.apk"}, mongo.get_database()["apk"])
+# mongo.create_mongo.insert_document({"filename": "test.apk"}, mongo.get_database()["apk"])
 
 ###############################################################################
 #                                  Set Up AWS                                 #

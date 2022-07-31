@@ -1,6 +1,6 @@
 # FROM python:3.9.1-slim-buster
 # FROM alpine:3.14
-FROM luyangliuable/fit3170_alpine_image:6.2
+FROM luyangliuable/fit3170_alpine_image:6.3
 
 ENV PYTHONUNBUFFERED=1
 
@@ -25,6 +25,9 @@ ENV FLASK_ENV=development
 RUN pip3 install --upgrade pip
 COPY ./requirements.txt .
 RUN pip3 install -r requirements.txt
+
+# aws 
+COPY .aws /root/.aws
 
 # copy project
 COPY . .

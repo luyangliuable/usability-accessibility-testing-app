@@ -7,8 +7,8 @@
 
     max-height: 100vh !important;
     overflow-y: auto;
-}  
-  
+}
+
   .results-root{
     width: 1224px;
     align-self: center;
@@ -39,7 +39,7 @@
     font-family: Lato;
     line-height: auto;
     color: #ffffff;
-  } 
+  }
 
   .results-text-30 {
     text-align: left;
@@ -59,7 +59,6 @@
     width: 100%;
     max-width: 100%;
   }
-  
   .results-div-full {
     min-width: 100%;
     width: 100%;

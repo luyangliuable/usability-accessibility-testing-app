@@ -1,70 +1,154 @@
-import React, { useCallback, useState } from 'react'
-import { useDropzone } from 'react-dropzone'
-import superagent from 'superagent'
+import React, { useCallback, useState, useEffect } from 'react';
+import { useDropzone } from 'react-dropzone';
+import superagent from 'superagent';
 
-import "./ResultBox.css"
+import "./ResultBox.css";
 
-export default function UploadBox() {
-  const [buttonState, setButtonState] = useState(false);
-  const [selectedFile, setSelectedFile] = useState(null);
+const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCurrentAppStatus}) => {
+    const [buttonState, setButtonState] = useState(false);
+    const [buttonValue, setButtonValue] = useState("Upload File");
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [taskId, setTaskId] = useState(['rand']);
 
-  const canAccept = (file) => {
-    /* TODO check file types */
-    return null
-  };
+    const canAccept = (file) => {
+        /* TODO check file types */
+        return ['apk'];
+    };
 
-  const onDropAccepted = useCallback(acceptedFiles => {
-    setButtonState(true);
-    setSelectedFile(acceptedFiles[0])
+    useEffect(() => {
+        console.log("The current stored result files are" + resultFiles);
+        console.log("The current app status is " + currentAppStatus);
+    }, []);
 
-    /* todo backend upload url */
-    const req = superagent.post('http://localhost/upload/');
-    acceptedFiles.forEach(file => {
-      req.attach(file.name, file);
+
+    const getStatus = (taskID) => {
+        fetch(`http://localhost:5005/upload/${taskID}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+        })
+            .then(response => response.json())
+            .then(res => {
+                console.log(res);
+                ///////////////////////////////////////////////////////////////
+                //          Update frontend if receive request TODO          //
+                ///////////////////////////////////////////////////////////////
+
+                const taskStatus = res.task_status;
+
+                if (taskStatus === 'SUCCESS'){
+                    setButtonState(false);
+                    setButtonValue("Upload again");
+                    updateCurrentAppStatus("RESULTS READY");
+                    return true;
+                } else if (taskStatus === 'FAILURE') {
+                    setButtonState(false);
+                    setButtonValue("Upload again");
+                    updateCurrentAppStatus("TASK FAILED");
+                    return false;
+                };
+
+                setTimeout(function() {
+                    getStatus(res.task_id);
+                }, 1000);
+            }).catch(err => console.log(err));
+    };
+
+    const onDropAccepted = useCallback(acceptedFiles => {
+        console.log("[1] upload start.");
+        setButtonState(true);
+        setSelectedFile(acceptedFiles[0]);
+
+        acceptedFiles.forEach(file => {
+            console.log(JSON.stringify(file));
+        });
+
+
+        // const file = document.getElementById('file_upload').files;
+        // console.log(JSON.stringify(file));
+        // const req = superagent.post('http://localhost:5005/upload/apk');
+
+        acceptedFiles.forEach(file => {
+            console.log('sending ' + file.path);
+            fetch('http://localhost:5005/upload/apk', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/vnd.android.package-archive',
+                },
+                body: file,
+            }).then(response => response.json()).then(data => {
+
+                console.log("done");
+
+                ///////////////////////////////////////////////////////////////
+                //          Update and save the task_id for backend          //
+                ///////////////////////////////////////////////////////////////
+                setTaskId(prev => {
+                    return [...prev, data['task_id']];
+                });
+
+                console.log(data['task_id']);
+
+                ///////////////////////////////////////////////////////////////
+                //                       Restore button                      //
+                ///////////////////////////////////////////////////////////////
+
+                // setButtonState(false);
+                const status = "Getting Results";
+                setButtonValue(status);
+                updateCurrentAppStatus(status);
+
+                console.log("getting status");
+                getStatus(data['task_id']);
+            });
+        });
+
+    }, []);
+
+    const { getRootProps, getInputProps } = useDropzone({
+        onDropAccepted: onDropAccepted,
+        maxFiles: 1,
+        disabled: buttonState,
+        // validator: canAccept
     });
 
-    req.end((resp) => console.log(resp));
-  }, []);
+    return (
+        <div className="result-box-root">
+            <div{...getRootProps()} disabled={buttonState}>
+                <input {...getInputProps()} disabled={buttonState} />
 
-  const {getRootProps, getInputProps} = useDropzone({
-    onDropAccepted: onDropAccepted,
-    maxFiles: 1,
-    disabled: buttonState,
-    validator: canAccept
-  });
+                <div className="result-box-full-width">
+                    <img className="result-box-icon" src={require("./content/dummy_200x256.png")} alt={""} />
+                    <img className="result-box-icon" src={require("./content/dummy_200x256.png")} alt={""} />
+                </div>
 
-  return (
-    <div className="result-box-root">
-        <div{ ...getRootProps() } disabled={buttonState}>
-          <input { ...getInputProps()} disabled={buttonState}/>
+                <div className="result-vspacing-10"> </div>
 
-          <div className="result-box-full-width">
-              <img className="result-box-icon" src={require("./content/dummy_200x256.png")}   alt={""}/>
-              <img className="result-box-icon" src={require("./content/dummy_200x256.png")}   alt={""}/>
-          </div>
+                <div className="result-box-full-width">
+                    <p className="result-box-text-30">{selectedFile ? selectedFile.name : 'Drop APK or MP4 here'}</p>
+                </div>
 
-          <div className="result-vspacing-10"> </div>
+                <div className="result-box-full-width">
+                    <div className="result-box-center-bar">
+                        {/* TODO actual progess bar */}
+                        <div className="result-box-line result-box-left" />
+                        <div className="result-box-line result-box-right" />
 
-          <div className="result-box-full-width">
-              <p className="result-box-text-30">{selectedFile ? selectedFile.name : 'Drop APK or MP4 here'}</p>
-          </div>
+                        <p className="result-box-text-20 result-text-center">or</p>
+                    </div>
+                </div>
 
-          <div className="result-box-full-width"> 
-            <div className="result-box-center-bar">
-              {/* TODO actual progess bar */}
-              <div className="result-box-line result-box-left" />
-              <div className="result-box-line result-box-right" />
-
-              <p className="result-box-text-20 result-text-center">or</p>
+                <div className="result-box-full-width">
+                    {/* TODO functional button */}
+                    <button
+                        className={buttonState ? "result-box-view-button result-button-disabled" : "result-box-view-button result-button-enabled"}
+                        disabled={buttonState}>{buttonValue}
+                    </button>
+                </div>
             </div>
-          </div>
-
-          <div className="result-box-full-width"> 
-              {/* TODO functional button */}
-            <button className={buttonState ? "result-box-view-button result-button-disabled" : "result-box-view-button result-button-enabled"}
-                disabled={buttonState}>{buttonState ? 'Uploading...' : 'Upload File'}</button>
-          </div>
         </div>
-    </div>
-  )
+    );
 }
+
+export default UploadBox

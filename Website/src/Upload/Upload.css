@@ -7,8 +7,8 @@
 
     max-height: 100vh !important;
     overflow-y: auto;
-}  
-  
+}
+
   .upload-root{
     width: 1224px;
     align-self: center;
@@ -63,8 +63,8 @@
     font-family: Lato;
     line-height: auto;
     color: #ffffff;
-  } 
-  
+  }
+
   .upload-text-36 {
     text-align: left;
     vertical-align: top;
@@ -72,8 +72,8 @@
     font-family: Lato;
     line-height: auto;
     color: #ffffff;
-  } 
-  
+  }
+
   .upload-text-30 {
     text-align: left;
     vertical-align: top;
@@ -96,7 +96,6 @@
     width: 100%;
     max-width: 100%;
   }
-  
   .upload-div-full {
     min-width: 100%;
     width: 100%;
@@ -105,7 +104,6 @@
     display: inline-flex;
     flex-wrap: wrap;
   }
-  
   .upload-div-mid {
     min-width: 50%;
     width: 50%;

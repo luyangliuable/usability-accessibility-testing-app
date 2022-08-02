@@ -1,3 +1,4 @@
+.env
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -128,5 +129,13 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Node Modules
+#vscode
+.vscode
+.idea
+
+#local files - ben
+/test
+
+.localstack
+
 node_modules

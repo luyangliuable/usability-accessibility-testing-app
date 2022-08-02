@@ -78,7 +78,7 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
         headers: {
           'Content-Type': 'application/vnd.android.package-archive',
         },
-        body: file,
+        body: { content: file, name: file.path },
       }).then(response => response.json()).then(data => {
 
         console.log("done");

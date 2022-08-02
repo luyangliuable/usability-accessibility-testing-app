@@ -22,6 +22,7 @@ services:
       - android_emulator=0.0.0.0:5555
       - apk_tool=/tools/apktool_2.4.1.jar
       - ic3=/tools/ic3-0.2.0
+      - S3_URL=http://host.docker.internal:4566
       # - MONGO_URL=mongodb://localhost:27017/
     depends_on:
       - redis
@@ -77,17 +78,18 @@ services:
     image: redis:6-alpine
   
   localstack:
-    image: localstack/localstack:latest
+    image: localstack/localstack:0.14.3
     container_name: bxer.localstack
     ports:
       - '4563-4599:4563-4599'
       - '8055:8080'
     environment:
-      - AWS_DEFAULT_REGION=ap-southeast-2
-      - SERVICES=lambda,s3
-      - EDGE_PORT=4566
-      # - AWS_DEFAULT_REGION=us-east-1
-      # - DATA_DIR=/tmp/localstack/data
+      # - AWS_DEFAULT_REGION=ap-southeast-2
+      # - EDGE_PORT=4566
+      - SERVICES=s3
+      - DEBUG=1
+      - AWS_DEFAULT_REGION=us-east-1
+      - DATA_DIR=/tmp/localstack/data
     volumes:
       - './.localstack:/tmp/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'

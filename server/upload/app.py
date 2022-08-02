@@ -55,7 +55,6 @@ def upload():
     This blueprint method acts as an api file uploader. It must be uploaded using form-data.
     The key in json for the apk file must be apk_file.
     """
-    print("upload start...")
     # print(request.get_data())
 
     if request.method == "POST":
@@ -86,7 +85,7 @@ def upload():
             savefile.write(file)
 
         print("[2] Uploading to bucket")
-        s3_client.upload_file(os.path.join(temp_dir, filename), bucketname, filename)
+        s3_client.upload_file(os.path.join(temp_dir, filename), bucketname, "/" + unique_id + "/" + file_key)
 
         print("[3] Adding file data to mongodb")
         mongo.insert_document({"type": "apk", "uuid": unique_id, "date": str( datetime.datetime.now() )}, mongo.get_database()["apk"])

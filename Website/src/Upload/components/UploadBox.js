@@ -71,14 +71,22 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
     // console.log(JSON.stringify(file));
     // const req = superagent.post('http://localhost:5005/upload/apk');
 
+    var formData = new FormData();
+
+
     acceptedFiles.forEach(file => {
-      console.log('sending ' + file.path);
+      // formData.append("file", file);
+      formData.append("file", file);
+      formData.append("filename", file.name);
+      // formData.append("content", file);
+      // console.log(typeof(file));
+      // console.log(file);
+      // console.log(formData);
+      console.log(`Sending ${file.path} to server.`);
       fetch(apk_upload_url, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/vnd.android.package-archive',
-        },
-        body: { content: file, name: file.path },
+        body: formData,
+        // body: { content: file, name: file.path },
       }).then(response => response.json()).then(data => {
 
         console.log("done");

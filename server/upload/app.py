@@ -55,37 +55,45 @@ def upload():
     This blueprint method acts as an api file uploader. It must be uploaded using form-data.
     The key in json for the apk file must be apk_file.
     """
-    # print(request.get_data())
-
     if request.method == "POST":
         ###############################################################################
         #                        If post http request received                        #
         ###############################################################################
 
         print("[0] Getting request from front-end")
-        file = str( request.get_data() )
+
+        # To get files use request.files.get() ########################################
+        # To get form data use request.form.get() #####################################
 
         ###############################################################################
         #                              Generate unique id                             #
         ###############################################################################
 
+        # Unique id is used to identify a file for a cluster ###################
         unique_id = unique_id_generator()
-        file_key = unique_id + ".apk"
+
+        # File name is the original uploaded file name ################################
+        file_key = request.form.get('filename')
 
         ###############################################################################
-        #                   Compress and byte serialise the apk file                  #
+        #                Create a temporary file to store file content                #
         ###############################################################################
         print("[1] Generating file")
-        # r.set(file_key, pickle.dumps( file ))
         temp_dir = tempfile.gettempdir();
-        filename = unique_id_generator()
-        print(os.path.join(temp_dir, filename), "created")
 
-        with open(os.path.join(temp_dir, filename), "w") as savefile:
-            savefile.write(file)
+        temp_file_name = os.path.join(temp_dir, unique_id)
+        with open(temp_file_name, "QB") as savefile:
+            savefile.write(request.files.get('file').read())
+        savefile.close()
 
+        print(temp_file_name, "is created")
+
+        ###############################################################################
+        #                   Upload the temporary file to git bucket                   #
+        ###############################################################################
         print("[2] Uploading to bucket")
-        s3_client.upload_file(os.path.join(temp_dir, filename), bucketname, "/" + unique_id + "/" + file_key)
+        s3_client.upload_file(temp_file_name, bucketname, file_key)
+
 
         print("[3] Adding file data to mongodb")
         mongo.insert_document({"type": "apk", "uuid": unique_id, "date": str( datetime.datetime.now() )}, mongo.get_database()["apk"])
@@ -123,6 +131,9 @@ def get_status(task_id):
 
 @upload_blueprint.after_request
 def after_request(response):
+    """
+        To allow cross origin requests because flask and react are not on the same url.
+    """
     header = response.headers
     header['Access-Control-Allow-Origin'] = '*'
     header['Access-Control-Allow-Headers'] = '*'
@@ -138,7 +149,4 @@ def after_request(response):
 
 
 if __name__ == "__main__":
-    print(unique_id_generator())
-    print(unique_id_generator())
-    print(unique_id_generator())
     print(unique_id_generator())

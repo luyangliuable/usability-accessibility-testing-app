@@ -11,6 +11,7 @@ services:
     command: python3 manage.py run -h 0.0.0.0
     volumes:
       - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
+    platform: linux/amd64
     environment:
       - FLASK_DEBUG=1
       - APP_SETTINGS=config.DevelopmentConfig
@@ -18,12 +19,10 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - REDIS_URL=redis://redis:6379/0
       - MONGO_URL=mongodb://host.docker.internal:27017/
-      - jadx=/tools/jadx
-      - android_emulator=0.0.0.0:5555
+      - android_emulator=0.0.0.0:5555 # TODO
       - apk_tool=/tools/apktool_2.4.1.jar
       - ic3=/tools/ic3-0.2.0
       - S3_URL=http://host.docker.internal:4566
-      # - MONGO_URL=mongodb://localhost:27017/
     depends_on:
       - redis
       - mongodb

@@ -1,6 +1,6 @@
 # FROM python:3.9.1-slim-buster
-# FROM alpine:3.14
-FROM luyangliuable/fit3170_alpine_image:6.3
+# FROM luyangliuable/fit3170_alpine_image:6.3
+FROM alpine:3.14
 
 ENV PYTHONUNBUFFERED=1
 

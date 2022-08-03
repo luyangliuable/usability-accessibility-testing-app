@@ -11,17 +11,18 @@ services:
     command: python3 manage.py run -h 0.0.0.0
     volumes:
       - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
+    platform: linux/amd64
     environment:
       - FLASK_DEBUG=1
       - APP_SETTINGS=config.DevelopmentConfig
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - REDIS_URL=redis://redis:6379/0
-      - MONGO_URL=mongodb://localhost:27017/
-      - jadx=/tools/jadx
-      - android_emulator=0.0.0.0:5555
+      - MONGO_URL=mongodb://host.docker.internal:27017/
+      - android_emulator=0.0.0.0:5555 # TODO
       - apk_tool=/tools/apktool_2.4.1.jar
       - ic3=/tools/ic3-0.2.0
+      - S3_URL=http://host.docker.internal:4566
     depends_on:
       - redis
       - mongodb
@@ -51,7 +52,7 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - REDIS_URL=redis://redis:6379/0
-      - MONGO_URL=mongodb://username:password@mongodb
+      # - MONGO_URL=mongodb://username:password@mongodb
     depends_on:
       - flask_backend
       - redis
@@ -82,12 +83,16 @@ services:
       - '4563-4599:4563-4599'
       - '8055:8080'
     environment:
+      # - AWS_DEFAULT_REGION=ap-southeast-2
+      # - EDGE_PORT=4566
       - SERVICES=s3
       - DEBUG=1
+      - AWS_DEFAULT_REGION=us-east-1
       - DATA_DIR=/tmp/localstack/data
     volumes:
       - './.localstack:/tmp/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
+
 
   storydistiller:
     image: trevinwadu/bxer:storydistiller

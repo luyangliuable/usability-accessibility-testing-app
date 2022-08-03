@@ -14,8 +14,7 @@ ENDPOINT_URL = os.environ.get('S3_URL')
 
 # aws s3 client
 boto3.setup_default_session(profile_name=AWS_PROFILE)
-s3_client = boto3.client("s3", region_name=AWS_REGION,
-                         endpoint_url=ENDPOINT_URL)
+s3_client = boto3.client("s3", region_name=AWS_REGION, endpoint_url=ENDPOINT_URL)
 
 # home route
 @app.route('/')
@@ -117,7 +116,6 @@ def _upload_result(uuid):
         for file in filenames:
             print(file)
             s3_client.upload_file(os.path.join(root,file), bucketname, s3_results_path+file)
-            
 
 
 if __name__=='__main__':

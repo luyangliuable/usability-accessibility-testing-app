@@ -1,89 +1,114 @@
 from flask import Blueprint, request, jsonify
-from redis import Redis, StrictRedis
-from werkzeug.utils import secure_filename
-# from celery.result import AsyncResult
 from flask_cors import cross_origin
-from werkzeug.datastructures import  FileStorage
 from tasks import create_task, celery
-import warnings
-import linecache
+import datetime
+import boto3
 import json
-import codecs
+import tempfile
 import json
-import zlib
 import uuid
-import pickle
 import os
+from redis import Redis
+from models.Apk import ApkManager
+# from celery.result import AsyncResult
+# from werkzeug.datastructures import FileStorage
+# from werkzeug.utils import secure_filename
+# import warnings
+# import linecache
+# import codecs
+# import pickle
+# import zlib
 
+###############################################################################
+#                            Set Up Flask Blueprint                           #
+###############################################################################
 upload_blueprint = Blueprint("upload", __name__)
-# r = Redis.from_url(os.environ.get('REDIS_URL'))
-# r = StrictRedis(decode_responses=True)
-r = Redis()
+
+
+###############################################################################
+#                            Set Up Flask Blueprint                           #
+###############################################################################
+
+mongo = ApkManager.instance()
+# mongo.create_mongo.insert_document({"filename": "test.apk"}, mongo.get_database()["apk"])
+
+###############################################################################
+#                                  Set Up AWS                                 #
+###############################################################################
+AWS_PROFILE = 'localstack'
+AWS_REGION = 'us-west-2'
+ENDPOINT_URL = os.environ.get('S3_URL')
+bucketname = "uploadbucket"
+
+boto3.setup_default_session(profile_name=AWS_PROFILE)
+s3_client = boto3.client("s3", region_name=AWS_REGION, endpoint_url=ENDPOINT_URL)
 
 def unique_id_generator():
-    res = "apk_file_" + str( uuid.uuid4() )
+    res = str( uuid.uuid4() )
     return res
 
 
-# @upload_blueprint.route('/upload/apk', methods=["GET"])
-# def check_uploaded_apk_files():
-#     """
-#     This blueprint method acts as an api file uploader. It must be uploaded using form-data.
-#     The key in json for the apk file must be apk_file.
-#     """
-#     print("form", request.form)
-
-
-#     if request.method == "GET":
-#         redis_result = r.keys("apk_file*")
-#         print(redis_result)
-
-#         return json.dumps({"uploaded_apk_files": redis_result } ), 200
-
-#     return "no valid http request received", 200
-
-
 @upload_blueprint.route('/upload/apk', methods=["GET", "POST"])
+@cross_origin()
 def upload():
     """
     This blueprint method acts as an api file uploader. It must be uploaded using form-data.
     The key in json for the apk file must be apk_file.
     """
-    print("upload start...")
-    # print(request.get_data())
-
     if request.method == "POST":
         ###############################################################################
         #                        If post http request received                        #
         ###############################################################################
 
         print("[0] Getting request from front-end")
-        file = str( request.get_data() )
+
+        # To get files use request.files.get() ########################################
+        # To get form data use request.form.get() #####################################
 
         ###############################################################################
         #                              Generate unique id                             #
         ###############################################################################
 
-        file_key = "apk_file_" + unique_id_generator()
+        # Unique id is used to identify a file for a cluster ###################
+        unique_id = unique_id_generator()
+
+        # File name is the original uploaded file name ################################
+        file_key = request.form.get('filename')
 
         ###############################################################################
-        #                   Compress and byte serialise the apk file                  #
+        #                Create a temporary file to store file content                #
         ###############################################################################
-        # r.set(file_key, zlib.compress(pickle.dumps(file)))
-        print("[1] putting file into redis")
-        r.set(file_key, pickle.dumps( file ))
+        print("[1] Generating file")
+        temp_dir = tempfile.gettempdir();
+
+        temp_file_name = os.path.join(temp_dir, unique_id)
+        with open(temp_file_name, "QB") as savefile:
+            savefile.write(request.files.get('file').read())
+        savefile.close()
+
+        print(temp_file_name, "is created")
+
+        ###############################################################################
+        #                   Upload the temporary file to git bucket                   #
+        ###############################################################################
+        print("[2] Uploading to bucket")
+        s3_client.upload_file(temp_file_name, bucketname, file_key)
 
 
-        print("[2] creating celery task")
+        print("[3] Adding file data to mongodb")
+        mongo.insert_document({"type": "apk", "uuid": unique_id, "date": str( datetime.datetime.now() )}, mongo.get_database()["apk"])
+
+        print("[4] creating celery task")
         task = create_task.delay()
 
-        print("[3] return celery task id and file key")
+        print("[5] return celery task id and file key")
         return json.dumps({"file_key": str( file_key ), "task_id": task.id}), 200
 
-    return "no request file received", 200
+    return json.dumps({"message": "failed to upload"}), 400
 
-@upload_blueprint.route('/upload/apk')
-def home():
+
+@upload_blueprint.route('/upload/health')
+def check_health():
     return "Upload Is Online"
 
 
@@ -103,8 +128,12 @@ def get_status(task_id):
 
     return jsonify(result), 200
 
+
 @upload_blueprint.after_request
 def after_request(response):
+    """
+        To allow cross origin requests because flask and react are not on the same url.
+    """
     header = response.headers
     header['Access-Control-Allow-Origin'] = '*'
     header['Access-Control-Allow-Headers'] = '*'
@@ -117,8 +146,7 @@ def after_request(response):
     # response.headers.add('Access-Control-Allow-Methods', 'POST')
     return response
 
+
+
 if __name__ == "__main__":
-    print(unique_id_generator())
-    print(unique_id_generator())
-    print(unique_id_generator())
     print(unique_id_generator())

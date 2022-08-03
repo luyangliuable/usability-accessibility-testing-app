@@ -1,4 +1,6 @@
 flask
+flask_cors
+boto3
 pymongo
 celery==4.4.7
 flower==0.9.7

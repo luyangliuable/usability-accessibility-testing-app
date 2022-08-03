@@ -21,8 +21,8 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
     console.log("The current app status is " + currentAppStatus);
   }, [currentAppStatus, resultFiles]);
 
-  const task_url = "http://127.0.0.1:5005/task";
-  const apk_upload_url = "http://127.0.0.1:5005/upload";
+  const task_url = "http://localhost:5005/task";
+  const apk_upload_url = "http://localhost:5005/upload";
 
   const getStatus = (taskID) => {
     fetch(`${task_url}/${taskID}`, {
@@ -34,9 +34,6 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
       .then(response => response.json())
       .then(res => {
         console.log(res);
-        ///////////////////////////////////////////////////////////////
-        //          Update frontend if receive request TODO          //
-        ///////////////////////////////////////////////////////////////
 
         const taskStatus = res.task_status;
 
@@ -55,7 +52,7 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
         setTimeout(function() {
           getStatus(res.task_id);
         }, 1000);
-      }).catch(err => console.log(err));
+      }).catch(err => console.log(( err )));
   };
 
   const onDropAccepted = useCallback(acceptedFiles => {
@@ -101,7 +98,7 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
         ///////////////////////////////////////////////////////////////
 
         // setButtonState(false);
-        const status = "Getting Results";
+        const status = "getting results";
         setButtonValue(status);
         updateCurrentAppStatus(status);
 

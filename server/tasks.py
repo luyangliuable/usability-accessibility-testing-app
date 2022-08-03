@@ -15,7 +15,8 @@ def create_task(info={}):
     #                           Create celery web tasks                           #
     ###############################################################################
 
-    # time.sleep(1)
+    # TODO signal all algorithms to start.
+    time.sleep(5)
     print("task completed")
 
     ###############################################################################

@@ -149,4 +149,4 @@ def after_request(response):
 
 
 if __name__ == "__main__":
-    print(unique_id_generator())
+    print((unique_id_generator()))

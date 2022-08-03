@@ -1,6 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import superagent from 'superagent';
 
 import "./ResultBox.css";
 
@@ -8,17 +7,19 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
   const [buttonState, setButtonState] = useState(false);
   const [buttonValue, setButtonValue] = useState("Upload File");
   const [selectedFile, setSelectedFile] = useState(null);
+
+  //eslint-disable-next-line
   const [taskId, setTaskId] = useState(['rand']);
 
+  //eslint-disable-next-line
   const canAccept = (file) => {
-    /* TODO check file types */
     return ['apk'];
   };
 
   useEffect(() => {
     console.log("The current stored result files are" + resultFiles);
     console.log("The current app status is " + currentAppStatus);
-  }, []);
+  }, [currentAppStatus, resultFiles]);
 
   const upload_url = "http://127.0.0.1:5000/upload";
   const apk_upload_url = "http://127.0.0.1:5000/upload/apk";
@@ -66,11 +67,6 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
       console.log(JSON.stringify(file));
     });
 
-
-    // const file = document.getElementById('file_upload').files;
-    // console.log(JSON.stringify(file));
-    // const req = superagent.post('http://localhost:5005/upload/apk');
-
     var formData = new FormData();
 
 
@@ -114,7 +110,7 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
       });
     });
 
-  }, []);
+  }, [getStatus, updateCurrentAppStatus]);
 
   const { getRootProps, getInputProps } = useDropzone({
     onDropAccepted: onDropAccepted,

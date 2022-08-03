@@ -20,6 +20,7 @@ const SelectAlgorithms = () => {
     const [currentAppStatus, updateCurrentAppStatus] = useState("READY");
     var reports = [];  /* TODO link to backend */
 
+    // People can add a dictionary with the structure I have  defined and it will dynamically create more accordions.
     var algorithms = [
         {
             uuid: "gifdroid",
@@ -62,7 +63,7 @@ const SelectAlgorithms = () => {
                 {/* ============================= */}
 
                 <Accordion allowZeroExpanded allowMultipleExpanded>
-                    {algorithms.map((algorithm, index) => (
+                    {algorithms.map((algorithm, index) => (     //It's basically a for loop
                         <AccordionItem key={algorithm.uuid}>
                             <AccordionItemHeading>
                                 <AccordionItemButton>

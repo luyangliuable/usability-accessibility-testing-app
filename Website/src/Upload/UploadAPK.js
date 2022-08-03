@@ -1,13 +1,14 @@
 import React from 'react'
-import { Button, Container } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import './Upload.css';
 
-import ResultBox from "./components/ResultBox"
-import UploadBox from "./components/UploadBox"
-import ReportsTable from "../Results/components/ReportsTable"
+import ResultBox from "./components/ResultBox";
+import UploadBox from "./components/UploadBox";
+import ReportsTable from "../Results/components/ReportsTable";
+import Button from "../components/button";
 
 // export default class Upload extends Component {
 
@@ -41,10 +42,8 @@ const Upload = () => {
                     </div>
 
                     <div>
-                        <Button>
-                            <Link to={"./selectalgorithm"}>
+                      <Button style={{marginTop: "15px"}}>
                                 <h3>NEXT</h3>
-                            </Link>
                         </Button>
                     </div>
                 </div>

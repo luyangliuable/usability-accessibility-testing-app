@@ -33,7 +33,7 @@ const SelectAlgorithms = () => {
             input: "-",
             content: "Venus does things and does not require any additional inputs"
         }
-    ]
+    ];
 
     const [checkedState, setCheckedState] = useState(
         new Array(algorithms.length).fill(false)

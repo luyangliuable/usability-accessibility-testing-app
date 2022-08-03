@@ -82,7 +82,7 @@ def upload():
         temp_dir = tempfile.gettempdir();
 
         temp_file_name = os.path.join(temp_dir, unique_id)
-        with open(temp_file_name, "QB") as savefile:
+        with open(temp_file_name, "wb") as savefile:
             savefile.write(request.files.get('file').read())
         savefile.close()
 

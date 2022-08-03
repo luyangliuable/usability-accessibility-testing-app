@@ -53,7 +53,3 @@ class ApkManager:
             print('failed to connect', ex)
         else:
             print("Successfully connected to mongodb.")
-
-
-    def insert(self):
-        pass

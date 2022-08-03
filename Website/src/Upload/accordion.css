@@ -20,27 +20,34 @@
     padding: 18px;
     width: 100%;
     text-align: left;
-    border: none;
+    font-size: 22px;
+    font-weight: bold;
 }
 
 .accordion__button:hover {
     background-color: #ddd;
 }
 
-.accordion__button:before {
-    display: inline-block;
+/*This is the drop down icon*/
+.accordion__button:after {
     content: '';
-    height: 10px;
-    width: 10px;
-    margin-right: 12px;
-    border-bottom: 2px solid currentColor;
-    border-right: 2px solid currentColor;
-    transform: rotate(-135deg);
+    height: 12px;
+    width: 12px;
+    border-bottom: 3px solid currentColor;
+    border-right: 3px solid currentColor;
+    transform: rotate(45deg);
+    display:block;
+    float:right;
+    margin-top:5px;
 }
 
-.accordion__button[aria-expanded='true']::before,
-.accordion__button[aria-selected='true']::before {
-    transform: rotate(45deg);
+.accordion__button[aria-expanded='true']{
+    background-color: #ddd;
+}
+
+.accordion__button[aria-expanded='true']::after,
+.accordion__button[aria-selected='true']::after {
+    transform: rotate(-135deg);
 }
 
 [hidden] {
@@ -54,7 +61,7 @@
 }
 
 h3 {
-    padding-left: 100px;
+    padding-left: 300px;
     color: #444;
 }
 

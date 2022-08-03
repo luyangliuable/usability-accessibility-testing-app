@@ -66,7 +66,7 @@ const SelectAlgorithms = () => {
                         <AccordionItem key={algorithm.uuid}>
                             <AccordionItemHeading>
                                 <AccordionItemButton>
-                                    <h3> {algorithm.heading} </h3>
+                                        {algorithm.heading} 
                                 </AccordionItemButton>
                             </AccordionItemHeading>
                             <AccordionItemPanel>

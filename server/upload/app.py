@@ -48,7 +48,7 @@ def unique_id_generator():
     return res
 
 
-@upload_blueprint.route('/upload/apk', methods=["GET", "POST"])
+@upload_blueprint.route('/upload', methods=["GET", "POST"])
 @cross_origin()
 def upload():
     """
@@ -112,7 +112,7 @@ def check_health():
     return "Upload Is Online"
 
 
-@upload_blueprint.route("/upload/<task_id>", methods=["GET"])
+@upload_blueprint.route("/task/<task_id>", methods=["GET"])
 def get_status(task_id):
     print('getting task id', task_id)
 

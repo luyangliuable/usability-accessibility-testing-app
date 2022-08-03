@@ -7,8 +7,8 @@ services:
     image: bxer.flask_backend
     container_name: bxer.flask_backend
     ports:
-      - 5005:5000
-    command: python3 manage.py run -h 0.0.0.0
+      - 5005:5005
+    command: python3 manage.py run -p 5005
     volumes:
       - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
     platform: linux/amd64

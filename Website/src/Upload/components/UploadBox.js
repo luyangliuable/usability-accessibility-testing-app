@@ -21,11 +21,11 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
     console.log("The current app status is " + currentAppStatus);
   }, [currentAppStatus, resultFiles]);
 
-  const upload_url = "http://127.0.0.1:5000/upload";
-  const apk_upload_url = "http://127.0.0.1:5000/upload/apk";
+  const task_url = "http://127.0.0.1:5005/task";
+  const apk_upload_url = "http://127.0.0.1:5005/upload";
 
   const getStatus = (taskID) => {
-    fetch(`${upload_url}/${taskID}`, {
+    fetch(`${task_url}/${taskID}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -110,7 +110,7 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
       });
     });
 
-  }, [getStatus, updateCurrentAppStatus]);
+  }, []);
 
   const { getRootProps, getInputProps } = useDropzone({
     onDropAccepted: onDropAccepted,

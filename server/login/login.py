@@ -8,7 +8,7 @@ from server.models.User import *
 login_blueprint = Blueprint('login', __name__)
 
 try:
-    mongo = pymongo.MongoClient("mongodb://localhost:27017/")
+    mongo = pymongo.MongoClient("mongodb://username:password@localhost:27017/?authSource=admin")
     db = mongo.users_db
     mongo.server_info()  # Triger exception if connection fails to the database
 except Exception as ex:

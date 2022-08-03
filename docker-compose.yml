@@ -55,6 +55,7 @@ services:
     depends_on:
       - flask_backend
       - redis
+      - mongodb
 
   mongodb:
     tty: true

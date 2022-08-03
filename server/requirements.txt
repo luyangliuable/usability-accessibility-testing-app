@@ -5,4 +5,5 @@ flower==0.9.7
 redis==3.5.3
 python-dotenv
 fastapi==0.78.0
+flask_cors
 # Pillow==9.1.1

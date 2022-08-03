@@ -35,15 +35,11 @@ app = FastAPI()
 #                                Start mongodb                                #
 ###############################################################################
 
-try:
-    mongo = pymongo.MongoClient(
-        host='localhost',
-        port=27017,
-    )
-
-    mongo.server_info() # Triger exception if connection fails to the database
-except Exception as ex:
-    print('failed to connect', ex)
+#try:
+#    mongo = pymongo.MongoClient("mongodb://username:password@localhost:27017/?authSource=admin")
+#    mongo.server_info() # Triger exception if connection fails to the database
+#except Exception as ex:
+#    print('failed to connect', ex)
 
 ###############################################################################
 #             Strict Redis forces redise to decode byte to string             #
@@ -106,6 +102,8 @@ def run_all_apps():
 # API which returns HTML file as response.
 @app.websocket("/scan_app/image")
 async def get(request):
+    return
+
     ###############################################################################
     #                   TODO move this to results app if easier                   #
     ###############################################################################

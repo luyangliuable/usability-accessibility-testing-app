@@ -7,7 +7,9 @@ from server.models.User import *
 
 app = Flask(__name__)
 try:
-    mongo = pymongo.MongoClient("mongodb://localhost:27017/")
+    mongo = pymongo.MongoClient("mongodb://username:password@localhost:27017/?authSource=admin")
+    #mongo = pymongo.MongoClient("mongodb://localhost:27017/")
+    
     db = mongo.users_db
     mongo.server_info()  # Triger exception if connection fails to the database
 except Exception as ex:

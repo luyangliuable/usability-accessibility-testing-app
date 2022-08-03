@@ -11,3 +11,4 @@ opencv
 PIL
 sklearn
 python-dotenv
+flask_cors

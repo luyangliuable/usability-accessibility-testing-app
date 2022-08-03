@@ -35,8 +35,9 @@ def create_app(script_info=None):
     ###############################################################################
     #                           Add cors to flask server                          #
     ###############################################################################
-    cors = CORS(app)
+
     app.config['CORS_HEADERS'] = 'Content-Type'
+    cors = CORS(app)
 
     # shell context for flask cli
     app.shell_context_processor({"app": app})

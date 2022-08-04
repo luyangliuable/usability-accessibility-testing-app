@@ -1,6 +1,5 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import superagent from 'superagent';
 
 import "./ResultBox.css";
 
@@ -8,23 +7,25 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
   const [buttonState, setButtonState] = useState(false);
   const [buttonValue, setButtonValue] = useState("Upload File");
   const [selectedFile, setSelectedFile] = useState(null);
+
+  //eslint-disable-next-line
   const [taskId, setTaskId] = useState(['rand']);
 
+  //eslint-disable-next-line
   const canAccept = (file) => {
-    /* TODO check file types */
     return ['apk'];
   };
 
   useEffect(() => {
     console.log("The current stored result files are" + resultFiles);
     console.log("The current app status is " + currentAppStatus);
-  }, []);
+  }, [currentAppStatus, resultFiles]);
 
-  const upload_url = "http://127.0.0.1:5000/upload";
-  const apk_upload_url = "http://127.0.0.1:5000/upload/apk";
+  const task_url = "http://localhost:5005/task";
+  const apk_upload_url = "http://localhost:5005/upload";
 
   const getStatus = (taskID) => {
-    fetch(`${upload_url}/${taskID}`, {
+    fetch(`${task_url}/${taskID}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json'
@@ -33,9 +34,6 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
       .then(response => response.json())
       .then(res => {
         console.log(res);
-        ///////////////////////////////////////////////////////////////
-        //          Update frontend if receive request TODO          //
-        ///////////////////////////////////////////////////////////////
 
         const taskStatus = res.task_status;
 
@@ -54,7 +52,7 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
         setTimeout(function() {
           getStatus(res.task_id);
         }, 1000);
-      }).catch(err => console.log(err));
+      }).catch(err => console.log(( err )));
   };
 
   const onDropAccepted = useCallback(acceptedFiles => {
@@ -65,11 +63,6 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
     acceptedFiles.forEach(file => {
       console.log(JSON.stringify(file));
     });
-
-
-    // const file = document.getElementById('file_upload').files;
-    // console.log(JSON.stringify(file));
-    // const req = superagent.post('http://localhost:5005/upload/apk');
 
     var formData = new FormData();
 
@@ -105,7 +98,7 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
         ///////////////////////////////////////////////////////////////
 
         // setButtonState(false);
-        const status = "Getting Results";
+        const status = "getting results";
         setButtonValue(status);
         updateCurrentAppStatus(status);
 

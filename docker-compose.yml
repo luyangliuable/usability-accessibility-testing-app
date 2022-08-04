@@ -8,10 +8,9 @@ services:
     container_name: bxer.flask_backend
     ports:
       - 5005:5000
-    command: python3 manage.py run -h 0.0.0.0
+    command: python3 manage.py run -p 5000
     volumes:
       - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
-    platform: linux/amd64
     environment:
       - FLASK_DEBUG=1
       - APP_SETTINGS=config.DevelopmentConfig
@@ -23,6 +22,8 @@ services:
       - apk_tool=/tools/apktool_2.4.1.jar
       - ic3=/tools/ic3-0.2.0
       - S3_URL=http://host.docker.internal:4566
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     depends_on:
       - redis
       - mongodb
@@ -30,9 +31,10 @@ services:
   react_ui:
     build:
       context: ./Website
-    container_name: react-ui
     ports:
       - "3001:3001"
+    environment:
+      - API_URL=flask_backend:5005
     container_name: bxer.react-ui
     stdin_open: true
     volumes:

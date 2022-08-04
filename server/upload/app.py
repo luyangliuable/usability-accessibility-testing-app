@@ -48,7 +48,7 @@ def unique_id_generator():
     return res
 
 
-@upload_blueprint.route('/upload/apk', methods=["GET", "POST"])
+@upload_blueprint.route('/upload', methods=["GET", "POST"])
 @cross_origin()
 def upload():
     """
@@ -82,7 +82,7 @@ def upload():
         temp_dir = tempfile.gettempdir();
 
         temp_file_name = os.path.join(temp_dir, unique_id)
-        with open(temp_file_name, "QB") as savefile:
+        with open(temp_file_name, "wb") as savefile:
             savefile.write(request.files.get('file').read())
         savefile.close()
 
@@ -112,7 +112,7 @@ def check_health():
     return "Upload Is Online"
 
 
-@upload_blueprint.route("/upload/<task_id>", methods=["GET"])
+@upload_blueprint.route("/task/<task_id>", methods=["GET"])
 def get_status(task_id):
     print('getting task id', task_id)
 
@@ -149,4 +149,4 @@ def after_request(response):
 
 
 if __name__ == "__main__":
-    print(unique_id_generator())
+    print((unique_id_generator()))

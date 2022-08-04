@@ -64,9 +64,12 @@ h6 {
 input.bigCheckbox {
     height: 40px;
     width: 40px;
-    margin-left: 85%;
-    margin-top: -300%;
+    float: right;
+    display:block;
+    margin-top:-5.5%;
+    margin-right: -100px;
 }
+
 
 div.accordion {
     display: flexbox;

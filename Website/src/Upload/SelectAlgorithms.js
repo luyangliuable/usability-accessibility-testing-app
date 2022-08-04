@@ -65,7 +65,6 @@ const SelectAlgorithms = () => {
                 {/* Store each algorithm as an    */}
                 {/* item in an item map           */}
                 {/* ============================= */}
-
                 <Accordion allowZeroExpanded allowMultipleExpanded>
                     {algorithms.map((algorithm, index) => (     //It's basically a for loop
                         <div className="accordion">
@@ -76,6 +75,12 @@ const SelectAlgorithms = () => {
                                             {algorithm.heading}
                                         </AccordionItemButton>
                                     </AccordionItemHeading>
+                                    <input
+                                    type="checkbox"
+                                    className='bigCheckbox'
+                                    id={`custom-checkbox-${index}`}
+                                    checked={checkedState[index]}
+                                    onChange={() => handleOnChange(index)}/> 
                                     <AccordionItemPanel>
                                         <h6>Additional Inputs:</h6> <p> {algorithm.input}</p>
                                         <p>
@@ -83,15 +88,6 @@ const SelectAlgorithms = () => {
                                         </p>
                                     </AccordionItemPanel>
                                 </AccordionItem>
-                            </div>
-                            <div>
-                                <input
-                                    type="checkbox"
-                                    className='bigCheckbox'
-                                    id={`custom-checkbox-${index}`}
-                                    checked={checkedState[index]}
-                                    onChange={() => handleOnChange(index)}
-                                />
                             </div>
                         </div>
                     ))}

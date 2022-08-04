@@ -27,7 +27,6 @@
   }
 
   .upload-div-group-white {
-    display: inline-flex;
     flex-wrap: wrap;
 
     background-color: #F2F2F2;
@@ -122,4 +121,8 @@
   .upload-side-padding-40 {
       padding-left: 40px;
       padding-right: 40px;
+  }
+
+  .next-button-align-right {
+    float: right;
   }

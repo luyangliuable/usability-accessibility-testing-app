@@ -118,11 +118,8 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
                 <input {...getInputProps()} disabled={buttonState} />
 
                 <div className="result-box-full-width">
-                    <img className="result-box-icon" src={require("./content/dummy_200x256.png")} alt={""} />
-                    <img className="result-box-icon" src={require("./content/dummy_200x256.png")} alt={""} />
+                    <img className="result-box-icon" src={require("./content/apk-image.png")} alt={""} />
                 </div>
-
-                <div className="result-vspacing-10"> </div>
 
                 <div className="result-box-full-width">
                     <p className="result-box-text-30">{selectedFile ? selectedFile.name : 'Drop APK or MP4 here'}</p>

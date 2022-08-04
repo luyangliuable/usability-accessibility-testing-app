@@ -5,7 +5,7 @@ const ResultBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
     return (
         <div className="result-box-root">
             <div className="result-box-full-width">
-                <img className="result-box-icon" src={require("./content/dummy_200x256.png")} alt={""} />
+                <img className="result-box-icon" src={require("./content/apk-image.png")} alt={""} />
             </div>
 
             <div className="result-vspacing-10"> </div>

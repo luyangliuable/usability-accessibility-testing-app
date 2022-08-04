@@ -26,25 +26,28 @@ We also got the help from researchers who are authors of research papers mention
 ## Team members
 
 ### System Architecture
-* Arragon Prosser - System architect
-* Pooja Seshadri - System architect
-* Eric Chen - System architect
-* Ansh Bajpai - System architect
-* Jimmy Tran - System architect
-* Zhongxun Pan - System architect
-* Luyang Liu - System architect
-
-### RTE Scrum Masters or Product Managers
+* Ansh Bajpai
 * Dale Thomas Beniga
-* Mark Diedericks
-* Leonardo Prasetyo
-* Emily Lam
-* Sifan Mao
 * Dhanushka Perera
-* Javeriya Nadaf
-* Joshua Jaden
+* Eric Chen
+* Leonardo Prasetyo
+* Luyang Liu
+* Mark Diedericks
 * Trevin Dilhan Wadugodapitiya
+* Zhongxun Pan
+
+### RTE Scrum Masters
+* Arragon Prosser 
+* Emily Lam
+* Javeriya Nadaf
+* Sifan Mao
+
+### Product Managers
 * Benjamin Woang
+* Jimmy Tran
+* Joshua Jaden
+* Pooja Seshadri
+
 
 ## Sources
 ### Relevant git repositories

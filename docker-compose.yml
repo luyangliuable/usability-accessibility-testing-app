@@ -11,6 +11,7 @@ services:
     command: python3 manage.py run -p 5000
     volumes:
       - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
+    platform: linux/amd64
     environment:
       - FLASK_DEBUG=1
       - APP_SETTINGS=config.DevelopmentConfig
@@ -31,7 +32,6 @@ services:
   react_ui:
     build:
       context: ./Website
-    container_name: react-ui
     ports:
       - "3001:3001"
     environment:

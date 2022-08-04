@@ -37,6 +37,18 @@ const SelectAlgorithms = () => {
             heading: "Venus",
             input: "-",
             content: "Venus does things and does not require any additional inputs"
+        },
+        {
+            uuid: "owleye",
+            heading: "OwlEye",
+            input: "-",
+            content: "Owl eye can automatically detect and localize UI display issues in the screenshots of the application under test"
+        },
+        {
+            uuid: "xBot",
+            heading: "xBot",
+            input: "-",
+            content: "xBot specializes in accessibility testing of Android apps"
         }
     ];
 
@@ -82,10 +94,12 @@ const SelectAlgorithms = () => {
                                     checked={checkedState[index]}
                                     onChange={() => handleOnChange(index)}/> 
                                     <AccordionItemPanel>
-                                        <h6>Additional Inputs:</h6> <p> {algorithm.input}</p>
                                         <p>
+                                            <b>
                                             {algorithm.content}
+                                            </b>
                                         </p>
+                                        <h6>Additional Inputs:</h6> <b><p> {algorithm.input}</p></b>
                                     </AccordionItemPanel>
                                 </AccordionItem>
                             </div>

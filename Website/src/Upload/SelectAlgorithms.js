@@ -109,7 +109,7 @@ const SelectAlgorithms = () => {
 
                 <div className="upload-vspacing-40"> </div>
 
-                <div>
+                <div className="next-button-align-right" >
                     <Button style={{ marginTop: "15px" }}>
                         <Link to={{pathname:"/upload/additionaluploads", state:checkedState}}>
                             <h3>NEXT</h3>

@@ -1,9 +1,13 @@
 import React from 'react'
 import { Container } from "react-bootstrap";
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+
 
 import './Upload.css';
 import './accordion.css';
+import Button from "../components/button";
+
 
 import {
     Accordion,
@@ -64,27 +68,45 @@ const SelectAlgorithms = () => {
 
                 <Accordion allowZeroExpanded allowMultipleExpanded>
                     {algorithms.map((algorithm, index) => (     //It's basically a for loop
-                        <AccordionItem key={algorithm.uuid}>
-                            <AccordionItemHeading>
-                                <AccordionItemButton>
-                                        {algorithm.heading} 
-                                </AccordionItemButton>
-                            </AccordionItemHeading>
-                            <AccordionItemPanel>
-                                Additional Inputs: {algorithm.input}
-                                {algorithm.content}
-                            </AccordionItemPanel>
-                            {/* <input
-                                type="checkbox"
-                                id={`custom-checkbox-${index}`}
-                                checked={checkedState[index]}
-                                onChange={() => handleOnChange(index)}
-                            /> */}
-                        </AccordionItem>
+                        <div className="accordion">
+                            <div>
+                                <AccordionItem key={algorithm.uuid}>
+                                    <AccordionItemHeading>
+                                        <AccordionItemButton>
+                                            {algorithm.heading}
+                                        </AccordionItemButton>
+                                    </AccordionItemHeading>
+                                    <AccordionItemPanel>
+                                        <h6>Additional Inputs:</h6> <p> {algorithm.input}</p>
+                                        <p>
+                                            {algorithm.content}
+                                        </p>
+                                    </AccordionItemPanel>
+                                </AccordionItem>
+                            </div>
+                            <div>
+                                <input
+                                    type="checkbox"
+                                    className='bigCheckbox'
+                                    id={`custom-checkbox-${index}`}
+                                    checked={checkedState[index]}
+                                    onChange={() => handleOnChange(index)}
+                                />
+                            </div>
+                        </div>
                     ))}
                 </Accordion>
 
                 <div className="upload-vspacing-40"> </div>
+
+                <div>
+                    <Button style={{ marginTop: "15px" }}>
+                        <Link to={{pathname:"/upload/additionaluploads", state:checkedState}}>
+                            <h3>NEXT</h3>
+                        </Link>
+                    </Button>
+                </div>
+
             </div>
         </Container>
     );

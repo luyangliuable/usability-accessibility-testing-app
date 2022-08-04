@@ -1,16 +1,12 @@
-/**
-* ----------------------------------------------
-* Demo styles
-* ----------------------------------------------
-**/
 .accordion {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 2px;
 }
 
-.accordion__item+.accordion__item {
+.accordion__item {
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     padding-top: 20px;
+    width: 80%;
 }
 
 .accordion__button {
@@ -60,6 +56,24 @@
     animation: fadein 0.35s ease-in;
     background-color: #f4f4f4;
 }
+
+h6 {
+    display: inline;
+}
+
+input.bigCheckbox {
+    height: 40px;
+    width: 40px;
+    margin-left: 85%;
+    margin-top: -300%;
+}
+
+div.accordion {
+    display: flexbox;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 
 /* -------------------------------------------------- */
 /* ---------------- Animation part ------------------ */

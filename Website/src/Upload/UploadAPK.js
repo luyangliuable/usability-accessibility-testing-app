@@ -42,7 +42,7 @@ const Upload = () => {
                     </div>
 
                     <div>
-                      <Button style={{marginTop: "15px"}}>
+                        <Button style={{ marginTop: "15px" }}>
                             <Link to={"./selectalgorithm"}>
                                 <h3>NEXT</h3>
                             </Link>

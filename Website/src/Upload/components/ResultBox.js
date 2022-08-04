@@ -1,6 +1,7 @@
 import React from 'react'
 import "./ResultBox.css"
 
+/*This page is currently not used. The code will remain if it needs to be reused*/
 const ResultBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCurrentAppStatus }) => {
     return (
         <div className="result-box-root">

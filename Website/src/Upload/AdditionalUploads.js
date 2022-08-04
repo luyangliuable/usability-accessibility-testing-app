@@ -21,7 +21,7 @@ const AdditionalUploads = (checkedState) => {
             <div className="upload-root">
 
                 <p className="upload-text-60 upload-text-center">ADDITIONAL UPLOADS</p>
-                <p className="upload-text-30 upload-text-center">Upload your APK or MP4 files to evaluated for bugs</p>
+                <p className="upload-text-30 upload-text-center">Upload your APK files to evaluated for bugs</p>
 
                 <div className="upload-vspacing-40"> </div>
 

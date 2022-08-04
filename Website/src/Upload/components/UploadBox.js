@@ -122,7 +122,7 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
                 </div>
 
                 <div className="result-box-full-width">
-                    <p className="result-box-text-30">{selectedFile ? selectedFile.name : 'Drop APK or MP4 here'}</p>
+                    <p className="result-box-text-30">{selectedFile ? selectedFile.name : 'Drop APK here'}</p>
                 </div>
 
                 <div className="result-box-full-width">

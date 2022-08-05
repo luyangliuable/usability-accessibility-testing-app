@@ -25,30 +25,30 @@ const SelectAlgorithms = () => {
     var reports = [];  /* TODO link to backend */
 
     // People can add a dictionary with the structure I have  defined and it will dynamically create more accordions.
-    var algorithms = [
-        {
-            uuid: "gifdroid",
-            heading: "GifDroid",
-            input: "Video",
-            content: "GifDroid does things and requires an additional video input"
-        },
-        {
-            uuid: "venus",
-            heading: "Venus",
-            input: "-",
-            content: "Venus does things and does not require any additional inputs"
-        }
-    ];
 
-    const [checkedState, setCheckedState] = useState(
-        new Array(algorithms.length).fill(false)
-    );
+
+    const [algorithms, updateAlgorithms] = useState(
+        new Array(
+            {
+                uuid: "gifdroid",
+                heading: "GifDroid",
+                input: "Video",
+                content: "GifDroid does things and requires an additional video input",
+                selected: false
+            },
+            {
+                uuid: "venus",
+                heading: "Venus",
+                input: "-",
+                content: "Venus does things and does not require any additional inputs",
+                selected: false
+            }
+        ));
+
 
     const handleOnChange = (position) => {
-        const updatedCheckedState = checkedState.map((item, index) =>
-            index === position ? !item : item
-        );
-        setCheckedState(updatedCheckedState);
+        algorithms[position].selected = !algorithms[position].selected;
+        updateAlgorithms(algorithms);
     };
 
     return (
@@ -67,29 +67,25 @@ const SelectAlgorithms = () => {
                 {/* ============================= */}
                 <Accordion allowZeroExpanded allowMultipleExpanded>
                     {algorithms.map((algorithm, index) => (     //It's basically a for loop
-                        <div className="accordion">
-                            <div>
-                                <AccordionItem key={algorithm.uuid}>
-                                    <AccordionItemHeading>
-                                        <AccordionItemButton>
-                                            {algorithm.heading}
-                                        </AccordionItemButton>
-                                    </AccordionItemHeading>
-                                    <input
-                                    type="checkbox"
-                                    className='bigCheckbox'
-                                    id={`custom-checkbox-${index}`}
-                                    checked={checkedState[index]}
-                                    onChange={() => handleOnChange(index)}/> 
-                                    <AccordionItemPanel>
-                                        <h6>Additional Inputs:</h6> <p> {algorithm.input}</p>
-                                        <p>
-                                            {algorithm.content}
-                                        </p>
-                                    </AccordionItemPanel>
-                                </AccordionItem>
-                            </div>
-                        </div>
+                        <AccordionItem key={algorithm.uuid}>
+                            <AccordionItemHeading>
+                                <AccordionItemButton>
+                                    {algorithm.heading}
+                                </AccordionItemButton>
+                            </AccordionItemHeading>
+                            <input
+                                type="checkbox"
+                                className='bigCheckbox'
+                                id={`checkbox-${algorithm.uuid}`}
+                                defaultChecked={false}
+                                onChange={() => handleOnChange(index)} />
+                            <AccordionItemPanel>
+                                <h6>Additional Inputs:</h6> <p> {algorithm.input}</p>
+                                <p>
+                                    {algorithm.content}
+                                </p>
+                            </AccordionItemPanel>
+                        </AccordionItem>
                     ))}
                 </Accordion>
 
@@ -97,7 +93,7 @@ const SelectAlgorithms = () => {
 
                 <div>
                     <Button style={{ marginTop: "15px" }}>
-                        <Link to={{pathname:"/upload/additionaluploads", state:checkedState}}>
+                        <Link to={"/upload/additionaluploads"} state={{ algorithms: algorithms }}>
                             <h3>NEXT</h3>
                         </Link>
                     </Button>

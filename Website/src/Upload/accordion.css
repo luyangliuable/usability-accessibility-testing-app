@@ -71,13 +71,6 @@ input.bigCheckbox {
 }
 
 
-div.accordion {
-    display: flexbox;
-    flex-direction: row;
-    justify-content: space-between;
-}
-
-
 /* -------------------------------------------------- */
 /* ---------------- Animation part ------------------ */
 /* -------------------------------------------------- */

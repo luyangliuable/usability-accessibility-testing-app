@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "query-string": "^7.1.1",
     "react-accessible-accordion": "^5.0.0",
     "react-dropzone": "^14.2.1"
   }

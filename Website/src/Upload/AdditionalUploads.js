@@ -1,21 +1,32 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Container } from "react-bootstrap";
 import { useState } from 'react';
 
 import './Upload.css';
 
-import ResultBox from "./components/ResultBox"
 import UploadBox from "./components/UploadBox"
-import ReportsTable from "../Results/components/ReportsTable"
+
+import {
+    Accordion,
+    AccordionItem,
+    AccordionItemHeading,
+    AccordionItemButton,
+    AccordionItemPanel,
+} from 'react-accessible-accordion';
+import { useLocation } from 'react-router-dom';
 
 // export default class Upload extends Component {
 
-const AdditionalUploads = (checkedState) => {
+const AdditionalUploads = ({prop}) => {
     const [resultFiles, updateResultFiles] = useState(["./dir_to_file/example_result_file.jpeg"]);
     const [currentAppStatus, updateCurrentAppStatus] = useState("READY");
     var reports = [];  /* TODO link to backend */
 
-    console.log("TestOutput: " + checkedState)
+    const locations = useLocation();
+
+    const algorithms = locations.state?.algorithms;
+
+
     return (
         <Container className='container-nav'>
             <div className="upload-root">
@@ -25,13 +36,22 @@ const AdditionalUploads = (checkedState) => {
 
                 <div className="upload-vspacing-40"> </div>
 
+                <Accordion allowZeroExpanded allowMultipleExpanded>
+                    {algorithms.map((algorithm) => (     //It's basically a for loop
+                        <AccordionItem key={algorithm.uuid}>
+                            <AccordionItemHeading>
+                                <AccordionItemButton>
+                                    {algorithm.heading}
+                                </AccordionItemButton>
+                            </AccordionItemHeading>
+                            <AccordionItemPanel>
+                                <UploadBox resultFiles={resultFiles} updateResultFiles={updateResultFiles} currentAppStatus={currentAppStatus} updateCurrentAppStatus={updateCurrentAppStatus} />
+                            </AccordionItemPanel>
+                        </AccordionItem>
+                    ))}
+                </Accordion>
 
                 <div className="upload-vspacing-40"> </div>
-
-
-                <div className="upload-vspacing-40"> </div>
-                <div className="upload-vspacing-40"> </div>
-
             </div>
         </Container>
     );

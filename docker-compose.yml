@@ -67,10 +67,6 @@ services:
       - 27017:27017
     volumes:
       - .:/data/mongodb
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=username
-      - MONGO_INITDB_ROOT_PASSWORD=password
-
   
   redis:
     ports:

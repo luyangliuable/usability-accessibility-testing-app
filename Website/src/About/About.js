@@ -22,16 +22,16 @@ export default class About extends Component {
 
           <div>
             <div className="about-div-mid">
-              <img className="about-img-520-380" src={require("./content/dummy_520x380.png")}  alt={""}/>
+              <img className="about-img-520-380" src={require("./content/phone.png")}  alt={""}/>
             </div>
             <div className="about-div-mid">
-              <img className="about-img-600-440" src={require("./content/dummy_600x440.png")}  alt={""}/>
+              <img className="about-img-600-440" src={require("./content/graph.png")}  alt={""}/>
             </div>
             <div className="about-div-mid">
               <p className="about-text-20">Android phone home screen with multiple applications</p>
             </div>
             <div className="about-div-mid">
-              <p className="about-text-20">Graph of number of available applications in Google Play Store from December 2009 to March 2022. Peaks in Dec ‘17 and Dec ‘20.</p>
+              <p className="about-text-20">Graph of number of available applications in Google Play Store from December 2009 to March 2022. Peaks in Dec '17 and Dec '20.</p>
             </div>
           </div>
 

@@ -30,7 +30,7 @@ export default function ToolBar() {
                 </Link>
               </Col> 
           </Col>
-          <Col xxl={2} className="nav-center">
+          <Col xxl={2} className="nav-right">
             <Link to={"./login"}>
               <h3>LOGIN</h3>
             </Link>

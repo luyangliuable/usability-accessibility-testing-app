@@ -24,9 +24,7 @@ const SelectAlgorithms = () => {
     const [currentAppStatus, updateCurrentAppStatus] = useState("READY");
     var reports = [];  /* TODO link to backend */
 
-    // People can add a dictionary with the structure I have  defined and it will dynamically create more accordions.
-
-
+    // People can add a dictionary with the structure I have defined and it will dynamically create more accordions.
     const [algorithms, updateAlgorithms] = useState(
         new Array(
             {
@@ -80,10 +78,12 @@ const SelectAlgorithms = () => {
                                 defaultChecked={false}
                                 onChange={() => handleOnChange(index)} />
                             <AccordionItemPanel>
-                                <h6>Additional Inputs:</h6> <p> {algorithm.input}</p>
                                 <p>
-                                    {algorithm.content}
+                                    <b>
+                                        {algorithm.content}
+                                    </b>
                                 </p>
+                                <h6>Additional Inputs:</h6> <b><p> {algorithm.input}</p></b>
                             </AccordionItemPanel>
                         </AccordionItem>
                     ))}
@@ -91,7 +91,7 @@ const SelectAlgorithms = () => {
 
                 <div className="upload-vspacing-40"> </div>
 
-                <div>
+                <div className="next-button-align-right" >
                     <Button style={{ marginTop: "15px" }}>
                         <Link to={"/upload/additionaluploads"} state={{ algorithms: algorithms }}>
                             <h3>NEXT</h3>

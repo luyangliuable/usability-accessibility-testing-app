@@ -6,7 +6,7 @@
 .accordion__item {
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     padding-top: 20px;
-    width: 80%;
+    width: 90%;
 }
 
 .accordion__button {

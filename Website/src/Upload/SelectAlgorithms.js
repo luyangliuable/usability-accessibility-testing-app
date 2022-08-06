@@ -20,29 +20,27 @@ import {
 // export default class Upload extends Component {
 
 const SelectAlgorithms = () => {
-    const [resultFiles, updateResultFiles] = useState(["./dir_to_file/example_result_file.jpeg"]);
-    const [currentAppStatus, updateCurrentAppStatus] = useState("READY");
-    var reports = [];  /* TODO link to backend */
-
     // People can add a dictionary with the structure I have defined and it will dynamically create more accordions.
     const [algorithms, updateAlgorithms] = useState(
-        new Array(
-            {
-                uuid: "gifdroid",
-                heading: "GifDroid",
-                input: "Video",
-                content: "GifDroid does things and requires an additional video input",
-                selected: false
-            },
-            {
-                uuid: "venus",
-                heading: "Venus",
-                input: "-",
-                content: "Venus does things and does not require any additional inputs",
-                selected: false
-            }
-        ));
-
+        [{
+            uuid: "gifdroid",                                                               // A unique identifier for the algorithm. Unsure if necessary
+            algorithmName: "GifDroid",                                                      // String representing the algorithms name
+            requiresAdditionalInput: true,                                                  // Boolean indicating whether additional inputs are required
+            additionalInputDescription: "Requires a screen recorded video of the app",      // String description of the additional inputs
+            additionalInputFileTypes: [".gif"],                                             // file types?? Think Luyang is doing something similar. Need to verify
+            description: "GifDroid does things and requires an additional video input",     // String description of what the algorithm does
+            selected: false                                                                 // Boolean indicating whether the algorithm has been selectedD
+        },
+        {
+            uuid: "venus",
+            algorithmName: "Venus",
+            requiresAdditionalInput: false,
+            additionalInputDescription: "Does not require any additional uploads",
+            additionalInputFileTypes: [],
+            description: "Venus does things and does not require any additional inputs",
+            selected: false
+        }
+        ]);
 
     const handleOnChange = (position) => {
         algorithms[position].selected = !algorithms[position].selected;
@@ -68,7 +66,7 @@ const SelectAlgorithms = () => {
                         <AccordionItem key={algorithm.uuid}>
                             <AccordionItemHeading>
                                 <AccordionItemButton>
-                                    {algorithm.heading}
+                                    {algorithm.algorithmName}
                                 </AccordionItemButton>
                             </AccordionItemHeading>
                             <input
@@ -80,10 +78,10 @@ const SelectAlgorithms = () => {
                             <AccordionItemPanel>
                                 <p>
                                     <b>
-                                        {algorithm.content}
+                                        {algorithm.description}
                                     </b>
                                 </p>
-                                <h6>Additional Inputs:</h6> <b><p> {algorithm.input}</p></b>
+                                <h6>Additional Inputs:</h6> <b><p> {algorithm.additionalInputDescription}</p></b>
                             </AccordionItemPanel>
                         </AccordionItem>
                     ))}

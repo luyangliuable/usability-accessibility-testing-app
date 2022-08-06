@@ -25,6 +25,31 @@ const AdditionalUploads = ({ prop }) => {
     const locations = useLocation();
 
     const algorithms = locations.state?.algorithms;
+    const selectedAlgorithms = [];
+    for (let i = 0; i < algorithms.length; i++) {       // Extracts selected algorithms that require additional uploads from the algorithms data structure
+        if (algorithms[i].selected === true && algorithms[i].requiresAdditionalInput == true) {
+            selectedAlgorithms.push(algorithms[i]);
+        }
+    }
+    console.log(selectedAlgorithms);
+
+    var renderSelectedAlgorithms = selectedAlgorithms.map((algorithm) => {     
+        // If any of the selected algorithms require an additional upload it will generate accordions with an upload box for it
+        return (
+            < Accordion allowZeroExpanded allowMultipleExpanded >
+                <AccordionItem key={algorithm.uuid}>
+                    <AccordionItemHeading>
+                        <AccordionItemButton>
+                            {algorithm.algorithmName}
+                        </AccordionItemButton>
+                    </AccordionItemHeading>
+                    <AccordionItemPanel>
+                        <UploadBox resultFiles={resultFiles} updateResultFiles={updateResultFiles} currentAppStatus={currentAppStatus} updateCurrentAppStatus={updateCurrentAppStatus} />
+                    </AccordionItemPanel>
+                </AccordionItem>
+            </Accordion >
+        )
+    });
 
 
     return (
@@ -36,20 +61,13 @@ const AdditionalUploads = ({ prop }) => {
 
                 <div className="upload-vspacing-40"> </div>
 
-                <Accordion allowZeroExpanded allowMultipleExpanded>
-                    {algorithms.map((algorithm) => (     //It's basically a for loop
-                        <AccordionItem key={algorithm.uuid}>
-                            <AccordionItemHeading>
-                                <AccordionItemButton>
-                                    {algorithm.heading}
-                                </AccordionItemButton>
-                            </AccordionItemHeading>
-                            <AccordionItemPanel>
-                                <UploadBox resultFiles={resultFiles} updateResultFiles={updateResultFiles} currentAppStatus={currentAppStatus} updateCurrentAppStatus={updateCurrentAppStatus} />
-                            </AccordionItemPanel>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
+                {/* If there are algorithms that require additional uploads, i.e. selectedAlgoriithms.length > 0, it will render the accordions. Otherwise, it will render the text layed out in the divs below */}
+                {selectedAlgorithms.length ? renderSelectedAlgorithms :
+                    <div>
+                        <p className="upload-text-30 upload-text-center">
+                            None of the selected algorithms require an additional upload.
+                        </p>
+                    </div>}
 
                 <div className="upload-vspacing-40"> </div>
             </div>

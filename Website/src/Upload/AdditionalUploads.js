@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Container } from "react-bootstrap";
 import { useState } from 'react';
 
@@ -17,7 +17,7 @@ import { useLocation } from 'react-router-dom';
 
 // export default class Upload extends Component {
 
-const AdditionalUploads = ({prop}) => {
+const AdditionalUploads = ({ prop }) => {
     const [resultFiles, updateResultFiles] = useState(["./dir_to_file/example_result_file.jpeg"]);
     const [currentAppStatus, updateCurrentAppStatus] = useState("READY");
     var reports = [];  /* TODO link to backend */

@@ -3,7 +3,7 @@ import { useDropzone } from 'react-dropzone';
 
 import "./ResultBox.css";
 
-const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCurrentAppStatus}) => {
+const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCurrentAppStatus }) => {
     const [buttonState, setButtonState] = useState(false);
     const [buttonValue, setButtonValue] = useState("Upload File");
     const [selectedFile, setSelectedFile] = useState(null);
@@ -36,7 +36,7 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
 
                 const taskStatus = res.task_status;
 
-                if (taskStatus === 'SUCCESS'){
+                if (taskStatus === 'SUCCESS') {
                     setButtonState(false);
                     setButtonValue("Upload again");
                     updateCurrentAppStatus("RESULTS READY");
@@ -48,7 +48,7 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
                     return false;
                 };
 
-                setTimeout(function() {
+                setTimeout(function () {
                     getStatus(res.task_id);
                 }, 1000);
             }).catch(err => console.log(err));
@@ -114,7 +114,7 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
 
     return (
         <div className="result-box-root">
-            <div{...getRootProps()} disabled={buttonState}>
+            <div {...getRootProps()} disabled={buttonState}>
                 <input {...getInputProps()} disabled={buttonState} />
 
                 <div className="result-box-full-width">

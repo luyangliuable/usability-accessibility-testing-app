@@ -1,7 +1,6 @@
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import NavDropdown from 'react-bootstrap/NavDropdown';
 
 function BasicExample() {
   return (
@@ -13,12 +12,12 @@ function BasicExample() {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto" >
-            <Nav.Link href="./about" style={{color:"rgb(219, 218, 218)"}} >About</Nav.Link>
-            <Nav.Link href="./upload" style={{color:"rgb(219, 218, 218)"}} >Upload</Nav.Link>
-            <Nav.Link href="./results" style={{color:"rgb(219, 218, 218)"}}>Results</Nav.Link>
+            <Nav.Link href="/about" style={{ color: "rgb(219, 218, 218)" }} >About</Nav.Link>
+            <Nav.Link href="/upload" style={{ color: "rgb(219, 218, 218)" }} >Upload</Nav.Link>
+            <Nav.Link href="/results" style={{ color: "rgb(219, 218, 218)" }}>Results</Nav.Link>
           </Nav>
           <Nav>
-            <Nav.Link href="./login" style={{color:"rgb(219, 218, 218)"}}>Login</Nav.Link>
+            <Nav.Link href="/login" style={{ color: "rgb(219, 218, 218)" }}>Login</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>

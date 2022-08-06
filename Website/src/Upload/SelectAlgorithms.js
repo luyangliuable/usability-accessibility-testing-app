@@ -39,6 +39,18 @@ const SelectAlgorithms = () => {
             additionalInputFileTypes: [],
             description: "Venus does things and does not require any additional inputs",
             selected: false
+        },
+        {
+            uuid: "owleye",
+            heading: "OwlEye",
+            input: "-",
+            content: "Owl eye can automatically detect and localize UI display issues in the screenshots of the application under test"
+        },
+        {
+            uuid: "xBot",
+            heading: "xBot",
+            input: "-",
+            content: "xBot specializes in accessibility testing of Android apps"
         }
         ]);
 

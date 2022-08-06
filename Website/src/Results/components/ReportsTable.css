@@ -82,7 +82,7 @@
     justify-content: space-around;
     align-items: center;
     background: #ffffff;
-    box-shadow: 4px 4px 8px #EEAAB;
+    box-shadow: "4px 4px 8px #EEAAB";
     padding: 20px;
     border-radius: 12px;
     margin-bottom: 10px;

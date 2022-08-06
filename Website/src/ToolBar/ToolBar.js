@@ -7,7 +7,7 @@ function BasicExample() {
     <Navbar bg="black" variant="dark">
       <Container>
         <Navbar.Brand href="./">
-          {/* <img alt='logo' src={require('./BXER.png')} height="100" width="100"/> */}
+          <img alt='logo' src={require('./BXER.png')} height="100" width="100"/>
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">

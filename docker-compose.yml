@@ -73,7 +73,7 @@ services:
       - 6379:6379
     container_name: bxer.redis
     image: redis:6-alpine
-  
+
   localstack:
     image: localstack/localstack:0.14.3
     container_name: bxer.localstack

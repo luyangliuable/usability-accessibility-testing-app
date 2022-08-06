@@ -141,3 +141,5 @@ dmypy.json
 .localstack
 
 node_modules
+.localstack\data\startup_info.json
+.localstack\data\recorded_api_calls.json

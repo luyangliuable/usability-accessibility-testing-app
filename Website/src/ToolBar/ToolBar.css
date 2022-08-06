@@ -29,10 +29,10 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 65px;
 }
 
-
-/* .btn-hover.color-5 { */
-/*     box-shadow: 0 4px 15px 0 rgba(23, 168, 108, 0.75); */
-/* } */
+.nav-right {
+    display: flex;
+    justify-content: right;
+    align-items: right;
+}

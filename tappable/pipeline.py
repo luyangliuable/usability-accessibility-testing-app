@@ -75,8 +75,10 @@ class ModelPipeline:
         labels = ['0' ,'1', '2', '3', '4', '5'] 
         with torch.no_grad():
             predictions = model(input)
-            _, index = torch.max(predictions, 1)
             percentage = torch.nn.functional.softmax(predictions, dim=1)[0] * 100
+            _, indices = torch.sort(predictions, descending=True)
+            print([(labels[idx], percentage[idx].item()) for idx in indices[0][:5]])
+            _, index = torch.max(predictions, 1) 
             return str(round(percentage[index[0]].item(),2)) + "%; rated " + labels[index[0]] + "/5 tappable"
 
     def showImage(self, pred_str):

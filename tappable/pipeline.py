@@ -10,10 +10,11 @@ from PIL import Image
 
 class ModelPipeline:
 
-    def __init__(self, img_path, bounds):
+    def __init__(self, img_path, bounds, model):
         self.img_path = img_path
         self.bounds = self.updateArray(bounds)
         self.img = self.getImage()
+        self.model_path = model
 
     #Gets stored image [TODO: update to get image from s3 bucket]
     def getImage(self):
@@ -68,7 +69,7 @@ class ModelPipeline:
 
         #Create model from saved state
         model = ResNet(18, Block, 4, 1000)
-        model.load_state_dict(torch.load('resnet.pt', map_location=torch.device('cpu')))
+        model.load_state_dict(torch.load(os.getcwd() + self.model_path, map_location=torch.device('cpu')))
         model.eval()
 
         #Prediction
@@ -105,6 +106,9 @@ if __name__ == '__main__':
     bounds = config.get('main', 'bounds')
     bounds_array = bounds.strip('[]').split(',')
 
-    prediction = ModelPipeline(img_path, bounds_array)
+    #Get model
+    model_path = config.get('main', 'model')
+
+    prediction = ModelPipeline(img_path, bounds_array,model_path)
     prediction_str = prediction.modelPipeline()
     prediction.showImage(prediction_str)

@@ -2,8 +2,11 @@ import numpy as np
 import torch
 from configparser import ConfigParser
 from skimage import io, transform
+from skimage.io import imshow
 from model import ResNet, Block
 import os
+import matplotlib.pyplot as plt
+from PIL import Image
 
 class ModelPipeline:
 
@@ -74,8 +77,19 @@ class ModelPipeline:
             predictions = model(input)
             _, index = torch.max(predictions, 1)
             percentage = torch.nn.functional.softmax(predictions, dim=1)[0] * 100
-            print(str(round(percentage[index[0]].item(),2)) + "%; rated " + labels[index[0]] + "/5 tappable")
+            return str(round(percentage[index[0]].item(),2)) + "%; rated " + labels[index[0]] + "/5 tappable"
 
+    def showImage(self, pred_str):
+        fig = plt.figure()
+        fig.suptitle(pred_str, fontsize=15)
+        ax1 = fig.add_subplot(1,2,1)
+        ax1.imshow(self.img)
+        ax2 = fig.add_subplot(1,2,2)
+        cropped = self.img[self.bounds[1]:self.bounds[3], self.bounds[0]:self.bounds[2]]
+        ax2.imshow(cropped)
+        ax1.title.set_text("Original Image")
+        ax2.title.set_text("Cropped Image")
+        plt.show()
 
 if __name__ == '__main__':
     #Read config file
@@ -90,4 +104,5 @@ if __name__ == '__main__':
     bounds_array = bounds.strip('[]').split(',')
 
     prediction = ModelPipeline(img_path, bounds_array)
-    prediction.modelPipeline()
+    prediction_str = prediction.modelPipeline()
+    prediction.showImage(prediction_str)

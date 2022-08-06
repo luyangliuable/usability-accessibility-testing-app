@@ -122,8 +122,8 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
         <input {...getInputProps()} disabled={buttonState} />
 
         <div className="result-box-full-width">
-          <img className="result-box-icon" src={require("./content/dummy_200x256.png")} alt={""} />
-          <img className="result-box-icon" src={require("./content/dummy_200x256.png")} alt={""} />
+          <img className="result-box-icon" src={require("./content/apk-image.png")} alt={""} />
+          <img className="result-box-icon" src={require("./content/apk-image.png")} alt={""} />
         </div>
 
         <div className="result-vspacing-10"> </div>

@@ -1,11 +1,12 @@
-import React, { Component } from 'react'
+import React from 'react'
 import "./ResultBox.css"
 
+/*This page is currently not used. The code will remain if it needs to be reused*/
 const ResultBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCurrentAppStatus }) => {
     return (
         <div className="result-box-root">
             <div className="result-box-full-width">
-                <img className="result-box-icon" src={require("./content/dummy_200x256.png")} alt={""} />
+                <img className="result-box-icon" src={require("./content/apk-image.png")} alt={""} />
             </div>
 
             <div className="result-vspacing-10"> </div>

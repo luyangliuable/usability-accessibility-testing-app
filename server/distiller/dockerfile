@@ -1,0 +1,34 @@
+# FROM python:3.9.1-slim-buster
+# FROM alpine:3.14
+FROM luyangliuable/fit3170_alpine_image:6.0
+
+ENV PYTHONUNBUFFERED=1
+
+WORKDIR /usr/src/app/server/distiller
+
+ENV FLASK_APP=app.py
+ENV FLASK_RUN_HOST=0.0.0.0
+
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+###############################################################################
+#                           requirements from alpine                          #
+###############################################################################
+
+# Why alpine why?! ############################################################
+# RUN apk add alpine-sdk
+# RUN apk add gcc musl-dev python3-dev libffi-dev openssl-dev cargo
+
+# Server will reload itself on file changes if in dev mode
+ENV FLASK_ENV=development
+
+RUN python2.7 -m pip install --upgrade pip
+COPY ./requirements.txt .
+RUN python2.7 -m pip install -r requirements.txt
+
+# copy project
+COPY . .
+
+CMD [ "python2.7", "./code/run_storydistiller.py" ]

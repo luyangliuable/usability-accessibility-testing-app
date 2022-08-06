@@ -42,15 +42,21 @@ const SelectAlgorithms = () => {
         },
         {
             uuid: "owleye",
-            heading: "OwlEye",
-            input: "-",
-            content: "Owl eye can automatically detect and localize UI display issues in the screenshots of the application under test"
+            algorithmName: "OwlEye",
+            requiresAdditionalInput: false,
+            additionalInputDescription: "Does not require any additional uploads",
+            additionalInputFileTypes: [],
+            description: "Owl eye can automatically detect and localize UI display issues in the screenshots of the application under test",
+            selected: false
         },
         {
             uuid: "xBot",
-            heading: "xBot",
-            input: "-",
-            content: "xBot specializes in accessibility testing of Android apps"
+            algorithmName: "xBot",
+            requiresAdditionalInput: false,
+            additionalInputDescription: "Does not require any additional uploads",
+            additionalInputFileTypes: [],
+            description: "xBot specializes in accessibility testing of Android apps",
+            selected: false
         }
         ]);
 

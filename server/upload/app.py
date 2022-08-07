@@ -38,7 +38,7 @@ mongo = ApkManager.instance()
 AWS_PROFILE = 'localstack'
 AWS_REGION = 'us-west-2'
 ENDPOINT_URL = os.environ.get('S3_URL')
-bucketname = "uploadbucket"
+bucketname = "apk-bucket"
 
 boto3.setup_default_session(profile_name=AWS_PROFILE)
 s3_client = boto3.client("s3", region_name=AWS_REGION, endpoint_url=ENDPOINT_URL)
@@ -92,11 +92,42 @@ def upload():
         #                   Upload the temporary file to git bucket                   #
         ###############################################################################
         print("[2] Uploading to bucket")
-        s3_client.upload_file(temp_file_name, bucketname, file_key)
+        s3_client.upload_file(temp_file_name, bucketname, os.path.join( unique_id, file_key ))
 
 
-        print("[3] Adding file data to mongodb")
-        mongo.insert_document({"type": "apk", "uuid": unique_id, "date": str( datetime.datetime.now() )}, mongo.get_database()["apk"])
+        print("[3] Adding file data to mongo db")
+
+        ###############################################################################
+        #               Store data into mongodb in the following format               #
+        ###############################################################################
+
+        # uuid - used to identify the cluster of data for one task.
+        # date - just the data initiated the task
+        # apk - the apk file to analyse
+        # tapshoe_files - store tapeshoe files here
+        # storydistiller_files - store storydistiller files here
+        # gifdroid_files - store gifdroid files here
+        # utg_files - store droidbot files here
+        # venus_files - store venus files here
+
+        # NOTE: store in the following format for files for easier identifcation
+        # {"type": {The file/mime type}, "name": {Name of file inside s3 bucket}, "notes": "Notes to take into consideration"}
+
+        data = {
+            "uuid": unique_id,
+            "date": str( datetime.datetime.now() ),
+            "apk": [],
+            "tapshoe_files": [],
+            "storydistiller_files": [],
+            "gifdroid_files": [],
+            "utg_files": [],
+            "owleye_files": [],
+            "venus_files": [],
+        }
+
+        apk_file_note = "user uploaded apk file"
+        data["apk"].append({"type": "apk", "name": file_key, "notes": apk_file_note});
+        mongo.insert_document(data, mongo.get_database()["apk"])
 
         print("[4] creating celery task")
         task = create_task.delay()

@@ -138,6 +138,7 @@ dmypy.json
 #local files - ben
 /test
 
+# Localstack
 .localstack
 
 node_modules

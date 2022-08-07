@@ -1,154 +1,157 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import superagent from 'superagent';
 
 import "./ResultBox.css";
 
-const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCurrentAppStatus}) => {
-    const [buttonState, setButtonState] = useState(false);
-    const [buttonValue, setButtonValue] = useState("Upload File");
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [taskId, setTaskId] = useState(['rand']);
+const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCurrentAppStatus }) => {
+  const [buttonState, setButtonState] = useState(false);
+  const [buttonValue, setButtonValue] = useState("Upload File");
+  const [selectedFile, setSelectedFile] = useState(null);
 
-    const canAccept = (file) => {
-        /* TODO check file types */
-        return ['apk'];
-    };
+  //eslint-disable-next-line
+  const [taskId, setTaskId] = useState(['rand']);
 
-    useEffect(() => {
-        console.log("The current stored result files are" + resultFiles);
-        console.log("The current app status is " + currentAppStatus);
-    }, []);
+  //eslint-disable-next-line
+  const canAccept = (file) => {
+    return ['apk'];
+  };
 
+  useEffect(() => {
+    console.log("The current stored result files are" + resultFiles);
+    console.log("The current app status is " + currentAppStatus);
+  }, [currentAppStatus, resultFiles]);
 
-    const getStatus = (taskID) => {
-        fetch(`http://localhost:5005/upload/${taskID}`, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-        })
-            .then(response => response.json())
-            .then(res => {
-                console.log(res);
-                ///////////////////////////////////////////////////////////////
-                //          Update frontend if receive request TODO          //
-                ///////////////////////////////////////////////////////////////
+  const task_url = "http://localhost:5005/task";
+  const apk_upload_url = "http://localhost:5005/upload";
 
-                const taskStatus = res.task_status;
+  const getStatus = (taskID) => {
+    fetch(`${task_url}/${taskID}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+    })
+      .then(response => response.json())
+      .then(res => {
+        console.log(res);
 
-                if (taskStatus === 'SUCCESS'){
-                    setButtonState(false);
-                    setButtonValue("Upload again");
-                    updateCurrentAppStatus("RESULTS READY");
-                    return true;
-                } else if (taskStatus === 'FAILURE') {
-                    setButtonState(false);
-                    setButtonValue("Upload again");
-                    updateCurrentAppStatus("TASK FAILED");
-                    return false;
-                };
+        const taskStatus = res.task_status;
 
-                setTimeout(function() {
-                    getStatus(res.task_id);
-                }, 1000);
-            }).catch(err => console.log(err));
-    };
+        if (taskStatus === 'SUCCESS') {
+          setButtonState(false);
+          setButtonValue("Upload again");
+          updateCurrentAppStatus("RESULTS READY");
+          return true;
+        } else if (taskStatus === 'FAILURE') {
+          setButtonState(false);
+          setButtonValue("Upload again");
+          updateCurrentAppStatus("TASK FAILED");
+          return false;
+        };
 
-    const onDropAccepted = useCallback(acceptedFiles => {
-        console.log("[1] upload start.");
-        setButtonState(true);
-        setSelectedFile(acceptedFiles[0]);
+        setTimeout(function() {
+          getStatus(res.task_id);
+        }, 1000);
+      }).catch(err => console.log(( err )));
+  };
 
-        acceptedFiles.forEach(file => {
-            console.log(JSON.stringify(file));
-        });
+  const onDropAccepted = useCallback(acceptedFiles => {
+    console.log("[1] upload start.");
+    setButtonState(true);
+    setSelectedFile(acceptedFiles[0]);
 
-
-        // const file = document.getElementById('file_upload').files;
-        // console.log(JSON.stringify(file));
-        // const req = superagent.post('http://localhost:5005/upload/apk');
-
-        acceptedFiles.forEach(file => {
-            console.log('sending ' + file.path);
-            fetch('http://localhost:5005/upload/apk', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/vnd.android.package-archive',
-                },
-                body: file,
-            }).then(response => response.json()).then(data => {
-
-                console.log("done");
-
-                ///////////////////////////////////////////////////////////////
-                //          Update and save the task_id for backend          //
-                ///////////////////////////////////////////////////////////////
-                setTaskId(prev => {
-                    return [...prev, data['task_id']];
-                });
-
-                console.log(data['task_id']);
-
-                ///////////////////////////////////////////////////////////////
-                //                       Restore button                      //
-                ///////////////////////////////////////////////////////////////
-
-                // setButtonState(false);
-                const status = "Getting Results";
-                setButtonValue(status);
-                updateCurrentAppStatus(status);
-
-                console.log("getting status");
-                getStatus(data['task_id']);
-            });
-        });
-
-    }, []);
-
-    const { getRootProps, getInputProps } = useDropzone({
-        onDropAccepted: onDropAccepted,
-        maxFiles: 1,
-        disabled: buttonState,
-        // validator: canAccept
+    acceptedFiles.forEach(file => {
+      console.log(JSON.stringify(file));
     });
 
-    return (
-        <div className="result-box-root">
-            <div{...getRootProps()} disabled={buttonState}>
-                <input {...getInputProps()} disabled={buttonState} />
+    var formData = new FormData();
 
-                <div className="result-box-full-width">
-                    <img className="result-box-icon" src={require("./content/dummy_200x256.png")} alt={""} />
-                    <img className="result-box-icon" src={require("./content/dummy_200x256.png")} alt={""} />
-                </div>
 
-                <div className="result-vspacing-10"> </div>
+    acceptedFiles.forEach(file => {
+      // formData.append("file", file);
+      formData.append("file", file);
+      formData.append("filename", file.name);
+      // formData.append("content", file);
+      // console.log(typeof(file));
+      // console.log(file);
+      // console.log(formData);
+      console.log(`Sending ${file.path} to server.`);
+      fetch(apk_upload_url, {
+        method: 'POST',
+        body: formData,
+        // body: { content: file, name: file.path },
+      }).then(response => response.json()).then(data => {
 
-                <div className="result-box-full-width">
-                    <p className="result-box-text-30">{selectedFile ? selectedFile.name : 'Drop APK or MP4 here'}</p>
-                </div>
+        console.log("done");
 
-                <div className="result-box-full-width">
-                    <div className="result-box-center-bar">
-                        {/* TODO actual progess bar */}
-                        <div className="result-box-line result-box-left" />
-                        <div className="result-box-line result-box-right" />
+        ///////////////////////////////////////////////////////////////
+        //          Update and save the task_id for backend          //
+        ///////////////////////////////////////////////////////////////
+        setTaskId(prev => {
+          return [...prev, data['task_id']];
+        });
 
-                        <p className="result-box-text-20 result-text-center">or</p>
-                    </div>
-                </div>
+        console.log(data['task_id']);
 
-                <div className="result-box-full-width">
-                    {/* TODO functional button */}
-                    <button
-                        className={buttonState ? "result-box-view-button result-button-disabled" : "result-box-view-button result-button-enabled"}
-                        disabled={buttonState}>{buttonValue}
-                    </button>
-                </div>
-            </div>
+        ///////////////////////////////////////////////////////////////
+        //                       Restore button                      //
+        ///////////////////////////////////////////////////////////////
+
+        // setButtonState(false);
+        const status = "getting results";
+        setButtonValue(status);
+        updateCurrentAppStatus(status);
+
+        console.log("getting status");
+        getStatus(data['task_id']);
+      });
+    });
+
+  }, []);
+
+  const { getRootProps, getInputProps } = useDropzone({
+    onDropAccepted: onDropAccepted,
+    maxFiles: 1,
+    disabled: buttonState,
+    // validator: canAccept
+  });
+
+  return (
+    <div className="result-box-root">
+      <div{...getRootProps()} disabled={buttonState}>
+        <input {...getInputProps()} disabled={buttonState} />
+
+        <div className="result-box-full-width">
+          <img className="result-box-icon" src={require("./content/apk-image.png")} alt={""} />
+          <img className="result-box-icon" src={require("./content/apk-image.png")} alt={""} />
         </div>
-    );
+
+        <div className="result-vspacing-10"> </div>
+
+        <div className="result-box-full-width">
+          <p className="result-box-text-30">{selectedFile ? selectedFile.name : 'Drop APK or MP4 here'}</p>
+        </div>
+
+        <div className="result-box-full-width">
+          <div className="result-box-center-bar">
+            {/* TODO actual progess bar */}
+            <div className="result-box-line result-box-left" />
+            <div className="result-box-line result-box-right" />
+
+            <p className="result-box-text-20 result-text-center">or</p>
+          </div>
+        </div>
+
+        <div className="result-box-full-width">
+          {/* TODO functional button */}
+          <button
+            className={buttonState ? "result-box-view-button result-button-disabled" : "result-box-view-button result-button-enabled"}
+            disabled={buttonState}>{buttonValue}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export default UploadBox

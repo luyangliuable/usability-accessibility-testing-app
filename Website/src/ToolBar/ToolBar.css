@@ -2,6 +2,7 @@
     padding: 10px 0px 10px 0px;
     background-color: #0d0d0d;
     z-index: 2;
+    border-bottom: .2px solid #FFF;
     position: fixed;
     width: 100%;
     top: 0;
@@ -27,5 +28,11 @@
 .nav-center {
     display: flex;
     justify-content: center;
-    align-items: center;  
+    align-items: center;
+}
+
+.nav-right {
+    display: flex;
+    justify-content: right;
+    align-items: right;
 }

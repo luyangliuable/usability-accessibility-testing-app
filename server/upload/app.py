@@ -130,7 +130,8 @@ def upload():
         mongo.insert_document(data, mongo.get_database()["apk"])
 
         print("[4] creating celery task")
-        task = create_task.delay()
+        info = { "uuid": unique_id }
+        task = create_task.delay(info)
 
         print("[5] return celery task id and file key")
         return json.dumps({"file_key": str( file_key ), "task_id": task.id}), 200

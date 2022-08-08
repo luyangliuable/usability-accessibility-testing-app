@@ -68,19 +68,19 @@ class ModelPipeline:
         input = self.image_transformations()
 
         #Create model from saved state
-        model = ResNet(18, Block, 4, 1000)
+        model = ResNet(18, Block, 4, 2)
         model.load_state_dict(torch.load(os.getcwd() + self.model_path, map_location=torch.device('cpu')))
         model.eval()
 
         #Prediction
-        labels = ['0' ,'1', '2', '3', '4', '5'] 
+        labels = ['tappable' ,'not tappable'] 
         with torch.no_grad():
             predictions = model(input)
             percentage = torch.nn.functional.softmax(predictions, dim=1)[0] * 100
             _, indices = torch.sort(predictions, descending=True)
             print([(labels[idx], percentage[idx].item()) for idx in indices[0][:5]])
             _, index = torch.max(predictions, 1) 
-            return str(round(percentage[index[0]].item(),2)) + "%; rated " + labels[index[0]] + "/5 tappable"
+            return str(round(percentage[index[0]].item(),2)) + "%; rated " + labels[index[0]]
 
     def showImage(self, pred_str):
         fig = plt.figure()

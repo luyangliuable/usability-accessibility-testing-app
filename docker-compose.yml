@@ -22,7 +22,9 @@ services:
       - apk_tool=/tools/apktool_2.4.1.jar
       - ic3=/tools/ic3-0.2.0
       - S3_URL=http://host.docker.internal:4566
-      - STORYDISTILLER=http://localhost:3002
+      - STORYDISTILLER=http://host.docker.internal:3002
+      - XBOT=http://host.docker.internal:3003
+      - OWLEYE=http://host.docker.internal:3004
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:

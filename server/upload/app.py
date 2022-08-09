@@ -88,6 +88,10 @@ def upload():
 
         print(temp_file_name, "is created")
 
+
+        enforce_bucket_existance(["apk-bucket", "storydistiller-bucket", "xbot-bucket"])
+
+
         ###############################################################################
         #                   Upload the temporary file to git bucket                   #
         ###############################################################################
@@ -177,6 +181,17 @@ def after_request(response):
     # response.headers.add('access-control-allow-headers', 'authorization')
     # response.headers.add('Access-Control-Allow-Methods', 'POST')
     return response
+
+
+
+
+def enforce_bucket_existance(buckets):
+    for bucket in buckets:
+        try:
+            s3_client.create_bucket(Bucket=bucket, CreateBucketConfiguration={'LocationConstraint': 'us-west-2'})
+        except:
+            print("Bucket already exists %s".format( bucket ))
+
 
 
 

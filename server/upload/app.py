@@ -10,14 +10,6 @@ import uuid
 import os
 from redis import Redis
 from models.Apk import ApkManager
-# from celery.result import AsyncResult
-# from werkzeug.datastructures import FileStorage
-# from werkzeug.utils import secure_filename
-# import warnings
-# import linecache
-# import codecs
-# import pickle
-# import zlib
 
 ###############################################################################
 #                            Set Up Flask Blueprint                           #
@@ -86,18 +78,13 @@ def upload():
             savefile.write(request.files.get('file').read())
             savefile.close()
 
-        print(temp_file_name, "is created")
-
-
         enforce_bucket_existance(["apk-bucket", "storydistiller-bucket", "xbot-bucket"])
-
 
         ###############################################################################
         #                   Upload the temporary file to git bucket                   #
         ###############################################################################
         print("[2] Uploading to bucket")
         s3_client.upload_file(temp_file_name, bucketname, os.path.join( unique_id, file_key ))
-
 
         print("[3] Adding file data to mongo db")
 
@@ -146,6 +133,7 @@ def signal_start_distiller(algorithm):
         print("[1] creating celery task")
         # info = { "uuid": unique_id }
         uuid = request.form.get("uuid")
+        print("uuid is", uuid)
         print("start task for algoritm", algorithm)
         task = run_algorithm.delay({"uuid": uuid, "algorithm": algorithm})
 

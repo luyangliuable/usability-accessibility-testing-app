@@ -48,6 +48,7 @@ def run_algorithm(info={}):
 
     try:
         print("Running " + str( algorithm_name ) + " url: "+ str( URL ))
+        print("Algorithm cluster uuid is", uuid)
         time.sleep(3);
         # result = requests.post(URL, json={ "uid": uuid })
     except Exception as ex:

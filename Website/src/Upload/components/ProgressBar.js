@@ -20,19 +20,15 @@ const ProgressBar = (props) => {
   const update = (newMessage, percentage) => {
     fade({ opacity: 1, delay: 500 });
     updateMessage(newMessage);
-    animate({ width: percentage + "%", delay: 500 });
+    animate({ width: ( percentage <= 100 ? percentage : 100 ) + "%", delay: 500 });
+
     fade({ opacity: 0, delay: 1000 });
   };
 
   useEffect(() => {
     setTimeout(() => {
-      update("Ready to begin", props.progress);
+      update(props.message, props.progress);
     }, 10);
-
-    // setTimeout(() => {
-    //   update("xbot is done", 60);
-    // }, 2300);
-
   }, [props.progress]);
 
   return (

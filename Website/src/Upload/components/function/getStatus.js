@@ -21,9 +21,9 @@ export function getStatus(task_url, task_id, objectState, setObjectState, i, for
       const taskStatus = res.task_status;
 
       if (taskStatus === 'SUCCESS') {
+        const newProgressBarMessage = objectState.algorithmsToComplete[i] + " is done!";
         i++;
         callback(i, formData);
-        console.log(objectState.algorithmsToComplete[i] + " is done!");
 
         setObjectState(prev => {
           return {
@@ -31,6 +31,7 @@ export function getStatus(task_url, task_id, objectState, setObjectState, i, for
             algorithmsComplete: prev.algorithmsComplete + 1,
             buttonState: false,
             buttonValue: "Upload again",
+            progressBarMessage: newProgressBarMessage
           };
         });
 

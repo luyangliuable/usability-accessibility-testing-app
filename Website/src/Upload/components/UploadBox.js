@@ -5,14 +5,15 @@ import ProgressBar from './ProgressBar';
 
 import "./ResultBox.css";
 
-const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCurrentAppStatus }) => {
+const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCurrentAppStatus, algorithsToComplete }) => {
 
   const [objectState, setObjectState] = useState({
     buttonState: false,
     buttonValue: "Upload File",
     selectedFile: null,
     algorithmsComplete: 0,
-    algorithmsToComplete: ['storydistiller', 'xbot', 'owleye'],
+    algorithmsToComplete: typeof algorithsToComplete != 'undefined' ? algorithsToComplete : ['storydistiller', 'xbot', 'owleye'],
+    progressBarMessage: "Ready To Begin"
   });
 
   //eslint-disable-next-line
@@ -50,7 +51,7 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
         <div className="result-vspacing-10"> </div>
 
         <div className="result-box-full-width">
-          <p className="result-box-text-30">{objectState.selectedFile ? objectState.selectedFile.name : 'Drop APK or MP4 here'}</p>
+          <p className="result-box-text-30">{objectState.selectedFile ? objectState.selectedFile.name : 'Drop APK or GIF files here'}</p>
         </div>
 
         <div className="result-box-full-width">
@@ -68,11 +69,11 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
             className={objectState.buttonState ? "result-box-view-button result-button-disabled" : "result-box-view-button result-button-enabled"}
             disabled={objectState.buttonState}>{objectState.buttonValue}
           </button>
-          <ProgressBar progress={objectState.algorithmsComplete*100 / objectState.algorithmsToComplete.length } style={{ mariginTop: "100px" }} />
+          <ProgressBar message={objectState.progressBarMessage} progress={objectState.algorithmsComplete*100 / objectState.algorithmsToComplete.length } style={{ mariginTop: "100px" }} />
         </div>
       </div>
     </div>
   );
-}
+};
 
 export default UploadBox;

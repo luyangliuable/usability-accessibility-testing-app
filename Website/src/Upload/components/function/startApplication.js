@@ -18,8 +18,7 @@ export const startApplication = async (objectState, setObjectState, acceptedFile
   console.log("[1] upload start.");
 
   function postData(i, formData) {
-    console.log(i, formData);
-    console.log(objectState);
+    // console.log(objectState);
     fetch(signalStartUrl + objectState.algorithmsToComplete[i], {
       method: 'POST',
       body: formData,
@@ -28,24 +27,7 @@ export const startApplication = async (objectState, setObjectState, acceptedFile
       if (i < objectState.algorithmsToComplete.length) {
         getStatus(task_url, data.task_id, objectState, setObjectState, i, formData, postData);
       }
-
-      // setObjectState(prev => {
-      //   return {
-      //     algorithmsComplete: 10,
-      //     complete: prev.complete + 1,
-      //     algorithmsComplete: [
-      //       ...prev.algorithmsComplete,
-      //       algorithmsToComplete[i],
-      //     ]
-      //   };
-
-      // });
-
-
     });
-
-
-
   };
 
   acceptedFiles.forEach(file => {
@@ -63,16 +45,21 @@ export const startApplication = async (objectState, setObjectState, acceptedFile
       formData.append("filename", file.name);
 
       console.log(`Sending ${file.path} to server.`);
-
-
       /////////////////////////////////////////////////////////////////////////
       //                     Call API run storydistiller                     //
       /////////////////////////////////////////////////////////////////////////
 
       uploadApk(formData, apkUploadUrl).then(response => {
+
+        // Append uuid for the uploaded files ///////////////////////////////
         formData.append("uuid", response.uuid);
+
+        // Stop the algorithm when i reaches the length of algorithms to run //
         let i = 0;
+
+        // Post the data for running the algorithm //////////////////////////
         postData(i, formData);
+
       });
     });
   });

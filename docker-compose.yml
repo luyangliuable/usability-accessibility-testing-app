@@ -38,6 +38,8 @@ services:
       - "3001:3001"
     environment:
       - API_URL=flask_backend:5005
+      - TASK_URL=http://localhost:5005/task
+      - APK_UPLOAD_URL=http://localhost:5005/upload
     container_name: bxer.react-ui
     stdin_open: true
     volumes:

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
-from tasks import create_task, celery
+from tasks import create_task, run_storydistiller, celery
 import datetime
 import boto3
 import json
@@ -133,14 +133,24 @@ def upload():
         data["apk"].append({"type": "apk", "name": file_key, "notes": apk_file_note});
         mongo.insert_document(data, mongo.get_database()["apk"])
 
-        print("[4] creating celery task")
-        info = { "uuid": unique_id }
-        task = create_task.delay(info)
-
         print("[5] return celery task id and file key")
-        return json.dumps({"file_key": str( file_key ), "task_id": task.id}), 200
+        return json.dumps({"file_key": str( file_key ), "uuid": unique_id}), 200
 
     return json.dumps({"message": "failed to upload"}), 400
+
+
+@upload_blueprint.route('/storydistiller', methods=["GET", "POST"])
+@cross_origin()
+def storydistiller():
+    if request.method == "POST":
+        print("[1] creating celery task")
+        # info = { "uuid": unique_id }
+        uuid = request.form.get("uuid")
+        task = run_storydistiller.delay({"uuid": uuid})
+
+        return json.dumps({"task_id": task.id, "results": ["TODO"]}), 200
+
+    return json.dumps({"message": "failed to start storydistiller task"}), 400
 
 
 @upload_blueprint.route('/upload/health')
@@ -165,6 +175,8 @@ def get_status(task_id):
     return jsonify(result), 200
 
 
+
+
 @upload_blueprint.after_request
 def after_request(response):
     """
@@ -174,15 +186,7 @@ def after_request(response):
     header['Access-Control-Allow-Origin'] = '*'
     header['Access-Control-Allow-Headers'] = '*'
     header['Access-Control-Allow-Methods'] = '*'
-    # response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,timeout')
-    # Other headers can be added here if needed
-    # response.headers.add('Access-Control-Allow-Origin', '*')
-    # response.headers.add('access-control-allow-headers', 'Content-Type')
-    # response.headers.add('access-control-allow-headers', 'authorization')
-    # response.headers.add('Access-Control-Allow-Methods', 'POST')
     return response
-
-
 
 
 def enforce_bucket_existance(buckets):

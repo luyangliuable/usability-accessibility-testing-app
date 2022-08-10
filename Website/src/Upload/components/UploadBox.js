@@ -21,8 +21,11 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
     console.log("The current app status is " + currentAppStatus);
   }, [currentAppStatus, resultFiles]);
 
+  // const task_url = process.env.TASK_URL;
   const task_url = "http://localhost:5005/task";
+  // const apk_upload_url = process.env.APK_UPLOAD_URL;
   const apk_upload_url = "http://localhost:5005/upload";
+  const run_storydistiller_url = "http://localhost:5005/storydistiller";
 
   const getStatus = (taskID) => {
     fetch(`${task_url}/${taskID}`, {
@@ -52,7 +55,25 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
         setTimeout(function() {
           getStatus(res.task_id);
         }, 1000);
-      }).catch(err => console.log(( err )));
+      }).catch(err => console.log((err)));
+  };
+
+  const uploadApk = async (formData) => {
+
+    const response = await fetch(apk_upload_url, {
+      method: 'POST',
+      body: formData,
+    });
+
+    return response.json();
+
+    //   .then(response => response.json()).then(data => {
+    //   console.log("Upload Done");
+    //   console.log(data);
+    //   uuid = data.uuid;
+    //   return data;
+    // });
+    // formData.append("uuid", uuid);
   };
 
   const onDropAccepted = useCallback(acceptedFiles => {
@@ -61,49 +82,42 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
     setSelectedFile(acceptedFiles[0]);
 
     acceptedFiles.forEach(file => {
-      console.log(JSON.stringify(file));
-    });
 
-    var formData = new FormData();
+      // Declare form data ////////////////////////////////////////////////////
+      var formData = new FormData();
+
+      acceptedFiles.forEach(file => {
+        /////////////////////////////////////////////////////////////////////////
+        //              Upload apk file to s3 bucket and set uuid              //
+        /////////////////////////////////////////////////////////////////////////
+
+        let uuid;
+        formData.append("file", file);
+        formData.append("filename", file.name);
+
+        console.log(`Sending ${file.path} to server.`);
 
 
-    acceptedFiles.forEach(file => {
-      // formData.append("file", file);
-      formData.append("file", file);
-      formData.append("filename", file.name);
-      // formData.append("content", file);
-      // console.log(typeof(file));
-      // console.log(file);
-      // console.log(formData);
-      console.log(`Sending ${file.path} to server.`);
-      fetch(apk_upload_url, {
-        method: 'POST',
-        body: formData,
-        // body: { content: file, name: file.path },
-      }).then(response => response.json()).then(data => {
+        /////////////////////////////////////////////////////////////////////////
+        //                     Call API run storydistiller                     //
+        /////////////////////////////////////////////////////////////////////////
 
-        console.log("done");
+        uploadApk(formData).then(response => {
+          formData.append("uuid", response.uuid);
+          fetch(run_storydistiller_url, {
+            method: 'POST',
+            body: formData,
+          }).then(response => response.json()).then(data => {
+            console.log(data.task_id);
 
-        ///////////////////////////////////////////////////////////////
-        //          Update and save the task_id for backend          //
-        ///////////////////////////////////////////////////////////////
-        setTaskId(prev => {
-          return [...prev, data['task_id']];
+            // setButtonState(false);
+            const status = "getting results";
+            setButtonValue(status);
+            updateCurrentAppStatus(status);
+
+            getStatus(data.task_id);
+          });
         });
-
-        console.log(data['task_id']);
-
-        ///////////////////////////////////////////////////////////////
-        //                       Restore button                      //
-        ///////////////////////////////////////////////////////////////
-
-        // setButtonState(false);
-        const status = "getting results";
-        setButtonValue(status);
-        updateCurrentAppStatus(status);
-
-        console.log("getting status");
-        getStatus(data['task_id']);
       });
     });
 
@@ -154,4 +168,4 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
   );
 }
 
-export default UploadBox
+export default UploadBox;

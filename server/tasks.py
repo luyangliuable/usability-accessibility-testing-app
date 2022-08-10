@@ -29,30 +29,29 @@ def run_algorithm(info={}):
 
     # xbot api url to be obtained from the enrionemtn ##########################
     xbot_api = os.environ.get("XBOT")
-    # xbot_api = "http://host.docker.internal:3003/new_job"
+    xbot_api = "http://host.docker.internal:3003/new_job"
 
     # xbot api url to be obtained from the enrionemtn ##########################
     owleye_api = os.environ.get("OWLEYE")
-    # owleye_api = "http://host.docker.internal:3004/new_job"
+    owleye_api = "http://host.docker.internal:3004/new_job"
 
     start_links = {
         "storydistiller": story_distiller_api,
-        "xbotapi": xbot_api,
+        "xbot": xbot_api,
         "owleye": owleye_api,
     }
 
-
-    algorithms = [algorithm for algorithm in start_links.keys()]
-    links = [link for link in start_links.values()]
+    # algorithms = [algorithm for algorithm in start_links.keys()]
+    # links = [link for link in start_links.values()]
 
     URL = start_links[algorithm_name]
 
     try:
-        print("[1] Running " + str( algorithm_name ) + "url: "+ str( URL ))
-        result = requests.post(URL, json={ "uid": uuid })
-        # time.sleep(3);
+        print("Running " + str( algorithm_name ) + " url: "+ str( URL ))
+        time.sleep(3);
+        # result = requests.post(URL, json={ "uid": uuid })
     except Exception as ex:
-        print('failed to complete tasks', algorithm, " with url", URL, "because", ex)
+        print('failed to complete tasks', algorithm_name, " with url", URL, "because", ex)
         errors.append(ex)
     else:
         print("Successfully connected completed tasks", algorithm_name)

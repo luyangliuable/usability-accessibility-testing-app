@@ -84,7 +84,7 @@ def upload():
         temp_file_name = os.path.join(temp_dir, unique_id)
         with open(temp_file_name, "wb") as savefile:
             savefile.write(request.files.get('file').read())
-        savefile.close()
+            savefile.close()
 
         print(temp_file_name, "is created")
 
@@ -146,9 +146,10 @@ def signal_start_distiller(algorithm):
         print("[1] creating celery task")
         # info = { "uuid": unique_id }
         uuid = request.form.get("uuid")
+        print("start task for algoritm", algorithm)
         task = run_algorithm.delay({"uuid": uuid, "algorithm": algorithm})
 
-        return json.dumps({"task_id": task.id, "results": ["TODO"]}), 200
+        return json.dumps({"task_id": task.id, "task_for_algorithm": "algorithm"}), 200
 
     return json.dumps({"message": "failed to start storydistiller task"}), 400
 

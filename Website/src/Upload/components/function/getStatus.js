@@ -1,33 +1,45 @@
-export const getStatus = (task_url, task_id, objectState, setObjectState ) => {
-  fetch(`${task_url}/${task_id}`, {
+export function getStatus(task_url, task_id, objectState, setObjectState, i, formData, callback, algorithmsToComplete) {
+
+  /////////////////////////////////////////////////////////////////////////////
+  //                          Create fetch response                          //
+  /////////////////////////////////////////////////////////////////////////////
+  const response = fetch(`${task_url}/${task_id}`, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
     },
-  })
-    .then(response => response.json())
+  });
+
+
+  /////////////////////////////////////////////////////////////////////////////
+  //                       Get task status from reponse                      //
+  /////////////////////////////////////////////////////////////////////////////
+
+  const res = response.then(response => response.json())
     .then(res => {
-      console.log(res);
 
       const taskStatus = res.task_status;
 
       if (taskStatus === 'SUCCESS') {
-        setObjectState((prev) => {
+        i++;
+        callback(i, formData);
+        console.log(objectState.algorithmsToComplete[i] + " is done!");
+
+        setObjectState(prev => {
           return {
-          ...prev,
-          buttonState: false,
-          buttonValue: "Upload again",
+            ...prev,
+            algorithmsComplete: prev.algorithmsComplete + 1,
+            buttonState: false,
+            buttonValue: "Upload again",
           };
         });
 
-        // setButtonState(false);
-        // setButtonValue("Upload again");
-        // updateCurrentAppStatus("RESULTS READY");
         return res;
       } else if (taskStatus === 'FAILURE') {
         setObjectState((prev) => {
           return {
             ...prev,
+            algorithmsComplete: objectState.algorithmsComplete + 1,
             buttonState: false,
             buttonValue: "Upload again",
           };
@@ -37,10 +49,14 @@ export const getStatus = (task_url, task_id, objectState, setObjectState ) => {
         return false;
       };
 
-      console.log();
+      /////////////////////////////////////////////////////////////////////////
+      //            Poll for backend status every 1000 milisecond            //
+      /////////////////////////////////////////////////////////////////////////
       setTimeout(function() {
-        getStatus(task_url, task_id, objectState, setObjectState);
+        getStatus(task_url, task_id, objectState, setObjectState, i, formData, callback, algorithmsToComplete);
       }, 1000);
+    });
 
-    }).catch(err => console.log((err)));
+
+  res.catch(err => console.log((err)));
 };

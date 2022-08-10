@@ -8,7 +8,7 @@ const ProgressBar = (props) => {
 
   const [progress, animate] = useSpring(() => ({
     config: { duration: 800 },
-    width: 10 + "%",
+    width: 0 + "%",
   }));
 
   const [textOp, fade] = useSpring(() => ({
@@ -26,12 +26,12 @@ const ProgressBar = (props) => {
 
   useEffect(() => {
     setTimeout(() => {
-      update("Storydistiller is done", 30);
+      update("Ready to begin", props.progress);
     }, 10);
 
-    setTimeout(() => {
-      update("xbot is done", 60);
-    }, 2300);
+    // setTimeout(() => {
+    //   update("xbot is done", 60);
+    // }, 2300);
 
   }, [props.progress]);
 
@@ -45,6 +45,6 @@ const ProgressBar = (props) => {
       <animated.p style={{ ...textOp,}}>{progressMessage}</animated.p>
     </>
   );
-}
+};
 
 export default ProgressBar;

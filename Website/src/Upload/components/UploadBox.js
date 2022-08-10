@@ -1,47 +1,40 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { startApplication } from './function/start_application';
+import { startApplication } from './function/startApplication';
 import ProgressBar from './ProgressBar';
 
 import "./ResultBox.css";
 
 const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCurrentAppStatus }) => {
-  // const [buttonState, setButtonState] = useState(false);
-  // const [buttonValue, setButtonValue] = useState("Upload File");
-  // const [selectedFile, setSelectedFile] = useState(null);
 
   const [objectState, setObjectState] = useState({
     buttonState: false,
     buttonValue: "Upload File",
     selectedFile: null,
+    algorithmsComplete: 0,
+    algorithmsToComplete: ['storydistiller', 'xbot', 'owleye'],
   });
 
   //eslint-disable-next-line
   const canAccept = (file) => {
-    return ['apk'];
+    return ['.apk'];
   };
 
-  const [algorithmstatus, updateAlgorithmStatus] = useState({
-    totalAlgorithms: 3, // TODO this is hardcoded
-    complete: 0,
-    algorithmsComplete: [],
-  });
-
-
   useEffect(() => {
-    console.log("The current stored result files are" + resultFiles);
-    console.log("The current app status is " + currentAppStatus);
-  }, [currentAppStatus, resultFiles]);
+    // console.log("The current stored result files are" + resultFiles);
+    // console.log("The current app status is " + currentAppStatus);
+    // console.log(objectState);
+  }, [currentAppStatus, resultFiles, objectState]);
 
   const onDropAccepted = useCallback(acceptedFiles => {
-    startApplication(objectState, setObjectState, acceptedFiles, algorithmstatus, updateAlgorithmStatus);
+    startApplication(objectState, setObjectState, acceptedFiles);
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({
     onDropAccepted: onDropAccepted,
     maxFiles: 1,
     disabled: objectState.buttonState,
-    // validator: canAccept
+    // validator: canAccept,
   });
 
   return (
@@ -69,13 +62,13 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
           </div>
         </div>
 
-        <div className="result-box-full-width" style={{display: "flexbox", flexDirection:"column", justifyContent: "center", alignItems:"center"}}>
+        <div className="result-box-full-width" style={{ display: "flexbox", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
           {/* TODO functional button */}
           <button
             className={objectState.buttonState ? "result-box-view-button result-button-disabled" : "result-box-view-button result-button-enabled"}
             disabled={objectState.buttonState}>{objectState.buttonValue}
           </button>
-          <ProgressBar style={{mariginTop: "100px"}}/>
+          <ProgressBar progress={objectState.algorithmsComplete*100 / objectState.algorithmsToComplete.length } style={{ mariginTop: "100px" }} />
         </div>
       </div>
     </div>

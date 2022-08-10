@@ -13,23 +13,23 @@ import Button from "../components/button";
 // export default class Upload extends Component {
 
 const Upload = () => {
-    const [resultFiles, updateResultFiles] = useState(["./dir_to_file/example_result_file.jpeg"]);
-    const [currentAppStatus, updateCurrentAppStatus] = useState("READY");
-    var reports = [];  /* TODO link to backend */
-    return (
-        <Container className='container-nav'>
-            <div className="upload-root">
+  const [resultFiles, updateResultFiles] = useState(["./dir_to_file/example_result_file.jpeg"]);
+  const [currentAppStatus, updateCurrentAppStatus] = useState("READY");
+  var reports = [];  /* TODO link to backend */
+  return (
+    <Container className='container-nav'>
+      <div className="upload-root">
 
-                <p className="upload-text-60 upload-text-center">UPLOAD YOUR APK</p>
-                <p className="upload-text-30 upload-text-center">Upload your APK files to evaluated for bugs</p>
+        <p className="upload-text-60 upload-text-center">UPLOAD YOUR APK</p>
+        <p className="upload-text-30 upload-text-center">Upload your APK files to evaluated for bugs</p>
 
-                <div className="upload-vspacing-40"> </div>
+        <div className="upload-vspacing-40"> </div>
 
-                <div className="upload-div-group-white">
-                    <div className="upload-cover-box">
-                        <UploadBox resultFiles={resultFiles} updateResultFiles={updateResultFiles} currentAppStatus={currentAppStatus} updateCurrentAppStatus={updateCurrentAppStatus} />
-                    </div>
-                    {/*
+        <div className="upload-div-group-white">
+          <div className="upload-cover-box">
+            <UploadBox resultFiles={resultFiles} updateResultFiles={updateResultFiles} currentAppStatus={currentAppStatus} updateCurrentAppStatus={updateCurrentAppStatus} />
+          </div>
+          {/*
                     <div className="upload-div-vcenter">
                         { /* https://icons.getbootstrap.com/icons/three-dots-vertical/
                         <svg xmlns="http://www.w3.org/2000/svg" width="128px" height="128px" fill="#828282" transform="rotate(90 0 0)" viewBox="0 0 16 16">
@@ -40,19 +40,19 @@ const Upload = () => {
                     <div className="upload-align-right">
                         <ResultBox className="upload-align-right" resultFiles={resultFiles} updateResultFiles={updateResultFiles} currentAppStatus={currentAppStatus} updateCurrentAppStatus={updateCurrentAppStatus} />
                     </div>*/}
-                </div>
+        </div>
 
-                <div className="next-button-align-right">
-                    <Button style={{ marginTop: "15px" }}>
-                        <Link to={"./selectalgorithm"}>
-                            <h3>NEXT</h3>
-                        </Link>
-                    </Button>
-                </div>
+        <div className="next-button-align-right">
+          <Link to={"./selectalgorithm"}>
+            <Button style={{ marginTop: "15px" }}>
+              <h3>NEXT</h3>
+            </Button>
+          </Link>
+        </div>
 
-                <div className="upload-vspacing-40"> </div>
+        <div className="upload-vspacing-40"> </div>
 
-                {/*
+        {/*
                 <div className="upload-div-group-white">
                     <p className="upload-text-48 upload-text-dark upload-full-width">RESULTS INCLUDE</p>
 
@@ -85,9 +85,9 @@ const Upload = () => {
                         <p className="upload-text-30 upload-full-width">There are no bug reports to display.</p>
                     </div>*/}
 
-            </div>
-        </Container>
-    );
+      </div>
+    </Container>
+  );
 }
 
 export default Upload;

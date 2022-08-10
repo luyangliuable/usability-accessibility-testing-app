@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
-from tasks import create_task, run_storydistiller, celery
+from tasks import create_task, run_algorithm, celery
 import datetime
 import boto3
 import json
@@ -139,14 +139,14 @@ def upload():
     return json.dumps({"message": "failed to upload"}), 400
 
 
-@upload_blueprint.route('/storydistiller', methods=["GET", "POST"])
+@upload_blueprint.route('/signal_start', methods=["GET", "POST"])
 @cross_origin()
-def storydistiller():
+def signal_start():
     if request.method == "POST":
         print("[1] creating celery task")
         # info = { "uuid": unique_id }
         uuid = request.form.get("uuid")
-        task = run_storydistiller.delay({"uuid": uuid})
+        task = run_algorithm.delay({"uuid": uuid})
 
         return json.dumps({"task_id": task.id, "results": ["TODO"]}), 200
 

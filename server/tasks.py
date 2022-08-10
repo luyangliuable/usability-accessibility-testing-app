@@ -12,29 +12,51 @@ celery.conf.result_backend = os.environ['REDIS_URL']
 
 
 
-@celery.task(name="run_storydistiller")
-def run_storydistiller(info={}):
+@celery.task(name="run_algorithm")
+def run_algorithm(info={}):
     ###############################################################################
     #                                Storydistiller                               #
     ###############################################################################
     errors = []
     uuid = info["uuid"]
 
+    # algorithm_name = info['algorithm']
+
+
     # Story distiller api url to be obtained from the enrionemtn ###############
     story_distiller_api = os.environ.get("STORYDISTILLER")
     story_distiller_api = "http://host.docker.internal:3002/new_job"
 
-    try:
-        algorithm = "storydistiller"
-        print("[1] Running Storydistiller")
-        result = requests.post(story_distiller_api, json={ "uid": uuid })
-        # time.sleep(3);
-    except Exception as ex:
-        print('failed to complete tasks', algorithm, "with url", story_distiller_api, "because", ex)
-        errors.append(ex)
-    else:
-        print("Successfully connected completed tasks", algorithm)
-        state = {"task_id": "", "task_status": ['distiller'], "task_result": ""}
+    # xbot api url to be obtained from the enrionemtn ##########################
+    xbot_api = os.environ.get("XBOT")
+    # xbot_api = "http://host.docker.internal:3003/new_job"
+
+    # xbot api url to be obtained from the enrionemtn ##########################
+    owleye_api = os.environ.get("OWLEYE")
+    # owleye_api = "http://host.docker.internal:3004/new_job"
+
+    start_links = {
+        "story_distiller_api": story_distiller_api,
+        "xbot_api": xbot_api,
+        "owleye_api": owleye_api,
+    }
+
+
+    algorithms = [algorithm for algorithm in start_links.keys()]
+    links = [link for link in start_links.values()]
+    print(links)
+
+    for algorithm, URL in zip(algorithms, links):
+        try:
+            print("[1] Running " + str( algorithm ) + "url: "+ str( URL ))
+            result = requests.post(URL, json={ "uid": uuid })
+            # time.sleep(3);
+        except Exception as ex:
+            print('failed to complete tasks', algorithm, " with url", URL, "because", ex)
+            errors.append(ex)
+        else:
+            print("Successfully connected completed tasks", algorithm)
+            state = {"task_id": "", "task_status": ['distiller'], "task_result": ""}
 
     result = {"files": ["file_url_placeholder"], "images": ["image_url_placeholder"], "errors": str( errors ) }
 
@@ -47,14 +69,6 @@ def create_task(info):
     print("Now inside celery....")
 
     # TODO signal all algorithms to start.
-
-    # xbot api url to be obtained from the enrionemtn ##########################
-    xbot_api = os.environ.get("XBOT")
-    # xbot_api = "http://host.docker.internal:3003/new_job"
-
-    # xbot api url to be obtained from the enrionemtn ##########################
-    owleye_api = os.environ.get("OWLEYE")
-    # owleye_api = "http://host.docker.internal:3004/new_job"
 
     ###############################################################################
     #                               Obtain task uuid                              #

@@ -25,7 +25,7 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
   const task_url = "http://localhost:5005/task";
   // const apk_upload_url = process.env.APK_UPLOAD_URL;
   const apk_upload_url = "http://localhost:5005/upload";
-  const run_storydistiller_url = "http://localhost:5005/storydistiller";
+  const run_storydistiller_url = "http://localhost:5005/signal_start";
 
   const getStatus = (taskID) => {
     fetch(`${task_url}/${taskID}`, {

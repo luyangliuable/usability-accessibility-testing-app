@@ -2,11 +2,10 @@ import numpy as np
 import torch
 from configparser import ConfigParser
 from skimage import io, transform
-from skimage.io import imshow
 from model import ResNet, Block
+from heatmap import Heatmap
 import os
 import matplotlib.pyplot as plt
-from PIL import Image
 
 class ModelPipeline:
 
@@ -15,6 +14,7 @@ class ModelPipeline:
         self.bounds = self.updateArray(bounds)
         self.img = self.getImage()
         self.model_path = model
+        self.prediction = None 
 
     #Gets stored image [TODO: update to get image from s3 bucket]
     def getImage(self):
@@ -80,7 +80,7 @@ class ModelPipeline:
             _, indices = torch.sort(predictions, descending=True)
             print([(labels[idx], percentage[idx].item()) for idx in indices[0][:5]])
             _, index = torch.max(predictions, 1) 
-            return str(round(percentage[index[0]].item(),2)) + "%; rated " + labels[index[0]]
+            return str(round(percentage[index[0]].item(),2)) + "%; rated " + labels[index[0]],index[0]
 
     def showImage(self, pred_str):
         fig = plt.figure()
@@ -110,5 +110,9 @@ if __name__ == '__main__':
     model_path = config.get('main', 'model')
 
     prediction = ModelPipeline(img_path, bounds_array,model_path)
-    prediction_str = prediction.modelPipeline()
-    prediction.showImage(prediction_str)
+    prediction_str, pred_val = prediction.modelPipeline()
+    fig = prediction.showImage(prediction_str)
+
+    #Heatmap
+    heatmap = Heatmap(model_path)
+    heatmap.createHeatmap(img_path,pred_val,bounds_array,object_array=None)

@@ -1,5 +1,7 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
+import { getStatus } from './function/run_algorithms';
+import ProgressBar from './ProgressBar.js';
 
 import "./ResultBox.css";
 
@@ -25,38 +27,7 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
   const task_url = "http://localhost:5005/task";
   // const apk_upload_url = process.env.APK_UPLOAD_URL;
   const apk_upload_url = "http://localhost:5005/upload";
-  const run_storydistiller_url = "http://localhost:5005/signal_start";
-
-  const getStatus = (taskID) => {
-    fetch(`${task_url}/${taskID}`, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-    })
-      .then(response => response.json())
-      .then(res => {
-        console.log(res);
-
-        const taskStatus = res.task_status;
-
-        if (taskStatus === 'SUCCESS') {
-          setButtonState(false);
-          setButtonValue("Upload again");
-          updateCurrentAppStatus("RESULTS READY");
-          return true;
-        } else if (taskStatus === 'FAILURE') {
-          setButtonState(false);
-          setButtonValue("Upload again");
-          updateCurrentAppStatus("TASK FAILED");
-          return false;
-        };
-
-        setTimeout(function() {
-          getStatus(res.task_id);
-        }, 1000);
-      }).catch(err => console.log((err)));
-  };
+  const run_storydistiller_url = "http://localhost:5005/signal_start/storydistiller";
 
   const uploadApk = async (formData) => {
 
@@ -66,14 +37,6 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
     });
 
     return response.json();
-
-    //   .then(response => response.json()).then(data => {
-    //   console.log("Upload Done");
-    //   console.log(data);
-    //   uuid = data.uuid;
-    //   return data;
-    // });
-    // formData.append("uuid", uuid);
   };
 
   const onDropAccepted = useCallback(acceptedFiles => {
@@ -109,13 +72,12 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
             body: formData,
           }).then(response => response.json()).then(data => {
             console.log(data.task_id);
-
             // setButtonState(false);
             const status = "getting results";
             setButtonValue(status);
             updateCurrentAppStatus(status);
 
-            getStatus(data.task_id);
+            getStatus(task_url, data.task_id, setButtonState, setButtonValue, updateCurrentAppStatus);
           });
         });
       });
@@ -151,17 +113,17 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
             {/* TODO actual progess bar */}
             <div className="result-box-line result-box-left" />
             <div className="result-box-line result-box-right" />
-
             <p className="result-box-text-20 result-text-center">or</p>
           </div>
         </div>
 
-        <div className="result-box-full-width">
+        <div className="result-box-full-width" style={{display: "flexbox", flexDirection:"column", justifyContent: "center", alignItems:"center"}}>
           {/* TODO functional button */}
           <button
             className={buttonState ? "result-box-view-button result-button-disabled" : "result-box-view-button result-button-enabled"}
             disabled={buttonState}>{buttonValue}
           </button>
+          <ProgressBar style={{mariginTop: "100px"}}/>
         </div>
       </div>
     </div>

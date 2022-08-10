@@ -139,18 +139,19 @@ def upload():
     return json.dumps({"message": "failed to upload"}), 400
 
 
-@upload_blueprint.route('/signal_start', methods=["GET", "POST"])
+@upload_blueprint.route('/signal_start/<algorithm>', methods=["GET", "POST"])
 @cross_origin()
-def signal_start():
+def signal_start_distiller(algorithm):
     if request.method == "POST":
         print("[1] creating celery task")
         # info = { "uuid": unique_id }
         uuid = request.form.get("uuid")
-        task = run_algorithm.delay({"uuid": uuid})
+        task = run_algorithm.delay({"uuid": uuid, "algorithm": algorithm})
 
         return json.dumps({"task_id": task.id, "results": ["TODO"]}), 200
 
     return json.dumps({"message": "failed to start storydistiller task"}), 400
+
 
 
 @upload_blueprint.route('/upload/health')
@@ -175,8 +176,6 @@ def get_status(task_id):
     return jsonify(result), 200
 
 
-
-
 @upload_blueprint.after_request
 def after_request(response):
     """
@@ -195,8 +194,6 @@ def enforce_bucket_existance(buckets):
             s3_client.create_bucket(Bucket=bucket, CreateBucketConfiguration={'LocationConstraint': 'us-west-2'})
         except:
             print("Bucket already exists %s".format( bucket ))
-
-
 
 
 if __name__ == "__main__":

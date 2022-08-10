@@ -20,7 +20,7 @@ def run_algorithm(info={}):
     errors = []
     uuid = info["uuid"]
 
-    # algorithm_name = info['algorithm']
+    algorithm_name = info['algorithm']
 
 
     # Story distiller api url to be obtained from the enrionemtn ###############
@@ -36,27 +36,29 @@ def run_algorithm(info={}):
     # owleye_api = "http://host.docker.internal:3004/new_job"
 
     start_links = {
-        "story_distiller_api": story_distiller_api,
-        "xbot_api": xbot_api,
-        "owleye_api": owleye_api,
+        "storydistiller": story_distiller_api,
+        "xbotapi": xbot_api,
+        "owleye": owleye_api,
     }
 
 
     algorithms = [algorithm for algorithm in start_links.keys()]
     links = [link for link in start_links.values()]
-    print(links)
 
-    for algorithm, URL in zip(algorithms, links):
-        try:
-            print("[1] Running " + str( algorithm ) + "url: "+ str( URL ))
-            result = requests.post(URL, json={ "uid": uuid })
-            # time.sleep(3);
-        except Exception as ex:
-            print('failed to complete tasks', algorithm, " with url", URL, "because", ex)
-            errors.append(ex)
-        else:
-            print("Successfully connected completed tasks", algorithm)
-            state = {"task_id": "", "task_status": ['distiller'], "task_result": ""}
+    URL = start_links[algorithm_name]
+
+    try:
+        print("[1] Running " + str( algorithm_name ) + "url: "+ str( URL ))
+        result = requests.post(URL, json={ "uid": uuid })
+        # time.sleep(3);
+    except Exception as ex:
+        print('failed to complete tasks', algorithm, " with url", URL, "because", ex)
+        errors.append(ex)
+    else:
+        print("Successfully connected completed tasks", algorithm_name)
+        state = {"task_id": "", "task_status": ['distiller'], "task_result": ""}
+
+    # for algorithm, URL in zip(algorithms, links):
 
     result = {"files": ["file_url_placeholder"], "images": ["image_url_placeholder"], "errors": str( errors ) }
 

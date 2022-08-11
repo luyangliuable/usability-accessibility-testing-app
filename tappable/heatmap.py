@@ -55,7 +55,7 @@ class Heatmap:
         binary_mask = np.zeros(shape=(width, height))
         x_ratio_min = bounds[0]/width
         x_ratio_max = bounds[2]/width
-        y_ratio_min =bounds[1]/height
+        y_ratio_min = bounds[1]/height
         y_ratio_max = bounds[3]/height
             
         for x in range(width):

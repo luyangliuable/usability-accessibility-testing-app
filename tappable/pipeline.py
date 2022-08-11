@@ -111,7 +111,7 @@ if __name__ == '__main__':
 
     prediction = ModelPipeline(img_path, bounds_array,model_path)
     prediction_str, pred_val = prediction.modelPipeline()
-    fig = prediction.showImage(prediction_str)
+    prediction.showImage(prediction_str)
 
     #Heatmap
     heatmap = Heatmap(model_path)

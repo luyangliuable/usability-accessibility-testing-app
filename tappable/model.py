@@ -1,5 +1,6 @@
 import torch.nn as nn
 
+#resnet18 cnn model 
 class Block(nn.Module):
     def __init__(self, num_layers, in_channels, out_channels, identity_downsample=None, stride=1):
         super(Block, self).__init__()
@@ -26,6 +27,7 @@ class Block(nn.Module):
         x += identity
         x = self.relu(x)
         return x
+
 
 class ResNet(nn.Module):
     def __init__(self, num_layers, block, image_channels, num_classes):
@@ -66,7 +68,7 @@ class ResNet(nn.Module):
     def make_layers(self, num_layers, block, num_residual_blocks, intermediate_channels, stride):
         layers = []
 
-        identity_downsample = nn.Sequential(nn.Conv2d(self.in_channels, intermediate_channels*self.expansion, kernel_size=1, stride=stride),
+        identity_downsample = nn.Sequential(nn.Conv2d(self.in_channels, intermediate_channels*self.expansion, kernel_size=1, stride=stride, bias=False),
                                             nn.BatchNorm2d(intermediate_channels*self.expansion))
         layers.append(block(num_layers, self.in_channels, intermediate_channels, identity_downsample, stride))
         self.in_channels = intermediate_channels * self.expansion

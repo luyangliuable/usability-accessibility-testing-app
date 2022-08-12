@@ -1,37 +1,35 @@
-import React, { Component } from 'react'
-import { Container } from "react-bootstrap";
+import React, { useState } from 'react'
 
 import "./Results.css"
 
 import ReportsTable from "../Results/components/ReportsTable"
 
-export default class Results extends Component {
-  render() {
+// export default class Results extends Component {
+const Results = () => {
+
     /* TODO link to backend */
-    var reports = [["test_file.apk",  "100 Mb", "21/04/22", "https://ourwebsite.com.au/results/dummyid1"],
-                   ["test_file2.apk", "150 Mb", "21/04/22", "https://ourwebsite.com.au/results/dummyid2"],
-                   ["test_file3.apk", "60 Mb",  "20/04/22", "https://ourwebsite.com.au/results/dummyid3"]]  
+    const [reports, updateReport] = useState([
+        { "image": "", "issues": ["Lorem ipsum dolor sit amet, consectetuer adipiscing elit.  Donec hendrerit tempor tellus.  Donec pretium posuere tellus.  Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.  Nulla posuere.  Donec vitae dolor.  Nullam tristique diam non turpis.  Cras placerat accumsan nulla.  Nullam rutrum.  Nam vestibulum accumsan nisl. "], "app": "xbot" },]);
+
+    const [images, updateImages] = useState([
+        ["test_file.apk", "100 mb", "21/04/22", "https://ourwebsite.com.au/results/dummyid1"],
+    ]);
 
     return (
-      <Container className='container-nav'>
-        <div className="results-root">
-          <p className="results-text-60 results-text-center">RESULTS</p>
-
-          <div className="results-vspacing-40"> </div>
-
-          <div className="results-div-full">
-            <p className="results-text-48 results-full-width">APK BUG REPORTS</p>
-
-            {/* Display the actual table if there is data */}
-            { reports.length > 0 && 
-              <ReportsTable reports={reports}/> }
-
-            {/* Display message if table is empty*/ }
-            { reports.length === 0 &&
-              <p className="results-text-30 results-full-width">There are no bug reports to display.</p> }
-          </div>
+            <div style={{display: 'flex', justifyContent:"center", flexDirection: "column", position: "absolute", width: "80%", left: "10%", top: "10%", padding: "10px"}}>
+            {
+                reports.map(report => (
+                    <>
+                        <ReportsTable issues={report["issues"]} image={report['image']} app={report['app']}/>
+                    </>
+                ))
+            }
         </div>
-      </Container>
-    )
-  }
-}
+    );
+};
+
+
+
+
+
+export default Results;

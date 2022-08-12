@@ -1,5 +1,5 @@
 .hero {
-    height: 70vh;
+    height: 98vh;
     background-size: cover;
     background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("./hero.jpg");
     background-position: left;

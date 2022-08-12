@@ -1,7 +1,10 @@
+.env
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+psonalnotes.md
+.DS_store
 
 # C extensions
 *.so
@@ -128,5 +131,16 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# Node Modules
+#vscode 
+.vscode
+.idea
+
+#local files - ben
+/test
+
+# Localstack
+.localstack
+
 node_modules
+.localstack\data\startup_info.json
+.localstack\data\recorded_api_calls.json

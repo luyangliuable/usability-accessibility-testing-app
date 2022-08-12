@@ -1,0 +1,40 @@
+div.button {
+    color: white !important;
+    background: #1e90ff;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100px;
+    height: 70px;
+    border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -moz-border-radius: 20px;
+    -ms-border-radius: 20px;
+    cursor: pointer;
+    box-shadow: 1px 1px 2px #A98;
+    -webkit-box-shadow: 1px 1px 2px #121212;
+    -moz-box-shadow: 1px 1px 2px #121212;
+    -ms-box-shadow: 1px 1px 2px #121212;
+    transition: all 0.3s ease;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    user-select: none;
+    -webkit-user-select: none; /*Safari*/
+    -moz-user-select: none; /*Firefox*/
+}
+
+
+div.button:hover {
+    box-shadow: 2px 2px 15px #121212;
+    -webkit-box-shadow: 2px 2px 15px #121212;
+    -moz-box-shadow: 2px 2px 15px #121212;
+    opacity: 0.8;
+    -webkit-opacity: 0.8;
+    -moz-opacity: 0.8;
+}
+
+div.button:active {
+    -webkit-box-shadow: inset 2px 2px black;
+    -moz-box-shadow: inset 2px 2px black;
+}

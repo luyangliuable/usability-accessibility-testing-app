@@ -1,14 +1,12 @@
  
   .result-box-root {
-    border-radius: 10px;
-    height: 512px;
-    width: 480px;
+    height: 100%;
+    width: 100%;
     background-color: #e2e2e2;
-    border: 1px solid #b2b2b2;
-    display: inline-flexbox;
+    border: 1px solid #000000;
 
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding-top: 50px;
+    padding-bottom: 50px;
   }
 
   .result-vspacing-10 {
@@ -18,8 +16,8 @@
   }
 
   .result-box-icon {
-    height: 256px;
-    width: 200px;
+    height: 128px;
+    width: 100px;
     margin-left: auto;
     margin-right: auto;
   }
@@ -29,6 +27,7 @@
       display: inline-flex;
       align-content: center;
       align-items: center;
+      padding-bottom: 30px;
   }
 
   .result-box-view-button {

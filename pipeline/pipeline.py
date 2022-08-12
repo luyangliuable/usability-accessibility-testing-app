@@ -6,13 +6,19 @@ from model import ResNet, Block
 from heatmap import Heatmap
 import os
 import matplotlib.pyplot as plt
+import math
+from PIL import Image
+
+resized_h = 540
+resized_w = 960
 
 class ModelPipeline:
 
     def __init__(self, img_path, bounds, model):
         self.img_path = img_path
-        self.bounds = self.updateArray(bounds)
         self.img = self.getImage()
+        self.bounds = bounds
+        self.bounds_resize = self.updateArray(self.bounds)
         self.model_path = model
         self.prediction = None 
 
@@ -24,24 +30,30 @@ class ModelPipeline:
     def updateArray(self, bounds):
         for i in range(len(bounds)):
             bounds[i] = int(bounds[i])
+        bounds = self.get_relative_bounds(bounds)
         return bounds
+
+    def get_relative_bounds(self, obj_bounds):
+        x_min = math.floor((obj_bounds[0]/self.img.shape[0])*resized_w)
+        y_min = math.floor((obj_bounds[1]/self.img.shape[1])*resized_h)
+        x_max = math.floor((obj_bounds[2]/self.img.shape[0])*resized_w)
+        y_max = math.floor((obj_bounds[3]/self.img.shape[1])*resized_h)
+        return [x_min, y_min, x_max, y_max]
             
     #Applies binary mask of button onto image matrix
     def applyMask(self, resizeImg):
-        width = resizeImg.shape[0]
-        height = resizeImg.shape[1]
+        binary_mask = np.zeros(shape=(resizeImg.shape[0], resizeImg.shape[1]))
 
-        binary_mask = np.zeros(shape=(width, height))
-        x_ratio_min = self.bounds[0]/width
-        x_ratio_max = self.bounds[2]/width
-        y_ratio_min = self.bounds[1]/height
-        y_ratio_max = self.bounds[3]/height
-            
-        for x in range(width):
-            for y in range(height):
-                if x_ratio_min <= x/width < x_ratio_max and y_ratio_min <= y/height < y_ratio_max:
-                    binary_mask[x,y] = 1 
-        concat = np.dstack((resizeImg, binary_mask)) 
+        x_min = self.bounds_resize[0]
+        x_max = self.bounds_resize[2]
+        y_min = self.bounds_resize[1]
+        y_max = self.bounds_resize[3]
+        
+        for y in range(y_min, y_max):
+            for x in range(x_min, x_max):
+                    binary_mask[y,x] = 1 #sets binary mask value to 1 if within tappable bounds
+
+        concat = np.dstack((resizeImg, binary_mask)) #matrix multiplication of image and binary mask
         return concat
 
     #Converts image to tensor
@@ -86,10 +98,11 @@ class ModelPipeline:
         fig = plt.figure()
         fig.suptitle(pred_str, fontsize=15)
         ax1 = fig.add_subplot(1,2,1)
-        ax1.imshow(self.img)
+        im = Image.open(os.getcwd() + self.img_path)
+        ax1.imshow(im)
         ax2 = fig.add_subplot(1,2,2)
-        cropped = self.img[self.bounds[1]:self.bounds[3], self.bounds[0]:self.bounds[2]]
-        ax2.imshow(cropped)
+        im1 = im.crop(self.bounds)
+        ax2.imshow(im1)
         ax1.title.set_text("Original Image")
         ax2.title.set_text("Cropped Image")
         plt.show()
@@ -109,6 +122,7 @@ if __name__ == '__main__':
     #Get model
     model_path = config.get('main', 'model')
 
+    #Get prediction
     prediction = ModelPipeline(img_path, bounds_array,model_path)
     prediction_str, pred_val = prediction.modelPipeline()
     prediction.showImage(prediction_str)

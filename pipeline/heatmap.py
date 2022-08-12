@@ -6,6 +6,10 @@ from skimage import transform
 from model import ResNet, Block
 import os
 import saliency.core as saliency
+import math
+
+resized_h = 540
+resized_w = 960
 
 class Heatmap:
 
@@ -45,24 +49,22 @@ class Heatmap:
         im = PIL.Image.open(os.getcwd() + img_path)
         im = np.asarray(im)
         img_resize = transform.resize(im, (960, 540))
-        im = self.applyMask(img_resize, bounds)
-        return im
+        im_mask = self.applyMask(im, img_resize, bounds)
+        return im_mask
 
-    def applyMask(self, img, bounds):
-        width = img.shape[0]
-        height = img.shape[1]
+    def applyMask(self, img, img_resize, bounds):
+        binary_mask = np.zeros(shape=(img_resize.shape[0], img_resize.shape[1]))
 
-        binary_mask = np.zeros(shape=(width, height))
-        x_ratio_min = bounds[0]/width
-        x_ratio_max = bounds[2]/width
-        y_ratio_min = bounds[1]/height
-        y_ratio_max = bounds[3]/height
+        x_min = math.floor((bounds[0]/img.shape[0])*resized_w)
+        y_min = math.floor((bounds[1]/img.shape[1])*resized_h)
+        x_max = math.floor((bounds[2]/img.shape[0])*resized_w)
+        y_max = math.floor((bounds[3]/img.shape[1])*resized_h)
             
-        for x in range(width):
-            for y in range(height):
-                if x_ratio_min <= x/width < x_ratio_max and y_ratio_min <= y/height < y_ratio_max:
-                    binary_mask[x,y] = 1 
-        concat = np.dstack((img, binary_mask)) 
+        for y in range(y_min, y_max):
+            for x in range(x_min, x_max):
+                    binary_mask[y,x] = 1 #sets binary mask value to 1 if within tappable bounds
+
+        concat = np.dstack((img_resize, binary_mask)) #matrix multiplication of image and binary mask
         return concat
 
     def createSegments(self, object_array, img):

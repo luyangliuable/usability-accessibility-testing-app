@@ -44,7 +44,7 @@ const AdditionalUploads = ({ prop }) => {
                         </AccordionItemButton>
                     </AccordionItemHeading>
                     <AccordionItemPanel>
-                        <UploadBox resultFiles={resultFiles} updateResultFiles={updateResultFiles} currentAppStatus={currentAppStatus} updateCurrentAppStatus={updateCurrentAppStatus} />
+                        <UploadBox resultFiles={resultFiles} updateResultFiles={updateResultFiles} currentAppStatus={currentAppStatus} updateCurrentAppStatus={updateCurrentAppStatus} acceptedFileTypes={algorithm.additionalInputFileTypes}/>
                     </AccordionItemPanel>
                 </AccordionItem>
             </Accordion >

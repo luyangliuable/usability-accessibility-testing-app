@@ -27,7 +27,9 @@ const SelectAlgorithms = () => {
             algorithmName: "GifDroid",                                                      // String representing the algorithms name
             requiresAdditionalInput: true,                                                  // Boolean indicating whether additional inputs are required
             additionalInputDescription: "Requires a screen recorded video of the app",      // String description of the additional inputs
-            additionalInputFileTypes: [".gif"],                                             // file types?? Think Luyang is doing something similar. Need to verify
+            additionalInputFileTypes: {
+                "image/gif": [".gif"]
+            },                                                                              // file types?? Think Luyang is doing something similar. Need to verify
             description: "GifDroid does things and requires an additional video input",     // String description of what the algorithm does
             selected: false                                                                 // Boolean indicating whether the algorithm has been selectedD
         },

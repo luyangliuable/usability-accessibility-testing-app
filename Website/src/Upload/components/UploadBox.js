@@ -3,7 +3,7 @@ import { useDropzone } from 'react-dropzone';
 
 import "./ResultBox.css";
 
-const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCurrentAppStatus }) => {
+const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCurrentAppStatus, acceptedFileTypes }) => {
   const [buttonState, setButtonState] = useState(false);
   const [buttonValue, setButtonValue] = useState("Upload File");
   const [selectedFile, setSelectedFile] = useState(null);
@@ -113,7 +113,7 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
     onDropAccepted: onDropAccepted,
     maxFiles: 1,
     disabled: buttonState,
-    // validator: canAccept
+    accept: acceptedFileTypes
   });
 
   return (

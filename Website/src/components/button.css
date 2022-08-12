@@ -13,12 +13,12 @@ div.button {
     -ms-border-radius: 20px;
     cursor: pointer;
     box-shadow: 1px 1px 2px #A98;
-    -webkit-box-shadow: 1px 1px 2px #A98;
-    -moz-box-shadow: 1px 1px 2px #A98;
-    -ms-box-shadow: 1px 1px 2px #A98;
-    transition: all 0.8s ease;
-    -webkit-transition: all 0.8s ease;
-    -moz-transition: all 0.8s ease;
+    -webkit-box-shadow: 1px 1px 2px #121212;
+    -moz-box-shadow: 1px 1px 2px #121212;
+    -ms-box-shadow: 1px 1px 2px #121212;
+    transition: all 0.3s ease;
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
     user-select: none;
     -webkit-user-select: none; /*Safari*/
     -moz-user-select: none; /*Firefox*/
@@ -26,9 +26,9 @@ div.button {
 
 
 div.button:hover {
-    -webkit-box-shadow: 2px 2px 5px #888;
-    -moz-box-shadow: 2px 2px 5px #888;
-    box-shadow: 2px 2px 5px #888;
+    box-shadow: 2px 2px 15px #121212;
+    -webkit-box-shadow: 2px 2px 15px #121212;
+    -moz-box-shadow: 2px 2px 15px #121212;
     opacity: 0.8;
     -webkit-opacity: 0.8;
     -moz-opacity: 0.8;

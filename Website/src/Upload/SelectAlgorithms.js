@@ -10,11 +10,11 @@ import Button from "../components/button";
 
 
 import {
-    Accordion,
-    AccordionItem,
-    AccordionItemHeading,
-    AccordionItemButton,
-    AccordionItemPanel,
+  Accordion,
+  AccordionItem,
+  AccordionItemHeading,
+  AccordionItemButton,
+  AccordionItemPanel,
 } from 'react-accessible-accordion';
 
 // export default class Upload extends Component {
@@ -62,64 +62,64 @@ const SelectAlgorithms = () => {
         }
         ]);
 
-    const handleOnChange = (position) => {
-        algorithms[position].selected = !algorithms[position].selected;
-        updateAlgorithms(algorithms);
-    };
+  const handleOnChange = (position) => {
+    algorithms[position].selected = !algorithms[position].selected;
+    updateAlgorithms(algorithms);
+  };
 
-    return (
-        <Container className='container-nav'>
-            <div className="upload-root">
+  return (
+    <Container className='container-nav'>
+      <div className="upload-root">
 
-                <p className="upload-text-60 upload-text-center">SELECT ALGORITHMS</p>
-                <p className="upload-text-30 upload-text-center">Select which algorithms you want your APK to be assessed by</p>
+        <p className="upload-text-60 upload-text-center">SELECT ALGORITHMS</p>
+        <p className="upload-text-30 upload-text-center">Select which algorithms you want your APK to be assessed by</p>
 
-                <div className="upload-vspacing-40"> </div>
+        <div className="upload-vspacing-40"> </div>
 
-                {/* ============================= */}
-                {/* ACCORDIANS FOR EACH ALGORITHM */}
-                {/* Store each algorithm as an    */}
-                {/* item in an item map           */}
-                {/* ============================= */}
-                <Accordion allowZeroExpanded allowMultipleExpanded>
-                    {algorithms.map((algorithm, index) => (     //It's basically a for loop
-                        <AccordionItem key={algorithm.uuid}>
-                            <AccordionItemHeading>
-                                <AccordionItemButton>
-                                    {algorithm.algorithmName}
-                                </AccordionItemButton>
-                            </AccordionItemHeading>
-                            <input
-                                type="checkbox"
-                                className='bigCheckbox'
-                                id={`checkbox-${algorithm.uuid}`}
-                                defaultChecked={false}
-                                onChange={() => handleOnChange(index)} />
-                            <AccordionItemPanel>
-                                <p>
-                                    <b>
-                                        {algorithm.description}
-                                    </b>
-                                </p>
-                                <h6>Additional Inputs:</h6> <b><p> {algorithm.additionalInputDescription}</p></b>
-                            </AccordionItemPanel>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
+        {/* ============================= */}
+        {/* ACCORDIANS FOR EACH ALGORITHM */}
+        {/* Store each algorithm as an    */}
+        {/* item in an item map           */}
+        {/* ============================= */}
+        <Accordion allowZeroExpanded allowMultipleExpanded>
+          {algorithms.map((algorithm, index) => (     //It's basically a for loop
+            <AccordionItem key={algorithm.uuid}>
+              <AccordionItemHeading>
+                <AccordionItemButton>
+                  {algorithm.algorithmName}
+                </AccordionItemButton>
+              </AccordionItemHeading>
+              <input
+                type="checkbox"
+                className='bigCheckbox'
+                id={`checkbox-${algorithm.uuid}`}
+                defaultChecked={false}
+                onChange={() => handleOnChange(index)} />
+              <AccordionItemPanel>
+                <p>
+                  <b>
+                    {algorithm.description}
+                  </b>
+                </p>
+                <h6>Additional Inputs:</h6> <b><p> {algorithm.additionalInputDescription}</p></b>
+              </AccordionItemPanel>
+            </AccordionItem>
+          ))}
+        </Accordion>
 
-                <div className="upload-vspacing-40"> </div>
+        <div className="upload-vspacing-40"> </div>
 
-                <div className="next-button-align-right" >
-                    <Button style={{ marginTop: "15px" }}>
-                        <Link to={"/upload/additionaluploads"} state={{ algorithms: algorithms }}>
-                            <h3>NEXT</h3>
-                        </Link>
-                    </Button>
-                </div>
+        <div className="next-button-align-right" >
+          <Link to={"/upload/additionaluploads"} state={{ algorithms: algorithms }}>
+            <Button style={{ marginTop: "15px" }}>
+              <h3>NEXT</h3>
+            </Button>
+          </Link>
+        </div>
 
-            </div>
-        </Container>
-    );
+      </div>
+    </Container>
+  );
 }
 
 export default SelectAlgorithms;

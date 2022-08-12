@@ -15,11 +15,9 @@ def create_app(script_info=None):
     # register blueprints
     from main.views import main_blueprint
     from upload.app import upload_blueprint
-    from redis_file_manager.app import redis_file_manager_blueprint
 
     app.register_blueprint(main_blueprint)
     app.register_blueprint(upload_blueprint)
-    app.register_blueprint(redis_file_manager_blueprint)
 
     ###############################################################################
     #                              Enable debug mode                              #

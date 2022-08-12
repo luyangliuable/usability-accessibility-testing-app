@@ -22,6 +22,9 @@ services:
       - apk_tool=/tools/apktool_2.4.1.jar
       - ic3=/tools/ic3-0.2.0
       - S3_URL=http://host.docker.internal:4566
+      - STORYDISTILLER=http://host.docker.internal:3002
+      - XBOT=http://host.docker.internal:3003
+      - OWLEYE=http://host.docker.internal:3004
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
@@ -35,6 +38,8 @@ services:
       - "3001:3001"
     environment:
       - API_URL=flask_backend:5005
+      - TASK_URL=http://localhost:5005/task
+      - APK_UPLOAD_URL=http://localhost:5005/upload
     container_name: bxer.react-ui
     stdin_open: true
     volumes:

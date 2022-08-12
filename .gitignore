@@ -131,13 +131,14 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-#vscode
+#vscode 
 .vscode
 .idea
 
 #local files - ben
 /test
 
+# Localstack
 .localstack
 
 node_modules

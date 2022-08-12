@@ -27,7 +27,7 @@ const Upload = () => {
 
                 <div className="upload-div-group-white">
                     <div className="upload-cover-box">
-                        <UploadBox resultFiles={resultFiles} updateResultFiles={updateResultFiles} currentAppStatus={currentAppStatus} updateCurrentAppStatus={updateCurrentAppStatus} acceptedFileTypes={{"application/octet-stream": [".apk"]}}/>
+                        <UploadBox resultFiles={resultFiles} updateResultFiles={updateResultFiles} currentAppStatus={currentAppStatus} updateCurrentAppStatus={updateCurrentAppStatus} acceptedFileTypes={{ "application/octet-stream": [".apk"] }} />
                     </div>
                     {/*
                     <div className="upload-div-vcenter">

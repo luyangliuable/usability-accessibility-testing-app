@@ -5,14 +5,14 @@ import ProgressBar from './ProgressBar';
 
 import "./ResultBox.css";
 
-const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCurrentAppStatus, acceptedFileTypes }) => {
+const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCurrentAppStatus, algorithmsToComplete, acceptedFileTypes }) => {
 
   const [objectState, setObjectState] = useState({
     buttonState: false,
     buttonValue: "Upload File",
     selectedFile: null,
     algorithmsComplete: 0,
-    algorithmsToComplete: typeof algorithsToComplete != 'undefined' ? algorithsToComplete : ['storydistiller', 'xbot', 'owleye'],
+    algorithmsToComplete: typeof algorithmsToComplete != 'undefined' ? algorithmsToComplete : ['storydistiller', 'xbot', 'owleye'],
     progressBarMessage: "Ready To Begin"
   });
 

@@ -1,5 +1,5 @@
 import { getStatus } from './getStatus';
-import { uploadApk } from './upload_apk';
+import { uploadApk } from './postApk';
 import { useState } from 'react';
 
 
@@ -49,7 +49,8 @@ export const startApplication = async (objectState, setObjectState, acceptedFile
       //                     Call API run storydistiller                     //
       /////////////////////////////////////////////////////////////////////////
 
-      uploadApk(formData, apkUploadUrl).then(response => {
+      uploadApk(formData,  apkUploadUrl).then(response => {
+        console.log(apkUploadUrl);
 
         // Append uuid for the uploaded files ///////////////////////////////
         formData.append("uuid", response.uuid);

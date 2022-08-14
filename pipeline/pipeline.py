@@ -1,132 +1,77 @@
-import numpy as np
-import torch
-from configparser import ConfigParser
-from skimage import io, transform
-from model import ResNet, Block
-from heatmap import Heatmap
 import os
+
+from heatmap import Heatmap
+from dataset import Tappable
+from torch.utils.data import DataLoader
+from model import ResNet, Block
+import torch
+from torchvision.utils import draw_bounding_boxes
+from torchvision.io import read_image
 import matplotlib.pyplot as plt
-import math
-from PIL import Image
+import torchvision
+import json
 
-resized_h = 540
-resized_w = 960
+#TODO - get image from storage + object_bounds (clickable & all) from xrai json file
+# object_bounds = [[789,1177,1038,1454],[291,1496,540,1773],[765,1030,1069,1156],[291,1177,540,1454],[540,1177,789,1454],[42,1020,765,1132]]
+# path = "/Users/em.ily/Documents/GitHub/FIT3170_Usability_Accessibility_Testing_App/pipeline/test_image/17380.jpg"
 
-class ModelPipeline:
+# object_bounds = [[52,875,1027,980],[827,441,937,519],[758,1108,880,1230],[52,730,1027,835],[880,1108,1002,1230]]
+# path = "/Users/em.ily/Documents/GitHub/FIT3170_Usability_Accessibility_Testing_App/pipeline/test_image/34354.jpg"
 
-    def __init__(self, img_path, bounds, model):
-        self.img_path = img_path
-        self.img = self.getImage()
-        self.bounds = bounds
-        self.bounds_resize = self.updateArray(self.bounds)
-        self.model_path = model
-        self.prediction = None 
+object_bounds = [[975,73,1080,199],[709,486,1038,605],[614,423,851,486],[42,1562,1038,1649],[42,513,303,577],[42,236,1038,362]]
+path = "/Users/em.ily/Documents/GitHub/FIT3170_Usability_Accessibility_Testing_App/pipeline/test_image/59175.jpg"
 
-    #Gets stored image [TODO: update to get image from s3 bucket]
-    def getImage(self):
-        self.validateImage()
-        return io.imread(os.getcwd() + self.img_path)
+file, extention = os.path.splitext(path)
+if not os.path.exists(file + "/"):
+    os.makedirs(file)
 
-    def updateArray(self, bounds):
-        for i in range(len(bounds)):
-            bounds[i] = int(bounds[i])
-        bounds = self.get_relative_bounds(bounds)
-        return bounds
+#Create dataset and dataloader 
+dataset = Tappable(img_path = path, bounds = object_bounds)
+dataloader = DataLoader(dataset, batch_size=1, shuffle=False)
 
-    def get_relative_bounds(self, obj_bounds):
-        x_min = math.floor((obj_bounds[0]/self.img.shape[0])*resized_w)
-        y_min = math.floor((obj_bounds[1]/self.img.shape[1])*resized_h)
-        x_max = math.floor((obj_bounds[2]/self.img.shape[0])*resized_w)
-        y_max = math.floor((obj_bounds[3]/self.img.shape[1])*resized_h)
-        return [x_min, y_min, x_max, y_max]
-            
-    #Applies binary mask of button onto image matrix
-    def applyMask(self, resizeImg):
-        binary_mask = np.zeros(shape=(resizeImg.shape[0], resizeImg.shape[1]))
+#Create model from saved state
+model = ResNet(18, Block, 4, 2)
+model.load_state_dict(torch.load(os.getcwd() + "/trained_models/resnet_v3.pt", map_location=torch.device('cpu')))
+model.eval()
 
-        x_min = self.bounds_resize[0]
-        x_max = self.bounds_resize[2]
-        y_min = self.bounds_resize[1]
-        y_max = self.bounds_resize[3]
-        
-        for y in range(y_min, y_max):
-            for x in range(x_min, x_max):
-                    binary_mask[y,x] = 1 #sets binary mask value to 1 if within tappable bounds
+untappable_bounds = {}
+bounding_boxes_all = []
+counter = 0
+labels = ["tappable", "not tappable"]
 
-        concat = np.dstack((resizeImg, binary_mask)) #matrix multiplication of image and binary mask
-        return concat
+#Create heatmap
+heatmap = Heatmap(path, model, file, segments=None)
 
-    #Converts image to tensor
-    def toTensor(self, maskImg):
-        transpose_img = maskImg.transpose((2, 0, 1))
-        return torch.from_numpy(transpose_img)
+#Run model on dataset 
+for batch_idx, item in enumerate(dataloader):
+    outputs = model(item['image'].type(torch.FloatTensor))
+    _, indices = torch.sort(outputs, descending=True)
+    percentage = torch.nn.functional.softmax(outputs, dim=1)[0] * 100
+    _, index = torch.max(outputs, 1) 
+    print([(labels[idx], percentage[idx].item()) for idx in indices[0][:2]])
 
-    #Apply Transformations
-    def image_transformations(self):
-        img_resize = transform.resize(self.img, (960, 540))
-        mask_img = self.applyMask(img_resize)
-        tensor_img = self.toTensor(mask_img)
-        tensor = tensor_img.unsqueeze(0)
-        float_tensor = tensor.type(torch.FloatTensor)
-        return float_tensor
+    if int(index[0]) == 1:
+        bounding_boxes = []
+        bounding_boxes_all.append(item['bounds'])
+        for i in range(len(item['bounds'])):
+            if isinstance(item['bounds'][i], torch.Tensor):
+                bounding_boxes.append(item['bounds'][i].cpu().item())
+            else:
+                bounding_boxes.append(item['bounds'][i])
+        heatmap_path = heatmap.createHeatmap(item['bounds'], index[0], counter)
+        untappable = {'bounds': bounding_boxes, 'percentage': percentage[index[0]].item(), 'heatmap': heatmap_path}
+        untappable_bounds[str(counter)] = untappable
+        counter += 1
 
-    #Image validation
-    def validateImage(self):
-        if self.img_path[-3:] != 'jpg':
-            raise Exception("File must be of type jpg")
+#Store bounding boxes for those rated untappable
+if bounding_boxes_all:
+    img = read_image(path)
+    boxes = torch.tensor(bounding_boxes_all, dtype=torch.float)
+    result = draw_bounding_boxes(img, boxes, width=8)
+    img = torchvision.transforms.ToPILImage()(result)
+    img.save(os.path.join(file, 'bounding_box.jpg'))
 
-    def modelPipeline(self):
-        #Apply Image Transformations
-        input = self.image_transformations()
+#Save json file 
+with open(os.path.join(file, 'details.json'), 'w+') as file:
+    json.dump(untappable_bounds, file)
 
-        #Create model from saved state
-        model = ResNet(18, Block, 4, 2)
-        model.load_state_dict(torch.load(os.getcwd() + self.model_path, map_location=torch.device('cpu')))
-        model.eval()
-
-        #Prediction
-        labels = ['tappable' ,'not tappable'] 
-        with torch.no_grad():
-            predictions = model(input)
-            percentage = torch.nn.functional.softmax(predictions, dim=1)[0] * 100
-            _, indices = torch.sort(predictions, descending=True)
-            print([(labels[idx], percentage[idx].item()) for idx in indices[0][:5]])
-            _, index = torch.max(predictions, 1) 
-            return str(round(percentage[index[0]].item(),2)) + "%; rated " + labels[index[0]],index[0]
-
-    def showImage(self, pred_str):
-        fig = plt.figure()
-        fig.suptitle(pred_str, fontsize=15)
-        ax1 = fig.add_subplot(1,2,1)
-        im = Image.open(os.getcwd() + self.img_path)
-        ax1.imshow(im)
-        ax2 = fig.add_subplot(1,2,2)
-        im1 = im.crop(self.bounds)
-        ax2.imshow(im1)
-        ax1.title.set_text("Original Image")
-        ax2.title.set_text("Cropped Image")
-        plt.show()
-
-if __name__ == '__main__':
-    #Read config file
-    config = ConfigParser()
-    config.read('config.ini')
-
-    #Get image path
-    img_path = config.get('main', 'image')
-
-    #Get object bounds
-    bounds = config.get('main', 'bounds')
-    bounds_array = bounds.strip('[]').split(',')
-
-    #Get model
-    model_path = config.get('main', 'model')
-
-    #Get prediction
-    prediction = ModelPipeline(img_path, bounds_array,model_path)
-    prediction_str, pred_val = prediction.modelPipeline()
-    prediction.showImage(prediction_str)
-
-    #Heatmap
-    heatmap = Heatmap(model_path)
-    heatmap.createHeatmap(img_path,pred_val,bounds_array,object_array=None)

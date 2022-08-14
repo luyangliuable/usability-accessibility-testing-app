@@ -9,8 +9,8 @@ IMAGE_H = 2560
 IMAGE_W = 1440
 
 root_path = os.path.dirname(__file__)
-json_dir = os.path.join(root_path, 'json_dir/')
-dataset_path = os.path.join(root_path, 'dataset/tappability_dataset.csv')
+json_dir = "/Users/em.ily/Downloads/json/"
+dataset_path = "/Users/em.ily/Downloads/tappability_dataset.csv"
 
 resized_h = 960
 resized_w = 540
@@ -80,4 +80,6 @@ def create_dataset():
 
         
 if __name__=='__main__':
-    create_dataset()
+    obj_bounds = _get_obj_bounds('9d15f79',json.load(open('/Users/em.ily/Downloads/json/17380.json'))['activity']['root'])
+    print(_get_relative_bounds(obj_bounds))
+    # create_dataset()

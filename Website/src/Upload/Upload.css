@@ -128,3 +128,11 @@
   .next-button-align-right {
     float: right;
   }
+
+  .black-text {
+    color: #0d0d0d;
+  }
+
+  hr {
+    width: 50%;
+  }

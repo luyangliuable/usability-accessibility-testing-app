@@ -11,6 +11,7 @@ import About from './About/About';
 import UploadAPK from './Upload/UploadAPK';
 import SelectAlgorithms from './Upload/SelectAlgorithms';
 import AdditionalUploads from './Upload/AdditionalUploads';
+import UploadSummary from './Upload/UploadSummary';
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
                 <Route path="/upload" element={<UploadAPK />}></Route>
                 <Route path="/upload/selectalgorithm" element={<SelectAlgorithms />}></Route>
                 <Route path="/upload/additionaluploads" element={<AdditionalUploads />}></Route>
+                <Route path="/upload/summary" element={<UploadSummary />}></Route>
             </Routes>
         </BrowserRouter>
     );

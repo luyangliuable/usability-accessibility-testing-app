@@ -1,17 +1,30 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Container } from "react-bootstrap";
 
 import Button from '../components/button';
-import { Link } from 'react-router-dom';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import './Upload.css';
 
 const UploadSummary = () => {
 
   const locations = useLocation();
+  const navigate = useNavigate();
 
-  const algorithms = locations.state?.algorithms;
+  console.log("[0] load state");
+  const objectState = locations.state?.objectState;
+  console.log(objectState);
+
+  const algorithms = typeof objectState === "undefined" ? [] : objectState.algorithms;
+
+  useEffect(() => {
+    console.log("[1] redirect");
+
+    if (typeof objectState === "undefined") {
+      navigate("/upload");
+    }
+  }, [objectState, navigate]);
+
   const selectedAlgorithms = [];
   const additionalInputAlgorithms = [];
   console.log(additionalInputAlgorithms);
@@ -25,20 +38,22 @@ const UploadSummary = () => {
     }
   }
 
-  const additionalInputDiv = "";
+  var additionalInputDiv = "";
   if (additionalInputAlgorithms.length > 0) {
-    additionalInputAlgorithms.map((algorithm, index) => {
-      <div key={algorithm.uuid + "-additional-input"}>
-        <h5 className="black-text">
-          {algorithm.algorithmName}
-        </h5>
-        <p>
-          {algorithm.additionalInputDescription}
-          <br></br>
-          files
-        </p>
-        {index === additionalInputAlgorithms.length - 1 ? "" : <hr></hr>}
-      </div>
+    additionalInputDiv = additionalInputAlgorithms.map((algorithm, index) => {
+      return (
+        <div key={algorithm.uuid + "-additional-input"}>
+          <h5 className="black-text">
+            {algorithm.algorithmName}
+          </h5>
+          <p>
+            {algorithm.additionalInputDescription}
+            <br></br>
+            files
+          </p>
+          {index === additionalInputAlgorithms.length - 1 ? "" : <hr></hr>}
+        </div>
+      )
     })
   }
   else {

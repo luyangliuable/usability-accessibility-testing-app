@@ -1,18 +1,66 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Container } from "react-bootstrap";
-import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import './Upload.css';
 
 import UploadBox from "./components/UploadBox";
-import Button from "../components/button";
-
-// export default class Upload extends Component {
+import Button from '../components/button';
 
 const Upload = () => {
     const [resultFiles, updateResultFiles] = useState(["./dir_to_file/example_result_file.jpeg"]);
     const [currentAppStatus, updateCurrentAppStatus] = useState("READY");
+
+    const [objectState, setObjectState] = useState({
+        uuid: null,
+        apk: null,
+        algorithms: [
+            {
+                uuid: "gifdroid",
+                algorithmName: "GifDroid",
+                requiresAdditionalInput: true,
+                additionalInputDescription: "Requires a screen recorded video of the app",
+                additionalInputFileTypes: {
+                    "image/gif": [".gif"]
+                },
+                additionalFiles: [],
+                description: "GifDroid does things and requires an additional video input",
+                selected: false
+            },
+            {
+                uuid: "venus",
+                algorithmName: "Venus",
+                requiresAdditionalInput: false,
+                additionalInputDescription: "Does not require any additional uploads",
+                additionalInputFileTypes: [],
+                additionalFiles: [],
+                description: "Venus does things and does not require any additional inputs",
+                selected: false
+            },
+            {
+                uuid: "owleye",
+                algorithmName: "OwlEye",
+                requiresAdditionalInput: false,
+                additionalInputDescription: "Does not require any additional uploads",
+                additionalInputFileTypes: [],
+                additionalFiles: [],
+                description: "Owl eye can automatically detect and localize UI display issues in the screenshots of the application under test",
+                selected: false
+            },
+            {
+                uuid: "xbot",
+                algorithmName: "xBot",
+                requiresAdditionalInput: false,
+                additionalInputDescription: "Does not require any additional uploads",
+                additionalInputFileTypes: [],
+                additionalFiles: [],
+                description: "xBot specializes in accessibility testing of Android apps",
+                selected: false
+            }
+        ],
+    });
+
+    const [buttonState, setButtonState] = useState(false);
 
     return (
         <Container className='container-nav'>
@@ -30,11 +78,12 @@ const Upload = () => {
                 </div>
 
                 <div className="next-button-align-right">
-                    <Button style={{ marginTop: "15px" }}>
-                        <Link to={"./selectalgorithm"}>
+                    <Link to={"./selectalgorithm"} state={{ objectState: objectState }}>
+                        <Button className={buttonState ? "result-box-view-button result-button-disabled" : "result-box-view-button result-button-enabled"}
+                            disabled={buttonState} style={{ marginTop: "15px" }}>
                             <h3>NEXT</h3>
-                        </Link>
-                    </Button>
+                        </Button>
+                    </Link>
                 </div>
 
                 <div className="upload-vspacing-40"> </div>

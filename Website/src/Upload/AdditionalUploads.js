@@ -1,10 +1,11 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Container } from "react-bootstrap";
-import { useState } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import './Upload.css';
 
 import UploadBox from "./components/UploadBox";
+import Button from '../components/button';
 
 import {
   Accordion,
@@ -14,20 +15,31 @@ import {
   AccordionItemPanel,
 } from 'react-accessible-accordion';
 
-import { useLocation } from 'react-router-dom';
-import Button from '../components/button';
-import { Link } from 'react-router-dom';
 
 
 // export default class Upload extends Component {
 
-const AdditionalUploads = ({ prop }) => {
+const AdditionalUploads = () => {
   const [resultFiles, updateResultFiles] = useState(["./dir_to_file/example_result_file.jpeg"]);
   const [currentAppStatus, updateCurrentAppStatus] = useState("READY");
 
   const locations = useLocation();
+  const navigate = useNavigate();
 
-  const algorithms = locations.state?.algorithms;
+  console.log("[0] load state")
+  const objectState = locations.state?.objectState;
+  // const setObjectState = locations.state?.setObjectState;
+
+  const algorithms = typeof objectState === "undefined" ? [] : objectState.algorithms;
+  
+  useEffect(() => {
+    console.log("[1] redirect")
+    
+    if (typeof objectState === "undefined") {
+      navigate("/upload");
+    }
+  }, [objectState, navigate]);
+
   const selectedAlgorithms = [];
   for (let i = 0; i < algorithms.length; i++) {       // Extracts selected algorithms that require additional uploads from the algorithms data structure
     if (algorithms[i].selected === true && algorithms[i].requiresAdditionalInput === true) {
@@ -49,21 +61,22 @@ const AdditionalUploads = ({ prop }) => {
         {selectedAlgorithms.length ?
           <div>
             < Accordion allowZeroExpanded allowMultipleExpanded >
-          selectedAlgorithms.map((algorithm) => {
-            // If any of the selected algorithms require an additional upload it will generate accordions with an upload box for it
-            return (
-              <AccordionItem key={algorithm.uuid}>
-                <AccordionItemHeading>
-                  <AccordionItemButton>
-                    {algorithm.algorithmName}
-                  </AccordionItemButton>
-                </AccordionItemHeading>
-                <AccordionItemPanel>
-                  <UploadBox resultFiles={resultFiles} updateResultFiles={updateResultFiles} currentAppStatus={currentAppStatus} updateCurrentAppStatus={updateCurrentAppStatus} acceptedFileTypes={algorithm.additionalInputFileTypes} />
-                </AccordionItemPanel>
-              </AccordionItem>
-              );
-          })
+              {selectedAlgorithms.map((algorithm) => {
+                // If any of the selected algorithms require an additional upload it will generate accordions with an upload box for it
+                return (
+                  <AccordionItem key={algorithm.uuid}>
+                    <AccordionItemHeading>
+                      <AccordionItemButton>
+                        {algorithm.algorithmName}
+                      </AccordionItemButton>
+                    </AccordionItemHeading>
+                    <AccordionItemPanel>
+                      <UploadBox resultFiles={resultFiles} updateResultFiles={updateResultFiles} currentAppStatus={currentAppStatus} updateCurrentAppStatus={updateCurrentAppStatus} acceptedFileTypes={algorithm.additionalInputFileTypes} />
+                    </AccordionItemPanel>
+                  </AccordionItem>
+                )
+              })
+              }
             </Accordion >
           </div> :
           <div>
@@ -76,7 +89,7 @@ const AdditionalUploads = ({ prop }) => {
         <div className="upload-vspacing-40"> </div>
 
         <div className="next-button-align-right" >
-          <Link to={"/upload/summary"} state={{ algorithms: algorithms }}>
+          <Link to={"/upload/summary"} state={{ objectState: objectState }}>
             <Button style={{ marginTop: "15px" }}>
               <h3>NEXT</h3>
             </Button>

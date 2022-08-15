@@ -40,7 +40,7 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
 
   return (
     <div className="result-box-root">
-      <div{...getRootProps()} disabled={objectState.buttonState}>
+      <div {...getRootProps()} disabled={objectState.buttonState}>
         <input {...getInputProps()} disabled={objectState.buttonState} />
 
         <div className="result-box-full-width">

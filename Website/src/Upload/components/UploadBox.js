@@ -12,7 +12,7 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
     buttonValue: "Upload File",
     selectedFile: null,
     algorithmsComplete: 0,
-    algorithmsToComplete: typeof algorithmsToComplete != 'undefined' ? algorithmsToComplete : ['storydistiller', 'xbot', 'owleye'],
+      algorithmsToComplete: typeof algorithmsToComplete != 'undefined' ? algorithmsToComplete : ["gifdroid"],
     progressBarMessage: "Ready To Begin"
   });
 

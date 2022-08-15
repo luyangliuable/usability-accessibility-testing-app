@@ -35,10 +35,15 @@ def run_algorithm(info={}):
     owleye_api = os.environ.get("OWLEYE")
     owleye_api = "http://host.docker.internal:3004/new_job"
 
+    # gifdroid api url to be obtained from the enrionemtn ##########################
+    gifdroid_api = os.environ.get("GIFDROID")
+    gifdroid_api = "http://host.docker.internal:3005/new_job"
+
     start_links = {
         "storydistiller": story_distiller_api,
         "xbot": xbot_api,
         "owleye": owleye_api,
+        "gifdroid": gifdroid_api,
     }
 
     # algorithms = [algorithm for algorithm in start_links.keys()]
@@ -49,8 +54,8 @@ def run_algorithm(info={}):
     try:
         print("Running " + str( algorithm_name ) + " url: "+ str( URL ))
         print("Algorithm cluster uuid is", uuid)
-        time.sleep(3);
-        # result = requests.post(URL, json={ "uid": uuid })
+        # time.sleep(3);
+        result = requests.post(URL, json={ "uid": uuid })
     except Exception as ex:
         print('failed to complete tasks', algorithm_name, " with url", URL, "because", ex)
         errors.append(ex)

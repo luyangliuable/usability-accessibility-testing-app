@@ -2,12 +2,14 @@ flask
 pymongo
 celery==4.4.7
 flower==0.9.7
+numpy==1.22.1
 redis==3.5.3
-fastapi==0.78.0
-pymongo==4.1.1
+numpy==1.22.1
+scikit-learn==1.0.2
+joblib==1.1.0
 python-dotenv
-torch
 opencv
 PIL
+torch
 sklearn
 python-dotenv

@@ -71,7 +71,7 @@ def upload():
         #                Create a temporary file to store file content                #
         ###############################################################################
         print("[1] Generating file")
-        temp_dir = tempfile.gettempdir();
+        temp_dir = tempfile.gettempdir()
 
         temp_file_name = os.path.join(temp_dir, unique_id)
         with open(temp_file_name, "wb") as savefile:

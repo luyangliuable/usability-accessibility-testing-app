@@ -1,4 +1,4 @@
-div.button {
+button {
     color: white !important;
     background: #1e90ff;
     display: flex;
@@ -8,6 +8,7 @@ div.button {
     width: 100px;
     height: 70px;
     border-radius: 20px;
+    margin-top: 15px;
     -webkit-border-radius: 20px;
     -moz-border-radius: 20px;
     -ms-border-radius: 20px;
@@ -20,12 +21,13 @@ div.button {
     -webkit-transition: all 0.3s ease;
     -moz-transition: all 0.3s ease;
     user-select: none;
-    -webkit-user-select: none; /*Safari*/
-    -moz-user-select: none; /*Firefox*/
+    -webkit-user-select: none;
+    /*Safari*/
+    -moz-user-select: none;
+    /*Firefox*/
 }
 
-
-div.button:hover {
+button:hover {
     box-shadow: 2px 2px 15px #121212;
     -webkit-box-shadow: 2px 2px 15px #121212;
     -moz-box-shadow: 2px 2px 15px #121212;
@@ -34,7 +36,11 @@ div.button:hover {
     -moz-opacity: 0.8;
 }
 
-div.button:active {
+button:active {
     -webkit-box-shadow: inset 2px 2px black;
     -moz-box-shadow: inset 2px 2px black;
+}
+
+button:disabled {
+    opacity: 30%;
 }

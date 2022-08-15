@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { Container } from "react-bootstrap";
 
-import Button from '../components/button';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import './Upload.css';
+import '../components/button.css';
 
 const UploadSummary = () => {
 
@@ -37,6 +37,11 @@ const UploadSummary = () => {
       }
     }
   }
+
+  const startApplication = () => {
+    console.log("[0] Starting Algorithms");
+    // startApplication(objectState, setObjectState, [objectState.apk]);
+  };
 
   var additionalInputDiv = "";
   if (additionalInputAlgorithms.length > 0) {
@@ -78,7 +83,6 @@ const UploadSummary = () => {
             <p>
               file
             </p>
-            <br></br>
           </div>
 
           <div>
@@ -117,9 +121,9 @@ const UploadSummary = () => {
 
         <div className="next-button-align-right" >
           <Link to={"/results"}>
-            <Button style={{ marginTop: "15px" }}>
+            <button onClick={startApplication}>
               <h3>START</h3>
-            </Button>
+            </button>
           </Link>
         </div>
 

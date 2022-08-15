@@ -3,9 +3,9 @@ import { Container } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import './Upload.css';
+import '../components/button.css';
 
 import UploadBox from "./components/UploadBox";
-import Button from '../components/button';
 
 import {
   Accordion,
@@ -14,10 +14,6 @@ import {
   AccordionItemButton,
   AccordionItemPanel,
 } from 'react-accessible-accordion';
-
-
-
-// export default class Upload extends Component {
 
 const AdditionalUploads = () => {
   const [resultFiles, updateResultFiles] = useState(["./dir_to_file/example_result_file.jpeg"]);
@@ -31,10 +27,10 @@ const AdditionalUploads = () => {
   // const setObjectState = locations.state?.setObjectState;
 
   const algorithms = typeof objectState === "undefined" ? [] : objectState.algorithms;
-  
+
   useEffect(() => {
     console.log("[1] redirect")
-    
+
     if (typeof objectState === "undefined") {
       navigate("/upload");
     }
@@ -47,6 +43,8 @@ const AdditionalUploads = () => {
     }
   }
   console.log(selectedAlgorithms);
+
+  const [buttonState, setButtonState] = useState(false);
 
   return (
     <Container className='container-nav'>
@@ -89,10 +87,10 @@ const AdditionalUploads = () => {
         <div className="upload-vspacing-40"> </div>
 
         <div className="next-button-align-right" >
-          <Link to={"/upload/summary"} state={{ objectState: objectState }}>
-            <Button style={{ marginTop: "15px" }}>
+          <Link to={"/upload/summary"} style={buttonState ? { pointerEvents: 'none' } : {}} state={{ objectState: objectState }}>
+            <button disabled={buttonState}>
               <h3>NEXT</h3>
-            </Button>
+            </button>
           </Link>
         </div>
 

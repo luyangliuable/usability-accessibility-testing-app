@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import './Upload.css';
 import './accordion.css';
+import '../components/button.css';
 
 import {
   Accordion,
@@ -13,7 +14,6 @@ import {
   AccordionItemPanel,
 } from 'react-accessible-accordion';
 
-import Button from '../components/button';
 
 const SelectAlgorithms = () => {
   const locations = useLocation();
@@ -76,11 +76,9 @@ const SelectAlgorithms = () => {
                 defaultChecked={false}
                 onChange={() => handleOnChange(index)} />
               <AccordionItemPanel>
-                <p>
-                  <b>
-                    {algorithm.description}
-                  </b>
-                </p>
+                <p> <b>
+                  {algorithm.description}
+                </b> </p>
                 <h6>Additional Inputs:</h6> <b><p> {algorithm.additionalInputDescription}</p></b>
               </AccordionItemPanel>
             </AccordionItem>
@@ -90,11 +88,10 @@ const SelectAlgorithms = () => {
         <div className="upload-vspacing-40"> </div>
 
         <div className="next-button-align-right" >
-          <Link to={"/upload/additionaluploads"} state={{ objectState: objectState }}>
-            <Button className={buttonState ? "result-box-view-button result-button-disabled" : "result-box-view-button result-button-enabled"}
-              disabled={buttonState} style={{ marginTop: "15px" }}>
+          <Link to={"/upload/additionaluploads"} style={buttonState ? { pointerEvents: 'none' } : {}} state={{ objectState: objectState }}>
+            <button disabled={buttonState}>
               <h3>NEXT</h3>
-            </Button>
+            </button>
           </Link>
         </div>
 

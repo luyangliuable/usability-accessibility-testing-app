@@ -3,9 +3,9 @@ import { Container } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 
 import './Upload.css';
+import '../components/button.css';
 
 import UploadBox from "./components/UploadBox";
-import Button from '../components/button';
 
 const Upload = () => {
     const [resultFiles, updateResultFiles] = useState(["./dir_to_file/example_result_file.jpeg"]);
@@ -78,11 +78,10 @@ const Upload = () => {
                 </div>
 
                 <div className="next-button-align-right">
-                    <Link to={"./selectalgorithm"} state={{ objectState: objectState }}>
-                        <Button className={buttonState ? "result-box-view-button result-button-disabled" : "result-box-view-button result-button-enabled"}
-                            disabled={buttonState} style={{ marginTop: "15px" }}>
+                    <Link to={"./selectalgorithm"} style={buttonState ? { pointerEvents: 'none' } : {}} state={{ objectState: objectState }}>
+                        <button disabled={buttonState}>
                             <h3>NEXT</h3>
-                        </Button>
+                        </button>
                     </Link>
                 </div>
 

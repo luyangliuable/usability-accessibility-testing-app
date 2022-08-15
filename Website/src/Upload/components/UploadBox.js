@@ -1,25 +1,19 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { startApplication } from './function/startApplication';
-import ProgressBar from './ProgressBar';
 
 import "./ResultBox.css";
+import "../../components/button.css"
 
 const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCurrentAppStatus, algorithmsToComplete, acceptedFileTypes }) => {
 
   const [objectState, setObjectState] = useState({
     buttonState: false,
-    buttonValue: "Upload File",
+    buttonValue: "UPLOAD FILE",
     selectedFile: null,
     algorithmsComplete: 0,
     algorithmsToComplete: typeof algorithmsToComplete != 'undefined' ? algorithmsToComplete : ['storydistiller', 'xbot', 'owleye'],
     progressBarMessage: "Ready To Begin"
   });
-
-  //eslint-disable-next-line
-  const canAccept = (file) => {
-    return ['.apk'];
-  };
 
   useEffect(() => {
     // console.log("The current stored result files are" + resultFiles);
@@ -28,7 +22,8 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
   }, [currentAppStatus, resultFiles, objectState]);
 
   const onDropAccepted = useCallback(acceptedFiles => {
-    startApplication(objectState, setObjectState, acceptedFiles);
+    objectState.selectedFile = acceptedFiles[0];
+    setObjectState(objectState);
   }, []);
 
   const { getRootProps, getInputProps } = useDropzone({
@@ -65,11 +60,9 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
 
         <div className="result-box-full-width" style={{ display: "flexbox", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
           {/* TODO functional button */}
-          <button
-            className={objectState.buttonState ? "result-box-view-button result-button-disabled" : "result-box-view-button result-button-enabled"}
-            disabled={objectState.buttonState}>{objectState.buttonValue}
+          <button disabled={objectState.buttonState} style={objectState.buttonState ? { pointerEvents: 'none', width: "220px" } : { width: "220px" }}>
+            <h3>{objectState.buttonValue}</h3>
           </button>
-          <ProgressBar message={objectState.progressBarMessage} progress={objectState.algorithmsComplete * 100 / objectState.algorithmsToComplete.length} style={{ mariginTop: "100px" }} />
         </div>
       </div>
     </div>

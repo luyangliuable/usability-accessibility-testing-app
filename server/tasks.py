@@ -67,85 +67,83 @@ def run_algorithm(info={}):
 
     result = {"files": ["file_url_placeholder"], "images": ["image_url_placeholder"], "errors": str( errors ) }
 
-@celery.task(name="create_task")
-def create_task(info):
-    ###############################################################################
-    #                           Create celery web tasks                           #
-    ###############################################################################
+# @celery.task(name="create_task")
+# def create_task(info):
+#     ###############################################################################
+#     #                           Create celery web tasks                           #
+#     ###############################################################################
 
-    print("Now inside celery....")
+#     print("Now inside celery....")
 
-    # TODO signal all algorithms to start.
+#     ###############################################################################
+#     #                               Obtain task uuid                              #
+#     ###############################################################################
+#     print(info)
+#     uuid = info['uuid']
 
-    ###############################################################################
-    #                               Obtain task uuid                              #
-    ###############################################################################
-    print(info)
-    uuid = info['uuid']
+#     ###############################################################################
+#     #                            Obtain celery task id                            #
+#     ###############################################################################
+#     task_id = celery.current_task.request.id
 
-    ###############################################################################
-    #                            Obtain celery task id                            #
-    ###############################################################################
-    task_id = celery.current_task.request.id
+#     celery.AsyncResult("task_id").status = "asdasdads";
+#     print(celery.AsyncResult("task_id").state)
 
-    celery.AsyncResult("task_id").status = "asdasdads";
-    print(celery.AsyncResult("task_id").state)
+#     ###############################################################################
+#     #                          Store errors and warnings                          #
+#     ###############################################################################
+#     errors = []
 
-    ###############################################################################
-    #                          Store errors and warnings                          #
-    ###############################################################################
-    errors = []
+#     #######################################################################################################
+#     # NOTE: In order for the next part to work both flask_backend and worker but be running inside docker #
+#     #######################################################################################################
 
-    #######################################################################################################
-    # NOTE: In order for the next part to work both flask_backend and worker but be running inside docker #
-    #######################################################################################################
+#     print("Celery task received uuid is", uuid)
 
-    print("Celery task received uuid is", uuid)
+#     ###############################################################################
+#     #                                PIPELINE START                               #
+#     ###############################################################################
 
-    ###############################################################################
-    #                                PIPELINE START                               #
-    ###############################################################################
-
-    ###############################################################################
-    #                                Storydistiller                               #
-    ###############################################################################
-    try:
-        algorithm = "storydistiller"
-        print("[1] Running Storydistiller")
-        # result = requests.post(story_distiller_api, json={ "uid": uuid })
-        time.sleep(3);
-    except Exception as ex:
-        print('failed to complete tasks', algorithm, "with url", story_distiller_api, "because", ex)
-        errors.append(ex)
-    else:
-        print("Successfully connected completed tasks", algorithm)
-        state = {"task_id": "", "task_status": ['distiller'], "task_result": ""}
-        current_task.update_state(state="sadasd")
+#     ###############################################################################
+#     #                                Storydistiller                               #
+#     ###############################################################################
+#     try:
+#         algorithm = "storydistiller"
+#         print("[1] Running Storydistiller")
+#         # result = requests.post(story_distiller_api, json={ "uid": uuid })
+#         time.sleep(3);
+#     except Exception as ex:
+#         print('failed to complete tasks', algorithm, "with url", story_distiller_api, "because", ex)
+#         errors.append(ex)
+#     else:
+#         print("Successfully connected completed tasks", algorithm)
+#         state = {"task_id": "", "task_status": ['distiller'], "task_result": ""}
+#         current_task.update_state(state="sadasd")
 
 
-    ###############################################################################
-    #                                    Xbot                                     #
-    ###############################################################################
-    try:
-        algorithm = "xbot"
-        result = requests.post(xbot_api, json={ "uid": uuid })
+#     ###############################################################################
+#     #                                    Xbot                                     #
+#     ###############################################################################
+#     try:
+#         algorithm = "xbot"
+#         result = requests.post(xbot_api, json={ "uid": uuid })
 
-        print(result.status_code)
-        print(result.text)
-        print(result.content)
-    except Exception as ex:
-        print('failed to complete tasks', algorithm, "with url", xbot_api, "because", ex)
-        errors.append(ex)
-    else:
-        print("Successfully connected completed tasks", algorithm)
-        current_task.update_state('PROGRESS', meta={"task_id": "", "task_status": ['xbot'], "task_result": "sadasd"})
+#         print(result.status_code)
+#         print(result.text)
+#         print(result.content)
+#     except Exception as ex:
+#         print('failed to complete tasks', algorithm, "with url", xbot_api, "because", ex)
+#         errors.append(ex)
+#     else:
+#         print("Successfully connected completed tasks", algorithm)
+#         current_task.update_state('PROGRESS', meta={"task_id": "", "task_status": ['xbot'], "task_result": "sadasd"})
 
 
-    ###############################################################################
-    #                                   owleye                                    #
-    ###############################################################################
-    print("task completed")
+#     ###############################################################################
+#     #                                   owleye                                    #
+#     ###############################################################################
+#     print("task completed")
 
-    result = {"files": ["file_url_placeholder"], "images": ["image_url_placeholder"], "errors": str( errors ) }
+#     result = {"files": ["file_url_placeholder"], "images": ["image_url_placeholder"], "errors": str( errors ) }
 
-    return result, 200
+#     return result, 200

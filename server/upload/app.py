@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
-from tasks import create_task, run_algorithm, celery
+from tasks import run_algorithm, celery
 import datetime
 import boto3
 import json
@@ -30,10 +30,14 @@ mongo = ApkManager.instance()
 AWS_PROFILE = 'localstack'
 AWS_REGION = 'us-west-2'
 ENDPOINT_URL = os.environ.get('S3_URL')
-bucketname = "apk-bucket"
+BUCKETNAME = "apk-bucket"
 
 boto3.setup_default_session(profile_name=AWS_PROFILE)
-s3_client = boto3.client("s3", region_name=AWS_REGION, endpoint_url=ENDPOINT_URL)
+s3_client = boto3.client(
+    "s3",
+    region_name=AWS_REGION,
+    endpoint_url=ENDPOINT_URL
+)
 
 def unique_id_generator():
     res = str( uuid.uuid4() )
@@ -78,13 +82,13 @@ def upload():
             savefile.write(request.files.get('file').read())
             savefile.close()
 
-        enforce_bucket_existance(["apk-bucket", "storydistiller-bucket", "xbot-bucket"])
+        enforce_bucket_existance([BUCKETNAME, "storydistiller-bucket", "xbot-bucket"])
 
         ###############################################################################
         #                   Upload the temporary file to git bucket                   #
         ###############################################################################
         print("[2] Uploading to bucket")
-        s3_client.upload_file(temp_file_name, bucketname, os.path.join( unique_id, file_key ))
+        s3_client.upload_file(temp_file_name, BUCKETNAME, os.path.join( unique_id, file_key ))
 
         print("[3] Adding file data to mongo db")
 
@@ -128,18 +132,20 @@ def upload():
 
 @upload_blueprint.route('/signal_start/<algorithm>', methods=["GET", "POST"])
 @cross_origin()
-def signal_start_distiller(algorithm):
+def signal_start(algorithm):
     if request.method == "POST":
         print("[1] creating celery task")
-        # info = { "uuid": unique_id }
         uuid = request.form.get("uuid")
         print("uuid is", uuid)
-        print("start task for algoritm", algorithm)
-        task = run_algorithm.delay({"uuid": uuid, "algorithm": algorithm})
+        print("start task for algorithm", algorithm)
+
+        task_info = {"uuid": uuid, "algorithm": algorithm}
+
+        task = run_algorithm.delay(task_info)
 
         return json.dumps({"task_id": task.id, "task_for_algorithm": "algorithm"}), 200
 
-    return json.dumps({"message": "failed to start storydistiller task"}), 400
+    return json.dumps({"message": "No POST request received."}), 400
 
 
 

@@ -4,27 +4,24 @@ import { useDropzone } from 'react-dropzone';
 import "./UploadBox.css";
 import "../../components/button.css"
 
-const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCurrentAppStatus, algorithmsToComplete, acceptedFileTypes }) => {
+const UploadBox = ({ currentAppStatus, updateCurrentAppStatus, algorithmsToComplete, acceptedFileTypes, method, requester }) => {
 
   const [objectState, setObjectState] = useState({
     buttonState: false,
-    buttonValue: "UPLOAD FILE",
     selectedFile: null,
-    algorithmsComplete: 0,
-    algorithmsToComplete: typeof algorithmsToComplete != 'undefined' ? algorithmsToComplete : ['storydistiller', 'xbot', 'owleye'],
-    progressBarMessage: "Ready To Begin"
+    requester: requester,
   });
 
   useEffect(() => {
-    // console.log("The current stored result files are" + resultFiles);
     // console.log("The current app status is " + currentAppStatus);
     // console.log(objectState);
-  }, [currentAppStatus, resultFiles, objectState]);
+  }, [currentAppStatus, objectState]);
 
   const onDropAccepted = useCallback(acceptedFiles => {
     objectState.selectedFile = acceptedFiles[0];
     setObjectState(objectState);
-  }, []);
+    method(objectState);
+  }, [method, objectState]);
 
   const { getRootProps, getInputProps } = useDropzone({
     onDropAccepted: onDropAccepted,
@@ -61,7 +58,7 @@ const UploadBox = ({ resultFiles, updateResultFiles, currentAppStatus, updateCur
         <div className="result-box-full-width" style={{ display: "flexbox", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
           {/* TODO functional button */}
           <button disabled={objectState.buttonState} style={objectState.buttonState ? { pointerEvents: 'none', width: "220px" } : { width: "220px" }}>
-            <h3>{objectState.buttonValue}</h3>
+            <h3>UPLOAD FILE</h3>
           </button>
         </div>
       </div>

@@ -16,22 +16,21 @@ import {
 } from 'react-accessible-accordion';
 
 const AdditionalUploads = () => {
-  const [resultFiles, updateResultFiles] = useState(["./dir_to_file/example_result_file.jpeg"]);
   const [currentAppStatus, updateCurrentAppStatus] = useState("READY");
 
   const locations = useLocation();
   const navigate = useNavigate();
 
   console.log("[0] load state")
-  const objectState = locations.state?.objectState;
-  // const setObjectState = locations.state?.setObjectState;
+  const tempState = locations.state?.objectState;
+  const [objectState, setObjectState] = useState(tempState);
+  console.log(objectState);
 
   const algorithms = typeof objectState === "undefined" ? [] : objectState.algorithms;
 
   useEffect(() => {
-    console.log("[1] redirect")
-
     if (typeof objectState === "undefined") {
+      console.log("[1.2] redirect")
       navigate("/upload");
     }
   }, [objectState, navigate]);
@@ -44,7 +43,25 @@ const AdditionalUploads = () => {
   }
   console.log(selectedAlgorithms);
 
-  const [buttonState, setButtonState] = useState(false);
+  const [buttonState, setButtonState] = useState(true);
+  const [algorithmCount, setAlgorithmCount] = useState(new Array(selectedAlgorithms.length).fill(true));
+  console.log(algorithmCount);
+
+  const uploadState = (state) => {
+    for (var i = 0; i < objectState.algorithms.length; i++) {
+      if (objectState.algorithms[i].uuid === state.requester.algorithm) {
+        objectState.algorithms[i].additionalFiles.push(state.selectedFile);
+      }
+    }
+    setObjectState(objectState);
+    algorithmCount[state.requester.index] = state.buttonState;
+    if (algorithmCount.every(element => element === false)) {
+      setButtonState(false)
+    }
+    else {
+      setButtonState(true);
+    }
+  }
 
   return (
     <Container className='container-nav'>
@@ -59,7 +76,7 @@ const AdditionalUploads = () => {
         {selectedAlgorithms.length ?
           <div>
             < Accordion allowZeroExpanded allowMultipleExpanded >
-              {selectedAlgorithms.map((algorithm) => {
+              {selectedAlgorithms.map((algorithm, index) => {
                 // If any of the selected algorithms require an additional upload it will generate accordions with an upload box for it
                 return (
                   <AccordionItem key={algorithm.uuid}>
@@ -69,7 +86,7 @@ const AdditionalUploads = () => {
                       </AccordionItemButton>
                     </AccordionItemHeading>
                     <AccordionItemPanel>
-                      <UploadBox resultFiles={resultFiles} updateResultFiles={updateResultFiles} currentAppStatus={currentAppStatus} updateCurrentAppStatus={updateCurrentAppStatus} acceptedFileTypes={algorithm.additionalInputFileTypes} />
+                      <UploadBox currentAppStatus={currentAppStatus} updateCurrentAppStatus={updateCurrentAppStatus} acceptedFileTypes={algorithm.additionalInputFileTypes} method={uploadState} requester={{ algorithm: algorithm.uuid, index: index }} />
                     </AccordionItemPanel>
                   </AccordionItem>
                 )

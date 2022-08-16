@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { Container } from "react-bootstrap";
-
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import './Upload.css';
@@ -18,17 +17,14 @@ const UploadSummary = () => {
   const algorithms = typeof objectState === "undefined" ? [] : objectState.algorithms;
 
   useEffect(() => {
-    console.log("[1] redirect");
-
     if (typeof objectState === "undefined") {
+      console.log("[1.3] redirect");
       navigate("/upload");
     }
   }, [objectState, navigate]);
 
   const selectedAlgorithms = [];
   const additionalInputAlgorithms = [];
-  console.log(additionalInputAlgorithms);
-  console.log(additionalInputAlgorithms.length);
   for (let i = 0; i < algorithms.length; i++) {       // Extracts selected algorithms that require additional uploads from the algorithms data structure
     if (algorithms[i].selected === true) {
       selectedAlgorithms.push(algorithms[i]);
@@ -37,6 +33,8 @@ const UploadSummary = () => {
       }
     }
   }
+  console.log(additionalInputAlgorithms);
+  console.log(additionalInputAlgorithms.length);
 
   const startApplication = () => {
     console.log("[0] Starting Algorithms");

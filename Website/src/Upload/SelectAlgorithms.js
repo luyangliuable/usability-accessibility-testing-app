@@ -19,32 +19,29 @@ const SelectAlgorithms = () => {
   const locations = useLocation();
   const navigate = useNavigate();
 
-  console.log("[0] load state")
-  const objectState = locations.state?.objectState;
-  // const setObjectState = locations.state?.setObjectState;
-
-  console.log(objectState);
-  console.log(typeof objectState);
+  const tempState = locations.state?.objectState;
+  const [objectState, setObjectState] = useState(tempState);
 
   const algorithms = typeof objectState === "undefined" ? [] : objectState.algorithms;
-  console.log(algorithms);
-  console.log(objectState.algorithms);
-  // console.log(setObjectState);
-
 
   useEffect(() => {
-    console.log("[1] redirect")
-
     if (typeof objectState === "undefined") {
+      console.log("[1.1] redirect")
       navigate("/upload");
     }
   }, [objectState, navigate]);
 
-  const [buttonState, setButtonState] = useState(false);
+  const [countSelected, setCountSelected] = useState(0);
 
   const handleOnChange = (position) => {
     objectState.algorithms[position].selected = !objectState.algorithms[position].selected;
-    // setObjectState(objectState);
+    setObjectState(objectState);
+    if (objectState.algorithms[position].selected) {
+      setCountSelected(countSelected + 1);
+    }
+    else {
+      setCountSelected(countSelected - 1);
+    }
   };
 
   return (
@@ -88,8 +85,8 @@ const SelectAlgorithms = () => {
         <div className="upload-vspacing-40"> </div>
 
         <div className="next-button-align-right" >
-          <Link to={"/upload/additionaluploads"} style={buttonState ? { pointerEvents: 'none' } : {}} state={{ objectState: objectState }}>
-            <button disabled={buttonState}>
+          <Link to={"/upload/additionaluploads"} style={countSelected === 0 ? { pointerEvents: 'none' } : {}} state={{ objectState: objectState }}>
+            <button disabled={countSelected === 0}>
               <h3>NEXT</h3>
             </button>
           </Link>

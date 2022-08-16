@@ -8,7 +8,6 @@ import '../components/button.css';
 import UploadBox from "./components/UploadBox";
 
 const Upload = () => {
-    const [resultFiles, updateResultFiles] = useState(["./dir_to_file/example_result_file.jpeg"]);
     const [currentAppStatus, updateCurrentAppStatus] = useState("READY");
 
     const [objectState, setObjectState] = useState({
@@ -32,7 +31,7 @@ const Upload = () => {
                 algorithmName: "Venus",
                 requiresAdditionalInput: false,
                 additionalInputDescription: "Does not require any additional uploads",
-                additionalInputFileTypes: [],
+                additionalInputFileTypes: {},
                 additionalFiles: [],
                 description: "Venus does things and does not require any additional inputs",
                 selected: false
@@ -42,7 +41,7 @@ const Upload = () => {
                 algorithmName: "OwlEye",
                 requiresAdditionalInput: false,
                 additionalInputDescription: "Does not require any additional uploads",
-                additionalInputFileTypes: [],
+                additionalInputFileTypes: {},
                 additionalFiles: [],
                 description: "Owl eye can automatically detect and localize UI display issues in the screenshots of the application under test",
                 selected: false
@@ -52,7 +51,7 @@ const Upload = () => {
                 algorithmName: "xBot",
                 requiresAdditionalInput: false,
                 additionalInputDescription: "Does not require any additional uploads",
-                additionalInputFileTypes: [],
+                additionalInputFileTypes: {},
                 additionalFiles: [],
                 description: "xBot specializes in accessibility testing of Android apps",
                 selected: false
@@ -60,7 +59,13 @@ const Upload = () => {
         ],
     });
 
-    const [buttonState, setButtonState] = useState(false);
+    const [buttonState, setButtonState] = useState(true);
+
+    const uploadState = (state) => {
+        objectState.apk = state.selectedFile;
+        setObjectState(objectState);
+        setButtonState(state.buttonState);
+    }
 
     return (
         <Container className='container-nav'>
@@ -73,7 +78,7 @@ const Upload = () => {
 
                 <div className="upload-div-group-white">
                     <div className="upload-cover-box">
-                        <UploadBox resultFiles={resultFiles} updateResultFiles={updateResultFiles} currentAppStatus={currentAppStatus} updateCurrentAppStatus={updateCurrentAppStatus} acceptedFileTypes={{ "application/octet-stream": [".apk"] }} />
+                        <UploadBox currentAppStatus={currentAppStatus} updateCurrentAppStatus={updateCurrentAppStatus} acceptedFileTypes={{ "application/octet-stream": [".apk"] }} method={uploadState} />
                     </div>
                 </div>
 

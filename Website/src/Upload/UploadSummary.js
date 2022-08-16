@@ -33,8 +33,6 @@ const UploadSummary = () => {
       }
     }
   }
-  console.log(additionalInputAlgorithms);
-  console.log(additionalInputAlgorithms.length);
 
   const startApplication = () => {
     console.log("[0] Starting Algorithms");
@@ -51,9 +49,14 @@ const UploadSummary = () => {
           </h5>
           <p>
             {algorithm.additionalInputDescription}
-            <br></br>
-            files
           </p>
+          {algorithm.additionalFiles.map((file) => {
+            return (
+              <p key={"additional-input-file-" + file.name}>
+                {file.name}
+              </p>
+            )
+          })}
           {index === additionalInputAlgorithms.length - 1 ? "" : <hr></hr>}
         </div>
       )
@@ -73,25 +76,22 @@ const UploadSummary = () => {
         <div className="upload-vspacing-40"> </div>
 
         <div className="upload-div-group-white">
-
           <div>
             <h1 className="black-text">
               APK
             </h1>
             <p>
-              file
+              {objectState.apk.name}
             </p>
           </div>
-
+          <br></br>
           <div>
             <h1 className="black-text">
               Algorithms
             </h1>
-
             <p>
               The following algorithms were selected. Once you proceed, the uploaded apk file will be passed to those algorithms to be analysed.
             </p>
-
             {selectedAlgorithms.map((algorithm, index) => {
               return (
                 <div key={algorithm.uuid + "-description"}>
@@ -107,14 +107,13 @@ const UploadSummary = () => {
             })
             }
           </div>
-
+          <br></br>
           <div>
             <h1 className="black-text">
               Additional Uploads
             </h1>
             {additionalInputDiv}
           </div>
-
         </div>
 
         <div className="next-button-align-right" >

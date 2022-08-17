@@ -64,7 +64,8 @@ def send_uid_and_signal_run():
             # Execute droidbot ############################################################
             _service_execute_droidbot(uid)
 
-            # TODO execute gifdroid
+            # Execute gifdroid ############################################################
+            _service_execute_gifdroid(uid)
         except Exception as ex:
             print(ex)
 
@@ -151,18 +152,25 @@ def _service_execute_droidbot(uuid):
         }
     )
 
+    os.chdir("/home/droidbot/")
+
+
 
 def _service_execute_gifdroid(uuid):
     # retrieve utg file name from mongodb
-    cursor = _db['utg-files'].find({})
+    cursor = _db['apk'].find({})
+
+    print("[1] Getting utg filename from mongodb")
 
     for document in cursor:
         # Find document that match with current uuid.
         if document["uuid"] == uuid:
+            print(str( document ))
             utg_filename = document['utg_files']
 
-    # retrieve utg file from s3 bucket
-    # uuid/utg.js
+    print(utg_filename)
+
+    print("[2] Creating temporary file to save utg file")
     temp_dir = tempfile.gettempdir()
 
     target_utg = path.join(temp_dir, utg_filename)
@@ -181,15 +189,17 @@ def _service_execute_gifdroid(uuid):
     subprocess.run([ "adb", "connect", config['EMULATOR']])
 
     os.chdir("/home/gifdroid")
-    subprocess.run([ "python", "main.py", "--video=sample.gif", "--utg=" + target_utg, "--artifact=artifact", "--out=" + config["DEFAULT_GIF_FILENAME"]])
+    subprocess.run([ "python3", "main.py", "--video=../sample.gif", "--utg=" + target_utg, "--artifact=artifact", "--out=" + config["DEFAULT_GIF_FILENAME"]])
 
     #save output file to bucket
     enforce_bucket_existance([config[ "BUCKETNAME" ], "storydistiller-bucket", "xbot-bucket"])
 
+
+    print("[4] Uploading gif file to bucket")
     s3_client.upload_file(config[ "DEFAULT_GIF_FILENAME" ], config[ 'BUCKETNAME' ], config[ "DEFAULT_GIF_FILENAME" ])
 
-
     #update mongodb
+    print("[5] Updating mongodb for traceability")
     _db.apk.update_one(
         {
             "uuid": uuid

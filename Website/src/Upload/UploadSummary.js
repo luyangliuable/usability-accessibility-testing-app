@@ -34,7 +34,7 @@ const UploadSummary = () => {
     }
   }
 
-  const startApplication = () => {
+  const start = () => {
     console.log("[0] Starting Algorithms");
     // startApplication(objectState, setObjectState, [objectState.apk]);
   };
@@ -118,7 +118,7 @@ const UploadSummary = () => {
 
         <div className="next-button-align-right" >
           <Link to={"/results"}>
-            <button onClick={startApplication}>
+            <button onClick={start}>
               <h3>START</h3>
             </button>
           </Link>

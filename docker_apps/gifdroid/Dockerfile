@@ -13,4 +13,6 @@ COPY . .
 
 COPY sample.gif .
 
+RUN mkdir ./gifdroid/archive
+
 EXPOSE 3005

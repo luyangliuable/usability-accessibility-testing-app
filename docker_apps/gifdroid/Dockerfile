@@ -11,4 +11,6 @@ COPY .aws /root/.aws
 
 COPY . .
 
+COPY sample.gif .
+
 EXPOSE 3005

@@ -2,7 +2,7 @@ import React from "react";
 import { Row, Container, Col } from "react-bootstrap";
 import { Link } from 'react-router-dom';
 
-import "./ToolBar.css"
+import "./ToolBar.css";
 
 export default function ToolBar() {
   return (
@@ -10,7 +10,7 @@ export default function ToolBar() {
       <Row>
         <Col xxl={2} className="company-logo" >
           <Link to={"./"}>
-            <img alt='logo' src={require('./BXER.png')} width="75%" height="75%" />
+            <img alt='logo' src={require('./BXER.png')} width="25%" height="15%" />
           </Link>
         </Col>
         <Col xxl={9} className="middle-bar" id="nav">
@@ -37,5 +37,5 @@ export default function ToolBar() {
         </Col>
       </Row>
     </Container>
-  )
+  );
 }

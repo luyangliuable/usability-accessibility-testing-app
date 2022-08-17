@@ -1,13 +1,13 @@
 .nav-container {
-    padding: 10px 0px 10px 0px;
-    background-color: #0d0d0d;
-    z-index: 2;
-    border-bottom: .2px solid #FFF;
     position: fixed;
     width: 100%;
     top: 0;
     left: 0;
-    font-size: 24px;
+    height: 7%;
+    padding: 0.5% 0px 0.5% 0px;
+    background-color: #0d0d0d;
+    z-index: 2;
+    border-bottom: .2px solid #FFF;
     text-align: center;
     box-shadow: 0 0 0.75rem rgb(0, 0, 0);
 }
@@ -25,17 +25,30 @@
 }
 
 h1 {
+    position: absolute;
+    height: 100%;
+    top: 0;
     color: white;
-    font-size: 38px
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    /* background: #EEE; */
+    font-size: 100%;
+    transition: opacity 0.5s ease;
+}
+
+
+h1:hover {
+    opacity: 0.4;
 }
 
 #nav a {
     color:white;
     text-decoration:none;
-    }
+}
 #nav a:active, #nav a:focus, #nav a:hover {
-    color:rgb(231, 204, 84); 
-    }
+    color:rgb(231, 204, 84);
+}
 
 
 

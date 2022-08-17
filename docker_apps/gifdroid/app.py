@@ -92,7 +92,6 @@ def _service_execute_droidbot(uuid):
 
     for document in cursor:
         # Find document that match with current uuid.
-
         if document["uuid"] == uuid:
             apk_filename = document['apk'][0]['name']
 
@@ -124,20 +123,21 @@ def _service_execute_droidbot(uuid):
     os.chdir("/home/droidbot")
     subprocess.run([ "droidbot", "-count", config[ "NUM_OF_EVENT" ], "-a", target_apk, "-o", OUTPUT_DIR])
 
-
     ###############################################################################
     #                                Save utg file                                #
     ###############################################################################
-    print("[4] Saving uTG.js file to bucket.")
+    print("[4] Saving utg.js file to bucket.")
 
     enforce_bucket_existance([config[ "BUCKETNAME" ], "storydistiller-bucket", "xbot-bucket"])
 
-    s3_client.upload_file(config[ "DEFAULT_UTG_FILENAME" ], config[ 'BUCKETNAME' ], config[ "DEFAULT_UTG_FILENAME" ])
+    s3_client.upload_file(config[ "DEFAULT_UTG_FILENAME" ], config[ 'BUCKETNAME' ], os.path.join(uuid, config[ "DEFAULT_UTG_FILENAME" ]))
 
     ###############################################################################
     #                                Update mongodb                               #
     ###############################################################################
+
     print("[5] Updating database for traceability of utg file")
+    print("Saving into entry", uuid)
 
     _db.apk.update_one(
         {
@@ -145,7 +145,7 @@ def _service_execute_droidbot(uuid):
         },
         {
             "$set": {
-                "utg_files": DEFAULT_UTG_FILENAME
+                "utg_files": config[ 'DEFAULT_UTG_FILENAME' ]
             }
         }
     )

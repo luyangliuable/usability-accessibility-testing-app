@@ -15,6 +15,7 @@ config = {
     "BUCKETNAME": "gifdroid-bucket",
     "MONGODB": os.environ.get('MONGO_URL'),
     "DEFAULT_UTG_FILENAME":  "utg.js",
+    "DEFAULT_GIF_FILENAME": "gifdroid_out.gif",
     "NUM_OF_EVENT": "10",
     "EMULATOR": os.environ.get("EMULATOR"),
 }
@@ -145,21 +146,60 @@ def _service_execute_droidbot(uuid):
         },
         {
             "$set": {
-                "utg_files": DEFAULT_UTG_FILENAME
+                "utg_files": config["DEFAULT_UTG_FILENAME"]
             }
         }
     )
 
 
 def _service_execute_gifdroid(uuid):
-    # [0] TODO retrieve
+    # retrieve utg file name from mongodb
+    cursor = _db['utg-files'].find({})
 
-    # [1] TODO retrieve utg file from s3 bucket
+    for document in cursor:
+        # Find document that match with current uuid.
+        if document["uuid"] == uuid:
+            utg_filename = document['utg_files']
+
+    # retrieve utg file from s3 bucket
     # uuid/utg.js
+    temp_dir = tempfile.gettempdir()
 
-    # subprocess.run([ "python", "main.py", "--video=dsandsakndsal.gif" --utg=<utg.json> --artifact=<folder> --out=<out_filename> ])
+    target_utg = path.join(temp_dir, utg_filename)
 
-    pass
+    s3_client.download_file(
+        Bucket=config["BUCKETNAME"],
+        Key=path.join(uuid, utg_filename),
+        Filename = target_utg
+    )
+
+    #run gifdroid
+    OUTPUT_DIR = "./"
+
+    print("[3] Running GIFDROID app")
+
+    subprocess.run([ "adb", "connect", config['EMULATOR']])
+
+    os.chdir("/home/gifdroid")
+    subprocess.run([ "python", "main.py", "--video=sample.gif", "--utg=" + target_utg, "--artifact=artifact", "--out=" + config["DEFAULT_GIF_FILENAME"]])
+
+    #save output file to bucket
+    enforce_bucket_existance([config[ "BUCKETNAME" ], "storydistiller-bucket", "xbot-bucket"])
+
+    s3_client.upload_file(config[ "DEFAULT_GIF_FILENAME" ], config[ 'BUCKETNAME' ], config[ "DEFAULT_GIF_FILENAME" ])
+
+
+    #update mongodb
+    _db.apk.update_one(
+        {
+            "uuid": uuid
+        },
+        {
+            "$set": {
+                "gifdroid_files": [config["DEFAULT_GIF_FILENAME"]]
+            }
+        }
+    )
 
 
 @app.route("/", methods=["GET"])

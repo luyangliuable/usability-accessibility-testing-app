@@ -79,7 +79,7 @@ def upload():
 
         temp_file_name = os.path.join(temp_dir, unique_id)
         with open(temp_file_name, "wb") as savefile:
-            savefile.write(request.files.get('file').read())
+            savefile.write(request.files.get('apk_file').read())
             savefile.close()
 
         enforce_bucket_existance([BUCKETNAME, "storydistiller-bucket", "xbot-bucket"])

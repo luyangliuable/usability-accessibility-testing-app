@@ -65,7 +65,7 @@ const Upload = () => {
         objectState.apk = state.selectedFile;
         setObjectState(objectState);
         setButtonState(state.buttonState);
-    }
+    };
 
     return (
         <Container className='container-nav'>

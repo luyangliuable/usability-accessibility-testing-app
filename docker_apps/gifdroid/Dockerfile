@@ -14,10 +14,8 @@ COPY .aws /root/.aws
 
 COPY . .
 
-COPY sample.gif /home/gifdroid/
-
-COPY smaller_sample.gif /home/gifdroid/
-
-COPY artifact /home/gifdroid/
+# COPY sample.gif /home/gifdroid/
+# COPY smaller_sample.gif /home/gifdroid/
+# COPY artifact /home/gifdroid/
 
 EXPOSE 3005

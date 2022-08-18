@@ -86,8 +86,8 @@ const UploadSummary = () => {
     }
 
     return (
-        <Container className='container-nav' style={{display: "flex", position: "absolute", flexDirection: "column", justifyContent: "space-between", alignItems:"center"}}>
-          <div className="upload-root">
+        <Container className='container-nav' >
+          <div className="upload-root" style={{display: "flex", flexDirection: "column", justifyContent: "space-between", alignItems:"center"}}>
 
             <p className="upload-text-60 upload-text-center">SUMMARY OF YOUR UPLOAD SELECTIONS</p>
             <p className="upload-text-30 upload-text-center">Click next to proceed and start the algorithms, or go back and make changes to your selections</p>
@@ -139,9 +139,9 @@ const UploadSummary = () => {
               </button>
               {/* </Link> */}
             </div>
+            <ProgressBar message={algorithmState.progressBarMessage} algorithmsInfo={algorithmState.algorithmsInfo} algorithmsComplete={algorithmState.algorithmsComplete}/>
           </div>
 
-          <ProgressBar message={algorithmState.progressBarMessage} algorithmsInfo={algorithmState.algorithmsInfo} algorithmsComplete={algorithmState.algorithmsComplete}/>
         </Container>
     );
 };

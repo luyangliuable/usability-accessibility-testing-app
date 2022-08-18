@@ -28,7 +28,7 @@ const ProgressBar = (props) => {
     useEffect(() => {
         const algorithmsToComplete = props.algorithmsInfo.filter(algorithm => algorithm.selected);
         setTimeout(() => {
-            update(props.message, props.algorithmsComplete * 100 / algorithmsToComplete.length);
+            update(props.message, props.algorithmsComplete * 100 / (algorithmsToComplete.length + 1));
         }, 10);
         console.log(props.algorithmsComplete * 100 / algorithmsToComplete.length);
         console.log("sadasd");
@@ -41,7 +41,7 @@ const ProgressBar = (props) => {
             </animated.div>
           </div>
 
-          <animated.p style={{ ...textOp,}}>{progressMessage}</animated.p>
+        <animated.p style={{ ...textOp, color: "#FFF"}}>{progressMessage}</animated.p>
         </>
     );
 };

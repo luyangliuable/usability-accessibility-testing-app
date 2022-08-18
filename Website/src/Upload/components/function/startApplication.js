@@ -24,7 +24,6 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
                 body: formData,
             }).then(response => response.json()).then(data => {
                 console.log(`celery task id is ${data.task_id}.`);
-
                 getStatus(task_url, data.task_id, objectState, setObjectState, i, formData, postData);
             });
         }
@@ -68,6 +67,14 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
 
         // Append uuid for the uploaded files ///////////////////////////////
         formData.append("uuid", response.uuid);
+
+        setObjectState(prev => {
+            return {
+                ...prev,
+                algorithmsComplete: prev.algorithmsComplete + 1,
+                progressBarMessage: "Upload done",
+            };
+        });
 
         // Stop the algorithm when i reaches the length of algorithms to run //
         let i = 0;

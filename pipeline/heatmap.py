@@ -98,7 +98,11 @@ class Heatmap:
         
     def storeHeatMap(self, xrai, id):
         plt.figure()
-        plot = plt.imshow(xrai, cmap='RdBu')
+        im = PIL.Image.open(self.img_path)
+        im = np.asarray(im)
+        img_resize = transform.resize(im, (RESIZE_HEIGHT, RESIZE_WIDTH))
+        plot = plt.imshow(img_resize)
+        plot = plt.imshow(xrai, cmap='Reds', alpha=0.6)
         plt.colorbar(plot, orientation="vertical")
         name = 'heatmap_' + str(id) + '.jpg'
         path = os.path.join(self.file_path, name)

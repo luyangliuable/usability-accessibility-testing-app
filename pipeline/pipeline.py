@@ -59,7 +59,7 @@ counter = 0
 labels = ["tappable", "not tappable"]
 
 #Create heatmap
-heatmap = Heatmap(path, model, file, segments=bounds_all)
+heatmap = Heatmap(path, model, file, segments=None) #TODO: Change segments = bounds_all to run with object bounds
 
 #Run model on dataset 
 for batch_idx, item in enumerate(dataloader):

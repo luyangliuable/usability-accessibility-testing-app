@@ -7,8 +7,8 @@ import os
 import saliency.core as saliency
 import math
 
-resized_h = 540
-resized_w = 960
+RESIZE_WIDTH = 540
+RESIZE_HEIGHT = 960
 
 class Heatmap:
 
@@ -30,17 +30,18 @@ class Heatmap:
         return self.storeHeatMap(xrai_attributions,id)
 
     def createSegments(self, obj_array):
+        print(obj_array)
         if obj_array is not None:
             segments = []
             im = PIL.Image.open(self.img_path)
             im = np.asarray(im)
             for bounds in obj_array:
 
-                binary_mask = np.zeros(shape=(resized_h, resized_w))
-                x_min = math.floor((bounds[0]/im.shape[1])*resized_w)
-                x_max = math.floor((bounds[1]/im.shape[1])*resized_w)
-                y_min = math.floor((bounds[2]/im.shape[0])*resized_h)
-                y_max = math.floor((bounds[4]/im.shape[0])*resized_h)
+                binary_mask = np.zeros(shape=(RESIZE_HEIGHT, RESIZE_WIDTH))
+                x_min = math.floor((bounds[0]/im.shape[1])*RESIZE_WIDTH)
+                x_max = math.floor((bounds[1]/im.shape[1])*RESIZE_WIDTH)
+                y_min = math.floor((bounds[2]/im.shape[0])*RESIZE_HEIGHT)
+                y_max = math.floor((bounds[3]/im.shape[0])*RESIZE_HEIGHT)
                 
                 for y in range(y_min, y_max):
                     for x in range(x_min, x_max):
@@ -76,7 +77,7 @@ class Heatmap:
     def loadImage(self, img_path, bounds):
         im = PIL.Image.open(img_path)
         im = np.asarray(im)
-        img_resize = transform.resize(im, (960, 540))
+        img_resize = transform.resize(im, (RESIZE_HEIGHT, RESIZE_WIDTH))
         im_mask = self.applyMask(img_resize, bounds, im.shape[0], im.shape[1])
         return im_mask
 

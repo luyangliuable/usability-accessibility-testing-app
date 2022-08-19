@@ -10,23 +10,40 @@ from torchvision.io import read_image
 import matplotlib.pyplot as plt
 import torchvision
 import json
+import re
 
-#TODO - get image from storage + object_bounds (clickable & all) from xrai json file
-# object_bounds = [[789,1177,1038,1454],[291,1496,540,1773],[765,1030,1069,1156],[291,1177,540,1454],[540,1177,789,1454],[42,1020,765,1132]]
-# path = "/Users/em.ily/Documents/GitHub/FIT3170_Usability_Accessibility_Testing_App/pipeline/test_image/17380.jpg"
+output = {}
+bounds = []
 
-# object_bounds = [[52,875,1027,980],[827,441,937,519],[758,1108,880,1230],[52,730,1027,835],[880,1108,1002,1230]]
-# path = "/Users/em.ily/Documents/GitHub/FIT3170_Usability_Accessibility_Testing_App/pipeline/test_image/34354.jpg"
+xml_file = open(r"/Users/em.ily/Downloads/a2dp.Vol.ManageData.xml").read() #TODO: XML FILE FROM XBOT
 
-object_bounds = [[975,73,1080,199],[709,486,1038,605],[614,423,851,486],[42,1562,1038,1649],[42,513,303,577],[42,236,1038,362]]
-path = "/Users/em.ily/Documents/GitHub/FIT3170_Usability_Accessibility_Testing_App/pipeline/test_image/59175.jpg"
+#Extract bounds and item details from xml file 
+regex_text = r"<node[\s\S]*?text=\"([\s\S]*?)\"[\s\S]*?class=\"([a-zA-z.]*?)\"[\s\S]*?clickable=\"([a-z]*)\"[\s\S]*?bounds=\"([\s\S]*?)\""
+regex_out = re.findall(regex_text, xml_file)
+for i in range(len(regex_out)):
+    #Store xml output in json file 
+    output[str(i)] = {"title": regex_out[i][0], "class": regex_out[i][1], "clickable": regex_out[i][2], "bounds": regex_out[i][3]}
+    #Get bounds for clickable items
+    re_text = r"\[(\d*?),(\d*?)\]\[(\d*?),(\d*?)\]"
+    if regex_out[i][2] == "true":
+        bounds_out = re.findall(re_text, regex_out[i][3])[0]
+        bounds_item = [int(bounds_out[0]), int(bounds_out[1]), int(bounds_out[2]), int(bounds_out[3])]
+        bounds.append(bounds_item)
 
+path = "/Users/em.ily/Documents/GitHub/FIT3170_Usability_Accessibility_Testing_App/pipeline/test_image/unknown.jpg" #TODO: PATH TO IMAGE FILE
+
+#Create directory 
 file, extention = os.path.splitext(path)
 if not os.path.exists(file + "/"):
     os.makedirs(file)
 
+#Store xml details as json (can comment out if not needed)
+json_out = json.dumps(output)
+file_out = open(os.path.join(file, 'xml_json_out.json'), 'w+')
+file_out.write(json_out)
+
 #Create dataset and dataloader 
-dataset = Tappable(img_path = path, bounds = object_bounds)
+dataset = Tappable(img_path = path, bounds = bounds)
 dataloader = DataLoader(dataset, batch_size=1, shuffle=False)
 
 #Create model from saved state

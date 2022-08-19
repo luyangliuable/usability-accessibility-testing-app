@@ -12,11 +12,10 @@ RESIZE_HEIGHT = 960
 
 class Heatmap:
 
-    def __init__(self, img_path, model, file_path, segments = None):
+    def __init__(self, img_path, model, file_path):
         self.img_path = img_path
         self.model = model
         self.bounds = []
-        self.segments = self.createSegments(segments)
         self.file_path = file_path
 
     def createHeatmap(self, object_bounds, prediction, id):
@@ -26,31 +25,8 @@ class Heatmap:
         im = im_orig.astype(np.float32)
         xrai_object = saliency.XRAI()
         print("creating heatmap")
-        xrai_attributions = xrai_object.GetMask(im, self.call_model_function, call_model_args, batch_size=20, segments =self.segments)
+        xrai_attributions = xrai_object.GetMask(im, self.call_model_function, call_model_args, batch_size=20, segments =None)
         return self.storeHeatMap(xrai_attributions,id)
-
-    def createSegments(self, obj_array):
-        print(obj_array)
-        if obj_array is not None:
-            segments = []
-            im = PIL.Image.open(self.img_path)
-            im = np.asarray(im)
-            for bounds in obj_array:
-
-                binary_mask = np.zeros(shape=(RESIZE_HEIGHT, RESIZE_WIDTH))
-                x_min = math.floor((bounds[0]/im.shape[1])*RESIZE_WIDTH)
-                x_max = math.floor((bounds[1]/im.shape[1])*RESIZE_WIDTH)
-                y_min = math.floor((bounds[2]/im.shape[0])*RESIZE_HEIGHT)
-                y_max = math.floor((bounds[3]/im.shape[0])*RESIZE_HEIGHT)
-                
-                for y in range(y_min, y_max):
-                    for x in range(x_min, x_max):
-                            binary_mask[y,x] = 1 #sets binary mask value to 1 if within tappable bounds
-
-            segments.append(binary_mask)
-            return segments
-        else:
-            return None
 
     def img_transformations(self, img):
         tensor_img = self.toTensor(img)

@@ -14,7 +14,6 @@ import re
 
 output = {}
 bounds = []
-bounds_all = []
 
 xml_file = open(r"/Users/em.ily/Downloads/a2dp.Vol.ManageData.xml").read() #TODO: XML FILE FROM XBOT
 
@@ -25,12 +24,11 @@ for i in range(len(regex_out)):
     #Store xml output in json file 
     output[str(i)] = {"title": regex_out[i][0], "class": regex_out[i][1], "clickable": regex_out[i][2], "bounds": regex_out[i][3]}
     #Get bounds for clickable items
-    re_text = r"\[(\d*?),(\d*?)\]\[(\d*?),(\d*?)\]"
-    bounds_out = re.findall(re_text, regex_out[i][3])[0]
-    bounds_item = [int(bounds_out[0]), int(bounds_out[1]), int(bounds_out[2]), int(bounds_out[3])]
     if regex_out[i][2] == "true":
+        re_text = r"\[(\d*?),(\d*?)\]\[(\d*?),(\d*?)\]"
+        bounds_out = re.findall(re_text, regex_out[i][3])[0]
+        bounds_item = [int(bounds_out[0]), int(bounds_out[1]), int(bounds_out[2]), int(bounds_out[3])]
         bounds.append(bounds_item)
-    bounds_all.append(bounds_item)
 
 path = "/Users/em.ily/Documents/GitHub/FIT3170_Usability_Accessibility_Testing_App/pipeline/test_image/unknown.jpg" #TODO: PATH TO IMAGE FILE
 
@@ -59,7 +57,7 @@ counter = 0
 labels = ["tappable", "not tappable"]
 
 #Create heatmap
-heatmap = Heatmap(path, model, file, segments=None) #TODO: Change segments = bounds_all to run with object bounds
+heatmap = Heatmap(path, model, file) #TODO: Change segments = bounds_all to run with object bounds
 
 #Run model on dataset 
 for batch_idx, item in enumerate(dataloader):

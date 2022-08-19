@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 
-import "./Results.css"
+import "./Results.css";
 
-import ReportsTable from "../Results/components/ReportsTable"
+import ReportsTable from "../Results/components/ReportsTable";
 
 // export default class Results extends Component {
 const Results = () => {

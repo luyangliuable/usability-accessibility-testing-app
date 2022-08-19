@@ -31,14 +31,14 @@ def send_uid_and_signal_run():
             print('NEW JOB FOR UUID: ' + request.get_json()["uid"])
             uid = request.get_json()["uid"]
         except:
-            return 'Invalid uuid data'
+            return 'Invalid uuid data', 500
 
         _service_execute(uid)
 
         return jsonify( {"result": "SUCCESS"} ), 200
 
 
-    return "No HTTP POST method received"
+    return "No HTTP POST method received", 500
 
 
 def _service_execute(uuid):

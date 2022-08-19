@@ -3,6 +3,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
+psonalnotes.md
+.DS_store
 
 # C extensions
 *.so
@@ -136,6 +138,9 @@ dmypy.json
 #local files - ben
 /test
 
+# Localstack
 .localstack
 
 node_modules
+.localstack\data\startup_info.json
+.localstack\data\recorded_api_calls.json

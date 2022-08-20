@@ -1,5 +1,8 @@
-h1, h2, h3, h4 {
-  font-family: 'Lato', sans-serif !important;
+h1,
+h2,
+h3,
+h4 {
+  font-family: "Lato", sans-serif !important;
   font-weight: 400 !important;
   margin: 0 !important;
   padding: 0 !important;
@@ -11,13 +14,13 @@ h2 {
 
 h3 {
   font-size: 24px !important;
-  color: #F2F2F2;
+  color: #f2f2f2;
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -27,7 +30,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
@@ -36,7 +39,83 @@ html {
   scroll-behavior: smooth;
 }
 
-a:hover, a:visited, a:link, a:active
-{
-    text-decoration: none !important;
+a:hover,
+a:visited,
+a:link,
+a:active {
+  text-decoration: none !important;
+}
+
+.container-nav {
+  padding: 150px;
+  background-color: #0d0d0d;
+  min-height: 100vh !important;
+  min-width: 100vw !important;
+  margin: 0px !important;
+
+  max-height: 100vh !important;
+  overflow-y: auto;
+}
+
+.root {
+  width: 1224px;
+  align-self: center;
+  margin: auto;
+  display: block;
+}
+
+.vspacing-40 {
+  padding-top: 40px;
+  width: 100%;
+  display: inline-flex;
+}
+
+.text-60 {
+  vertical-align: top;
+  padding-bottom: 32px;
+  font-size: 60px;
+  font-weight: 500;
+  font-family: Lato;
+  line-height: auto;
+  color: #f2f2f2;
+}
+
+.text-48 {
+  vertical-align: middle;
+  font-size: 48px;
+  font-family: Lato;
+  line-height: auto;
+  color: #ffffff;
+}
+
+.text-36 {
+  vertical-align: top;
+  font-size: 36px;
+  font-family: Lato;
+  line-height: auto;
+  color: #ffffff;
+}
+
+.text-30 {
+  vertical-align: top;
+  font-size: 30px;
+  font-family: Lato;
+  line-height: auto;
+  color: #ffffff;
+}
+
+.text-20 {
+  vertical-align: top;
+  font-size: 20px;
+  font-family: Lato;
+  line-height: auto;
+  color: #ffffff;
+}
+
+.text-centre {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
 }

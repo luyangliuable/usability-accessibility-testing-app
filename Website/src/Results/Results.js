@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 
 import "./Results.css";
+import '../index.css';
 
 import ReportsTable from "../Results/components/ReportsTable";
 
@@ -27,9 +28,5 @@ const Results = () => {
         </div>
     );
 };
-
-
-
-
 
 export default Results;

@@ -71,6 +71,11 @@ def upload():
         # File name is the original uploaded file name ################################
         file_key = request.form.get('filename')
 
+        # File name is the original uploaded file name ################################
+        additional_files = request.form.get('additional_files')
+
+        print("additional files", additional_files)
+
         ###############################################################################
         #                Create a temporary file to store file content                #
         ###############################################################################
@@ -112,6 +117,7 @@ def upload():
             "uuid": unique_id,
             "date": str( datetime.datetime.now() ),
             "apk": [],
+            "additional_files": [],
             "tapshoe_files": [],
             "storydistiller_files": [],
             "gifdroid_files": [],
@@ -121,7 +127,8 @@ def upload():
         }
 
         apk_file_note = "user uploaded apk file"
-        data["apk"].append({"type": "apk", "name": file_key, "notes": apk_file_note});
+        data["apk"].append({"type": "apk", "name": file_key, "notes": apk_file_note})
+        data["additional_files"].append(additional_files)
         mongo.insert_document(data, mongo.get_database()["apk"])
 
         print("[5] return celery task id and file key")

@@ -51,10 +51,21 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
     ///////////////////////////////////////////////////////////////////////////
     //                       Scan for additional files                       //
     ///////////////////////////////////////////////////////////////////////////
+    console.log(objectState.algorithmsInfo);
+
     objectState.algorithmsInfo.forEach(file => {
-        console.log(file.additionalFiles);
-        additionalFiles[file.uuid] = file.additionalFiles;
+        if ( file.additionalFiles.length  > 0 ) {
+            additionalFiles[file.uuid] = {
+                file: file.additionalFiles,
+                type: Object.keys(file.additionalInputFileTypes),
+                algorithm: file.uuid,
+            };
+        }
     });
+
+    console.log(additionalFiles);
+
+    formData.append("additional_files", additionalFiles);
 
     console.log(additionalFiles);
 

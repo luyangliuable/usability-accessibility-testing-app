@@ -47,13 +47,11 @@ const AdditionalUploads = () => {
       selectedAlgorithms.push(algorithms[i]);
     }
   }
-  console.log(selectedAlgorithms);
 
-  const [buttonState, setButtonState] = useState(true);
+  const [buttonState, setButtonState] = useState(selectedAlgorithms != 0);
   const [algorithmCount, setAlgorithmCount] = useState(
     new Array(selectedAlgorithms.length).fill(true)
   );
-  console.log(algorithmCount);
 
   const uploadState = (state) => {
     for (var i = 0; i < objectState.algorithms.length; i++) {
@@ -73,7 +71,7 @@ const AdditionalUploads = () => {
   return (
     <Container className="container-nav">
       <div className="root">
-        <p className="text-60 text-centre">ADDITIONAL UPLOADS</p>
+        <p className="text-48 text-centre">ADDITIONAL UPLOADS</p>
         <p className="text-30 text-centre">
           Upload additional files to evaluated for bugs
         </p>
@@ -114,8 +112,6 @@ const AdditionalUploads = () => {
             </p>
           </div>
         )}
-
-        <div className="vspacing-40"> </div>
 
         <div className="next-button-align-right">
           <Link

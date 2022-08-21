@@ -76,7 +76,7 @@ const Upload = () => {
   return (
     <Container className="container-nav">
       <div className="root">
-        <p className="text-60 text-centre">UPLOAD YOUR APK</p>
+        <p className="text-48 text-centre">UPLOAD YOUR APK</p>
         <p className="text-30 text-centre">
           Upload your APK files to evaluated for bugs
         </p>
@@ -84,14 +84,12 @@ const Upload = () => {
         <div className="vspacing-40"> </div>
 
         <div className="upload-div-group-white">
-          <div className="upload-cover-box">
-            <UploadBox
-              currentAppStatus={currentAppStatus}
-              updateCurrentAppStatus={updateCurrentAppStatus}
-              acceptedFileTypes={{ "application/octet-stream": [".apk"] }}
-              method={uploadState}
-            />
-          </div>
+          <UploadBox
+            currentAppStatus={currentAppStatus}
+            updateCurrentAppStatus={updateCurrentAppStatus}
+            acceptedFileTypes={{ "application/octet-stream": [".apk"] }}
+            method={uploadState}
+          />
         </div>
 
         <div className="next-button-align-right">
@@ -105,8 +103,6 @@ const Upload = () => {
             </button>
           </Link>
         </div>
-
-        <div className="vspacing-40"> </div>
       </div>
     </Container>
   );

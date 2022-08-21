@@ -49,7 +49,7 @@ const SelectAlgorithms = () => {
   return (
     <Container className="container-nav">
       <div className="root">
-        <p className="text-60 text-centre">SELECT ALGORITHMS</p>
+        <p className="text-48 text-centre">SELECT ALGORITHMS</p>
         <p className="text-30 text-centre">
           Select which algorithms you want your APK to be assessed by
         </p>
@@ -94,8 +94,6 @@ const SelectAlgorithms = () => {
             )
           )}
         </Accordion>
-
-        <div className="vspacing-40"> </div>
 
         <div className="next-button-align-right">
           <Link

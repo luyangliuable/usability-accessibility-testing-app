@@ -3,14 +3,14 @@
   width: 100%;
   background-color: #e2e2e2;
   border: 1px solid #000000;
-  padding-top: 50px;
-  padding-bottom: 50px;
+  padding-top: 40px;
+  padding-bottom: 40px;
 }
 
 .result-vspacing-10 {
   padding-top: 10px;
   width: 100%;
-  display: inline-flex
+  display: inline-flex;
 }
 
 .result-box-icon {
@@ -25,17 +25,6 @@
   display: inline-flex;
   align-content: center;
   align-items: center;
-  padding-bottom: 30px;
-}
-
-.result-box-text-30 {
-  width: 100%;
-  text-align: center;
-  vertical-align: top;
-  font-size: 30px;
-  font-family: Lato;
-  line-height: auto;
-  color: rgba(13, 13, 13, 0.5);
 }
 
 .result-box-center-bar {
@@ -71,27 +60,14 @@
   margin-right: 32px;
 }
 
-.result-progress-bar {
-  padding-left: 28px;
-  padding-bottom: 64px;
-}
-
-.result-box-rectangle-3-5 {
-  border-radius: 20px;
-  height: 28px;
-  width: 314px;
-  background-color: rgba(196, 196, 196, 0);
-  border: 1px solid #000000;
-  display: block;
-}
-
-.result-box-rectangle-3-6 {
-  border-radius: 20px 0px 0px 20px;
-  height: 28px;
-  width: 171px;
-  background-color: rgba(28, 116, 151, 0.25);
-  display: block;
-  margin-top: -28px;
+.result-box-text-30 {
+  width: 100%;
+  text-align: center;
+  vertical-align: top;
+  font-size: 30px;
+  font-family: Lato;
+  line-height: auto;
+  color: rgba(13, 13, 13, 0.5);
 }
 
 .result-box-text-20 {
@@ -106,9 +82,4 @@
 
 .result-text-center {
   text-align: center;
-}
-
-.result-text-after {
-  text-align: right;
-  margin-right: -28px;
 }

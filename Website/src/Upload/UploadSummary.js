@@ -92,7 +92,7 @@ const UploadSummary = () => {
           alignItems: "center",
         }}
       >
-        <p className="text-60 text-centre">SUMMARY OF YOUR UPLOAD SELECTIONS</p>
+        <p className="text-48 text-centre">SUMMARY OF YOUR UPLOAD SELECTIONS</p>
         <p className="text-30 text-centre">
           Click next to proceed and start the algorithms, or go back and make
           changes to your selections

@@ -21,24 +21,24 @@ export default function ToolBar() {
         <Col xs={9} className="middle-bar" id="nav">
           <Col>
             <NavLink exact activeClassName="active" to={"./about"}>
-              <h1><a href="#">ABOUT</a></h1>
+              <h1><a href="./about">ABOUT</a></h1>
             </NavLink>
           </Col>
           <Col>
             <NavLink activeClassName="active" to={"./upload"}>
-              <h1><a href="#">UPLOAD</a></h1>
+              <h1><a href="./upload">UPLOAD</a></h1>
             </NavLink>
           </Col>
           <Col>
             <NavLink activeClassName="active" to={"./results"}>
-              <h1><a href="#">RESULTS</a></h1>
+              <h1><a href="./results">RESULTS</a></h1>
             </NavLink>
           </Col>
           <Col xs={6}></Col>
         </Col>
         <Col xs={1} id="nav">
           <NavLink activeClassName="active"  to={"./login"}>
-            <h1><a href="#">LOGIN</a></h1>
+            <h1><a href="./login">LOGIN</a></h1>
           </NavLink>
         </Col>
       </Row>

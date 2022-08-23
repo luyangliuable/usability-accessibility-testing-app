@@ -1,4 +1,4 @@
-.result-box-root {
+.upload-box-root {
   height: 100%;
   width: 100%;
   background-color: #e2e2e2;
@@ -7,77 +7,65 @@
   padding-bottom: 40px;
 }
 
-.result-vspacing-10 {
+.upload-vspacing-10 {
   padding-top: 10px;
   width: 100%;
   display: inline-flex;
 }
 
-.result-box-icon {
+.upload-box-icon {
   height: 128px;
   width: 100px;
   margin-left: auto;
   margin-right: auto;
 }
 
-.result-box-full-width {
+.upload-box-full-width {
   width: 100%;
   display: inline-flex;
   align-content: center;
   align-items: center;
 }
 
-.result-box-center-bar {
+.upload-box-center-bar {
   height: 28px;
   width: 370px;
   margin-left: auto;
   margin-right: auto;
-  display: inline-flexbox;
-  padding-bottom: 40px;
-  align-content: center;
-  align-items: center;
 }
 
-.result-box-line {
+.upload-box-line {
   width: 110px;
   height: 2px;
   background-color: #0d0d0d;
-  margin-top: -10px;
-  margin-bottom: 0px;
-  padding: 0px;
+  margin-top: 15px;
   display: inline-flex;
 }
 
-.result-box-left {
+.upload-box-left {
   align-self: flex-start;
   float: left;
   margin-left: 32px;
 }
 
-.result-box-right {
+.upload-box-right {
   align-self: flex-end;
   float: right;
   margin-right: 32px;
 }
 
-.result-box-text-30 {
+.upload-box-text-30 {
   width: 100%;
   text-align: center;
-  vertical-align: top;
   font-size: 30px;
-  line-height: auto;
   color: rgba(13, 13, 13, 0.5);
 }
 
-.result-box-text-20 {
-  vertical-align: top;
+.upload-box-text-20 {
   font-size: 20px;
-  line-height: auto;
   color: #000000;
-  margin-top: -28px;
-  padding: 0px;
 }
 
-.result-text-center {
+.upload-text-center {
   text-align: center;
 }

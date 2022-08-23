@@ -39,11 +39,10 @@ h1:hover {
 }
 
 #nav a {
-  color: white;
-  text-decoration: none;
+  color:white;
+  }
+
+#nav .active a{
+  color: rgb(214, 219, 137);
 }
-#nav a:active,
-#nav a:focus,
-#nav a:hover {
-  color: rgb(231, 204, 84);
-}
+

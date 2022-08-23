@@ -1,6 +1,7 @@
 import React from "react";
 import { Row, Container, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import {NavLink} from 'react-router-dom'
 
 import "./ToolBar.css";
 
@@ -19,26 +20,26 @@ export default function ToolBar() {
         </Col>
         <Col xs={9} className="middle-bar" id="nav">
           <Col>
-            <Link to={"./about"}>
+            <NavLink exact activeClassName="active" to={"./about"}>
               <h1><a href="#">ABOUT</a></h1>
-            </Link>
+            </NavLink>
           </Col>
           <Col>
-            <Link to={"./upload"}>
+            <NavLink activeClassName="active" to={"./upload"}>
               <h1><a href="#">UPLOAD</a></h1>
-            </Link>
+            </NavLink>
           </Col>
           <Col>
-            <Link to={"./results"}>
+            <NavLink activeClassName="active" to={"./results"}>
               <h1><a href="#">RESULTS</a></h1>
-            </Link>
+            </NavLink>
           </Col>
           <Col xs={6}></Col>
         </Col>
         <Col xs={1} id="nav">
-          <Link to={"./login"}>
+          <NavLink activeClassName="active"  to={"./login"}>
             <h1><a href="#">LOGIN</a></h1>
-          </Link>
+          </NavLink>
         </Col>
       </Row>
     </Container>

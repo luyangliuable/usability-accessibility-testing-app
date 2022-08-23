@@ -13,16 +13,30 @@ export default function ReportsTable({ image, issues, app }) {
     return (
         <>
             <h2 style={{color:"white"}}>{app}</h2>
+            <p style={{color:"white"}}>click each image to retrieve more infomation</p>
             <div id="report">
                 {/* <img id='report_img' src={require("../Content/bug_screenshot.PNG")} alt="issue" /> */}
                 <img
                     id='report_img'
-                    src={require("../Content/bug_screenshot.PNG")}
+                    src={require("../Content/a2dp.Vol.AppChooser.png")}
                     //src="../Content/bug_screenshot.PNG"
                     //src={image}
                     //src={require({image})}
                     onClick={() => setModalShow(true)}
                 />
+
+                 <img
+                    id='report_img'
+                    src={require("../Content/a2dp.Vol.CustomIntentMaker.png")}
+                    onClick={() => setModalShow(true)}
+                />
+
+                <img
+                    id='report_img'
+                    src={require("../Content/a2dp.Vol.main.png")}
+                    onClick={() => setModalShow(true)}
+                />
+
                 <MyVerticallyCenteredModal
                     show={modalShow}
                     onClick={() => setModalShow(false)}
@@ -52,7 +66,7 @@ function MyVerticallyCenteredModal(props) {
       >
         <Modal.Header closeButton>
           <Modal.Title id="contained-modal-title-vcenter">
-            Issue List
+            Detected issues
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

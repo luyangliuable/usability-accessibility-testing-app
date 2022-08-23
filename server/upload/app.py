@@ -127,7 +127,7 @@ def upload():
         }
 
         apk_file_note = "user uploaded apk file"
-        data["apk"].append({"type": "apk", "name": file_key, "notes": apk_file_note})
+            data["apk"].append({"type": "apk", "name": file_key, "notes": apk_file_note})
         data["additional_files"].append(additional_files)
         mongo.insert_document(data, mongo.get_database()["apk"])
 

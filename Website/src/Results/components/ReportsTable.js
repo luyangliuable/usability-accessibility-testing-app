@@ -18,7 +18,7 @@ export default function ReportsTable({ image, issues, app }) {
                 {/* <img id='report_img' src={require("../Content/bug_screenshot.PNG")} alt="issue" /> */}
                 <img
                     id='report_img'
-                    src={require("../Content/a2dp.Vol.AppChooser.png")}
+                    src={require("../Content/xbot/a2dp.Vol.AppChooser.png")}
                     //src="../Content/bug_screenshot.PNG"
                     //src={image}
                     //src={require({image})}
@@ -27,13 +27,13 @@ export default function ReportsTable({ image, issues, app }) {
 
                  <img
                     id='report_img'
-                    src={require("../Content/a2dp.Vol.CustomIntentMaker.png")}
+                    src={require("../Content/xbot/a2dp.Vol.CustomIntentMaker.png")}
                     onClick={() => setModalShow(true)}
                 />
 
                 <img
                     id='report_img'
-                    src={require("../Content/a2dp.Vol.main.png")}
+                    src={require("../Content/xbot/a2dp.Vol.main.png")}
                     onClick={() => setModalShow(true)}
                 />
 
@@ -43,13 +43,41 @@ export default function ReportsTable({ image, issues, app }) {
                     onHide={() => setModalShow(false)}
                 />
 
-                <p>
+                {/* <p>
                     {
                         issues.map((issue) => (
                             <li style={{ float: "right", width: "80%", margin: "12px 0px 0px 10px" }}>{issue}</li>
                         ))
                     }
-                </p>
+                </p> */}
+            </div>
+
+            <h2 style={{color:"white"}}>OwlEye</h2>
+            <p> </p>
+            <div id="report" >
+                <img
+                    id='report_img'
+                    src={require("../Content/owleye/a2dp.Vol.AppChooser.jpg")}
+                    onClick={() => setModalShow(true)}
+                />
+
+                 <img
+                    id='report_img'
+                    src={require("../Content/owleye/a2dp.Vol.CustomIntentMaker.jpg")}
+                    onClick={() => setModalShow(true)}
+                />
+
+                <img
+                    id='report_img'
+                    src={require("../Content/owleye/a2dp.Vol.main.jpg")}
+                    onClick={() => setModalShow(true)}
+                />
+
+                <MyVerticallyCenteredModal
+                    show={modalShow}
+                    onClick={() => setModalShow(false)}
+                    onHide={() => setModalShow(false)}
+                />
             </div>
         </ >
     );

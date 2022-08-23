@@ -12,6 +12,12 @@
   margin-bottom: 25px;
 }
 
+.btn-primary {
+  float: right;
+  margin-bottom: 25px;
+  background-color: #1c7497!important;
+}
+
 .back-button {
   float: left;
   margin-bottom: 25px;
@@ -24,3 +30,4 @@
 hr {
   width: 50%;
 }
+

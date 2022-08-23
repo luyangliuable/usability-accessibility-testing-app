@@ -120,7 +120,7 @@ const AdditionalUploads = () => {
             to={"/upload/selectalgorithm"}
             state={{ objectState: objectState }}
           >
-            <button>
+            <button class="button btn btn-primary">
               <h3>BACK</h3>
             </button>
           </Link>
@@ -132,7 +132,7 @@ const AdditionalUploads = () => {
             style={buttonState ? { pointerEvents: "none" } : {}}
             state={{ objectState: objectState }}
           >
-            <button disabled={buttonState}>
+            <button disabled={buttonState} class="button btn btn-primary">
               <h3>NEXT</h3>
             </button>
           </Link>

@@ -125,7 +125,7 @@ const UploadSummary = () => {
             to={"/upload/additionaluploads"}
             state={{ objectState: objectState }}
           >
-            <button>
+            <button class="button btn btn-primary">
               <h3>BACK</h3>
             </button>
           </Link>
@@ -133,7 +133,7 @@ const UploadSummary = () => {
 
         <div className="next-button">
           {/* <Link to={"/results"}> */}
-          <button onClick={start}>
+          <button class="button btn btn-primary" onClick={start}>
             <h3>START</h3>
           </button>
           {/* </Link> */}

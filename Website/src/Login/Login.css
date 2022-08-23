@@ -1,14 +1,3 @@
-.container-nav {
-  padding: 20px;
-  background-color: #0d0d0d;
-  /* min-height: 100vh !important; */
-  min-width: 100vw !important;
-  margin: 0px !important;
-
-  /* max-height: 100vh !important; */
-  /* overflow-y: auto; */
-}
-
 .login-root {
   height: 570px;
   width: 1224px;

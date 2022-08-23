@@ -46,8 +46,20 @@ a:active {
   text-decoration: none !important;
 }
 
+.container-nav {
+  padding: 1.8vh;
+  background-color: #0d0d0d;
+  min-height: 88vh !important;
+  min-width: 100vw !important;
+  margin: 0px !important;
+
+  /* max-height: 100vh !important; */
+  /* overflow-y: auto; */
+  overflow-x: auto;
+}
+
 .root {
-  width: 1224px;
+  width: 70vw;
   align-self: center;
   margin: auto;
   display: block;
@@ -59,45 +71,21 @@ a:active {
   display: inline-flex;
 }
 
-/* .text-60 {
-  vertical-align: top;
-  padding-bottom: 32px;
-  font-size: 60px;
-  font-weight: 500;
+.text-header {
+  font-size: max(4vmin, 30px);
   font-family: Lato;
-  line-height: auto;
-  color: #f2f2f2;
-} */
-
-.text-48 {
-  vertical-align: middle;
-  font-size: 48px;
-  font-family: Lato;
-  line-height: auto;
   color: #ffffff;
 }
 
-.text-36 {
-  vertical-align: top;
-  font-size: 36px;
+.text-sub-header {
+  font-size: max(3.3vmin, 24px);
   font-family: Lato;
-  line-height: auto;
   color: #ffffff;
 }
 
-.text-30 {
-  vertical-align: top;
-  font-size: 30px;
+.text {
+  font-size: max(2.2vmin, 18px);
   font-family: Lato;
-  line-height: auto;
-  color: #ffffff;
-}
-
-.text-24 {
-  vertical-align: top;
-  font-size: 24px;
-  font-family: Lato;
-  line-height: auto;
   color: #ffffff;
 }
 

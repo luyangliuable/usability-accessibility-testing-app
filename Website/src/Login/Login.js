@@ -3,6 +3,7 @@ import { Row, Container, Form, Button, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 import "./Login.css";
+import "../index.css";
 
 export default function Login() {
   return (

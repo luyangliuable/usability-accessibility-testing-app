@@ -49,9 +49,11 @@ const SelectAlgorithms = () => {
   return (
     <Container className="container-nav">
       <div className="root">
-        <p className="text-48 text-centre">SELECT ALGORITHMS</p>
-        <p className="text-30 text-centre">
-          Select which algorithms you want your APK to be assessed by
+        <p className="text-header text-centre">SELECT ALGORITHMS</p>
+        <p className="text text-centre">
+          Click on the name of an algorithm to get more detailed information.
+          Then select the desired algorithms using the checkboxes to the right
+          of the algorithm. At least one algorithm must be selected to proceed.
         </p>
 
         <div className="vspacing-40"> </div>
@@ -81,21 +83,24 @@ const SelectAlgorithms = () => {
                   onChange={() => handleOnChange(index)}
                 />
                 <AccordionItemPanel>
-                  <p>
-                    {" "}
-                    <b>{algorithm.description}</b>{" "}
-                  </p>
-                  <h6>Additional Inputs:</h6>{" "}
-                  <b>
-                    <p> {algorithm.additionalInputDescription}</p>
-                  </b>
+                  <p>{algorithm.description}</p>
+                  <h6>Additional Inputs:</h6>
+                  <p> {algorithm.additionalInputDescription}</p>
                 </AccordionItemPanel>
               </AccordionItem>
             )
           )}
         </Accordion>
 
-        <div className="next-button-align-right">
+        <div className="back-button">
+          <Link to={"/upload"} state={{ objectState: objectState }}>
+            <button>
+              <h3>BACK</h3>
+            </button>
+          </Link>
+        </div>
+
+        <div className="next-button">
           <Link
             to={"/upload/additionaluploads"}
             style={countSelected === 0 ? { pointerEvents: "none" } : {}}

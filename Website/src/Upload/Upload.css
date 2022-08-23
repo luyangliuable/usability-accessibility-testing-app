@@ -7,8 +7,13 @@
   width: 100%;
 }
 
-.next-button-align-right {
+.next-button {
   float: right;
+  margin-bottom: 25px;
+}
+
+.back-button {
+  float: left;
   margin-bottom: 25px;
 }
 

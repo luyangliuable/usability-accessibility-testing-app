@@ -9,11 +9,10 @@ export default class About extends Component {
     return (
       <Container className="container-nav">
         <div className="root">
-
-          <p className="text-48 text-centre">ABOUT US</p>
+          <p className="text-header text-centre">ABOUT US</p>
           <br></br>
-          <p className="text-36 text-left">BACKGROUND</p>
-          <p className="text-30 text-left">
+          <p className="text-sub-header text-left">BACKGROUND</p>
+          <p className="text text-left">
             Mobile apps are now widely used in our daily life. For users with
             disabilities or who are aged, many applications may have issues such
             as erroneous animation, font size, text overlap, or colour schema
@@ -38,12 +37,12 @@ export default class About extends Component {
             />
           </div>
           <div className="about-div-mid">
-            <p className="text-16 text-left">
+            <p className="text-caption text-left">
               Figure 1. Android phone home screen with multiple applications
             </p>
           </div>
           <div className="about-div-mid">
-            <p className="text-16 text-left">
+            <p className="text-caption text-left">
               Figure 2. Graph of number of available applications in Google Play Store
               from December 2009 to March 2022. Peaks in Dec '17 and Dec '20.
             </p>
@@ -51,8 +50,8 @@ export default class About extends Component {
 
           <div className="vspacing-40"> </div>
 
-          <p className="text-36 text-left">APPLICATION DEVELOPMENT</p>
-          <p className="text-30 text-left">
+          <p className="text-sub-header text-left">APPLICATION DEVELOPMENT</p>
+          <p className="text text-left">
             This application is currently being developed by a team of 17
             students from Monash University.{" "}
           </p>

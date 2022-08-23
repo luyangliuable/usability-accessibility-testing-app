@@ -71,9 +71,10 @@ const AdditionalUploads = () => {
   return (
     <Container className="container-nav">
       <div className="root">
-        <p className="text-48 text-centre">ADDITIONAL UPLOADS</p>
-        <p className="text-30 text-centre">
-          Upload additional files to evaluated for bugs
+        <p className="text-header text-centre">ADDITIONAL UPLOADS</p>
+        <p className="text text-centre">
+          For each algorithm listed below, click on the algorithm name to expand
+          the section and then upload the additional files requested.
         </p>
 
         <div className="vspacing-40"> </div>
@@ -107,13 +108,25 @@ const AdditionalUploads = () => {
           </div>
         ) : (
           <div>
-            <p className="text-30 text-centre">
+            <p className="text text-centre">
               None of the selected algorithms require an additional upload.
+              Click Next to proceed.
             </p>
           </div>
         )}
 
-        <div className="next-button-align-right">
+        <div className="back-button">
+          <Link
+            to={"/upload/selectalgorithm"}
+            state={{ objectState: objectState }}
+          >
+            <button>
+              <h3>BACK</h3>
+            </button>
+          </Link>
+        </div>
+
+        <div className="next-button">
           <Link
             to={"/upload/summary"}
             style={buttonState ? { pointerEvents: "none" } : {}}

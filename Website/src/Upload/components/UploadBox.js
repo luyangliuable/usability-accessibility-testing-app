@@ -49,11 +49,6 @@ const UploadBox = ({
             src={require("./content/apk-image.png")}
             alt={""}
           />
-          <img
-            className="result-box-icon"
-            src={require("./content/apk-image.png")}
-            alt={""}
-          />
         </div>
 
         <div className="result-vspacing-10"> </div>
@@ -62,33 +57,29 @@ const UploadBox = ({
           <p className="result-box-text-30">
             {objectState.selectedFile
               ? objectState.selectedFile.name
-              : "Drop APK or GIF files here"}
+              : "Drop files here"}
           </p>
         </div>
 
-        <div className="result-box-full-width">
           <div className="result-box-center-bar">
             <div className="result-box-line result-box-left" />
             <div className="result-box-line result-box-right" />
             <p className="result-box-text-20 result-text-center">or</p>
           </div>
-        </div>
 
         <div
           className="result-box-full-width"
           style={{
             display: "flexbox",
             flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
           }}
         >
           <button
             disabled={objectState.buttonState}
             style={
               objectState.buttonState
-                ? { pointerEvents: "none", width: "220px" }
-                : { width: "220px" }
+                ? { pointerEvents: "none", width: "200px" }
+                : { width: "200px" }
             }
           >
             <h3>UPLOAD FILE</h3>

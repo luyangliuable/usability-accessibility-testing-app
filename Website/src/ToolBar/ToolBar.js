@@ -8,17 +8,16 @@ export default function ToolBar() {
   return (
     <Container className="nav-container" fluid="true">
       <Row>
-        <Col xxl={1} className="company-logo">
+        <Col xs={1} className="company-logo">
           <Link to={"./"}>
             <img
               alt="logo"
               src={require("./BXER.png")}
-              width="25%"
-              height="15%"
+              style={{height:"max(5vmin, 30px)",}}
             />
           </Link>
         </Col>
-        <Col xxl={9} className="middle-bar" id="nav">
+        <Col xs={9} className="middle-bar" id="nav">
           <Col>
             <Link to={"./about"}>
               <h1>ABOUT</h1>
@@ -34,9 +33,9 @@ export default function ToolBar() {
               <h1>RESULTS</h1>
             </Link>
           </Col>
-          <Col xxl={6}></Col>
+          <Col xs={6}></Col>
         </Col>
-        <Col xxl={1}>
+        <Col xs={1}>
           <Link to={"./login"}>
             <h1>LOGIN</h1>
           </Link>

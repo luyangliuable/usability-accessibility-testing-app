@@ -83,19 +83,13 @@ const UploadSummary = () => {
 
   return (
     <Container className="container-nav">
-      <div
-        className="root"
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <p className="text-48 text-centre">SUMMARY OF YOUR UPLOAD SELECTIONS</p>
-        <p className="text-30 text-centre">
-          Click next to proceed and start the algorithms, or go back and make
-          changes to your selections
+      <div className="root">
+        <p className="text-header text-centre">
+          SUMMARY OF YOUR UPLOAD SELECTIONS
+        </p>
+        <p className="text text-centre">
+          Review your choices and uploaded files, then click Next to proceed.
+          Your files will be uploaded and the algorithms will start running.
         </p>
 
         <div className="vspacing-40"> </div>
@@ -108,11 +102,7 @@ const UploadSummary = () => {
           <br></br>
           <div>
             <h2 className="black-text">Algorithms</h2>
-            <p>
-              The following algorithms were selected. Once you proceed, the
-              uploaded apk file will be passed to those algorithms to be
-              analysed.
-            </p>
+            <p>The following algorithms were selected</p>
             {selectedAlgorithms.map((algorithm, index) => {
               return (
                 <div key={algorithm.uuid + "-description"}>
@@ -123,24 +113,47 @@ const UploadSummary = () => {
               );
             })}
           </div>
+          <br></br>
           <div>
             <h2 className="black-text">Additional Uploads</h2> <br />
             {additionalInputDiv}
           </div>
         </div>
 
-        <div className="next-button-align-right">
+        <div className="back-button">
+          <Link
+            to={"/upload/additionaluploads"}
+            state={{ objectState: objectState }}
+          >
+            <button>
+              <h3>BACK</h3>
+            </button>
+          </Link>
+        </div>
+
+        <div className="next-button">
           {/* <Link to={"/results"}> */}
           <button onClick={start}>
             <h3>START</h3>
           </button>
           {/* </Link> */}
         </div>
-        <ProgressBar
-          message={algorithmState.progressBarMessage}
-          algorithmsInfo={algorithmState.algorithmsInfo}
-          algorithmsComplete={algorithmState.algorithmsComplete}
-        />
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingTop: "50px",
+          }}
+        >
+          <ProgressBar
+            message={algorithmState.progressBarMessage}
+            algorithmsInfo={algorithmState.algorithmsInfo}
+            algorithmsComplete={algorithmState.algorithmsComplete}
+          />
+        </div>
       </div>
     </Container>
   );

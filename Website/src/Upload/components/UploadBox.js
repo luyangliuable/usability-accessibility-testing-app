@@ -39,36 +39,36 @@ const UploadBox = ({
   });
 
   return (
-    <div className="result-box-root">
+    <div className="upload-box-root">
       <div {...getRootProps()} disabled={objectState.buttonState}>
         <input {...getInputProps()} disabled={objectState.buttonState} />
 
-        <div className="result-box-full-width">
+        <div className="upload-box-full-width">
           <img
-            className="result-box-icon"
+            className="upload-box-icon"
             src={require("./content/apk-image.png")}
             alt={""}
           />
         </div>
 
-        <div className="result-vspacing-10"> </div>
+        <div className="upload-vspacing-10"> </div>
 
-        <div className="result-box-full-width">
-          <p className="result-box-text-30">
+        <div className="upload-box-full-width">
+          <p className="upload-box-text-30">
             {objectState.selectedFile
               ? objectState.selectedFile.name
               : "Drop files here"}
           </p>
         </div>
 
-          <div className="result-box-center-bar">
-            <div className="result-box-line result-box-left" />
-            <div className="result-box-line result-box-right" />
-            <p className="result-box-text-20 result-text-center">or</p>
-          </div>
+        <div className="upload-box-center-bar">
+          <div className="upload-box-line upload-box-left" />
+          <div className="upload-box-line upload-box-right" />
+          <p className="upload-box-text-20 upload-text-center">or</p>
+        </div>
 
         <div
-          className="result-box-full-width"
+          className="upload-box-full-width"
           style={{
             display: "flexbox",
             flexDirection: "column",

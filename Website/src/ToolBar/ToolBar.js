@@ -35,7 +35,7 @@ export default function ToolBar() {
           </Col>
           <Col xs={6}></Col>
         </Col>
-        <Col xs={1}>
+        <Col xs={1} id="nav">
           <Link to={"./login"}>
             <h1><a href="#">LOGIN</a></h1>
           </Link>

@@ -33,29 +33,33 @@ def convert_droidbot_to_gifdroid_utg():
     # Gifdroid file format: web-build-[\d.*-\d.\d.]T00/w.*[Android emulator]_\d.*.png
 
     # Replace first part of filename with web-build which is accepted by gifdroid
-    target_files = [re.sub("^\w*_", "web-build_", each_img_file) for each_img_file in img_files]
+    print("get target files\n")
+    target_files = [re.sub("^\w*-.*-.*\d", "artifacts_", each_img_file) for each_img_file in img_files]
+
 
     # rm .jpg
-    target_files = [re.sub("." + droidbot_img_file_type + "\Z", "", each_img_file) for each_img_file in img_files]
+    target_files = [re.sub("." + droidbot_img_file_type + "\Z", "", each_img_file) for each_img_file in target_files]
 
     print(target_files)
 
-    # with tempfile.TemporaryDirectory() as tempdirname:
-    target_files = [
-        shutil.copyfile(
-            os.path.join(states_folder, img_files[i]),
-            os.path.join('./images', each_target_file + "_" + str(i) + "." + droidbot_img_file_type)
-        ) for i, each_target_file in enumerate(target_files)
-    ]
+    with tempfile.TemporaryDirectory() as tmp:
+        tempdirname = tmp
 
-    ###############################################################################
-    #                      convert all files from jpg to png                      #
-    ###############################################################################
-    og_img_files = file_order_sorter('./images', droidbot_img_file_type )
+        target_files = [
+            shutil.copyfile(
+                os.path.join(states_folder, img_files[i]),
+                os.path.join(tempdirname, each_target_file + str(i) + "." + droidbot_img_file_type)
+            ) for i, each_target_file in enumerate(target_files)
+        ]
 
-    im1 = [ Image.open(os.path.join('./images', file)) for file in file_order_sorter('./images', droidbot_img_file_type )];
+        ###############################################################################
+        #                      convert all files from jpg to png                      #
+        ###############################################################################
+        og_img_files = file_order_sorter(tempdirname, droidbot_img_file_type )
 
-    im1 = [ file.save(os.path.join(output_folder, re.sub(".jpg\Z", ".png", og_img_files[i]))) for i, file in enumerate( im1 )];
+        im1 = [ Image.open(os.path.join(tempdirname, file)) for file in file_order_sorter(tempdirname, droidbot_img_file_type )];
+
+        im1 = [ file.save(os.path.join(output_folder, re.sub(".jpg\Z", ".png", og_img_files[i]))) for i, file in enumerate( im1 )];
 
     #############################################################################
     #                             Generate json file                            #

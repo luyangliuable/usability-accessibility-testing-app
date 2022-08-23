@@ -51,8 +51,6 @@ def match_state_to_event(events_folder: str):
             source_screen_id = lookup[ data['start_state'] ]
             destination_screen_id = lookup[ data['stop_state'] ]
 
-            # print(source_screen_id, "mapped to", destination_screen_id)
-
             output['events'].append({
                 'sequence': i,
                 'sourceScreenId': str( source_screen_id ),

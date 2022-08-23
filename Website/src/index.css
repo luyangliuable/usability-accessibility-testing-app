@@ -2,7 +2,6 @@ h1,
 h2,
 h3,
 h4 {
-  font-family: "Lato", sans-serif !important;
   font-weight: 400 !important;
   margin: 0 !important;
   padding: 0 !important;
@@ -72,15 +71,16 @@ a:active {
 .text-48 {
   vertical-align: middle;
   font-size: 48px;
-  font-family: Lato;
+  font-weight: 500;
   line-height: auto;
   color: #ffffff;
+  letter-spacing: 3px;
 }
 
 .text-36 {
   vertical-align: top;
   font-size: 36px;
-  font-family: Lato;
+  font-weight: 400;
   line-height: auto;
   color: #ffffff;
 }
@@ -88,17 +88,17 @@ a:active {
 .text-30 {
   vertical-align: top;
   font-size: 30px;
-  font-family: Lato;
+  font-weight: 100;
   line-height: auto;
   color: #ffffff;
 }
 
-.text-24 {
+.text-16 {
   vertical-align: top;
-  font-size: 24px;
-  font-family: Lato;
+  font-size: 16px;
+  font-weight: 300; 
   line-height: auto;
-  color: #ffffff;
+  color: #c0c0c0;
 }
 
 .text-centre {

@@ -72,29 +72,28 @@ function MyVerticallyCenteredModal(props) {
         <Modal.Body>
           <p>
           The following is a list of opportunities to improve the accessibility of A2DP Volume. Each item corresponds to an outlined area on the attached screenshot.</p>
-            <p>
+            <li>
             Item label
             a2dp.Vol:id/m_et_search
             This item may not have a label readable by screen readers.
-            </p>
-            <p>
+            </li>
+            <li>
                 Text contrast
             a2dp.Vol:id/pi_tv_name
             The item's text contrast ratio is 1.99. This ratio is based on an estimated foreground color of #B4B4B4 and an estimated background color of #FAFAFA. Consider increasing this item's text contrast ratio to 3.00 or greater.
-            </p>
-            <p>
+            </li>
+            <li>
             Text contrast
             a2dp.Vol:id/pi_tv_name
             The item's text contrast ratio is 1.04. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #FAFAFA. Consider increasing this item's text contrast ratio to 3.00 or greater.
 
-            </p>
-            <p>
+            </li>
+            <li>
             Text contrast
             a2dp.Vol:id/pi_tv_name
             The item's text contrast ratio is 1.04. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #FAFAFA. Consider increasing this item's text contrast ratio to 3.00 or greater.
 
-            </p>
-            <p></p>
+            </li>
         </Modal.Body>
       </Modal>
       

@@ -2,9 +2,12 @@ import os
 import sys
 import shutil
 import re
-# from PIL import image
+import PIL
+import tempfile
+from PIL import Image
 import subprocess
 
+from event_to_screen_matcher import *
 from artifact_img_converter import *
 from artifact_target_creator import *
 from timeconverter import main as time_converter
@@ -12,10 +15,6 @@ from timeconverter import main as time_converter
 import json
 
 def convert_droidbot_to_gifdroid_utg():
-    ###############################################################################
-    #                                   Get time                                  #
-    ###############################################################################
-
     print("converting utg")
     utg_file = sys.argv[1]
     events_folder = sys.argv[2]
@@ -23,14 +22,6 @@ def convert_droidbot_to_gifdroid_utg():
 
     output_folder = "./output"
     subprocess.run([ "mkdir", "output"])
-
-    time = time_converter(utg_file, events_folder)
-
-    ###############################################################################
-    #                               Get target info                               #
-    ###############################################################################
-
-    focused_object = find_focused_object_classname(states_folder)
 
     ###############################################################################
     #                                 Rename file                                 #
@@ -49,35 +40,64 @@ def convert_droidbot_to_gifdroid_utg():
 
     print(target_files)
 
+    # with tempfile.TemporaryDirectory() as tempdirname:
     target_files = [
         shutil.copyfile(
             os.path.join(states_folder, img_files[i]),
-            os.path.join(output_folder, each_target_file + "_" + str(i) + "." + droidbot_img_file_type)
+            os.path.join('./images', each_target_file + "_" + str(i) + "." + droidbot_img_file_type)
         ) for i, each_target_file in enumerate(target_files)
     ]
 
     ###############################################################################
     #                      convert all files from jpg to png                      #
     ###############################################################################
-    # im1 = [ image.open(os.path.join(output_folder, file)) for file in file_order_sorter(output_folder, droidbot_img_file_type )];
+    og_img_files = file_order_sorter('./images', droidbot_img_file_type )
 
-    # im1 = [ image.save(os.path.join(output_folder, re.sub(".jpg\Z", ".png", file))) for file in img1];
+    im1 = [ Image.open(os.path.join('./images', file)) for file in file_order_sorter('./images', droidbot_img_file_type )];
+
+    im1 = [ file.save(os.path.join(output_folder, re.sub(".jpg\Z", ".png", og_img_files[i]))) for i, file in enumerate( im1 )];
 
     #############################################################################
     #                             Generate json file                            #
     #############################################################################
-    json_output = {}
+    f = open('utg.json', 'w')
+    json_output = {"events": []}
 
-    json_output['events'] = time['events']
-    print(len( json_output['events'] ))
+    ###############################################################################
+    #                                 Extract time                                #
+    ###############################################################################
+    time = time_converter(utg_file, events_folder)
+    time_events = time['events']
 
-    print(json_output)
-    print(focused_object)
-    print(len(focused_object))
+    ###############################################################################
+    #                                Extract object                               #
+    ###############################################################################
+    focused_object = find_focused_object_classname(events_folder)
 
-    # for i in range(len(time)):
+    ###############################################################################
+    #                               Extract Sequence                              #
+    ###############################################################################
+    sequence = match_state_to_event(events_folder=events_folder)
 
+    sequence_of_events = sequence['events']
 
+    ###############################################################################
+    #                          Combine data into sequence                          #
+    ###############################################################################
+
+    for i in range(len(sequence_of_events)):
+        if 'ignore' in focused_object[i] and focused_object[i]['ignore'] == True:
+            pass
+        else:
+            d = sequence_of_events[i].copy()
+            d.update(time_events[i])
+            d.update(focused_object[i])
+
+            json_output['events'].append(d)
+
+    json.dump(json_output, f, indent=4)
+
+    return 0
 
 
 if __name__=="__main__":

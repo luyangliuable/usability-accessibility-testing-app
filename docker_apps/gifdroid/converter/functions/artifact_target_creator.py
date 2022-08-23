@@ -42,13 +42,16 @@ def find_focused_object_classname(events_folder: str=None):
             focused_object[i] = {
                 "type": content["event"]["event_type"],
                 "executionResult": "SUCCESS",
-                "childSequence": child_sequence,
-                "targetDetails": {
-                    "className": each_view['class'],
-                    "androidClassName": each_view['class'],
-                    "textLabel": each_view['text'],
-                    "contentDescription": each_view['content_description'],
-                    "resourceName": each_view['resource_id'],
+                "target": {
+                    # "childSequence": child_sequence,
+                    "type": content["event"]["event_type"],
+                    "targetDetails": {
+                        "className": each_view['class'],
+                        "androidClassName": each_view['class'],
+                        "textLabel": each_view['text'],
+                        "contentDescription": each_view['content_description'],
+                        "resourceName": each_view['resource_id'],
+                    }
                 }
             }
 
@@ -69,12 +72,8 @@ def find_focused_object_classname(events_folder: str=None):
     #                              Create target json                             #
     ###############################################################################
 
-    print(focused_object)
-
-    print(len(focused_object))
-
     return focused_object
 
 
 if __name__ == "__main__":
-    find_focused_object_classname("/Users/rubber/droidbot/events/")
+    find_focused_object_classname("/Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/docker_apps/gifdroid/converter/functions/events/")

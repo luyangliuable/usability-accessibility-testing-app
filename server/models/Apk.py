@@ -30,16 +30,35 @@ class ApkManager:
         return cls._instance
 
 
+    def get_document(self, uuid: str):
+        cursor = self._db['apk'].find({"uuid": uuid})
+
+        result = []
+        for document in cursor:
+            # Find document that match with current uuid.
+            if document["uuid"] == uuid:
+                # utg_filename = document['utg_files']
+                result.append(document)
+
+        return result
+
+
     def get_database(self):
         return self._db
 
-    def create_collection(self, collection_name):
+    def create_collection(self, collection_name: str):
         self.collection = exec("%s%s" % ( "self._db.", collection_name ) )
         print("Collection", collection_name, "created")
 
 
+    def get_collection(self, collection_name:str):
+        return self._db.get_collection(collection_name)
+
+
     def insert_document(self, document, collection: Collection):
-        post_id = collection.insert_one(document).inserted_id
+        post_id = collection.insert_one(document)
+
+        print(post_id)
 
         return post_id
 

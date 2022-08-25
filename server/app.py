@@ -15,9 +15,11 @@ def create_app(script_info=None):
     # register blueprints
     from main.views import main_blueprint
     from upload.app import upload_blueprint
+    from controller.file_controller import file_blueprint
 
     app.register_blueprint(main_blueprint)
     app.register_blueprint(upload_blueprint)
+    app.register_blueprint(file_blueprint)
 
     ###############################################################################
     #                              Enable debug mode                              #

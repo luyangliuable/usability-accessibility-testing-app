@@ -1,0 +1,14 @@
+Venus Notes:
+
+Copy apk into Docker container:
+docker cp /home/user/Downloads/a2dp.Vol_133.apk b62bb8e5973a:/home/ui-checker/
+
+Setting debugger to True for markii: 
+vim /home/ui-checker/src/uichecker/common.py: run_markii(); 
+
+HOW TO RUN:
+./uicheck a2dp.Vol_133.apk /home/ui-checker/tests/test_queries.dl
+./uicheck markii/tests/invalidrec/app-debug.apk tests/test_queries.dl
+
+root@24fc495b4610:/home/ui-checker# cd markii/tests/test01
+root@24fc495b4610:/home/ui-checker/markii/tests/test01# ./gradlew assembleDebug

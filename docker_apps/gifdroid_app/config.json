@@ -1,0 +1,11 @@
+{
+    "AWS_REGION": "us-west-2",
+    "AWS_PROFILE": "localstack",
+    "ENDPOINT_URL": null,
+    "BUCKETNAME": "gifdroid-bucket",
+    "MONGODB": null,
+    "DEFAULT_UTG_FILENAME": "utg.js",
+    "NUM_OF_EVENT": "10",
+    "EMULATOR": null,
+    "OUTPUT_FILE": "gifdroid.json"
+}

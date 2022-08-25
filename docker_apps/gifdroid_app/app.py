@@ -1,5 +1,6 @@
 import pymongo
 import boto3
+import json
 import os
 from os import path
 import subprocess
@@ -8,17 +9,12 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
-config = {
-    'AWS_REGION': 'us-west-2',
-    "AWS_PROFILE": 'localstack',
-    "ENDPOINT_URL": os.environ.get('S3_URL'),
-    "BUCKETNAME": "gifdroid-bucket",
-    "MONGODB": os.environ.get('MONGO_URL'),
-    "DEFAULT_UTG_FILENAME":  "utg.js",
-    "DEFAULT_GIF_FILENAME": "gifdroid_out.gif",
-    "NUM_OF_EVENT": "10",
-    "EMULATOR": os.environ.get("EMULATOR"),
-}
+###############################################################################
+#        Load user config file gifdroid algorithm running configuration       #
+###############################################################################
+
+with open("config.json", "r") as f:
+    config = json.load(f)
 
 ###############################################################################
 #                                Set up AWS S3                                #
@@ -158,9 +154,10 @@ def _service_execute_droidbot(uuid):
 
 def _service_execute_gifdroid(uuid):
     # retrieve utg file name from mongodb
-    cursor = _db['apk'].find({})
 
     print("[1] Getting utg filename from mongodb")
+
+    cursor = _db['apk'].find({})
 
     for document in cursor:
         # Find document that match with current uuid.
@@ -182,14 +179,13 @@ def _service_execute_gifdroid(uuid):
     )
 
     #run gifdroid
-    OUTPUT_DIR = "./"
 
     print("[3] Running GIFDROID app")
 
     subprocess.run([ "adb", "connect", config['EMULATOR']])
 
     os.chdir("/home/gifdroid")
-    subprocess.run([ "python3", "main.py", "--video=../sample.gif", "--utg=" + target_utg, "--artifact=artifact", "--out=" + config["DEFAULT_GIF_FILENAME"]])
+    subprocess.run([ "python3", "main.py", "--video=../sample.gif", "--utg=" + target_utg, "--artifact=artifact", "--out=" + config["OUTPUT_FILE"]])
 
     #save output file to bucket
     enforce_bucket_existance([config[ "BUCKETNAME" ], "storydistiller-bucket", "xbot-bucket"])

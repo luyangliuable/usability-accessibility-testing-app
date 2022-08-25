@@ -31,7 +31,6 @@ def convert_droidbot_to_gifdroid_utg():
     img_files = file_order_sorter(states_folder, droidbot_img_file_type)
 
     # Gifdroid file format: web-build-[\d.*-\d.\d.]T00/w.*[Android emulator]_\d.*.png
-
     # Replace first part of filename with web-build which is accepted by gifdroid
     print("get target files\n")
     target_files = [re.sub("^\w*-.*-.*\d", "artifacts_", each_img_file) for each_img_file in img_files]

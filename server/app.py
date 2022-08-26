@@ -16,10 +16,12 @@ def create_app(script_info=None):
     from main.views import main_blueprint
     from upload.app import upload_blueprint
     from controller.file_controller import file_blueprint
+    from download.app import download_blueprint
 
     app.register_blueprint(main_blueprint)
     app.register_blueprint(upload_blueprint)
     app.register_blueprint(file_blueprint)
+    app.register_blueprint(download_blueprint)
 
     ###############################################################################
     #                              Enable debug mode                              #
@@ -41,5 +43,6 @@ def create_app(script_info=None):
     # shell context for flask cli
     app.shell_context_processor({"app": app})
 
-
     return app
+
+

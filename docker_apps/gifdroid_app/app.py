@@ -178,7 +178,6 @@ def _service_execute_gifdroid(uuid):
         Filename = target_utg
     )
 
-    #run gifdroid
 
     print("[3] Running GIFDROID app")
 

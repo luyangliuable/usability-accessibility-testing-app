@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
 import datetime
+import json
 import uuid
 from models.Apk import ApkManager
 
@@ -49,7 +50,7 @@ def get_document():
     """
     print("Starting get document")
     if request.method == "GET":
-        uuid = request.args.get('uuid')
+        uuid = request.json['uuid']
         result = mongo.get_document(uuid=uuid)
 
         result = [item for item in result]
@@ -57,7 +58,8 @@ def get_document():
         ###############################################################################
         #                  TODO can't serialised some parts of result                 #
         ###############################################################################
-        return str( {'result': result} ), 200
+
+        return safe_serialize(result), 200
 
     return "Invalid request", 400
 
@@ -97,6 +99,10 @@ def add_documment():
 ###############################################################################
 #                              Utility Functions                              #
 ###############################################################################
+def safe_serialize(obj):
+  default = lambda o: f"<<non-serializable: {type(o).__qualname__}>>"
+  return json.dumps(obj, default=default)
+
 
 def unique_id_generator():
     res = str( uuid.uuid4() )

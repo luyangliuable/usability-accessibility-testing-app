@@ -1,39 +1,45 @@
 import React from "react";
 import { Row, Container, Col } from "react-bootstrap";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import {NavLink} from 'react-router-dom'
 
 import "./ToolBar.css";
 
 export default function ToolBar() {
   return (
-    <Container className="nav-container" fluid='true'>
+    <Container className="nav-container" fluid="true">
       <Row>
-        <Col xxl={2} className="company-logo" >
+        <Col xs={1} className="company-logo">
           <Link to={"./"}>
-            <img alt='logo' src={require('./BXER.png')} width="25%" height="15%" />
+            <img
+              alt="logo"
+              src={require("./BXER.png")}
+              style={{height:"max(5vmin, 30px)",}}
+            />
           </Link>
         </Col>
-        <Col xxl={9} className="middle-bar" id="nav">
+        <Col xs={9} className="middle-bar" id="nav">
           <Col>
-            <Link to={"./about"}>
-              <h1>ABOUT</h1>
-            </Link>
-          </Col>
-          <Col >
-            <Link to={"./upload"}>
-              <h1>UPLOAD FILES</h1>
-            </Link>
+            <NavLink exact activeClassName="active" to={"./about"}>
+              <h1><a href="./about">ABOUT</a></h1>
+            </NavLink>
           </Col>
           <Col>
-            <Link to={"./results"}>
-              <h1>RESULTS</h1>
-            </Link>
+            <NavLink activeClassName="active" to={"./upload"}>
+              <h1><a href="./upload">UPLOAD</a></h1>
+            </NavLink>
           </Col>
           <Col>
+            <NavLink activeClassName="active" to={"./results"}>
+              <h1><a href="./results">RESULTS</a></h1>
+            </NavLink>
           </Col>
-          <Link to={"./login"}>
-            <h1>LOGIN</h1>
-          </Link>
+          <Col xs={6}></Col>
+        </Col>
+        <Col xs={1} id="nav">
+          <NavLink activeClassName="active"  to={"./login"}>
+            <h1><a href="./login">LOGIN</a></h1>
+          </NavLink>
         </Col>
       </Row>
     </Container>

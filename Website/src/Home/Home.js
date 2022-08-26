@@ -9,7 +9,7 @@ export default class Home extends Component {
       <Container fluid="true">
         <Row className="hero">
             <Col className='hero-text'>
-                <h1>HELPING DEVLOPERS. <br/> HELPING USERS.</h1>
+                <h1>HELPING DEVELOPERS. <br/> HELPING USERS.</h1>
             </Col>
         </Row>
       </Container>

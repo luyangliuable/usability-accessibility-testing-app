@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 
 import "./Results.css";
+import '../index.css';
 
 import ReportsTable from "../Results/components/ReportsTable";
+
 
 // export default class Results extends Component {
 const Results = () => {
 
     /* TODO link to backend */
     const [reports, updateReport] = useState([
-        { "image": "", "issues": ["Lorem ipsum dolor sit amet, consectetuer adipiscing elit.  Donec hendrerit tempor tellus.  Donec pretium posuere tellus.  Proin quam nisl, tincidunt et, mattis eget, convallis nec, purus.  Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.  Nulla posuere.  Donec vitae dolor.  Nullam tristique diam non turpis.  Cras placerat accumsan nulla.  Nullam rutrum.  Nam vestibulum accumsan nisl. "], "app": "xbot" },]);
+        { "image": "../Content/a2dp.Vol.AppChooser.png", "issues": [], "app": "xbot" },]);
 
     const [images, updateImages] = useState([
         ["test_file.apk", "100 mb", "21/04/22", "https://ourwebsite.com.au/results/dummyid1"],
@@ -21,15 +23,12 @@ const Results = () => {
                 reports.map(report => (
                     <>
                         <ReportsTable issues={report["issues"]} image={report['image']} app={report['app']}/>
+ 
                     </>
                 ))
             }
         </div>
     );
 };
-
-
-
-
 
 export default Results;

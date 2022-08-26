@@ -12,8 +12,6 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 # morgrify is required to convert jpg to png
-RUN apt install imagemagick
-
 COPY .aws /root/.aws
 
 COPY . .

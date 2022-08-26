@@ -15,7 +15,6 @@
     text-align: left;
     vertical-align: middle;
     font-size: 36px;
-    font-family: Lato;
     line-height: auto;
     color: #ffffff;
 
@@ -33,7 +32,6 @@
     text-align: left;
     vertical-align: middle;
     font-size: 36px;
-    font-family: Lato;
     font-weight: 100;
     line-height: auto;
     color: #ffffff;
@@ -62,7 +60,6 @@
     text-align: left;
     vertical-align: middle;
     font-size: 36px;
-    font-family: Lato;
     line-height: auto;
     color: #ffffff;
 }
@@ -85,5 +82,14 @@
     box-shadow: "4px 4px 8px #EEAAB";
     padding: 20px;
     border-radius: 12px;
-    margin-bottom: 10px;
+    margin-bottom: 50px;
 }
+  
+  .image {
+    width: 100px;
+  }
+
+  .tablea {
+    color: white;
+    margin-top:50px;
+  }

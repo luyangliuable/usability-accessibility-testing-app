@@ -8,7 +8,7 @@ import json
 import uuid
 import os
 from redis import Redis
-from models.Apk import ApkManager
+from models.DBManager import DBManager
 
 ###############################################################################
 #                            Set Up Flask Blueprint                           #

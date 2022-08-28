@@ -3,7 +3,7 @@ from flask_cors import cross_origin
 import datetime
 import json
 import uuid
-from models.Apk import ApkManager
+from models.DBManager import DBManager
 
 ###############################################################################
 #                            Set Up Flask Blueprint                           #
@@ -29,7 +29,7 @@ data = {
 ###############################################################################
 #                          Initiate database instance                         #
 ###############################################################################
-mongo = ApkManager.instance()
+mongo = DBManager.instance()
 
 
 @file_blueprint.route("/file", methods=['GET'])

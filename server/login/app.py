@@ -1,33 +1,28 @@
 from flask import Flask
 from flask import render_template, Blueprint, jsonify, request, Response, send_file, redirect, url_for
+from flask_cors import cross_origin
+
+
 import os
 import pymongo
 
-from server.models.User import *
+from models.User import *
 
 login_blueprint = Blueprint('login', __name__)
 
-try:
-    mongo = pymongo.MongoClient("mongodb://localhost:27017/")
-    db = mongo.users_db
-    mongo.server_info()  # Triger exception if connection fails to the database
-except Exception as ex:
-    print('failed to connect', ex)
-
-
-@login_blueprint.route('/')
-def home():
-    return 'Flask with docker!'
-
 
 @login_blueprint.route('/signUp', methods=['POST'])
+@cross_origin()
 def signUpUser():
-    return UserModel().signUpUser()
+    if request.method == "POST":
+        return UserModel().signUpUser()
 
 
 @login_blueprint.route('/login', methods=['POST'])
+@cross_origin()
 def loginUser():
-    return UserModel().loginUser()
+    if request.method == "POST":
+        return UserModel().loginUser()
 
 
 if __name__ == "__main__":

@@ -32,13 +32,13 @@ s3_client = boto3.client(
 #                              Connect to mongodb                             #
 ###############################################################################
 try:
-    connection = pymongo.MongoClient(config["MONGODB"])
+    connection = pymongo.MongoClient(config["MONGO_URL"])
     _db = connection.fit3170
     connection.server_info()  # Triger exception if connection fails to the database
 except Exception as ex:
-    print('failed to connect', ex)
+    print('failed to connect GIFDROID', ex)
 else:
-    print("Successfully connected to mongodb.")
+    print("Successfully connected to mongodb. GifDroid")
 
 
 @app.route("/new_job", methods=["POST"])

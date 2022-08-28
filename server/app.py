@@ -15,11 +15,15 @@ def create_app(script_info=None):
     # register blueprints
     from main.views import main_blueprint
     from upload.app import upload_blueprint
+    from reports.app import reports_blueprint
+    from login.app import login_blueprint
     from controller.file_controller import file_blueprint
     from download.app import download_blueprint
 
     app.register_blueprint(main_blueprint)
     app.register_blueprint(upload_blueprint)
+    app.register_blueprint(reports_blueprint)
+    app.register_blueprint(login_blueprint)
     app.register_blueprint(file_blueprint)
     app.register_blueprint(download_blueprint)
 
@@ -44,5 +48,3 @@ def create_app(script_info=None):
     app.shell_context_processor({"app": app})
 
     return app
-
-

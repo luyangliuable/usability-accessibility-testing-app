@@ -15,6 +15,8 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
     // const run_storydistiller_url = process.env.DISTILLER;
     const signalStartUrl = "http://localhost:5005/signal_start/";
 
+    const resultCreateUrl = "http://localhost:5005/create_result";
+
     console.log("[1] upload start.");
 
     function postData(i, formData) {
@@ -79,6 +81,17 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
         // Append uuid for the uploaded files ///////////////////////////////
         formData.append("uuid", response.uuid);
 
+        const user_UUID = sessionStorage.getItem('User_UUID');
+        const jsonData = JSON.stringify({
+            "user_id": user_UUID,
+            "result_id": response.uuid
+        });
+        var _ = fetch(resultCreateUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: jsonData,
+        });
+
         setObjectState(prev => {
             return {
                 ...prev,
@@ -95,4 +108,3 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
 
     });
 };
-

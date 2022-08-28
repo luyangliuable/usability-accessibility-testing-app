@@ -9,7 +9,7 @@ import json
 import uuid
 import os
 from redis import Redis
-from models.Apk import ApkManager
+from models.DBManager import DBManager
 
 ###############################################################################
 #                            Set Up Flask Blueprint                           #
@@ -20,7 +20,7 @@ upload_blueprint = Blueprint("upload", __name__)
 #                            Set Up Flask Blueprint                           #
 ###############################################################################
 
-mongo = ApkManager.instance()
+mongo = DBManager.instance()
 # mongo.create_mongo.insert_document({"filename": "test.apk"}, mongo.get_database()["apk"])
 
 ###############################################################################
@@ -174,7 +174,7 @@ def get_status(task_id):
         "task_result": task_result.result
     }
 
-    return jsonify(result), 200
+    return json.dumps(result), 200
 
 
 @upload_blueprint.after_request

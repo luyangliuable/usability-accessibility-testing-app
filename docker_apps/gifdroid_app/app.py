@@ -53,14 +53,14 @@ s3_client = boto3.client(
 ###############################################################################
 #                              Connect to mongodb                             #
 ###############################################################################
-# try:
-#     connection = pymongo.MongoClient(config["MONGODB"])
-#     _db = connection.fit3170
-#     connection.server_info()  # Triger exception if connection fails to the database
-# except Exception as ex:
-#     print('failed to connect', ex)
-# else:
-#     print("Successfully connected to mongodb.")
+try:
+    connection = pymongo.MongoClient(os.environ.get("MONGO_URL"))
+    _db = connection.fit3170
+    connection.server_info()  # Triger exception if connection fails to the database
+except Exception as ex:
+    print('failed to connect', ex)
+else:
+    print("Successfully connected to mongodb.")
 
 
 @app.route("/new_job", methods=["POST"])
@@ -103,11 +103,6 @@ def _service_execute_droidbot(uuid):
     ###############################################################################
     print("[1] Getting session information")
     # cursor = _db['apk'].find({})
-
-    # for document in cursor:
-    #     # Find document that match with current uuid.
-    #     if document["uuid"] == uuid:
-    #         apk_filename = document['apk'][0]['name']
 
     response = requests.get(file_api, headers={'Content-Type': 'application/json'},  data=json.dumps( {'uuid': uuid} )).content
 
@@ -187,9 +182,6 @@ def _service_execute_droidbot(uuid):
         }
     )
 
-    os.chdir("/home/droidbot/")
-
-
 
 def _service_execute_gifdroid(uuid):
     # retrieve utg file name from mongodb
@@ -199,59 +191,60 @@ def _service_execute_gifdroid(uuid):
     ###############################################################################
     print("[1] Getting utg filename from mongodb")
 
-    data = requests.post(file_api, headers={'Content-Type': 'application/json'}, data={'uuid': uuid}).json()[0]
-    data = bytes_to_json(data)[0]
-
-    utg_filename=data['utg_files']
-
-    # cursor = _db['apk'].find({})
-
-    # utg_filename=""
-
-    # for document in cursor:
-    #     # Find document that match with current uuid.
-    #     if document["uuid"] == uuid:
-    #         print(str( document ))
-    #         utg_filename = document['utg_files']
-
-    print(utg_filename)
-
     print("[2] Creating temporary file to save utg file")
     temp_dir = tempfile.gettempdir()
+    ###############################################################################
+    #                   Converter script doesn't utg of droidbot                  #
+    ###############################################################################
 
-    target_utg = path.join(temp_dir, utg_filename)
+    # target_utg = path.join(temp_dir, "utg.")
 
-    s3_client.download_file(
-        Bucket=config["BUCKET_NAME"],
-        Key=path.join(uuid, utg_filename),
-        Filename = target_utg
-    )
+    # s3_client.download_file(
+    #     Bucket=config["BUCKET_NAME"],
+    #     Key=path.join(uuid, utg_filename),
+    #     Filename = target_utg
+    # )
 
     ###############################################################################
     #                        Convert utg to correct format                        #
     ###############################################################################
-    convert_droidbot_to_gifdroid_utg(os.path.join("/home/droidbot", config['DEFAULT_UTG_FILENAME']),"/home/droidbot/events", "home/droidbot/states")
+    convert_droidbot_to_gifdroid_utg(os.path.join("/home/droidbot", config['DEFAULT_UTG_FILENAME']),"/home/droidbot/events", "/home/droidbot/states")
 
     ###############################################################################
     #                          Get gif file from frontend                         #
     ###############################################################################
+    os.chdir("/home/gifdroid")
+
+    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+
+    response = requests.get("http://host.docker.internal:5005/file/get", data=json.dumps( {"uuid": uuid} ), headers=headers)
+
+    lookup = json.loads( response.content )[0]
+
+    for item in lookup['additional_files']:
+        if item['algorithm'] == 'gifdroid':
+            gif_file = item['name']
+
+    s3_client.download_file(
+        Bucket=config["BUCKET_NAME"],
+        Key=path.join(uuid, gif_file),
+        Filename = gif_file
+    )
 
     ###############################################################################
     #                               Run GIFDROID app                              #
     ###############################################################################
     print("[3] Running GIFDROID app")
 
-    subprocess.run([ "adb", "connect", EMULATOR])
 
-    os.chdir("/home/gifdroid")
-    subprocess.run([ "python3", "main.py", "--video=../sample.gif", "--utg=" + "./utg.json", "--artifact=./output", "--out=" + config["OUTPUT_FILE"]])
+    subprocess.run([ "python3", "main.py", "--video=./" + gif_file, "--utg=" + "../droidbot/utg.json", "--artifact=../droidbot/output", "--out=" + config["OUTPUT_FILE"]])
 
     #save output file to bucket
     enforce_bucket_existance([config[ "BUCKET_NAME" ], "storydistiller-bucket", "xbot-bucket"])
 
 
     print("[4] Uploading gif file to bucket")
-    s3_client.upload_file(config[ "DEFAULT_GIF_FILENAME" ], config[ 'BUCKET_NAME' ], config[ "DEFAULT_GIF_FILENAME" ])
+    s3_client.upload_file(config[ "OUTPUT_FILE" ], config[ 'BUCKET_NAME' ], os.path.join(uuid, config[ "OUTPUT_FILE" ] ))
 
     #update mongodb
     print("[5] Updating mongodb for traceability")
@@ -261,7 +254,7 @@ def _service_execute_gifdroid(uuid):
         },
         {
             "$set": {
-                "gifdroid_files": [config["DEFAULT_GIF_FILENAME"]]
+                "gifdroid_files": [config["OUTPUT_FILE"]]
             }
         }
     )
@@ -300,4 +293,9 @@ def enforce_bucket_existance(buckets):
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=3005)
+    # No point doing debug mode True because can't debug on docker
+    app.run(host="0.0.0.0", port=3005)
+    # convert_droidbot_to_gifdroid_utg("/Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/docker_apps/gifdroid_app/utg.js", "/Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/docker_apps/gifdroid_app/events", "/Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/docker_apps/gifdroid_app/states")
+
+
+

@@ -125,7 +125,7 @@ def upload():
 
         print("[5] return celery task id and file key")
         print(data)
-        exit(0)
+        # exit(0)
         return json.dumps({"file_key": str( file_key ), "uuid": unique_id}), 200
 
     return json.dumps({"message": "failed to upload"}), 400

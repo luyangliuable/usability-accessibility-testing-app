@@ -49,7 +49,7 @@ def download(uuid,algorithm):
 
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 
-    response = requests.get('http://localhost:5000/file/get', data=json.dumps( data ), headers=headers)
+    response = requests.get('/file/get', data=json.dumps( data ), headers=headers)
 
     ###############################################################################
     #             Assume the the first element in result is the result            #

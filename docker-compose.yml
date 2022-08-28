@@ -32,13 +32,11 @@ services:
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - REDIS_URL=redis://redis:6379/0
       - MONGO_URL=mongodb://host.docker.internal:27017/
-      - android_emulator=0.0.0.0:5555 # TODO
-      - apk_tool=/tools/apktool_2.4.1.jar
-      - ic3=/tools/ic3-0.2.0
       - S3_URL=http://host.docker.internal:4566
       - STORYDISTILLER=http://host.docker.internal:3002
       - XBOT=http://host.docker.internal:3003
       - OWLEYE=http://host.docker.internal:3004
+      - FLASK_BACKEND=http://host.docker.internal:5005
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:
@@ -143,12 +141,13 @@ services:
     command: python3 app.py
     image: bwoa0001/gifdroid
     container_name: bxer.gifdroid
+    # network_mode: "host"
     ports:
       - '3005:3005'
     environment:
-    - FLASK_APP=app
+    - FLASK_BACKEND=http://host.docker.internal:5005
     - DEBUG_MODE=1
     - MONGO_URL=mongodb://host.docker.internal:27017/
     - S3_URL=http://host.docker.internal:4566
-    - EMULATOR=host.docker.internal:5554
+    - EMULATOR=host.docker.internal:5555
     - FILE_API=http://host.docker.internal:5005/file/get

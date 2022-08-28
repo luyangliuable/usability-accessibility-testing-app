@@ -68,7 +68,6 @@ def convert_droidbot_to_gifdroid_utg(utg_file=None, events_folder=None, states_f
     #############################################################################
     #                             Generate json file                            #
     #############################################################################
-    f = open('utg.json', 'w')
     json_output = {"events": []}
 
     ###############################################################################
@@ -103,7 +102,10 @@ def convert_droidbot_to_gifdroid_utg(utg_file=None, events_folder=None, states_f
 
             json_output['events'].append(d)
 
-    json.dump(json_output, f, indent=4)
+    with open('utg.json', 'w') as f:
+        json.dump(json_output, f, indent=4)
+
+    print(json_output)
 
     return 0
 

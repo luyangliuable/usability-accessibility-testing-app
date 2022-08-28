@@ -7,18 +7,23 @@ import tempfile
 from PIL import Image
 import subprocess
 
-from event_to_screen_matcher import *
-from artifact_img_converter import *
-from artifact_target_creator import *
-from timeconverter import main as time_converter
+from converter.functions.event_to_screen_matcher import *
+from converter.functions.artifact_img_converter import *
+from converter.functions.artifact_target_creator import *
+from converter.functions.timeconverter import main as time_converter
 
 import json
 
-def convert_droidbot_to_gifdroid_utg():
+def convert_droidbot_to_gifdroid_utg(utg_file=None, events_folder=None, states_folder=None):
     print("converting utg")
-    utg_file = sys.argv[1]
-    events_folder = sys.argv[2]
-    states_folder = sys.argv[3]
+    if utg_file == None:
+        utg_file = sys.argv[1]
+
+    if events_folder == None:
+        events_folder = sys.argv[2]
+
+    if states_folder == None:
+        states_folder = sys.argv[3]
 
     output_folder = "./output"
     subprocess.run([ "mkdir", "output"])

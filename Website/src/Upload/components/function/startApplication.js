@@ -1,6 +1,7 @@
 import { getStatus } from './getStatus';
 import { uploadApk } from './upload_apk';
 import { useState } from 'react';
+import  { getAdditionalFiles } from './getAdditionalFiles';
 
 
 export const startApplication = async (objectState, setObjectState, algorithmsToComplete) => {
@@ -42,34 +43,24 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
     const gifFile = objectState.algorithmFiles.apkFile;
 
     formData.append("apk_file", apkFile);
+
     formData.append("filename", apkFile.name);
-
-    console.log(apkFile);
-
-    const additionalFiles = {};
 
     ///////////////////////////////////////////////////////////////////////////
     //                       Scan for additional files                       //
     ///////////////////////////////////////////////////////////////////////////
-    console.log(objectState.algorithmsInfo);
+    console.log("[2] Getting additional files.");
+
+    const additionalFiles = getAdditionalFiles(objectState);
 
     objectState.algorithmsInfo.forEach(file => {
         if ( file.additionalFiles.length  > 0 ) {
-            additionalFiles[file.uuid] = {
-                file: file.additionalFiles,
-                type: Object.keys(file.additionalInputFileTypes),
-                algorithm: file.uuid,
-            };
+            formData.append(file.uuid, file.additionalFiles[0]); // Assume each algorithm only has 1 additional file
+            console.log(file.uuid + " has " + file.additionalFiles[0]);
         }
     });
 
-    console.log(additionalFiles);
-
-    formData.append("additional_files", additionalFiles);
-
-    console.log(additionalFiles);
-
-    console.log(`Sending ${apkFile.path} to server.`);
+    console.log(`Sending ${apkFile.name} to server.`);
     /////////////////////////////////////////////////////////////////////////
     //                     Call API run storydistiller                     //
     /////////////////////////////////////////////////////////////////////////

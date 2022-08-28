@@ -1,7 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
 from tasks import run_algorithm, celery
-import datetime
 import boto3
 import json
 import tempfile
@@ -21,7 +20,6 @@ upload_blueprint = Blueprint("upload", __name__)
 ###############################################################################
 
 mongo = ApkManager.instance()
-# mongo.create_mongo.insert_document({"filename": "test.apk"}, mongo.get_database()["apk"])
 
 ###############################################################################
 #                                  Set Up AWS                                 #
@@ -43,6 +41,7 @@ def unique_id_generator():
     return res
 
 
+
 @upload_blueprint.route('/upload', methods=["GET", "POST"])
 @cross_origin()
 def upload():
@@ -54,6 +53,9 @@ def upload():
         ###############################################################################
         #                        If post http request received                        #
         ###############################################################################
+
+        enforce_bucket_existance([BUCKETNAME, "storydistiller-bucket", "xbot-bucket"])
+
 
         print("[0] Getting request from front-end")
 
@@ -67,70 +69,63 @@ def upload():
         # Unique id is used to identify a file for a cluster ###################
         unique_id = unique_id_generator()
 
+        # Document template to be inserted into mongodb
+        data = ApkManager.get_format(unique_id)
+
         # File name is the original uploaded file name ################################
         file_key = request.form.get('filename')
 
         # File name is the original uploaded file name ################################
-        additional_files = request.form.get('additional_files')
 
-        print("additional files", additional_files)
+        print("[1] Uploading additional files")
+
+        temp_dir = tempfile.gettempdir()
+
+        for key, item in request.files.items():
+        ###############################################################################
+        #                          Save every additional file                         #
+        ###############################################################################
+            if key != "apk_file":
+                print("additional files", item.name, "detected")
+
+                temp_file_name = os.path.join(temp_dir, str( item.name ))
+
+                with open(temp_file_name, "wb") as savefile:
+                    savefile.write(item.read())
+                    savefile.close()
+
+                s3_client.upload_file(temp_file_name, BUCKETNAME, os.path.join( unique_id, str(item.filename) ))
+                data = ApkManager.get_format(unique_id)
+                data["additional_files"].append({"algorithm": item.name, "type": item.content_type, "name": item.filename, "notes": ""})
 
         ###############################################################################
         #                Create a temporary file to store file content                #
         ###############################################################################
-        print("[1] Generating file")
-        temp_dir = tempfile.gettempdir()
+        print("[2] Generating apk file")
 
         temp_file_name = os.path.join(temp_dir, unique_id)
+
         with open(temp_file_name, "wb") as savefile:
             savefile.write(request.files.get('apk_file').read())
             savefile.close()
 
-        enforce_bucket_existance([BUCKETNAME, "storydistiller-bucket", "xbot-bucket"])
-
         ###############################################################################
         #                   Upload the temporary file to git bucket                   #
         ###############################################################################
-        print("[2] Uploading to bucket")
+        print("[3] Uploading apk to bucket")
         s3_client.upload_file(temp_file_name, BUCKETNAME, os.path.join( unique_id, file_key ))
 
-        print("[3] Adding file data to mongo db")
-
-        ###############################################################################
-        #               Store data into mongodb in the following format               #
-        ###############################################################################
-
-        # uuid - used to identify the cluster of data for one task.
-        # date - just the data initiated the task
-        # apk - the apk file to analyse
-        # tapshoe_files - store tapeshoe files here
-        # storydistiller_files - store storydistiller files here
-        # gifdroid_files - store gifdroid files here
-        # utg_files - store droidbot files here
-        # venus_files - store venus files here
-
-        # NOTE: store in the following format for files for easier identifcation
-        # {"type": {The file/mime type}, "name": {Name of file inside s3 bucket}, "notes": "Notes to take into consideration"}
-
-        data = {
-            "uuid": unique_id,
-            "date": str( datetime.datetime.now() ),
-            "apk": [],
-            "additional_files": [],
-            "tapshoe_files": [],
-            "storydistiller_files": [],
-            "gifdroid_files": [],
-            "utg_files": [],
-            "owleye_files": [],
-            "venus_files": [],
-        }
+        print("[4] Adding apk file meta data to mongo db")
 
         apk_file_note = "user uploaded apk file"
+
         data["apk"].append({"type": "apk", "name": file_key, "notes": apk_file_note})
-        data["additional_files"].append(additional_files)
+
         mongo.insert_document(data, mongo.get_database()["apk"])
 
         print("[5] return celery task id and file key")
+        print(data)
+        exit(0)
         return json.dumps({"file_key": str( file_key ), "uuid": unique_id}), 200
 
     return json.dumps({"message": "failed to upload"}), 400

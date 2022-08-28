@@ -31,7 +31,6 @@ data = {
 ###############################################################################
 mongo = ApkManager.instance()
 
-
 @file_blueprint.route("/file", methods=['GET'])
 @cross_origin()
 def check_health():
@@ -51,14 +50,14 @@ def get_document():
     print("Starting get document")
     if request.method == "GET":
         uuid = request.json['uuid']
+
         result = mongo.get_document(uuid=uuid)
 
         result = [item for item in result]
 
         ###############################################################################
-        #                  TODO can't serialised some parts of result                 #
+        #                FIX: Somehow this is returning bytes not json                #
         ###############################################################################
-
         return safe_serialize(result), 200
 
     return "Invalid request", 400
@@ -67,23 +66,30 @@ def get_document():
 @file_blueprint.route("/file/add", methods=['GET', "POST"])
 @cross_origin()
 def add_documment():
-    ###############################################################################
-    #                  TODO add method for adding new document in                 #
-    ###############################################################################
     if request.method == "POST":
+        try:
+            ###############################################################################
+            #                         Add file metadata to mongodb                        #
+            ###############################################################################
 
-        collection = "apk"
-        document = data
+            collection = "apk"
+            document = data
 
-        for each_key, _ in document.items():
-            document[each_key] = request.args.get(each_key)
+            for each_key, _ in document.items():
+                document[each_key] = request.args.get(each_key)
 
-        document['uuid'] = unique_id_generator()
-        print(document)
+            document['uuid'] = unique_id_generator()
+            print(document)
 
-        post_id = mongo.insert_document(document, mongo.get_collection('apk')).inserted_id
+            mongo.insert_document(document, mongo.get_collection('apk')).inserted_id
 
-        return document['uuid'], 200
+            return document['uuid'], 200
+        except Exception as e:
+            ###############################################################################
+            #                                Error Handling                               #
+            ###############################################################################
+            return str(e), 400
+
 
     return "Not a valid request", 400
 
@@ -100,8 +106,8 @@ def add_documment():
 #                              Utility Functions                              #
 ###############################################################################
 def safe_serialize(obj):
-  default = lambda o: f"<<non-serializable: {type(o).__qualname__}>>"
-  return json.dumps(obj, default=default)
+    default = lambda o: f"<<non-serializable: {type(o).__qualname__}>>"
+    return json.dumps(obj, default=default)
 
 
 def unique_id_generator():

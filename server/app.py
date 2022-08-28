@@ -15,7 +15,7 @@ def create_app(script_info=None):
     # register blueprints
     from main.views import main_blueprint
     from upload.app import upload_blueprint
-    from controller.file_controller import file_blueprint
+    from controllers.file_controller import file_blueprint
     from download.app import download_blueprint
 
     app.register_blueprint(main_blueprint)

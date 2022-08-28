@@ -86,7 +86,7 @@ services:
       - 27017:27017
     volumes:
       - .:/data/mongodb
-  
+
   redis:
     ports:
       - 6379:6379
@@ -137,12 +137,12 @@ services:
     environment:
     - S3_URL=http://host.docker.internal:4566
 
-  gifdroidbot:
+  gifdroid:
     build:
       context: ./docker_apps/gifdroid_app
     command: python3 app.py
     image: bwoa0001/gifdroid
-    container_name: bxer.gifdroidbot
+    container_name: bxer.gifdroid
     ports:
       - '3005:3005'
     environment:
@@ -150,4 +150,5 @@ services:
     - DEBUG_MODE=1
     - MONGO_URL=mongodb://host.docker.internal:27017/
     - S3_URL=http://host.docker.internal:4566
-    - EMULATOR=host.docker.internal:5555
+    - EMULATOR=host.docker.internal:5554
+    - FILE_API=http://host.docker.internal:5005/file/get

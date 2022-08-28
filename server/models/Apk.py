@@ -1,6 +1,7 @@
 import pymongo
 from pymongo.database import Collection
 import os
+import datetime
 
 class ApkManager:
     """
@@ -9,11 +10,91 @@ class ApkManager:
 
     _instance = None  # _ means it is private
 
+    apk_schema = {
+        'uuid': {
+            'type': 'string',
+            'minlength': 5,
+            'required': True,
+        },
+        'date': {
+            'type': 'string',
+            'required': False
+        },
+        'additional_files': {
+            'type': 'array',
+            'required': False
+        },
+        'tapshoe_files': {
+            'type': 'array',
+            'required': False
+        },
+        'storydistiller_files': {
+            'type': 'array',
+            'required': False
+        },
+        'gifdroid_files': {
+            'type': 'array',
+            'required': False
+        },
+        'droidbot_files': {
+            'type': 'array',
+            'required': False
+        },
+        'utg_files': {
+            'type': 'array',
+            'required': False
+        },
+        'owleye_files': {
+            'type': 'array',
+            'required': False
+        },
+        'venus_files': {
+            'type': 'array',
+            'required': False
+        }
+    }
+
+
+
     def __init__(self):
         """
         NOTE: DO NOT ALLOW initiation directly
         """
         raise RuntimeError('Cannot initialise an api singleton, call instance() instead')
+
+
+    @staticmethod
+    def get_format(uuid: str) -> dict:
+        ###############################################################################
+        #               Store data into mongodb in the following format               #
+        ###############################################################################
+
+        # uuid - used to identify the cluster of data for one task.
+        # date - just the data initiated the task
+        # apk - the apk file to analyse
+        # tapshoe_files - store tapeshoe files here
+        # storydistiller_files - store storydistiller files here
+        # gifdroid_files - store gifdroid files here
+        # utg_files - store droidbot files here
+        # venus_files - store venus files here
+
+        # NOTE: store in the following format for files for easier identifcation
+        # {"type": {The file/mime type}, "name": {Name of file inside s3 bucket}, "notes": "Notes to take into consideration"}
+
+        data = {
+            "uuid": uuid,
+            "date": str( datetime.datetime.now() ),
+            "apk": [],
+            "additional_files": [],
+            "tapshoe_files": [],
+            "storydistiller_files": [],
+            "gifdroid_files": [],
+            "utg_files": [],
+            "owleye_files": [],
+            "venus_files": [],
+        }
+
+        return data
 
 
     @classmethod
@@ -42,13 +123,56 @@ class ApkManager:
 
         return result
 
+    @classmethod
+    def get_db_status(cls, db_name:str):
+        try:
+            client = pymongo.MongoClient(cls.url)
+            exec("%s%s" % ( "client.", db_name ) )
+        except:
+            return False
+        else:
+            return True
+
 
     def get_database(self):
         return self._db
 
-    def create_collection(self, collection_name: str):
-        self.collection = exec("%s%s" % ( "self._db.", collection_name ) )
+    @staticmethod
+    def create_mongo_validator(user_schema: dict):
+        required = []
+        validator = {'$jsonSchema': {'bsonType': 'object', 'properties': {}}}
+
+        # Bson types
+        # https://www.mongodb.com/docs/manual/reference/bson-types/
+
+        for field_key in user_schema:
+            field = user_schema[field_key]
+            properties = {'bsonType': field['type']}
+            minimum = field.get('minlength')
+
+            if type(minimum) == int:
+                properties['minimum'] = minimum
+
+            if field.get('required') is True:
+                required.append(field_key)
+
+            validator['$jsonSchema']['properties'][field_key] = properties
+
+        return validator
+
+
+    def create_collection(self, collection_name: str, schema=None):
+
+        validator = {}
+
+        if schema != None:
+            validator = ApkManager.create_mongo_validator(schema)
+
+        result = self._db.create_collection(collection_name, validator=validator)
+
         print("Collection", collection_name, "created")
+
+        return True
 
 
     def get_collection(self, collection_name:str):
@@ -72,3 +196,14 @@ class ApkManager:
             print('failed to connect', ex)
         else:
             print("Successfully connected to mongodb.")
+
+
+if __name__ == "__main__":
+
+
+    # print(ApkManager.create_mongo_validator(apk_schema))
+
+    a = ApkManager.instance()
+    # a.create_collection("random", ApkManager.apk_schema)
+    # print(a.get_db_status("FIT3170asda"))
+    a.insert_document({'test': 'worksl'}, a.get_collection("random"))

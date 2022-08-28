@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Container } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { startApplication } from "./components/function/startApplication";
+import { getAdditionalFiles } from "./components/function/getAdditionalFiles";
 import ProgressBar from "./components/ProgressBar";
 
 import "./Upload.css";
@@ -12,11 +13,8 @@ const UploadSummary = () => {
   const locations = useLocation();
   const navigate = useNavigate();
 
-  console.log("[0] load state");
-
   const objectState = locations.state?.objectState;
-  const algorithms =
-    typeof objectState === "undefined" ? [] : objectState.algorithms;
+  const algorithms = typeof objectState === "undefined" ? [] : objectState.algorithms;
 
   const [algorithmState, setAlgorithmState] = useState({
     buttonState: false,
@@ -27,12 +25,13 @@ const UploadSummary = () => {
     progressBarMessage: "Ready To Begin",
   });
 
+
   useEffect(() => {
+      console.log(algorithmState);
     if (typeof objectState === "undefined") {
       console.log("[1.3] redirect");
       navigate("/upload");
     }
-    console.log(algorithmState);
   }, [objectState, navigate, algorithmState]);
 
   const selectedAlgorithms = [];
@@ -54,8 +53,6 @@ const UploadSummary = () => {
     const algorithmsToComplete = algorithmState.algorithmsInfo.filter(
       (algorithm) => algorithm.selected
     );
-
-    console.log(algorithmsToComplete);
 
     startApplication(algorithmState, setAlgorithmState, algorithmsToComplete);
   };

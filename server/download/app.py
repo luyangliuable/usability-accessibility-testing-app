@@ -1,17 +1,11 @@
 from flask import Blueprint, request, jsonify, send_file
 from flask_cors import cross_origin
-import requests
 import boto3
-import json
-import tempfile
 import json
 import uuid
 import os
-from redis import Redis
 from controllers.file_controller import *
-from models.DBManager import DBManager
-from server.routes.file_api import get_document
-from server.controllers.file_controller import FileController
+from controllers.file_controller import FileController
 
 ###############################################################################
 #                            Set Up Flask Blueprint                           #

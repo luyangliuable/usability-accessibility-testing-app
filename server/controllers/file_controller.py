@@ -1,7 +1,7 @@
 from utility.uuid_generator import unique_id_generator
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
-from models.Apk import ApkManager
+from models.DBManager import DBManager
 import datetime
 import json
 
@@ -41,7 +41,7 @@ class FileController:
         #                          Initiate database instance                         #
         ###############################################################################
         self.collection_name = "apk"
-        self.mongo = ApkManager.instance()
+        self.mongo = DBManager.instance()
 
         self.collection = self.mongo.get_collection('apk')
 

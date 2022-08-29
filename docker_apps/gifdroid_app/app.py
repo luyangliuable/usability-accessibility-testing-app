@@ -101,10 +101,13 @@ def _service_execute_droidbot(uuid):
     print('Beginning new job for %s' % uuid)
 
     data={
-        'algorithm': 'gifdroid',
-        'status': 'RUNNING', # TODO create enum
-        'notes': 'executing droidbot to generate utg file',
-        'estimate_remaining_time': 60*3
+        'gifdroid': {
+            'status': 'RUNNING', # TODO create enum
+            'notes': 'executing droidbot to generate utg file',
+            'estimate_remaining_time': 60*3,
+            'json_link': '',
+            'image_links': [],
+        }
     }
 
     update_app_status(uuid, data)
@@ -184,14 +187,8 @@ def _service_execute_droidbot(uuid):
 def _service_execute_gifdroid(uuid):
     # retrieve utg file name from mongodb
 
-    data={
-        'algorithm': 'gifdroid',
-        'status': 'RUNNING', # TODO create enum
-        'notes': 'executing gifdroid to generate execution trace file',
-        'estimate_remaining_time': 60
-    }
-
-    update_app_status(uuid, data)
+    notes = 'executing gifdroid to generate execution trace file'
+    update_app_attribute(uuid, 'notes', notes)
 
     ###############################################################################
     #                        Get utg filename from mongodb                        #

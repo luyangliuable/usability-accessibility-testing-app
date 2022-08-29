@@ -13,21 +13,20 @@ parentdir = os.path.dirname(os.path.dirname(currentdir))
 sys.path.insert(0, parentdir)
 
 # relative import ends ########################################################
-
 from controllers.algorithm_status_controller import algorithm_status_controller as asc
-from models.Apk import *
+from models.DBManager import *
 
 class TestDbManager(unittest.TestCase):
     def setUp(self):
         self.tcn = "apk"
-        self.db = ApkManager.instance()
+        self.db = DBManager.instance()
 
         self.tc = self.db.create_collection(self.tcn)
         self.asc = asc(self.tcn)
 
         # Test document
         self.uuid = unique_id_generator()
-        format = ApkManager.get_format(self.uuid)
+        format = DBManager.get_format(self.uuid)
 
         self.td = self.db.insert_document(format, self.tc)
 
@@ -48,11 +47,23 @@ class TestDbManager(unittest.TestCase):
 
 
     def test_update_algorithm_status_attribute(self):
-        expected = {'gifdroid': {'status': 'done', 'notes': 'random_notes', 'estimate_remaining_time': 100, 'result_link': ''}}
+        expected = {
+            'gifdroid': {
+                'status': 'PENDING',
+                'notes': 'random_notes',
+                'estimate_remaining_time': 100,
+                'result_link': ''
+            }
+        }
         self.asc.update_algorithm_status(self.uuid, expected)
-        self.asc.update_algorithm_status_attribute(self.uuid, 'gifdroid', 'status', expected['gifdroid']['status'])
+        self.asc.update_algorithm_status_attribute(self.uuid, 'gifdroid', 'status', "done")
 
         r = self.db.get_document(self.uuid, self.tc)[0]['algorithm_status']
+
+        expected['gifdroid']['status'] = 'done'
+
+        write_to_view("view.txt", r)
+        write_to_view("view2.txt", expected)
 
 
         self.assertEqual(r, expected)

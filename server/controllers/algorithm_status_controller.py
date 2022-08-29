@@ -3,10 +3,10 @@ from flask_cors import cross_origin
 import datetime
 import json
 import uuid
-from models.Apk import ApkManager
+from models.DBManager import DBManager
 from enums.algorithm_enum import AlgorithmEnum as Algorithm
 
-# from models.Apk import ApkManager
+# from models.Apk import DBManager
 
 class algorithm_status_controller():
     """
@@ -17,7 +17,7 @@ class algorithm_status_controller():
         ###############################################################################
         #                          Initiate database instance                         #
         ###############################################################################
-        self._db = ApkManager.instance()
+        self._db = DBManager.instance()
         self.c = self._db.get_collection(collection_name)
 
 
@@ -50,7 +50,7 @@ class algorithm_status_controller():
 
             status_key = 'algorithm_status'
 
-            d[status_key][key] = val
+            d[status_key][algorithm][key] = val
 
             # Get status ##################################################################
             self._db.update_document(uuid, self.c, status_key, d[status_key])

@@ -1,5 +1,4 @@
 from flask import Blueprint, request, jsonify
-from models.Apk import ApkManager
 from controllers.file_controller import FileController
 from flask_cors import cross_origin
 import datetime

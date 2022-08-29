@@ -41,7 +41,7 @@ def get_document():
     if request.method == "GET":
         uuid = request.json['uuid']
 
-        return file_controller.get_document(uuid)
+        return safe_serialize( file_controller.get_document(uuid) ), 200
 
     return "Invalid request", 400
 

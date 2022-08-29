@@ -63,7 +63,7 @@ class FileController:
         # The result for mongodb get document returns a list ##########################
         result = [item for item in result][0]
 
-        return result, 200
+        return result
 
 
     def add_document(self, request_parameters: list):

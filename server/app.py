@@ -13,11 +13,32 @@ def create_app(script_info=None):
     app.config.from_object(app_settings)
 
     # register blueprints
-    from main.views import main_blueprint
-    from upload.app import upload_blueprint
+    from routes.main import main_blueprint
+    from routes.algorithm_status_api import algorithm_status_blueprint
+    from routes.upload_api import upload_blueprint
+    from routes.file_api import file_blueprint
+    from routes.login_api import login_blueprint
+    from reports.app import reports_blueprint
 
+    # from controllers.file_controller import file_blueprint
+    from download.app import download_blueprint
+
+    # Used as main page of flask ##############################################
     app.register_blueprint(main_blueprint)
+
+    # Used as upload api for flask ################################################
     app.register_blueprint(upload_blueprint)
+
+    # Used as file management api for flask #######################################
+    app.register_blueprint(reports_blueprint)
+    app.register_blueprint(login_blueprint)
+    app.register_blueprint(file_blueprint)
+
+    # Used as download file from algorithm to frontend api  #######################
+    app.register_blueprint(download_blueprint)
+
+    # Used for getting algorithm status, notes, estimated remaining time and results
+    app.register_blueprint(algorithm_status_blueprint)
 
     ###############################################################################
     #                              Enable debug mode                              #
@@ -38,6 +59,5 @@ def create_app(script_info=None):
 
     # shell context for flask cli
     app.shell_context_processor({"app": app})
-
 
     return app

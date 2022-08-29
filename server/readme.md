@@ -49,13 +49,13 @@ output = json
 ### To create a bucket
 
 ```shell
-aws --endpoint-url=http://localhost:4566 s3 mb s3://bucketname 
+aws --endpoint-url=http://localhost:4566 s3 mb s3://bucketname
 ```
 
 ### List all files in bucket
 
 ```shell
-aws --endpoint-url=http://localhost:4566 s3 ls s3://bucketname 
+aws --endpoint-url=http://localhost:4566 s3 ls s3://bucketname
 ```
 
 ### Delete all files in bucket
@@ -75,4 +75,3 @@ sudo aws s3 rm s3://apk-bucket/ --recursive --include "*" --exclude "donotdelete
 ```shell
     export S3_URL=http://127.0.0.1:4566
 ```
-

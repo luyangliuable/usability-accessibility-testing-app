@@ -1,0 +1,242 @@
+import pymongo
+from pymongo.database import Collection
+import os
+import datetime
+
+class DBManager:
+    """
+        This class is a *singleton* that provides a global access point for API in this project. It access the api key inside .env file. It must be initiated to be used and only one instance can exist at a time
+    """
+
+    _instance = None  # _ means it is private
+
+    # https://www.mongodb.com/docs/manual/reference/bson-types/
+
+    apk_schema = {
+        'uuid': {
+            'type': 'string',
+            'minlength': 5,
+            'required': True,
+        },
+        'date': {
+            'type': 'string',
+            'required': False
+        },
+        'additional_files': {
+            'type': 'array',
+            'required': False
+        },
+        'tapshoe_files': {
+            'type': 'array',
+            'required': False
+        },
+        'storydistiller_files': {
+            'type': 'array',
+            'required': False
+        },
+        'gifdroid_files': {
+            'type': 'array',
+            'required': False
+        },
+        'droidbot_files': {
+            'type': 'array',
+            'required': False
+        },
+        'utg_files': {
+            'type': 'array',
+            'required': False
+        },
+        'owleye_files': {
+            'type': 'array',
+            'required': False
+        },
+        'venus_files': {
+            'type': 'array',
+            'required': False
+        },
+        'algorithm_status': {
+            'type': 'object',
+            'required': False,
+            'default': {} # Currently default is not parsed
+        }
+    }
+
+
+    def __init__(self):
+        """
+        NOTE: DO NOT ALLOW initiation directly
+        """
+        raise RuntimeError('Cannot initialise an api singleton, call instance() instead')
+
+
+    @staticmethod
+    def get_format(uuid: str) -> dict:
+        """
+        Get the format/model of the data document to be added to model db.
+
+        Parameters:
+            uuid (str): The algorthm cluster or job uuid
+
+        Returns:
+            data: The model to create a document
+        """
+        ###############################################################################
+        #               Store data into mongodb in the following format               #
+        ###############################################################################
+
+        # uuid - used to identify the cluster of data for one task.
+        # date - just the data initiated the task
+        # apk - the apk file to analyse
+        # tapshoe_files - store tapeshoe files here
+        # storydistiller_files - store storydistiller files here
+        # gifdroid_files - store gifdroid files here
+        # utg_files - store droidbot files here
+        # venus_files - store venus files here
+
+        # NOTE: store in the following format for files for easier identifcation
+        # {"type": {The file/mime type}, "name": {Name of file inside s3 bucket}, "notes": "Notes to take into consideration"}
+
+        data = {
+            "uuid": uuid,
+            "date": str( datetime.datetime.now() ),
+            "apk": [],
+            "additional_files": [],
+            "tapshoe_files": [],
+            "storydistiller_files": [],
+            "gifdroid_files": [],
+            "utg_files": [],
+            "owleye_files": [],
+            "venus_files": [],
+            "algorithm_status": {},
+        }
+
+        return data
+
+
+    @classmethod
+    def instance(cls):
+        """
+        If there is already an instance, just return the single instance. Otherwise create a new instance of api.
+        """
+        if cls._instance is None:
+            cls._instance = cls.__new__(cls)
+            cls.url = os.environ.get('MONGO_URL')
+            cls.connect()
+            cls.db = None
+
+        return cls._instance
+
+
+    def get_document(self, uuid: str, collection: Collection):
+        cursor = collection.find({"uuid": uuid})
+
+        result = []
+        for document in cursor:
+            # Find document that match with current uuid.
+            if document["uuid"] == uuid:
+                # utg_filename = document['utg_files']
+                result.append(document)
+
+        return result
+
+
+    @classmethod
+    def get_db_status(cls, db_name:str):
+        try:
+            client = pymongo.MongoClient(cls.url)
+            exec("%s%s" % ( "client.", db_name ) )
+        except:
+            return False
+        else:
+            return True
+
+
+    def get_database(self):
+        return self._db
+
+
+    @staticmethod
+    def create_mongo_validator(user_schema: dict):
+        required = []
+        validator = {'$jsonSchema': {'bsonType': 'object', 'properties': {}}}
+
+        # Bson types
+        # https://www.mongodb.com/docs/manual/reference/bson-types/
+
+        for field_key in user_schema:
+            field = user_schema[field_key]
+            properties = {'bsonType': field['type']}
+            minimum = field.get('minlength')
+
+            if type(minimum) == int:
+                properties['minimum'] = minimum
+
+            if field.get('required') is True:
+                required.append(field_key)
+
+            validator['$jsonSchema']['properties'][field_key] = properties
+
+        return validator
+
+
+    def create_collection(self, collection_name: str, schema=None):
+        validator = {}
+
+        if schema != None:
+            validator = ApkManager.create_mongo_validator(schema)
+
+        # Placeholder result variable
+        result = Collection(self._db, collection_name)
+
+        try:
+            result = self._db.create_collection(collection_name, validator=validator)
+        except Exception as e:
+            # Collection may already exist
+            print(e)
+        else:
+            print("Collection", collection_name, "created")
+
+        return result
+
+
+    def update_document(self, uuid: str, collection: Collection, attribute: str, value):
+
+        collection.update_one(
+            {
+                "uuid": uuid
+            },
+            {
+                "$set": {
+                    attribute: value
+                }
+            }
+        )
+
+
+    def get_collection(self, collection_name:str):
+        return self._db.get_collection(collection_name)
+
+
+    def insert_document(self, document, collection: Collection):
+        post_id = collection.insert_one(document)
+
+        print(post_id)
+
+        return post_id
+
+
+    @classmethod
+    def connect(cls):
+        try:
+            cls.connection = pymongo.MongoClient(cls.url)
+            cls._db = cls.connection.fit3170
+            cls.connection.server_info()  # Triger exception if connection fails to the database
+        except Exception as ex:
+            print('failed to connect DBManager', ex)
+        else:
+            print("Successfully connected to mongodb.")
+
+
+if __name__ == "__main__":
+    a = DBManager.instance()
+    a.insert_document({'test': 'worksl'}, a.get_collection("random"))

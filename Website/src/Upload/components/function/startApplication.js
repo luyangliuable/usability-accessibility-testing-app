@@ -1,6 +1,7 @@
 import { getStatus } from './getStatus';
 import { uploadApk } from './upload_apk';
 import { useState } from 'react';
+import  { getAdditionalFiles } from './getAdditionalFiles';
 
 
 export const startApplication = async (objectState, setObjectState, algorithmsToComplete) => {
@@ -14,6 +15,8 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
     const apkUploadUrl = "http://localhost:5005/upload";
     // const run_storydistiller_url = process.env.DISTILLER;
     const signalStartUrl = "http://localhost:5005/signal_start/";
+
+    const resultCreateUrl = "http://localhost:5005/create_result";
 
     console.log("[1] upload start.");
 
@@ -42,23 +45,24 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
     const gifFile = objectState.algorithmFiles.apkFile;
 
     formData.append("apk_file", apkFile);
+
     formData.append("filename", apkFile.name);
-
-    console.log(apkFile);
-
-    const additionalFiles = {};
 
     ///////////////////////////////////////////////////////////////////////////
     //                       Scan for additional files                       //
     ///////////////////////////////////////////////////////////////////////////
+    console.log("[2] Getting additional files.");
+
+    const additionalFiles = getAdditionalFiles(objectState);
+
     objectState.algorithmsInfo.forEach(file => {
-        console.log(file.additionalFiles);
-        additionalFiles[file.uuid] = file.additionalFiles;
+        if ( file.additionalFiles.length  > 0 ) {
+            formData.append(file.uuid, file.additionalFiles[0]); // Assume each algorithm only has 1 additional file
+            console.log(file.uuid + " has " + file.additionalFiles[0]);
+        }
     });
 
-    console.log(additionalFiles);
-
-    console.log(`Sending ${apkFile.path} to server.`);
+    console.log(`Sending ${apkFile.name} to server.`);
     /////////////////////////////////////////////////////////////////////////
     //                     Call API run storydistiller                     //
     /////////////////////////////////////////////////////////////////////////
@@ -67,6 +71,17 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
 
         // Append uuid for the uploaded files ///////////////////////////////
         formData.append("uuid", response.uuid);
+
+        const user_UUID = sessionStorage.getItem('User_UUID');
+        const jsonData = JSON.stringify({
+            "user_id": user_UUID,
+            "result_id": response.uuid
+        });
+        var _ = fetch(resultCreateUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: jsonData,
+        });
 
         setObjectState(prev => {
             return {
@@ -84,4 +99,3 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
 
     });
 };
-

@@ -1,39 +1,45 @@
 import React from "react";
 import { Row, Container, Col } from "react-bootstrap";
-import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
+import {NavLink} from 'react-router-dom'
 
 import "./ToolBar.css";
 
 export default function ToolBar() {
   return (
-    <Container className="nav-container" fluid='true'>
+    <Container className="nav-container" fluid="true">
       <Row>
-        <Col xxl={2} className="company-logo" >
+        <Col xs={1} className="company-logo">
           <Link to={"./"}>
-            <img alt='logo' src={require('./BXER.png')} width="25%" height="15%" />
+            <img
+              alt="logo"
+              src={require("./BXER.png")}
+              style={{height:"max(5vmin, 30px)",}}
+            />
           </Link>
         </Col>
-        <Col xxl={9} className="middle-bar" id="nav">
+        <Col xs={9} className="middle-bar" id="nav">
           <Col>
-            <Link to={"./about"}>
+            <NavLink exact activeClassName="active" to={"./about"}>
               <h1>ABOUT</h1>
-            </Link>
-          </Col>
-          <Col >
-            <Link to={"./upload"}>
-              <h1>UPLOAD FILES</h1>
-            </Link>
+            </NavLink>
           </Col>
           <Col>
-            <Link to={"./results"}>
+            <NavLink activeClassName="active" to={"./upload"}>
+              <h1>UPLOAD</h1>
+            </NavLink>
+          </Col>
+          <Col>
+            <NavLink activeClassName="active" to={"./results"}>
               <h1>RESULTS</h1>
-            </Link>
+            </NavLink>
           </Col>
-          <Col>
-          </Col>
-          <Link to={"./login"}>
+          <Col xs={6}></Col>
+        </Col>
+        <Col xs={1} id="nav">
+          <NavLink activeClassName="active"  to={"./login"}>
             <h1>LOGIN</h1>
-          </Link>
+          </NavLink>
         </Col>
       </Row>
     </Container>

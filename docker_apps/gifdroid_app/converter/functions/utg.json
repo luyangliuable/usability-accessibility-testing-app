@@ -1,0 +1,167 @@
+{
+    "events": [
+        {
+            "sequence": 1,
+            "sourceScreenId": "0",
+            "destinationScreenId": "1",
+            "startTimeSeconds": 9.0,
+            "endTimeSeconds": 12.0,
+            "executionResult": "SUCCESS",
+            "launch": {
+                "action": "a2dp.Vol.main"
+            }
+        },
+        {
+            "sequence": 2,
+            "sourceScreenId": "1",
+            "destinationScreenId": "2",
+            "startTimeSeconds": 12.0,
+            "endTimeSeconds": 23.0,
+            "type": "touch",
+            "executionResult": "SUCCESS",
+            "target": {
+                "type": "touch",
+                "targetDetails": {
+                    "className": "android.widget.ImageButton",
+                    "androidClassName": "android.widget.ImageButton",
+                    "textLabel": null,
+                    "contentDescription": "More options",
+                    "resourceName": null
+                }
+            }
+        },
+        {
+            "sequence": 3,
+            "sourceScreenId": "2",
+            "destinationScreenId": "3",
+            "startTimeSeconds": 23.0,
+            "endTimeSeconds": 19.0,
+            "type": "touch",
+            "executionResult": "SUCCESS",
+            "target": {
+                "type": "touch",
+                "targetDetails": {
+                    "className": "android.widget.LinearLayout",
+                    "androidClassName": "android.widget.LinearLayout",
+                    "textLabel": null,
+                    "contentDescription": null,
+                    "resourceName": null
+                }
+            }
+        },
+        {
+            "sequence": 4,
+            "sourceScreenId": "3",
+            "destinationScreenId": "1",
+            "startTimeSeconds": 19.0,
+            "endTimeSeconds": 27.0,
+            "type": "touch",
+            "executionResult": "SUCCESS",
+            "target": {
+                "type": "touch",
+                "targetDetails": {
+                    "className": "android.widget.ImageButton",
+                    "androidClassName": "android.widget.ImageButton",
+                    "textLabel": null,
+                    "contentDescription": "Navigate up",
+                    "resourceName": null
+                }
+            }
+        },
+        {
+            "sequence": 5,
+            "sourceScreenId": "1",
+            "destinationScreenId": "1",
+            "startTimeSeconds": 27.0,
+            "endTimeSeconds": 39.0,
+            "type": "touch",
+            "executionResult": "SUCCESS",
+            "target": {
+                "type": "touch",
+                "targetDetails": {
+                    "className": "android.widget.Button",
+                    "androidClassName": "android.widget.Button",
+                    "textLabel": "STORED LOCATION",
+                    "contentDescription": null,
+                    "resourceName": "a2dp.Vol:id/Locationbtn"
+                }
+            }
+        },
+        {
+            "sequence": 6,
+            "sourceScreenId": "1",
+            "destinationScreenId": "1",
+            "startTimeSeconds": 39.0,
+            "endTimeSeconds": 44.0,
+            "type": "touch",
+            "executionResult": "SUCCESS",
+            "target": {
+                "type": "touch",
+                "targetDetails": {
+                    "className": "android.widget.Button",
+                    "androidClassName": "android.widget.Button",
+                    "textLabel": "FIND DEVICES",
+                    "contentDescription": null,
+                    "resourceName": "a2dp.Vol:id/Button01"
+                }
+            }
+        },
+        {
+            "sequence": 7,
+            "sourceScreenId": "1",
+            "destinationScreenId": "4",
+            "startTimeSeconds": 44.0,
+            "endTimeSeconds": 31.0,
+            "type": "touch",
+            "executionResult": "SUCCESS",
+            "target": {
+                "type": "touch",
+                "targetDetails": {
+                    "className": "android.widget.Button",
+                    "androidClassName": "android.widget.Button",
+                    "textLabel": "STOP SERVICE",
+                    "contentDescription": null,
+                    "resourceName": "a2dp.Vol:id/ServButton"
+                }
+            }
+        },
+        {
+            "sequence": 8,
+            "sourceScreenId": "4",
+            "destinationScreenId": "2",
+            "startTimeSeconds": 31.0,
+            "endTimeSeconds": 35.0,
+            "type": "touch",
+            "executionResult": "SUCCESS",
+            "target": {
+                "type": "touch",
+                "targetDetails": {
+                    "className": "android.widget.ImageButton",
+                    "androidClassName": "android.widget.ImageButton",
+                    "textLabel": null,
+                    "contentDescription": "More options",
+                    "resourceName": null
+                }
+            }
+        },
+        {
+            "sequence": 9,
+            "sourceScreenId": "2",
+            "destinationScreenId": "3",
+            "startTimeSeconds": 35.0,
+            "endTimeSeconds": 14.0,
+            "type": "touch",
+            "executionResult": "SUCCESS",
+            "target": {
+                "type": "touch",
+                "targetDetails": {
+                    "className": "android.widget.TextView",
+                    "androidClassName": "android.widget.TextView",
+                    "textLabel": "Apps for Notifications",
+                    "contentDescription": null,
+                    "resourceName": "android:id/title"
+                }
+            }
+        }
+    ]
+}

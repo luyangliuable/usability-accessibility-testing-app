@@ -120,7 +120,12 @@ def _service_execute_droidbot(uuid):
     data = requests.get(file_api, headers={'Content-Type': 'application/json'},  data=json.dumps( {'uuid': uuid} )).json()
 
     # Apk has an Array/List of apk files ##########################################
-    apk_filename = data['apk'][0]['name']
+    print(data)
+    print(data)
+    print(data)
+    print(data)
+    print(data)
+    apk_filename = data['apk']['name']
 
     ############################################################################
     #                    Download file into temporary folder                   #
@@ -235,18 +240,25 @@ def _service_execute_gifdroid(uuid):
     enforce_bucket_existance([config[ "BUCKET_NAME" ], "storydistiller-bucket", "xbot-bucket"])
 
 
-    print("[4] Uploading gif file to bucket")
+    print("[4] Uploading json file to bucket")
     s3_client.upload_file(config[ "OUTPUT_FILE" ], config[ 'BUCKET_NAME' ], os.path.join(uuid, config[ "OUTPUT_FILE" ] ))
 
-    #update mongodb
+    ###############################################################################
+    #                            mongo: Update mongodb                            #
+    ###############################################################################
     print("[5] Updating mongodb for traceability")
+
     _db.apk.update_one(
         {
             "uuid": uuid
         },
         {
             "$set": {
-                "gifdroid_files": [config["OUTPUT_FILE"]]
+                "results": {
+                    "$set": {
+                        "json": config["OUTPUT_FILE"]
+                    }
+                }
             }
         }
     )
@@ -278,7 +290,7 @@ def bytes_to_json(byte_str: bytes):
     return data
 
 def upload_directory(path, bucketname):
-    for root,dirs,files in os.walk(path):
+    for root, _, files in os.walk(path):
         for file in files:
             s3_client.upload_file(os.path.join(root,file),bucketname,file)
 

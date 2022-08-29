@@ -1,0 +1,48 @@
+{
+    'uuid': {
+            'type': 'string',
+            'minlength': 5,
+            'required': True,
+    },
+        'date': {
+            'type': 'string',
+            'required': False
+    },
+        'additional_files': {
+            'type': 'array',
+            'required': False
+    },
+        'tapshoe_files': {
+            'type': 'array',
+            'required': False
+    },
+        'storydistiller_files': {
+            'type': 'array',
+            'required': False
+    },
+        'gifdroid_files': {
+            'type': 'array',
+            'required': False
+    },
+        'droidbot_files': {
+            'type': 'array',
+            'required': False
+    },
+        'utg_files': {
+            'type': 'array',
+            'required': False
+    },
+        'owleye_files': {
+            'type': 'array',
+            'required': False
+    },
+        'venus_files': {
+            'type': 'array',
+            'required': False
+    },
+        'algorithm_status': {
+            'type': 'object',
+            'required': False,
+            'default': {} # Currently default is not parsed
+    }
+}

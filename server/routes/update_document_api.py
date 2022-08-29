@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from controllers.file_controller import FileController
+from controllers.update_document_controller import UpdateDocumentController
 from flask_cors import cross_origin
 import datetime
 import json
@@ -9,26 +9,11 @@ import uuid
 ###############################################################################
 #                            Set Up Flask Blueprint                           #
 ###############################################################################
-file_blueprint = Blueprint("file", __name__)
+update_document_blueprint = Blueprint("file", __name__)
+file_controller = UpdateDocumentController()
 
-###############################################################################
-#                   TODO make this a class not routing page                   #
-###############################################################################
-# def get_document2(uuid):
-#     result = mongo.get_document(uuid=uuid, collection=mongo.get_collection('apk'))
 
-#     result = [item for item in result][0]
-
-#     ###############################################################################
-#     #                FIX: Somehow this is returning bytes not json                #
-#     ###############################################################################
-#     # res = safe_serialize(result)
-
-#     return result, 200
-
-file_controller = FileController()
-
-@file_blueprint.route("/file/get", methods=['GET'])
+@update_document_blueprint.route("/file/get", methods=['GET'])
 @cross_origin()
 def get_document():
     """
@@ -45,7 +30,7 @@ def get_document():
     return "Invalid request", 400
 
 
-@file_blueprint.route("/file/add", methods=['GET', "POST"])
+@update_document_blueprint.route("/file/add", methods=['GET', "POST"])
 @cross_origin()
 def add_documment():
     if request.method == "POST":
@@ -78,17 +63,18 @@ def add_documment():
 ###############################################################################
 #                    TODO Add file for updating a document                    #
 ###############################################################################
-def update_one():
-    _db.apk.update_one(
-        {
-            "uuid": uuid
-        },
-        {
-            "$set": {
-                "utg_files": config["DEFAULT_UTG_FILENAME"]
-            }
-        }
-    )
+
+# def update_one():
+#     _db.apk.update_one(
+#         {
+#             "uuid": uuid
+#         },
+#         {
+#             "$set": {
+#                 "utg_files": config["DEFAULT_UTG_FILENAME"]
+#             }
+#         }
+#     )
 
 ###############################################################################
 #                  TODO add method file getting one document                  #

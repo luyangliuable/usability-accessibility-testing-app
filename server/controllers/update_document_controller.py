@@ -32,7 +32,7 @@ data = {
 #     return "Working", 200
 
 
-class FileController:
+class UpdateDocumentController:
     """
     This controller class is used to update metadata for files on mongodb for traceability purpose.
     """
@@ -60,8 +60,8 @@ class FileController:
             collection=self.collection
         )
 
-        # The result for mongodb get document returns a list ##########################
-        result = [item for item in result][0]
+        # # The result for mongodb get document returns a list ##########################
+        # result = [item for item in result]
 
         return result
 

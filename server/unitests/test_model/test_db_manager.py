@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import uuid
 import inspect
 import unittest
@@ -14,11 +15,11 @@ sys.path.insert(0, parentdir)
 
 # relative import ends ########################################################
 
-from models.Apk import *
+from models.DBManager import DBManager
 
 class Test_Db_Manager(unittest.TestCase):
     def setUp(self):
-        self.db = ApkManager.instance()
+        self.db = DBManager.instance()
 
         # Test collection
         self.tcn = "test"
@@ -26,7 +27,7 @@ class Test_Db_Manager(unittest.TestCase):
 
         # Test document
         self.uuid = unique_id_generator()
-        format = ApkManager.get_format(self.uuid)
+        format = DBManager.get_format(self.uuid)
 
         self.td = self.db.insert_document(format, self.tc)
 
@@ -40,13 +41,30 @@ class Test_Db_Manager(unittest.TestCase):
         ###############################################################################
         #                            Pop dynamic attributes                           #
         ###############################################################################
-        res[0].pop('_id')
-        res[0].pop('date')
+        res.pop('_id')
+        res.pop('date')
 
-        format = ApkManager.get_format(self.uuid)
+        format = DBManager.get_format(self.uuid)
         format.pop('date')
 
-        self.assertEqual(str( res[0] ), str( format ))
+        write_to_view("view.txt", res)
+
+        self.assertEqual(str( res ), str( format ))
+
+
+    def test_get_format(self):
+        val = DBManager.get_format(self.uuid)
+
+        val.pop('date')
+        val.pop('uuid')
+
+        with open("../../models/document_format.json", "w") as f:
+            expected = json.load(f)
+
+        expected.pop('date')
+        expected.pop('uuid')
+
+        self.assertEqual(expected, val) 
 
 
     def test_update_d(self):
@@ -63,10 +81,13 @@ class Test_Db_Manager(unittest.TestCase):
         ###############################################################################
         #                            Pop dynamic attributes                           #
         ###############################################################################
-        res[0].pop('_id')
-        res[0].pop('date')
+        res.pop('_id')
+        res.pop('date')
 
-        self.assertEqual(val, res[0]["algorithm_status"])
+        write_to_view("view.txt", res)
+        write_to_view("view2.txt", val)
+
+        self.assertEqual(val, res["algorithm_status"])
 
 ###############################################################################
 #                              Untility functions                             #

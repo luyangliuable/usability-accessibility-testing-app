@@ -17,11 +17,22 @@ def create_app(script_info=None):
     from upload.app import upload_blueprint
     from controllers.file_controller import file_blueprint
     from download.app import download_blueprint
+    from routes.algorithm_status_route import algorithm_status_blueprint
 
+    # Used as main page of flask ##############################################
     app.register_blueprint(main_blueprint)
+
+    # Used as upload api for flask ################################################
     app.register_blueprint(upload_blueprint)
+
+    # Used as file management api for flask #######################################
     app.register_blueprint(file_blueprint)
+
+    # Used as download file from algorithm to frontend api  #######################
     app.register_blueprint(download_blueprint)
+
+    # Used for getting algorithm status, notes, estimated remaining time and results
+    app.register_blueprint(algorithm_status_blueprint)
 
     ###############################################################################
     #                              Enable debug mode                              #

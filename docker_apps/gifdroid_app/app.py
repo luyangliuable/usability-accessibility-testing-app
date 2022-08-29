@@ -26,10 +26,13 @@ endpoint_url = os.environ.get("S3_URL")
 if endpoint_url == None:
     endpoint_url = config['ENDPOINT_URL']
 
+status_api = str( os.environ.get("STATUS_API") )
+
 file_api = str( os.environ.get("FILE_API") )
 
 if file_api == None:
     endpoint_url = config['FILE_API']
+
 
 EMULATOR = os.environ.get( "EMULATOR" )
 
@@ -87,7 +90,6 @@ def send_uid_and_signal_run():
 
     return "No HTTP POST method received"
 
-
 def _service_execute_droidbot(uuid):
     """
     This function execute droidbot algorithm responsible for getting the utg.js file.
@@ -98,22 +100,21 @@ def _service_execute_droidbot(uuid):
 
     print('Beginning new job for %s' % uuid)
 
+    data={
+        'algorithm': 'gifdroid',
+        'status': 'RUNNING', # TODO create enum
+        'notes': 'executing droidbot to generate utg file',
+        'estimate_remaining_time': 60*3
+    }
+
+    update_app_status(uuid, data)
+
     ###############################################################################
     #                      GET the APK file name from mongodb                     #
     ###############################################################################
     print("[1] Getting session information")
-    # cursor = _db['apk'].find({})
 
-    response = requests.get(file_api, headers={'Content-Type': 'application/json'},  data=json.dumps( {'uuid': uuid} )).content
-
-    ###############################################################################
-    #          Fix flask backend return json not stupid byte string please         #
-    ###############################################################################
-    data = bytes_to_json(response)
-    data = data[0]
-
-    print("data")
-    print(data)
+    data = requests.get(file_api, headers={'Content-Type': 'application/json'},  data=json.dumps( {'uuid': uuid} )).json()
 
     # Apk has an Array/List of apk files ##########################################
     apk_filename = data['apk'][0]['name']
@@ -124,11 +125,8 @@ def _service_execute_droidbot(uuid):
     temp_dir = tempfile.gettempdir()
 
     print("[2] Getting file from bucket using UUID " + uuid + " and apk file " + apk_filename + ".")
-    print(temp_dir)
 
     target_apk = path.join(temp_dir, apk_filename)
-
-    print(config['ENDPOINT_URL'])
 
     s3_client.download_file(
         Bucket='apk-bucket',
@@ -186,24 +184,21 @@ def _service_execute_droidbot(uuid):
 def _service_execute_gifdroid(uuid):
     # retrieve utg file name from mongodb
 
+    data={
+        'algorithm': 'gifdroid',
+        'status': 'RUNNING', # TODO create enum
+        'notes': 'executing gifdroid to generate execution trace file',
+        'estimate_remaining_time': 60
+    }
+
+    update_app_status(uuid, data)
+
     ###############################################################################
     #                        Get utg filename from mongodb                        #
     ###############################################################################
     print("[1] Getting utg filename from mongodb")
 
     print("[2] Creating temporary file to save utg file")
-    temp_dir = tempfile.gettempdir()
-    ###############################################################################
-    #                   Converter script doesn't utg of droidbot                  #
-    ###############################################################################
-
-    # target_utg = path.join(temp_dir, "utg.")
-
-    # s3_client.download_file(
-    #     Bucket=config["BUCKET_NAME"],
-    #     Key=path.join(uuid, utg_filename),
-    #     Filename = target_utg
-    # )
 
     ###############################################################################
     #                        Convert utg to correct format                        #
@@ -215,11 +210,11 @@ def _service_execute_gifdroid(uuid):
     ###############################################################################
     os.chdir("/home/gifdroid")
 
-    headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
 
     response = requests.get("http://host.docker.internal:5005/file/get", data=json.dumps( {"uuid": uuid} ), headers=headers)
 
-    lookup = json.loads( response.content )[0]
+    lookup = response.json()
 
     for item in lookup['additional_files']:
         if item['algorithm'] == 'gifdroid':
@@ -259,6 +254,13 @@ def _service_execute_gifdroid(uuid):
         }
     )
 
+    download_link = os.path.join( "http://localhost:5005", "download_result", uuid) + "/gifdroid_files"
+
+    update_app_attribute(uuid, 'status', "DONE")
+    update_app_attribute(uuid, 'download_link', download_link)
+
+    return 200
+
 
 @app.route("/", methods=["GET"])
 def check_health():
@@ -292,10 +294,36 @@ def enforce_bucket_existance(buckets):
             print("Bucket already exists %s".format( bucket ))
 
 
+def update_app_attribute(uuid, attribute, val):
+    # NOTE the request link MUST NOT have an additional /
+    request_url = os.path.join( status_api, 'update', uuid, 'gifdroid') + "/" + attribute
+    res = requests.post(request_url, headers={'Content-Type': 'application/json'}, data=str( val ))
+    print(request_url)
+    print(res.content)
+
+    return res
+
+
+def update_app_status(uuid, status):
+    # NOTE the request link MUST NOT have an additional /
+    request_url = os.path.join( status_api, 'update') + "/" + uuid
+    res = requests.post(request_url, headers={'Content-Type': 'application/json'}, data=json.dumps( status ))
+    print(request_url)
+    print(res.content)
+
+    return res
+
+
 if __name__ == "__main__":
     # No point doing debug mode True because can't debug on docker
     app.run(host="0.0.0.0", port=3005)
-    # convert_droidbot_to_gifdroid_utg("/Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/docker_apps/gifdroid_app/utg.js", "/Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/docker_apps/gifdroid_app/events", "/Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/docker_apps/gifdroid_app/states")
+    # data={
+    #     "estimate_remaining_time": 60
+    # }
+
+    # update_app_status("57730388-de61-45c1-8098-d449491004ec", data)
+    # update_app_attribute("608883a9-4241-4f2b-8053-0ece386cd7ae", 'result_link', 'poofoobar')
+    # update_app_attribute("608883a9-4241-4f2b-8053-0ece386cd7ae", 'status', 'DONE')
 
 
 

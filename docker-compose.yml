@@ -145,6 +145,7 @@ services:
     ports:
       - '3005:3005'
     environment:
+    - STATUS_API=http://host.docker.internal:5005/status
     - FLASK_BACKEND=http://host.docker.internal:5005
     - DEBUG_MODE=1
     - MONGO_URL=mongodb://host.docker.internal:27017/

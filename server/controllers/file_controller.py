@@ -41,6 +41,21 @@ def check_health():
     return "Working", 200
 
 
+###############################################################################
+#                   TODO make this a class not routing page                   #
+###############################################################################
+def get_document2(uuid):
+    result = mongo.get_document(uuid=uuid, collection=mongo.get_collection('apk'))
+
+    result = [item for item in result][0]
+
+    ###############################################################################
+    #                FIX: Somehow this is returning bytes not json                #
+    ###############################################################################
+    # res = safe_serialize(result)
+
+    return result, 200
+
 @file_blueprint.route("/file/get", methods=['GET'])
 @cross_origin()
 def get_document():
@@ -51,14 +66,22 @@ def get_document():
     if request.method == "GET":
         uuid = request.json['uuid']
 
-        result = mongo.get_document(uuid=uuid)
+        result = mongo.get_document(uuid=uuid, collection=mongo.get_collection('apk'))
 
         result = [item for item in result]
 
         ###############################################################################
         #                FIX: Somehow this is returning bytes not json                #
         ###############################################################################
-        return safe_serialize(result), 200
+        res = safe_serialize(result)
+
+        print(res)
+
+        res = json.loads(res)[0]
+
+        res.pop('_id')
+
+        return res, 200
 
     return "Invalid request", 400
 
@@ -119,8 +142,9 @@ def update_one():
 ###############################################################################
 def safe_serialize(obj):
     default = lambda o: f"<<non-serializable: {type(o).__qualname__}>>"
-    return json.dumps(obj, default=default)
+    res = json.dumps(obj, default=default)
 
+    return res
 
 def unique_id_generator():
     res = str( uuid.uuid4() )

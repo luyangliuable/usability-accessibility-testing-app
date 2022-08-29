@@ -50,7 +50,7 @@ class algorithm_status_controller():
 
             status_key = 'algorithm_status'
 
-            d[status_key][algorithm][key] = val
+            d[status_key][key] = val
 
             # Get status ##################################################################
             self._db.update_document(uuid, self.c, status_key, d[status_key])
@@ -67,8 +67,6 @@ class algorithm_status_controller():
         try:
             d = self._db.get_document(uuid, self.c)
             d = d[0]
-
-            # p = {"status": status, "notes": notes, "estimate_remaining_time": estimate_remaining_time}
 
             for key, item in update_dict.items():
                 if item == "" or item == None:

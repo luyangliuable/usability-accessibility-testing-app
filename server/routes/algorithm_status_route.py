@@ -10,7 +10,7 @@ from controllers.algorithm_status_controller import *
 ###############################################################################
 #                            Set Up Flask Blueprint                           #
 ###############################################################################
-file_blueprint = Blueprint("algorithm_status", __name__)
+algorithm_status_blueprint = Blueprint("algorithm_status", __name__)
 
 ###############################################################################
 #                Initiate algorithm status controller for route               #
@@ -18,7 +18,7 @@ file_blueprint = Blueprint("algorithm_status", __name__)
 default_collection = 'apk'
 asc = algorithm_status_controller(default_collection)
 
-@file_blueprint.route("/status/get/<uuid>", methods=['GET'])
+@algorithm_status_blueprint.route("/status/get/<uuid>", methods=['GET'])
 @cross_origin()
 def get_status(uuid):
     """
@@ -30,19 +30,19 @@ def get_status(uuid):
     return json.dumps(res)
 
 
-@file_blueprint.route("/status/update/<uuid>", methods=['GET', 'POST'])
+@algorithm_status_blueprint.route("/status/update/<uuid>", methods=['GET', 'POST'])
 @cross_origin()
 def update_status(uuid):
     """
     Method for updating status of each and every algorithm
     """
     if request.method == "POST":
-        update = request.json()
+        update = request.json
 
         res = asc.update_algorithm_status(uuid, update)
-        return json.dumps(res)
+        return json.dumps(res), 200
 
-@file_blueprint.route("/status/update/<uuid>/<algorithm>", methods=['GET', 'POST'])
+@algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>", methods=['GET', 'POST'])
 @cross_origin()
 def update_one_algorithm(uuid, algorithm):
     """
@@ -51,32 +51,36 @@ def update_one_algorithm(uuid, algorithm):
     pass
 
 
-@file_blueprint.route("/status/update/<uuid>/<algorithm>/<attribute>", methods=['GET', 'POST'])
+@algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>/<attribute>", methods=['GET', 'POST'])
 @cross_origin()
 def update_one_attribute(uuid, algorithm, attribute):
     """
     Method for updating status of each and every algorithm
     """
     if request.method == "POST":
-        update = request.json()
+        # Assume result is a string
+        update = str( request.data.decode() )
 
         res = asc.update_algorithm_status_attribute(uuid, algorithm, attribute, update)
-        return json.dumps(res)
+
+        print(res)
+
+        return safe_serialize( res ), 200
 
 
-@file_blueprint.route("/status", methods=['GET'])
+@algorithm_status_blueprint.route("/status", methods=['GET'])
 @cross_origin()
 def status():
     pass
 
 
-@file_blueprint.route("/status/update", methods=['GET'])
+@algorithm_status_blueprint.route("/status/update", methods=['GET'])
 @cross_origin()
 def u_status():
     pass
 
 
-@file_blueprint.route("/status/get", methods=['GET'])
+@algorithm_status_blueprint.route("/status/get", methods=['GET'])
 @cross_origin()
 def g_status():
     pass

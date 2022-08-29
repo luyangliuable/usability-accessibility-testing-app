@@ -1,6 +1,9 @@
 import os
+from pickle import bytes_types
 import sys
+import json
 import uuid
+import requests
 import inspect
 import unittest
 
@@ -23,44 +26,38 @@ class TestDbManager(unittest.TestCase):
         self.db = ApkManager.instance()
 
         self.tc = self.db.create_collection(self.tcn)
-        self.asc = asc(self.tcn)
 
         # Test document
         self.uuid = unique_id_generator()
+
         format = ApkManager.get_format(self.uuid)
 
         self.td = self.db.insert_document(format, self.tc)
 
 
-    def test_same_collection(self):
-        self.assertEqual(self.asc.get_colletion(), self.tc)
+    def test_get_file(self):
+        headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
+        data = requests.get("http://localhost:5005/file/get", data=json.dumps( {"uuid": self.uuid} ), headers=headers).json()
+        write_to_view("view.txt", data)
+
+        data.pop('date')
+
+        expected = ApkManager.get_format(self.uuid)
+        expected.pop('date')
+
+        # Get file route
+        print(data)
 
 
-    def test_update_status(self):
-        expected = {'gifdroid': {'status': 'random_status', 'notes': 'random_notes', 'estimate_remaining_time': 100, 'result_link': ''}}
-
-        self.asc.update_algorithm_status(self.uuid, expected)
-
-        r = self.db.get_document(self.uuid, self.tc)[0]
-        r = r['algorithm_status']
-
-        self.assertEqual(r, expected)
-
-
-    def test_update_algorithm_status_attribute(self):
-        expected = {'gifdroid': {'status': 'done', 'notes': 'random_notes', 'estimate_remaining_time': 100, 'result_link': ''}}
-        self.asc.update_algorithm_status(self.uuid, expected)
-        self.asc.update_algorithm_status_attribute(self.uuid, 'gifdroid', 'status', expected['gifdroid']['status'])
-
-        r = self.db.get_document(self.uuid, self.tc)[0]['algorithm_status']
-
-
-        self.assertEqual(r, expected)
+        self.assertEqual(expected, data)
 
 
 ###############################################################################
 #                              Untility functions                             #
 ###############################################################################
+def safe_serialize(obj):
+    default = lambda o: f"<<non-serializable: {type(o).__qualname__}>>"
+    return json.dumps(obj, default=default)
 
 def write_to_view(filename: str, content):
     """
@@ -73,6 +70,13 @@ def write_to_view(filename: str, content):
 def unique_id_generator() -> str:
     res = str( uuid.uuid4() )
     return res
+
+
+def bytes_to_json(byte_str: bytes):
+    data = byte_str.decode('utf8').replace("'", '"')
+    data = json.loads(data)
+
+    return data
 
 
 def main():

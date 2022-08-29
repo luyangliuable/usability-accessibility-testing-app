@@ -9,6 +9,7 @@ import uuid
 import os
 from redis import Redis
 from models.Apk import ApkManager
+from controllers.file_controller import *
 
 ###############################################################################
 #                            Set Up Flask Blueprint                           #
@@ -49,12 +50,8 @@ def download(uuid,algorithm):
 
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 
-    response = requests.get('/file/get', data=json.dumps( data ), headers=headers)
-
-    ###############################################################################
-    #             Assume the the first element in result is the result            #
-    ###############################################################################
-    lookup = json.loads( response.content )[0]
+    # response = requests.get('http://docker.host.internal:5005/file/get', data=json.dumps( data ), headers=headers)
+    lookup = get_document2(uuid)[0]
 
     ###############################################################################
     #      If the file is json just respond with json instead of sendinf file     #
@@ -63,18 +60,22 @@ def download(uuid,algorithm):
     ###############################################################################
     #                    Assume first element of apk is the apk                   #
     ###############################################################################
-    result_file_from_algorithm = lookup[algorithm][0]['name']
+    print(lookup)
+
+    if algorithm == "apk":
+        result_file_from_algorithm = lookup[algorithm][0]['name']
+    else:
+        result_file_from_algorithm = lookup[algorithm][0]
 
     ###############################################################################
     #                        TODO Update more buckets here                        #
     ###############################################################################
-    result_bucket = None
+    result_bucket = 'apk-bucket'
+
     if algorithm == 'apk':
         result_bucket = 'apk-bucket'
-    elif algorithm == "gifdroid_file":
-        result_bucket = 'gifdroid-bucket'
-    else:
-        return "Invalid Algorithm", 400
+    # else:
+    #     return "Invalid Algorithm", 400
 
     print("Getting file from", os.path.join(uuid, result_file_from_algorithm))
 

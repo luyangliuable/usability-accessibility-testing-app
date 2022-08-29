@@ -124,8 +124,6 @@ def upload():
         mongo.insert_document(data, mongo.get_database()["apk"])
 
         print("[5] return celery task id and file key")
-        print(data)
-        # exit(0)
         return json.dumps({"file_key": str( file_key ), "uuid": unique_id}), 200
 
     return json.dumps({"message": "failed to upload"}), 400
@@ -137,11 +135,15 @@ def signal_start(algorithm):
     if request.method == "POST":
         print("[1] creating celery task")
         uuid = request.form.get("uuid")
+
         print("uuid is", uuid)
         print("start task for algorithm", algorithm)
 
-        task_info = {"uuid": uuid, "algorithm": algorithm}
+###############################################################################
+#                       Add algorithm status to mongodb                       #
+###############################################################################
 
+        task_info = {"uuid": uuid, "algorithm": algorithm}
         task = run_algorithm.delay(task_info)
 
         return json.dumps({"task_id": task.id, "task_for_algorithm": "algorithm"}), 200

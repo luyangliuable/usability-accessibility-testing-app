@@ -10,6 +10,8 @@ class ApkManager:
 
     _instance = None  # _ means it is private
 
+    # https://www.mongodb.com/docs/manual/reference/bson-types/
+
     apk_schema = {
         'uuid': {
             'type': 'string',
@@ -51,9 +53,13 @@ class ApkManager:
         'venus_files': {
             'type': 'array',
             'required': False
+        },
+        'algorithm_status': {
+            'type': 'object',
+            'required': False,
+            'default': {} # Currently default is not parsed
         }
     }
-
 
 
     def __init__(self):
@@ -65,6 +71,15 @@ class ApkManager:
 
     @staticmethod
     def get_format(uuid: str) -> dict:
+        """
+        Get the format/model of the data document to be added to model db.
+
+        Parameters:
+            uuid (str): The algorthm cluster or job uuid
+
+        Returns:
+            data: The model to create a document
+        """
         ###############################################################################
         #               Store data into mongodb in the following format               #
         ###############################################################################
@@ -92,6 +107,7 @@ class ApkManager:
             "utg_files": [],
             "owleye_files": [],
             "venus_files": [],
+            "algorithm_status": {},
         }
 
         return data
@@ -111,8 +127,8 @@ class ApkManager:
         return cls._instance
 
 
-    def get_document(self, uuid: str):
-        cursor = self._db['apk'].find({"uuid": uuid})
+    def get_document(self, uuid: str, collection: Collection):
+        cursor = collection.find({"uuid": uuid})
 
         result = []
         for document in cursor:
@@ -122,6 +138,7 @@ class ApkManager:
                 result.append(document)
 
         return result
+
 
     @classmethod
     def get_db_status(cls, db_name:str):
@@ -136,6 +153,7 @@ class ApkManager:
 
     def get_database(self):
         return self._db
+
 
     @staticmethod
     def create_mongo_validator(user_schema: dict):
@@ -162,17 +180,37 @@ class ApkManager:
 
 
     def create_collection(self, collection_name: str, schema=None):
-
         validator = {}
 
         if schema != None:
             validator = ApkManager.create_mongo_validator(schema)
 
-        result = self._db.create_collection(collection_name, validator=validator)
+        # Placeholder result variable
+        result = Collection(self._db, collection_name)
 
-        print("Collection", collection_name, "created")
+        try:
+            result = self._db.create_collection(collection_name, validator=validator)
+        except Exception as e:
+            # Collection may already exist
+            print(e)
+        else:
+            print("Collection", collection_name, "created")
 
-        return True
+        return result
+
+
+    def update_document(self, uuid: str, collection: Collection, attribute: str, value):
+
+        collection.update_one(
+            {
+                "uuid": uuid
+            },
+            {
+                "$set": {
+                    attribute: value
+                }
+            }
+        )
 
 
     def get_collection(self, collection_name:str):
@@ -185,6 +223,7 @@ class ApkManager:
         print(post_id)
 
         return post_id
+
 
     @classmethod
     def connect(cls):
@@ -199,11 +238,5 @@ class ApkManager:
 
 
 if __name__ == "__main__":
-
-
-    # print(ApkManager.create_mongo_validator(apk_schema))
-
     a = ApkManager.instance()
-    # a.create_collection("random", ApkManager.apk_schema)
-    # print(a.get_db_status("FIT3170asda"))
     a.insert_document({'test': 'worksl'}, a.get_collection("random"))

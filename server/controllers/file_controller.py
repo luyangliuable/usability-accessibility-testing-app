@@ -97,6 +97,18 @@ def add_documment():
 #                    TODO Add file for updating a document                    #
 ###############################################################################
 
+def update_one():
+    _db.apk.update_one(
+        {
+            "uuid": uuid
+        },
+        {
+            "$set": {
+                "utg_files": config["DEFAULT_UTG_FILENAME"]
+            }
+        }
+    )
+
 ###############################################################################
 #                  TODO add method file getting one document                  #
 ###############################################################################

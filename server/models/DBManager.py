@@ -3,7 +3,7 @@ from pymongo.database import Collection
 import os
 import datetime
 
-class ApkManager:
+class DBManager:
     """
         This class is a *singleton* that provides a global access point for API in this project. It access the api key inside .env file. It must be initiated to be used and only one instance can exist at a time
     """
@@ -232,11 +232,11 @@ class ApkManager:
             cls._db = cls.connection.fit3170
             cls.connection.server_info()  # Triger exception if connection fails to the database
         except Exception as ex:
-            print('failed to connect', ex)
+            print('failed to connect DBManager', ex)
         else:
             print("Successfully connected to mongodb.")
 
 
 if __name__ == "__main__":
-    a = ApkManager.instance()
+    a = DBManager.instance()
     a.insert_document({'test': 'worksl'}, a.get_collection("random"))

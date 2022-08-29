@@ -61,9 +61,9 @@ try:
     _db = connection.fit3170
     connection.server_info()  # Triger exception if connection fails to the database
 except Exception as ex:
-    print('failed to connect', ex)
+    print('failed to connect GIFDROID', ex)
 else:
-    print("Successfully connected to mongodb.")
+    print("Successfully connected to mongodb. GifDroid")
 
 
 @app.route("/new_job", methods=["POST"])

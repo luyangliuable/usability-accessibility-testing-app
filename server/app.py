@@ -17,6 +17,8 @@ def create_app(script_info=None):
     from routes.algorithm_status_api import algorithm_status_blueprint
     from routes.upload_api import upload_blueprint
     from routes.file_api import file_blueprint
+    from routes.login_api import login_blueprint
+    from reports.app import reports_blueprint
 
     # from controllers.file_controller import file_blueprint
     from download.app import download_blueprint
@@ -28,6 +30,8 @@ def create_app(script_info=None):
     app.register_blueprint(upload_blueprint)
 
     # Used as file management api for flask #######################################
+    app.register_blueprint(reports_blueprint)
+    app.register_blueprint(login_blueprint)
     app.register_blueprint(file_blueprint)
 
     # Used as download file from algorithm to frontend api  #######################
@@ -57,5 +61,3 @@ def create_app(script_info=None):
     app.shell_context_processor({"app": app})
 
     return app
-
-

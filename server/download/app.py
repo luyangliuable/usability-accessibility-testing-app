@@ -8,8 +8,10 @@ import json
 import uuid
 import os
 from redis import Redis
-from models.Apk import ApkManager
 from controllers.file_controller import *
+from models.DBManager import DBManager
+from server.routes.file_api import get_document
+from server.controllers.file_controller import FileController
 
 ###############################################################################
 #                            Set Up Flask Blueprint                           #
@@ -38,6 +40,8 @@ def unique_id_generator():
     res = str( uuid.uuid4() )
     return res
 
+file_controller = FileController()
+
 
 @download_blueprint.route('/download_result/<uuid>/<algorithm>', methods=["GET", "POST"])
 @cross_origin()
@@ -51,7 +55,8 @@ def download(uuid,algorithm):
     headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 
     # response = requests.get('http://docker.host.internal:5005/file/get', data=json.dumps( data ), headers=headers)
-    lookup = get_document2(uuid)[0]
+    # lookup = get_document(uuid)[0]
+    lookup = file_controller.get_document(uuid)[0]
 
     ###############################################################################
     #      If the file is json just respond with json instead of sendinf file     #

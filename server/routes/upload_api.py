@@ -8,7 +8,7 @@ import json
 import uuid
 import os
 from redis import Redis
-from models.Apk import ApkManager
+from models.DBManager import DBManager
 
 ###############################################################################
 #                            Set Up Flask Blueprint                           #
@@ -18,7 +18,7 @@ upload_blueprint = Blueprint("upload", __name__)
 ###############################################################################
 #                            Start mongodb instance                           #
 ###############################################################################
-mongo = ApkManager.instance()
+mongo = DBManager.instance()
 
 ###############################################################################
 #                                  Set Up AWS                                 #
@@ -70,7 +70,7 @@ def upload():
         unique_id = unique_id_generator()
 
         # Document template to be inserted into mongodb
-        data = ApkManager.get_format(unique_id)
+        data = DBManager.get_format(unique_id)
 
         # File name is the original uploaded file name ################################
         file_key = request.form.get('filename')
@@ -95,7 +95,7 @@ def upload():
                     savefile.close()
 
                 s3_client.upload_file(temp_file_name, BUCKETNAME, os.path.join( unique_id, str(item.filename) ))
-                data = ApkManager.get_format(unique_id)
+                data = DBManager.get_format(unique_id)
                 data["additional_files"].append({"algorithm": item.name, "type": item.content_type, "name": item.filename, "notes": ""})
 
         ###############################################################################
@@ -171,7 +171,7 @@ def get_status(task_id):
         "task_result": task_result.result
     }
 
-    return jsonify(result), 200
+    return json.dumps(result), 200
 
 
 @upload_blueprint.after_request

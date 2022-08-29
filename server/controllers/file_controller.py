@@ -1,14 +1,9 @@
+from utility.uuid_generator import unique_id_generator
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
+from models.Apk import ApkManager
 import datetime
 import json
-import uuid
-from models.Apk import ApkManager
-
-###############################################################################
-#                            Set Up Flask Blueprint                           #
-###############################################################################
-file_blueprint = Blueprint("file", __name__)
 
 ###############################################################################
 #                                    Schema                                   #
@@ -26,85 +21,73 @@ data = {
     "venus_files": [],
 }
 
-###############################################################################
-#                          Initiate database instance                         #
-###############################################################################
-mongo = ApkManager.instance()
 
-@file_blueprint.route("/file", methods=['GET'])
-@cross_origin()
-def check_health():
+# @file_blueprint.route("/file", methods=['GET'])
+# @cross_origin()
+# def check_health():
+#     """
+#     Method file controller files and submiting CRUD/REST API requests into
+#     """
+
+#     return "Working", 200
+
+
+class FileController:
     """
-    Method file controller files and submiting CRUD/REST API requests into
+    This controller class is used to update metadata for files on mongodb for traceability purpose.
     """
-
-    return "Working", 200
-
-
-###############################################################################
-#                   TODO make this a class not routing page                   #
-###############################################################################
-def get_document2(uuid):
-    result = mongo.get_document(uuid=uuid, collection=mongo.get_collection('apk'))
-
-    result = [item for item in result][0]
-
-    ###############################################################################
-    #                FIX: Somehow this is returning bytes not json                #
-    ###############################################################################
-    # res = safe_serialize(result)
-
-    return result, 200
-
-@file_blueprint.route("/file/get", methods=['GET'])
-@cross_origin()
-def get_document():
-    """
-    Method for getting a document from api
-    """
-    print("Starting get document")
-    if request.method == "GET":
-        uuid = request.json['uuid']
-
-        result = mongo.get_document(uuid=uuid, collection=mongo.get_collection('apk'))
-
-        result = [item for item in result]
-
+    def __init__(self):
         ###############################################################################
-        #                FIX: Somehow this is returning bytes not json                #
+        #                          Initiate database instance                         #
         ###############################################################################
-        res = safe_serialize(result)
+        self.collection_name = "apk"
+        self.mongo = ApkManager.instance()
 
-        print(res)
-
-        res = json.loads(res)[0]
-
-        res.pop('_id')
-
-        return res, 200
-
-    return "Invalid request", 400
+        self.collection = self.mongo.get_collection('apk')
 
 
-@file_blueprint.route("/file/add", methods=['GET', "POST"])
-@cross_origin()
-def add_documment():
-    if request.method == "POST":
+    def get_document(self, uuid: str):
+        """
+        Get file metadata that matches the job uuid
+
+        Parameters:
+            uuid (str) - The job uuid the identifies the cluster of algorithms to run
+        """
+
+        # Get document that match uui in apk colletion #########################
+        result = self.mongo.get_document(
+            uuid=uuid,
+            collection=self.collection
+        )
+
+        # The result for mongodb get document returns a list ##########################
+        result = [item for item in result][0]
+
+        return result, 200
+
+
+    def add_document(self, request_parameters: list):
+        """
+        Add file metadata that matches the job uuid
+
+
+        Parameters:
+            request_parameters - request parameters that contain contents of document
+        """
+
         try:
             ###############################################################################
             #                         Add file metadata to mongodb                        #
             ###############################################################################
 
-            collection = "apk"
             document = data
 
             for each_key, _ in document.items():
-                document[each_key] = request.args.get(each_key)
+                document[each_key] = request_parameters.get(each_key)
 
             document['uuid'] = unique_id_generator()
-            print(document)
 
-            mongo.insert_document(document, mongo.get_collection('apk')).inserted_id
+            self.mongo.insert_document(document, self.collection).inserted_id
 
             return document['uuid'], 200
         except Exception as e:
@@ -113,43 +96,3 @@ def add_documment():
             ###############################################################################
             return str(e), 400
 
-
-    return "Not a valid request", 400
-
-###############################################################################
-#                    TODO Add file for updating a document                    #
-###############################################################################
-
-def update_one():
-    _db.apk.update_one(
-        {
-            "uuid": uuid
-        },
-        {
-            "$set": {
-                "utg_files": config["DEFAULT_UTG_FILENAME"]
-            }
-        }
-    )
-
-###############################################################################
-#                  TODO add method file getting one document                  #
-###############################################################################
-
-
-###############################################################################
-#                              Utility Functions                              #
-###############################################################################
-def safe_serialize(obj):
-    default = lambda o: f"<<non-serializable: {type(o).__qualname__}>>"
-    res = json.dumps(obj, default=default)
-
-    return res
-
-def unique_id_generator():
-    res = str( uuid.uuid4() )
-    return res
-
-
-if __name__ == "__main__":
-    pass

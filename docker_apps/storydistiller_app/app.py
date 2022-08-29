@@ -71,6 +71,7 @@ def _service_execute(uuid):
 # get name of file stored where key==uuid in s3
 def _get_apk_name(uuid):
     response = s3_client.list_objects_v2(Bucket='apk-bucket', Prefix=uuid)
+    print(reponse)
     contents = response['Contents']
     apk_name = contents[0]['Key'].replace(uuid+'/', '').replace('.apk', '')
     return apk_name
@@ -102,7 +103,6 @@ def _upload_result(uuid, apk_name):
     s3_client.upload_file(output_folder_path, bucket, s3_output_path)
     os.system('rm -r %s' % (output_filename))
     os.chdir("/home/app")
-
 
     # upload screenshots
     screenshots_path = output_root_path + apk_name + '/screenshots'

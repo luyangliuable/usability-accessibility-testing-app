@@ -16,9 +16,8 @@ from models.Apk import ApkManager
 upload_blueprint = Blueprint("upload", __name__)
 
 ###############################################################################
-#                            Set Up Flask Blueprint                           #
+#                            Start mongodb instance                           #
 ###############################################################################
-
 mongo = ApkManager.instance()
 
 ###############################################################################
@@ -29,6 +28,7 @@ AWS_REGION = 'us-west-2'
 ENDPOINT_URL = os.environ.get('S3_URL')
 BUCKETNAME = "apk-bucket"
 
+
 boto3.setup_default_session(profile_name=AWS_PROFILE)
 s3_client = boto3.client(
     "s3",
@@ -36,10 +36,10 @@ s3_client = boto3.client(
     endpoint_url=ENDPOINT_URL
 )
 
+
 def unique_id_generator():
     res = str( uuid.uuid4() )
     return res
-
 
 
 @upload_blueprint.route('/upload', methods=["GET", "POST"])

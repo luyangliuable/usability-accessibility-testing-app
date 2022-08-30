@@ -120,12 +120,7 @@ class DBManager:
                 ],
                 "gifdroid": {
                     "images": [],
-                    "json": {
-                        "name": "",
-                        "data": "",
-                        "s3_bucket": "",
-                        "s3_key": ""
-                    }
+                    "json": []
                 },
                 "uichecker": {}
             }

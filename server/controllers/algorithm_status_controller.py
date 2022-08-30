@@ -89,7 +89,6 @@ class AlgorithmStatusController():
         # Get document ################################################################
         try:
             d = self._db.get_document(uuid, self.c)
-            d = d[0]
 
             status_key = 'algorithm_status'
 

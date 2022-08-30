@@ -14,8 +14,11 @@ class gifdroidJsonParser(Strategy):
     }
 
     @staticmethod
-    def do_algorithm(uuid: str, file: List, name: List=['']) -> List:
+    def do_algorithm(uuid: str, file: List, name: List) -> List:
         # res =  self.gifdroid_result_file_json_format
+
+        if type( file ) != list: raise ValueError("file must be a list")
+
         res = [{} for _ in range(len(file))]
 
         for i in range(len(file)):

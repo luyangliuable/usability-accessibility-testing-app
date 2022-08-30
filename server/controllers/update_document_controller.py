@@ -29,8 +29,21 @@ class UpdateDocumentController:
 
         self.c = self.mongo.get_collection('apk')
 
+        # Attribute lookup for algorithm
+        self.lookup = {
+            "owleye": "activity",
+            "storydisitiller": "activity",
+            "xbot": "activity",
+            "gifdroid": "gifdroid",
+            "droidbot": "gifdroid",
+        }
 
-    def insert_algorithm_result(self, uuid: str, algorithm: str, links_to_res: list, result_type:str):
+
+    def get_lookup(self):
+        return self.lookup
+
+
+    def insert_algorithm_result(self, uuid: str, algorithm: str, links_to_res: list, result_type:str, file_names: list):
         """
         This function inserts the links to the algorithm results into the document matching uuid
 
@@ -41,19 +54,10 @@ class UpdateDocumentController:
 
         """
 
-        # Attribute lookup for algorithm
-        lookup = {
-            "owleye": "activity",
-            "storydisitiller": "activity",
-            "xbot": "activity",
-            "gifdroid": "gifdroid",
-            "droidbot": "gifdroid",
-        }
 
         ###############################################################################
         #                             Convert file to json                            #
         ###############################################################################
-
         result_key_in_d = "results"
 
         ###############################################################################
@@ -67,9 +71,16 @@ class UpdateDocumentController:
         result = d[result_key_in_d]
 
         # Change document and insert result link ######################################
-        prev = result[lookup[algorithm]][result_type]
-        tmp = self._strategy.do_algorithm(uuid, links_to_res)
-        result[lookup[algorithm]][result_type] = prev + tmp
+        prev = result[self.lookup[algorithm]][result_type]
+        print(file_names)
+        print(file_names)
+        print(file_names)
+        print(file_names)
+        tmp = self._strategy.do_algorithm(uuid, links_to_res, file_names)
+        print(tmp)
+
+        print(result['gifdroid'])
+        result[self.lookup[algorithm]][result_type] = prev + tmp
 
         # Update result back #####################################################
         self.mongo.update_document(uuid, self.c, result_key_in_d, result)

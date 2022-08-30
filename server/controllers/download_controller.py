@@ -29,23 +29,22 @@ class DownloadController:
         self.cn = collection_name
         self.udc = UDContrl(collection_name, json_result_file_parser)
 
-    def download(self,uuid,algorithm, type, name):
+    def download(self,uuid, algorithm, name):
 
         # data = {'uuid': uuid}
         # headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 
         # response = requests.get('http://docker.host.internal:5005/file/get', data=json.dumps( data ), headers=headers)
         # lookup = get_document(uuid)[0]
-        lookup = self.udc.get_document(uuid)
+        # lookup = self.udc.get_document(uuid)
+
+        # print(algorithm)
+
+        print("attempting to get file from bucket location", os.path.join(uuid, name), "for download" )
 
         ###############################################################################
         #      If the file is json just respond with json instead of sendinf file     #
         ###############################################################################
-
-        print(type)
-        print(name)
-        print(lookup['results'][algorithm][type])
-
         # try:
         #     result_file_from_algorithm = [o for o in lookup['results'][algorithm][type] if o['name'] == name][0]
         # except:

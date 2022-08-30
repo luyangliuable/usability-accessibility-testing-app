@@ -20,6 +20,7 @@ class gifdroidJsonParser(Strategy):
         if type( file ) != list: raise ValueError("file must be a list")
 
         res = [{} for _ in range(len(file))]
+        print(name)
 
         for i in range(len(file)):
             tmp = gifdroidJsonParser.gifdroid_result_file_json_format
@@ -32,7 +33,7 @@ class gifdroidJsonParser(Strategy):
 
             # TODO when files are stored in algorithm folders change this to:
             # tmp['s3_key'] = os.path.join(uuid, apl_algorithm, file[i])
-            tmp['s3_key'] = os.path.join(uuid, file[i])
+            tmp['s3_key'] = os.path.join(uuid, name[i])
 
             res[i] = tmp
 

@@ -5,6 +5,8 @@ import "../index.css";
 
 import ReportsTable from "../Results/components/ReportsTable";
 
+import GifdroidResult from "./components/GifdroidResult";
+
 // export default class Results extends Component {
 const Results = () => {
   /* TODO link to backend */
@@ -56,15 +58,19 @@ const Results = () => {
         padding: "10px",
       }}
     >
-      {reports.map((report) => (
+      {
+          reports.map((report) => (
         <>
           <ReportsTable
             issues={report["issues"]}
             image={report["image"]}
             app={report["app"]}
           />
+
+          <GifdroidResult/>
         </>
-      ))}
+      ))
+      }
 
       <button onClick={checkReports}>get reports</button>
     </div>

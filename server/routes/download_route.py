@@ -38,10 +38,10 @@ def unique_id_generator():
 download_controller = DownloadController('apk', gifdroidJsonParser)
 
 
-@download_blueprint.route('/download_result/<uuid>/<algorithm>/<type>/<name>', methods=["GET", "POST"])
+@download_blueprint.route('/download_result/<uuid>/<algorithm>/<name>', methods=["GET", "POST"])
 @cross_origin()
-def download(uuid,algorithm, type, name):
-    result_file_from_algorithm = download_controller.download(uuid, algorithm, type, name)
+def download(uuid,algorithm, name):
+    result_file_from_algorithm = download_controller.download(uuid, algorithm, name)
 
     return send_file(result_file_from_algorithm, as_attachment=True), 200
 

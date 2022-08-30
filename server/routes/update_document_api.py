@@ -14,6 +14,27 @@ update_document_blueprint = Blueprint("file", __name__)
 file_controller = UpdateDocumentController('apk', gifdroidJsonParser)
 
 
+@update_document_blueprint.route("/file/get/<uuid>/<algorithm>", methods=['GET'])
+@cross_origin()
+def get_result_of_algorithm(uuid, algorithm):
+    """
+    Method for getting a document from api
+    """
+
+    try:
+        print("Starting get document")
+
+        doc = file_controller.get_document(uuid)
+        print(doc['results'][algorithm])
+
+        result = doc['results'][algorithm]
+
+        return result, 200
+    except Exception as e:
+        print(e)
+        return str(e), 400
+
+
 @update_document_blueprint.route("/file/get", methods=['GET'])
 @cross_origin()
 def get_document():
@@ -50,12 +71,12 @@ def result_add(uuid, algorithm):
 
         print(uuid)
         print(algorithm)
-        files = request.json.get("files")
-        print(files)
+        links = request.json.get("files")
         type = request.json.get("type")
+        file_names = request.json.get("names")
         print(type)
 
-        file_controller.insert_algorithm_result(uuid, algorithm, files, str( type ))
+        file_controller.insert_algorithm_result(uuid, algorithm, links, type, file_names)
 
         return "Done", 200
 

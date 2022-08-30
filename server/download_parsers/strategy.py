@@ -11,5 +11,5 @@ class Strategy(ABC):
     """
 
     @abstractmethod
-    def do_algorithm(self, uuid: str, file: List, apk_algorithm: str='') -> List:
+    def do_algorithm(self, uuid: str, file: List, file_names: List) -> List:
         pass

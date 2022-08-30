@@ -4,6 +4,7 @@ import uuid
 import os
 from controllers.update_document_controller import UpdateDocumentController as UDContrl
 from utility.uuid_generator import unique_id_generator
+from download_parsers.strategy import Strategy
 
 ###############################################################################
 #                                  Set Up AWS                                 #
@@ -24,30 +25,36 @@ s3_client = boto3.client(
 )
 
 class DownloadController:
-    def __init__(self):
-        pass
+    def __init__(self, collection_name: str, json_result_file_parser: Strategy):
+        self.cn = collection_name
+        self.udc = UDContrl(collection_name, json_result_file_parser)
 
-    def download(self,uuid,algorithm):
+    def download(self,uuid, algorithm, name):
 
         # data = {'uuid': uuid}
         # headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
 
-        ud_ctr =  UDContrl()
-
         # response = requests.get('http://docker.host.internal:5005/file/get', data=json.dumps( data ), headers=headers)
         # lookup = get_document(uuid)[0]
-        lookup = ud_ctr.get_document(uuid)
+        # lookup = self.udc.get_document(uuid)
+
+        # print(algorithm)
+
+        print("attempting to get file from bucket location", os.path.join(uuid, name), "for download" )
 
         ###############################################################################
         #      If the file is json just respond with json instead of sendinf file     #
         ###############################################################################
-        print(lookup)
-
-        if algorithm == "apk":
-            result_file_from_algorithm = lookup[algorithm]['name']
-        else:
-            result_file_from_algorithm = lookup[algorithm]
+        # try:
+        #     result_file_from_algorithm = [o for o in lookup['results'][algorithm][type] if o['name'] == name][0]
+        # except:
+        #     raise IndexError("File is not stored")
 
         ###############################################################################
         #                        TODO Update more buckets here                        #
         ###############################################################################
+
+
+        s3_client.download_file(Bucket='apk-bucket', Key=os.path.join(uuid, name), Filename=name)
+
+        return name

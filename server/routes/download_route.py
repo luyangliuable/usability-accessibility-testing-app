@@ -5,6 +5,7 @@ import json
 import uuid
 import os
 
+from download_parsers.gifdroid_json_parser import gifdroidJsonParser
 from controllers.download_controller import DownloadController
 
 ###############################################################################
@@ -34,13 +35,13 @@ def unique_id_generator():
     res = str( uuid.uuid4() )
 
 
-download_controller = DownloadController()
+download_controller = DownloadController('apk', gifdroidJsonParser)
 
 
-@download_blueprint.route('/download_result/<uuid>/<algorithm>', methods=["GET", "POST"])
+@download_blueprint.route('/download_result/<uuid>/<algorithm>/<name>', methods=["GET", "POST"])
 @cross_origin()
-def download(uuid,algorithm):
-    result_file_from_algorithm = download_controller.download(uuid, algorithm)
+def download(uuid,algorithm, name):
+    result_file_from_algorithm = download_controller.download(uuid, algorithm, name)
 
     return send_file(result_file_from_algorithm, as_attachment=True), 200
 

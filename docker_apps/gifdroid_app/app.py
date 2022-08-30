@@ -11,6 +11,7 @@ import tempfile
 from flask import Flask, request, jsonify
 
 from converter.run import convert_droidbot_to_gifdroid_utg
+from converter.functions.artifact_img_converter import file_order_sorter
 
 app = Flask(__name__)
 
@@ -100,8 +101,6 @@ def _service_execute_droidbot(uuid):
 
     print('Beginning new job for %s' % uuid)
 
-    # update_app_status(uuid, data)
-
     ###############################################################################
     #                      GET the APK file name from mongodb                     #
     ###############################################################################
@@ -128,30 +127,27 @@ def _service_execute_droidbot(uuid):
         Filename = target_apk
     )
 
+    OUTPUT_DIR = "./"
+
     ############################################################################
     #                      Run program with downloaded apk                     #
     ############################################################################
-    OUTPUT_DIR = "./"
-
     print("[3] Running Droidbot app")
-
-    subprocess.run([ "adb", "connect", EMULATOR])
-
     os.chdir("/home/droidbot")
+    subprocess.run([ "adb", "connect", EMULATOR])
     subprocess.run([ "droidbot", "-count", config[ "NUM_OF_EVENT" ], "-a", target_apk, "-o", OUTPUT_DIR])
 
     ###############################################################################
     #                                Save utg file                                #
     ###############################################################################
     print("[4] Saving utg.js file to bucket.")
-
     enforce_bucket_existance([config[ "BUCKET_NAME" ], "storydistiller-bucket", "xbot-bucket"])
 
-    #Upload events folder
-    upload_directory("events", config["BUCKET_NAME"])
+    # #Upload events folder
+    # upload_directory("events", config["BUCKET_NAME"])
 
     #Upload states folder
-    upload_directory("states", config["BUCKET_NAME"])
+    # upload_directory("states", config["BUCKET_NAME"], uuid)
 
     # Upload utg
     s3_client.upload_file(config[ "DEFAULT_UTG_FILENAME" ], config[ 'BUCKET_NAME' ], os.path.join(uuid, config[ "DEFAULT_UTG_FILENAME" ]))
@@ -199,6 +195,17 @@ def _service_execute_gifdroid(uuid):
 
     response = requests.get("http://host.docker.internal:5005/file/get", data=json.dumps( {"uuid": uuid} ), headers=headers)
 
+    ###############################################################################
+    #                          Upload image result files                          #
+    ###############################################################################
+    result_img_file_type = "png"
+    result_type = "images"
+    image_output = "../droidbot/output"
+    result_img_files = file_order_sorter(image_output, result_img_file_type)
+    upload_directory(image_output, config["BUCKET_NAME"], uuid)
+    download_links = [ os.path.join( "http://localhost:5005", "download_result", uuid, "gifdroid") + "/" + file for file in result_img_files ]
+    insert_result(uuid, download_links, 'images', result_img_files)
+
     lookup = response.json()
 
     for item in lookup['additional_files']:
@@ -216,12 +223,10 @@ def _service_execute_gifdroid(uuid):
     ###############################################################################
     print("[3] Running GIFDROID app")
 
-
     subprocess.run([ "python3", "main.py", "--video=./" + gif_file, "--utg=" + "../droidbot/utg.json", "--artifact=../droidbot/output", "--out=" + config["OUTPUT_FILE"]])
 
     #save output file to bucket
     enforce_bucket_existance([config[ "BUCKET_NAME" ], "storydistiller-bucket", "xbot-bucket"])
-
 
     print("[4] Uploading json file to bucket")
     s3_client.upload_file(config[ "OUTPUT_FILE" ], config[ 'BUCKET_NAME' ], os.path.join(uuid, config[ "OUTPUT_FILE" ] ))
@@ -231,25 +236,12 @@ def _service_execute_gifdroid(uuid):
     ###############################################################################
     print("[5] Updating mongodb for traceability")
 
-    _db.apk.update_one(
-        {
-            "uuid": uuid
-        },
-        {
-            "$set": {
-                "results": {
-                    "$set": {
-                        "json": config["OUTPUT_FILE"]
-                    }
-                }
-            }
-        }
-    )
+    type = 'json'
 
-    download_link = os.path.join( "http://localhost:5005", "download_result", uuid) + "/gifdroid_files"
+    # Download images doesn't need to know the type of file. Just need to identify the file
+    download_link = os.path.join( "http://localhost:5005", "download_result", uuid, "gifdroid") + "/" + config['BUCKET_NAME']
 
-    update_app_attribute(uuid, 'status', "DONE")
-    update_app_attribute(uuid, 'download_link', download_link)
+    insert_result(uuid, [download_link], 'json', [config['OUTPUT_FILE']])
 
     return 200
 
@@ -272,10 +264,13 @@ def bytes_to_json(byte_str: bytes):
 
     return data
 
-def upload_directory(path, bucketname):
+def upload_directory(path, bucketname, uuid):
     for root, _, files in os.walk(path):
         for file in files:
-            s3_client.upload_file(os.path.join(root,file),bucketname,file)
+            key = os.path.join(uuid, file)
+
+            # s3_client.upload_file(os.path.join(root,file), key, file)
+            s3_client.upload_file(os.path.join(root, file), bucketname, key)
 
 
 def enforce_bucket_existance(buckets):
@@ -286,20 +281,34 @@ def enforce_bucket_existance(buckets):
             print("Bucket already exists %s".format( bucket ))
 
 
-# def update_app_attribute(uuid, attribute, val):
-#     # NOTE the request link MUST NOT have an additional /
-#     request_url = os.path.join( status_api, 'update', uuid, 'gifdroid') + "/" + attribute
-#     res = requests.post(request_url, headers={'Content-Type': 'application/json'}, data=str( val ))
-#     print(request_url)
-#     print(res.content)
+def update_status(uuid: str, status: str):
+    flask_backend = os.environ["FLASK_BACKEND"]
+    request_url = os.path.join(flask_backend, 'result', uuid) + "/" + 'gifdroid'
 
-#     return res
+    data =  {
+        "files": result_files,
+        "type": type
+    }
+
+    res = requests.post(request_url, headers={'Content-Type': 'application/json'}, data=json.dumps(data))
+    print(request_url)
+    print(res.content)
+
+    return res
 
 
-def update_app_status(uuid, status):
+def insert_result(uuid, result_files: list, type: str, file_names: list):
     # NOTE the request link MUST NOT have an additional /
-    request_url = os.path.join( status_api, 'update') + "/" + uuid
-    res = requests.post(request_url, headers={'Content-Type': 'application/json'}, data=json.dumps( status ))
+    flask_backend = os.environ["FLASK_BACKEND"]
+    request_url = os.path.join(flask_backend, 'result/add', uuid) + "/" + 'gifdroid'
+
+    data =  {
+        "files": result_files,
+        "type": type,
+        "names": file_names
+    }
+
+    res = requests.post(request_url, headers={'Content-Type': 'application/json'}, data=json.dumps(data))
     print(request_url)
     print(res.content)
 
@@ -309,13 +318,6 @@ def update_app_status(uuid, status):
 if __name__ == "__main__":
     # No point doing debug mode True because can't debug on docker
     app.run(host="0.0.0.0", port=3005)
-    # data={
-    #     "estimate_remaining_time": 60
-    # }
-
-    # update_app_status("57730388-de61-45c1-8098-d449491004ec", data)
-    # update_app_attribute("608883a9-4241-4f2b-8053-0ece386cd7ae", 'result_link', 'poofoobar')
-    # update_app_attribute("608883a9-4241-4f2b-8053-0ece386cd7ae", 'status', 'DONE')
 
 
 

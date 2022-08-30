@@ -6,9 +6,19 @@ import time
 import os
 import requests
 
+from enums.status_enum import StatusEnum as Status
+from controllers.algorithm_status_controller import AlgorithmStatusController as ASC
+from download_parsers.gifdroid_json_parser import gifdroidJsonParser
+
 celery = Celery(__name__)
 celery.conf.broker_url = os.environ['REDIS_URL']
 celery.conf.result_backend = os.environ['REDIS_URL']
+
+###############################################################################
+#                         Algorithm status controller                         #
+###############################################################################
+asc = ASC(collection_name='apk')
+
 
 @celery.task(name="run_algorithm")
 def run_algorithm(info={}):
@@ -19,7 +29,6 @@ def run_algorithm(info={}):
     uuid = info["uuid"]
 
     algorithm_name = info['algorithm']
-
 
     # Story distiller api url to be obtained from the enrionemtn ###############
     story_distiller_api = os.environ.get("STORYDISTILLER")
@@ -47,9 +56,23 @@ def run_algorithm(info={}):
     URL = start_links[algorithm_name]
 
     try:
+
+        ###############################################################################
+        #                      Print some usefull debugging info                      #
+        ###############################################################################
         print("Running " + str( algorithm_name ) + " url: "+ str( URL ))
         print("Algorithm cluster uuid is", uuid)
+
+        ###############################################################################
+        #                      Change algorithm status to started                     #
+        ###############################################################################
+        asc.update_algorithm_status(uuid, 'gifdroid', Status.running)
+
+        ###############################################################################
+        #                          Signal Algorithm to start                          #
+        ###############################################################################
         result = requests.post(URL, json={ "uid": uuid })
+
     except Exception as ex:
         print('failed to complete tasks', algorithm_name, " with url", URL, "because", ex)
         errors.append(ex)

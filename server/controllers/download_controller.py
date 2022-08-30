@@ -51,14 +51,3 @@ class DownloadController:
         ###############################################################################
         #                        TODO Update more buckets here                        #
         ###############################################################################
-        result_bucket = 'apk-bucket'
-
-        if algorithm == 'apk':
-            result_bucket = 'apk-bucket'
-
-        print("Getting file from", os.path.join(uuid, result_file_from_algorithm))
-
-        s3_client.download_file(Bucket=result_bucket, Key=os.path.join(uuid, result_file_from_algorithm), Filename=result_file_from_algorithm)
-
-        return result_file_from_algorithm
-        # return send_file(result_file_from_algorithm, as_attachment=True), 200

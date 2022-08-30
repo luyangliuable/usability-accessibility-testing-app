@@ -212,7 +212,7 @@ class DBManager:
         validator = {}
 
         if schema != None:
-            validator = ApkManager.create_mongo_validator(schema)
+            validator = DBManager.create_mongo_validator(schema)
 
         # Placeholder result variable
         result = Collection(self._db, collection_name)

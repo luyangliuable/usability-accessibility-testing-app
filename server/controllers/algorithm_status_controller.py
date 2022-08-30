@@ -45,23 +45,23 @@ class AlgorithmStatusController():
     }
 
 
-    def __init__(self, collection_name:str, json_result_file_parser: Strategy):
+    def __init__(self, collection_name: str):
         ###############################################################################
         #                          Initiate database instance                         #
         ###############################################################################
         self._db = DBManager.instance()
         self.c = self._db.get_collection(collection_name)
-        self._strategy = json_result_file_parser
 
-        self._json_result_file_parser = json_result_file_parser
+        # self._strategy = json_result_file_parser
+        # self._json_result_file_parser = json_result_file_parser
 
 
-    def strategy(self, strategy: Strategy) -> None:
-        """
-        Usually, the Context allows replacing a Strategy object at runtime.
-        """
+    # def strategy(self, strategy: Strategy) -> None:
+    #     """
+    #     Usually, the Context allows replacing a Strategy object at runtime.
+    #     """
 
-        self._strategy = strategy
+    #     self._strategy = strategy
 
 
     def get_algorithm_status(self, uuid: str):
@@ -102,52 +102,6 @@ class AlgorithmStatusController():
             print(e)
         else:
             return d
-
-    def insert_algorithm_result(self, uuid: str, algorithm: str, links_to_res: list, result_type:str):
-        """
-        This function inserts the links to the algorithm results into the document matching uuid
-
-        Parameters:
-            uuid - uuid for the job which is the cluster of algorithms tasked to run
-            algorithm - the algorithm the result links for
-            links_to_res - the single link to result. NOTE that element in list is dynamically typed so it can be a string
-
-        """
-
-        # Attribute lookup for algorithm
-        lookup = {
-            "owleye": "activity",
-            "storydisitiller": "activity",
-            "xbot": "activity",
-            "gifdroid": "gifdroid",
-            "droidbot": "gifdroid",
-        }
-
-        ###############################################################################
-        #                             Convert file to json                            #
-        ###############################################################################
-
-        result_key_in_d = "results"
-
-        ###############################################################################
-        #   TODO Allow to insert strategy to have different algorithms for parsing    #
-        ###############################################################################
-
-        # Get document matching uuid ############################################
-        d = self._db.get_document(uuid, self.c)
-
-        # Get the results segment #####################################################
-        result = d[result_key_in_d]
-
-        # Change document and insert result link ######################################
-        prev = result[lookup[algorithm]][result_type]
-        tmp = self._strategy.do_algorithm(uuid, links_to_res)
-        result[lookup[algorithm]][result_type] = prev + tmp
-
-        # Update result back #####################################################
-        self._db.update_document(uuid, self.c, result_key_in_d, result)
-
-        return result
 
 
     def update_algorithm_status(self, uuid: str, algorithm: str, new_status: str):

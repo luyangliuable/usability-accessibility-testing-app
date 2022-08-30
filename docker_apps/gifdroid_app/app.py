@@ -303,14 +303,14 @@ def enforce_bucket_existance(buckets):
             print("Bucket already exists %s".format( bucket ))
 
 
-def update_app_attribute(uuid, attribute, val):
-    # NOTE the request link MUST NOT have an additional /
-    request_url = os.path.join( status_api, 'update', uuid, 'gifdroid') + "/" + attribute
-    res = requests.post(request_url, headers={'Content-Type': 'application/json'}, data=str( val ))
-    print(request_url)
-    print(res.content)
+# def update_app_attribute(uuid, attribute, val):
+#     # NOTE the request link MUST NOT have an additional /
+#     request_url = os.path.join( status_api, 'update', uuid, 'gifdroid') + "/" + attribute
+#     res = requests.post(request_url, headers={'Content-Type': 'application/json'}, data=str( val ))
+#     print(request_url)
+#     print(res.content)
 
-    return res
+#     return res
 
 
 def update_app_status(uuid, status):

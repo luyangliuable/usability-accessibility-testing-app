@@ -1,0 +1,1 @@
+{'gifdroid': {'status': 'DONE', 'notes': '', 'start_time': '', 'end_time': ''}}

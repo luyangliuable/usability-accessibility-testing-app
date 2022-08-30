@@ -1,6 +1,6 @@
 import os
 import sys
-from artifact_img_converter import *
+from converter.functions.artifact_img_converter import *
 import json
 import re
 

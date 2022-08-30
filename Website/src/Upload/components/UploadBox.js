@@ -1,5 +1,6 @@
 import React, { useCallback, useState, useEffect } from "react";
 import { useDropzone } from "react-dropzone";
+// import { getResultLink } from "./function/getResults";
 
 import "./UploadBox.css";
 import "../../components/button.css";
@@ -18,8 +19,8 @@ const UploadBox = ({
 
   useEffect(() => {
     console.log("Requester is " + requester);
-    // console.log("The current app status is " + currentAppStatus);
     console.log(objectState);
+    // console.log(getResultLink("upload"));
   }, [currentAppStatus, objectState]);
 
   const onDropAccepted = useCallback(

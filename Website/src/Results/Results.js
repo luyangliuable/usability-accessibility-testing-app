@@ -72,7 +72,7 @@ const Results = () => {
       ))
       }
 
-      <button onClick={checkReports}>get reports</button>
+      <button className='custbutton' onClick={checkReports}>get reports</button>
     </div>
   );
 };

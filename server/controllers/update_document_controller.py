@@ -72,10 +72,6 @@ class UpdateDocumentController:
 
         # Change document and insert result link ######################################
         prev = result[self.lookup[algorithm]][result_type]
-        print(file_names)
-        print(file_names)
-        print(file_names)
-        print(file_names)
         tmp = self._strategy.do_algorithm(uuid, links_to_res, file_names)
         print(tmp)
 

@@ -109,7 +109,6 @@ def _service_execute_droidbot(uuid):
     data = requests.get(file_api, headers={'Content-Type': 'application/json'},  data=json.dumps( {'uuid': uuid} )).json()
 
     # Apk has an Array/List of apk files ##########################################
-    print(data)
     apk_filename = data['apk']['name']
 
     ############################################################################
@@ -199,9 +198,10 @@ def _service_execute_gifdroid(uuid):
     #                          Upload image result files                          #
     ###############################################################################
     result_img_file_type = "png"
-    result_type = "images"
     image_output = "../droidbot/output"
     result_img_files = file_order_sorter(image_output, result_img_file_type)
+    print(result_img_file_type)
+    print(result_img_file_type)
     upload_directory(image_output, config["BUCKET_NAME"], uuid)
     download_links = [ os.path.join( "http://localhost:5005", "download_result", uuid, "gifdroid") + "/" + file for file in result_img_files ]
     insert_result(uuid, download_links, 'images', result_img_files)
@@ -291,8 +291,6 @@ def update_status(uuid: str, status: str):
     }
 
     res = requests.post(request_url, headers={'Content-Type': 'application/json'}, data=json.dumps(data))
-    print(request_url)
-    print(res.content)
 
     return res
 
@@ -309,8 +307,6 @@ def insert_result(uuid, result_files: list, type: str, file_names: list):
     }
 
     res = requests.post(request_url, headers={'Content-Type': 'application/json'}, data=json.dumps(data))
-    print(request_url)
-    print(res.content)
 
     return res
 

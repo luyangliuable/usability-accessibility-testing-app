@@ -1,6 +1,5 @@
 import base64
 from flask import Flask, jsonify, request
-import uuid
 import json
 from models.DBManager import DBManager
 
@@ -28,7 +27,6 @@ class ReportModel:
             return json.dumps({"ERROR": "Could not load reports DB collection"}), 500
 
         new_report = {
-            "id": str(uuid.uuid4()),
             "user_id": json_response["user_id"],
             "result_id": json_response["result_id"]
         }

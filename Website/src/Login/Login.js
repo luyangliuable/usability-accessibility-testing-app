@@ -1,7 +1,7 @@
 import React from "react";
 import { Row, Container, Form, Button, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import { postForm } from "./postForm";
+import { postForm } from "./function/postForm";
 
 import "./Login.css";
 import "../index.css";

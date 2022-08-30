@@ -13,7 +13,7 @@ export default function ToolBar() {
           <Link to={"./"}>
             <img
               alt="logo"
-              src={require("./BXER.png")}
+              src={require("./content/BXER.png")}
               style={{ height: "max(5vmin, 30px)" }}
             />
           </Link>

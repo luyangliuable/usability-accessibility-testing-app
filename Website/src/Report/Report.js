@@ -8,18 +8,20 @@ import ReportsTable from "../Results/components/ReportsTable";
 // export default class Results extends Component {
 const Results = () => {
   /* TODO link to backend */
+  // Remove eslint when var is used
+  // eslint-disable-next-line
   const [reports, updateReport] = useState([
     { image: "../Content/a2dp.Vol.AppChooser.png", issues: [], app: "xbot" },
   ]);
 
-  const [images, updateImages] = useState([
-    [
-      "test_file.apk",
-      "100 mb",
-      "21/04/22",
-      "https://ourwebsite.com.au/results/dummyid1",
-    ],
-  ]);
+  // const [images, updateImages] = useState([
+  //   [
+  //     "test_file.apk",
+  //     "100 mb",
+  //     "21/04/22",
+  //     "https://ourwebsite.com.au/results/dummyid1",
+  //   ],
+  // ]);
 
 
 

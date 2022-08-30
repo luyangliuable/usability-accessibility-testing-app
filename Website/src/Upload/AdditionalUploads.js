@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import "./Upload.css";
 import "../index.css";
+import "./components/accordion.css";
 import "../components/button.css";
 
 import UploadBox from "./components/UploadBox";
@@ -48,7 +49,7 @@ const AdditionalUploads = () => {
     }
   }
 
-  const [buttonState, setButtonState] = useState(selectedAlgorithms != 0);
+  const [buttonState, setButtonState] = useState(selectedAlgorithms !== 0);
   const [algorithmCount, setAlgorithmCount] = useState(
     new Array(selectedAlgorithms.length).fill(true)
   );
@@ -61,6 +62,7 @@ const AdditionalUploads = () => {
     }
     setObjectState(objectState);
     algorithmCount[state.requester.index] = state.buttonState;
+    setAlgorithmCount(algorithmCount);
     if (algorithmCount.every((element) => element === false)) {
       setButtonState(false);
     } else {

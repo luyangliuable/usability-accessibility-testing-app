@@ -1,7 +1,6 @@
 import { getStatus } from './getStatus';
 import { uploadApk } from './upload_apk';
-import { useState } from 'react';
-import  { getAdditionalFiles } from './getAdditionalFiles';
+import { getAdditionalFiles } from './getAdditionalFiles';
 
 
 export const startApplication = async (objectState, setObjectState, algorithmsToComplete) => {
@@ -42,6 +41,8 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
     const apkFile = objectState.algorithmFiles.apkFile;
 
     // Gif file for gifdroid //////////////////////////////////////////////////
+    // Remove eslint when var is used
+    // eslint-disable-next-line
     const gifFile = objectState.algorithmFiles.apkFile;
 
     formData.append("apk_file", apkFile);
@@ -53,10 +54,12 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
     ///////////////////////////////////////////////////////////////////////////
     console.log("[2] Getting additional files.");
 
+    // Remove eslint when var is used
+    // eslint-disable-next-line
     const additionalFiles = getAdditionalFiles(objectState);
 
     objectState.algorithmsInfo.forEach(file => {
-        if ( file.additionalFiles.length  > 0 ) {
+        if (file.additionalFiles.length > 0) {
             formData.append(file.uuid, file.additionalFiles[0]); // Assume each algorithm only has 1 additional file
             console.log(file.uuid + " has " + file.additionalFiles[0]);
         }
@@ -77,10 +80,12 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
             "user_id": user_UUID,
             "result_id": response.uuid
         });
+        // Remove eslint when var is used
+        // eslint-disable-next-line
         var _ = fetch(resultCreateUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: jsonData,
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: jsonData,
         });
 
         setObjectState(prev => {

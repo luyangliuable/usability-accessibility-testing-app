@@ -6,13 +6,7 @@ import "../index.css";
 
 const Reports = () => {
   const user_UUID = sessionStorage.getItem("User_UUID");
-  console.log(user_UUID);
   const pathway = "http://localhost:5005/get_results";
-
-  const jsonData = JSON.stringify({
-    user_id: user_UUID,
-  });
-
 
   const [reports, updateReports] = useState([]);
 
@@ -22,7 +16,9 @@ const Reports = () => {
       headers: {
         "Content-Type": "application/json",
       },
-      body: jsonData,
+      body: JSON.stringify({
+        user_id: user_UUID,
+      }),
     });
     const data = await res.json();
     const stringData = JSON.stringify(data);
@@ -34,21 +30,6 @@ const Reports = () => {
     getReports();
     console.log(reports);
   }, []);
-
-  // const [reports, updateReports] = useState([
-  //   {
-  //     _id: "630af3109bb13854f07c149a",
-  //     id: "89ad8efc-ccfb-46cf-836b-ec8031cd1e2a",
-  //     user_id: "fa1b0657-68cc-41c5-9089-40ec02b08d8b",
-  //     result_id: "07f2a8fe-ab9b-4c16-b959-de155dac17d2",
-  //   },
-  //   {
-  //     _id: "630af7989f80dd03f48a8e1e",
-  //     id: "de3a6e15-94c3-40de-8870-eeecd83055c3",
-  //     user_id: "fa1b0657-68cc-41c5-9089-40ec02b08d8b",
-  //     result_id: "bb2009ad-b5bd-4173-9cbf-f72de89594b4",
-  //   },
-  // ]);
 
   return (
     <Container className="container-nav">
@@ -75,9 +56,9 @@ const Reports = () => {
             </tr>
             {reports.map((report, index) => {
               return (
-                <tr key={report.result_id}>
+                <tr key={report._id.$oid}>
                   <td>{index + 1}</td>
-                  <td>ID {report.user_id}</td>
+                  <td>ID {report.result_id}</td>
                   <td>Start Time</td>
                   <td>Status</td>
                   <td>Link</td>
@@ -87,7 +68,6 @@ const Reports = () => {
           </tbody>
         </Table>
         <div>
-          {/* <button onClick={checkReports}>get reports</button> */}
         </div>
       </div>
     </Container>

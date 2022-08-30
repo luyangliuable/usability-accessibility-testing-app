@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import ToolBar from './ToolBar/ToolBar';
 import Login from './Login/Login';
 import Home from './Home/Home';
-import SignUp from './Login/SignUp/SignUp';
+import SignUp from './Login/SignUp';
 import Results from './Results/Results';
 import Report from './Report/Report';
 import About from './About/About';

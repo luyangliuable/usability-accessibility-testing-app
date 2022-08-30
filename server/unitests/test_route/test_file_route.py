@@ -17,7 +17,7 @@ sys.path.insert(0, parentdir)
 
 # relative import ends ########################################################
 
-from controllers.algorithm_status_controller import algorithm_status_controller as asc
+from controllers.algorithm_status_controller import AlgorithmStatusController as asc
 from models.Apk import *
 
 class TestDbManager(unittest.TestCase):

@@ -13,16 +13,17 @@ parentdir = os.path.dirname(os.path.dirname(currentdir))
 sys.path.insert(0, parentdir)
 
 # relative import ends ########################################################
-from controllers.algorithm_status_controller import algorithm_status_controller as asc
+from controllers.algorithm_status_controller import AlgorithmStatusController
+from download_parsers.gifdroid_json_parser import gifdroidJsonParser
 from models.DBManager import *
 
 class TestDbManager(unittest.TestCase):
     def setUp(self):
-        self.tcn = "apk"
+        self._parser = gifdroidJsonParser
+        self.tcn = "test"
         self.db = DBManager.instance()
 
         self.tc = self.db.create_collection(self.tcn)
-        self.asc = asc(self.tcn)
 
         # Test document
         self.uuid = unique_id_generator()
@@ -30,43 +31,61 @@ class TestDbManager(unittest.TestCase):
 
         self.td = self.db.insert_document(format, self.tc)
 
+        self.asc = AlgorithmStatusController(self.tcn, self._parser)
+
 
     def test_same_collection(self):
         self.assertEqual(self.asc.get_colletion(), self.tc)
 
 
-    def test_update_status(self):
-        expected = {'gifdroid': {'status': 'random_status', 'notes': 'random_notes', 'estimate_remaining_time': 100, 'result_link': ''}}
+    def test_update_status_gifdroid(self):
+        expected = {'gifdroid': {'status': 'DONE', 'notes': '', 'start_time': '', 'end_time': ''}}
 
-        self.asc.update_algorithm_status(self.uuid, expected)
+        self.asc.update_algorithm_status(self.uuid, 'gifdroid', "DONE")
 
-        r = self.db.get_document(self.uuid, self.tc)[0]
+        r = self.db.get_document(self.uuid, self.tc)
         r = r['algorithm_status']
 
-        self.assertEqual(r, expected)
+        # write_to_view("view.txt", r)
+        # write_to_view("view2.txt", expected)
+
+        self.assertEqual(r['gifdroid'], expected['gifdroid'])
+
+    def test_insert_result_into_algorithm_result(self):
+        result = ["google.com.aubdasdas", "finally_got_something.org.au"]
+
+        expected = {'images': [{'name': 'finally_got_something.org.au', 'type': 'audio/basic', 's3_bucket': 'apk', 's3_key': os.path.join(self.uuid, 'finally_got_something.org.au' )}, {'name': 'finally_got_something.org.au', 'type': 'audio/basic', 's3_bucket': 'apk', 's3_key': os.path.join(self.uuid, "finally_got_something.org.au" )}], 'json': {'name': '', 'data': '', 's3_bucket': '', 's3_key': ''}}
+
+        self.asc.insert_algorithm_result(self.uuid, 'gifdroid', result, 'images')
+
+        r = self.db.get_document(self.uuid, self.tc)
+
+        write_to_view("view.txt", r['results']['gifdroid'])
+        write_to_view("view1.txt", result)
+
+        self.assertEqual(r['results']['gifdroid']['images'], expected['images'])
+
+    # def test_update_algorithm_status_attribute(self):
+    #     expected = {
+    #         'gifdroid': {
+    #             'status': 'PENDING',
+    #             'notes': 'random_notes',
+    #             'estimate_remaining_time': 100,
+    #             'result_link': ''
+    #         }
+    #     }
+    #     self.asc.update_algorithm_status(self.uuid, expected, "PENDING")
+    #     self.asc.update_algorithm_status_attribute(self.uuid, 'gifdroid', 'status', "DONE")
+
+    #     r = self.db.get_document(self.uuid, self.tc)['algorithm_status']
+
+    #     expected['gifdroid']['status'] = 'DONE'
+
+    #     write_to_view("view.txt", r)
+    #     write_to_view("view2.txt", expected)
 
 
-    def test_update_algorithm_status_attribute(self):
-        expected = {
-            'gifdroid': {
-                'status': 'PENDING',
-                'notes': 'random_notes',
-                'estimate_remaining_time': 100,
-                'result_link': ''
-            }
-        }
-        self.asc.update_algorithm_status(self.uuid, expected)
-        self.asc.update_algorithm_status_attribute(self.uuid, 'gifdroid', 'status', "done")
-
-        r = self.db.get_document(self.uuid, self.tc)[0]['algorithm_status']
-
-        expected['gifdroid']['status'] = 'done'
-
-        write_to_view("view.txt", r)
-        write_to_view("view2.txt", expected)
-
-
-        self.assertEqual(r, expected)
+    #     self.assertEqual(r, expected)
 
 
 ###############################################################################

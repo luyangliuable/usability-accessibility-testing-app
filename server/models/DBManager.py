@@ -66,8 +66,33 @@ class DBManager:
             "algorithm_status" : {
                 "storydistiller" : {
                     "status" : "",
-                    "starttime" : "",
-                    "endtime" : ""
+                    "notes": "",
+                    "start_time" : "",
+                    "end_time" : ""
+                },
+                "owleye" : {
+                    "status" : "",
+                    "notes": "",
+                    "start_time" : "",
+                    "end_time" : ""
+                },
+                "xbot" : {
+                    "status" : "",
+                    "notes": "",
+                    "start_time" : "",
+                    "end_time" : ""
+                },
+                "gifdroid" : {
+                    "status" : "",
+                    "notes": "",
+                    "start_time" : "",
+                    "end_time" : ""
+                },
+                "ui_checker" : {
+                    "status" : "",
+                    "notes": "",
+                    "start_time" : "",
+                    "end_time" : ""
                 }
             },
             "algorithm_outputs" : {

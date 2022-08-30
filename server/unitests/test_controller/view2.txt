@@ -1,1 +1,1 @@
-{'gifdroid': {'status': 'done', 'notes': 'random_notes', 'estimate_remaining_time': 100, 'result_link': ''}}
+{'gifdroid': {'status': 'DONE', 'notes': '', 'start_time': '', 'end_time': ''}}

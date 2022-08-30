@@ -16,7 +16,7 @@ algorithm_status_blueprint = Blueprint("algorithm_status", __name__)
 #                Initiate algorithm status controller for route               #
 ###############################################################################
 default_collection = 'apk'
-asc = algorithm_status_controller(default_collection)
+asc = AlgorithmStatusController(default_collection)
 
 @algorithm_status_blueprint.route("/status/get/<uuid>", methods=['GET'])
 @cross_origin()

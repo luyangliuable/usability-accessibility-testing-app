@@ -1,1 +1,1 @@
-{'gifdroid': {'status': 'done', 'notes': 'random_notes', 'estimate_remaining_time': 100, 'result_link': ''}}
+{'images': [{'name': 'finally_got_something.org.au', 'type': 'audio/basic', 's3_bucket': 'apk', 's3_key': '7350098f-a228-4ba4-bfb5-696622302fb8/finally_got_something.org.au'}, {'name': 'finally_got_something.org.au', 'type': 'audio/basic', 's3_bucket': 'apk', 's3_key': '7350098f-a228-4ba4-bfb5-696622302fb8/finally_got_something.org.au'}], 'json': {'name': '', 'data': '', 's3_bucket': '', 's3_key': ''}}

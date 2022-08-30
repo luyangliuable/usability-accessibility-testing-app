@@ -7,6 +7,7 @@ import Login from './Login/Login';
 import Home from './Home/Home';
 import SignUp from './Login/SignUp/SignUp';
 import Results from './Results/Results';
+import Report from './Report/Report';
 import About from './About/About';
 import UploadAPK from './Upload/UploadAPK';
 import SelectAlgorithms from './Upload/SelectAlgorithms';
@@ -25,6 +26,7 @@ function App() {
                 <Route path="/login/signup" element={<SignUp />}></Route>
                 <Route path="/about" element={<About />}></Route>
                 <Route path="/results" element={<Results />}></Route>
+                <Route path="/reports" element={<Report />}></Route>
                 <Route path="/upload" element={<UploadAPK />}></Route>
                 <Route path="/upload/selectalgorithm" element={<SelectAlgorithms />}></Route>
                 <Route path="/upload/additionaluploads" element={<AdditionalUploads />}></Route>

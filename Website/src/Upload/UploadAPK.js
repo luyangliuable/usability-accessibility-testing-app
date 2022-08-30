@@ -107,7 +107,7 @@ const Upload = () => {
             style={buttonState ? { pointerEvents: "none" } : {}}
             state={{ objectState: objectState }}
           >
-            <button class="button btn btn-primary" disabled={buttonState}>
+            <button className="button btn btn-primary" disabled={buttonState}>
               <h3>NEXT</h3>
             </button>
           </Link>

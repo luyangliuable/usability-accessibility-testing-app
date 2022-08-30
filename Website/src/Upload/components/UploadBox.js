@@ -74,8 +74,8 @@ const UploadBox = ({
             flexDirection: "column",
           }}
         >
-          <button 
-            class="button btn btn-primary"
+          <button
+            className="button btn btn-primary"
             disabled={objectState.buttonState}
             style={
               objectState.buttonState

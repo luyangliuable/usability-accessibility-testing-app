@@ -100,17 +100,7 @@ def _service_execute_droidbot(uuid):
 
     print('Beginning new job for %s' % uuid)
 
-    data={
-        'gifdroid': {
-            'status': 'RUNNING', # TODO create enum
-            'notes': 'executing droidbot to generate utg file',
-            'estimate_remaining_time': 60*3,
-            'json_link': '',
-            'image_links': [],
-        }
-    }
-
-    update_app_status(uuid, data)
+    # update_app_status(uuid, data)
 
     ###############################################################################
     #                      GET the APK file name from mongodb                     #
@@ -120,10 +110,6 @@ def _service_execute_droidbot(uuid):
     data = requests.get(file_api, headers={'Content-Type': 'application/json'},  data=json.dumps( {'uuid': uuid} )).json()
 
     # Apk has an Array/List of apk files ##########################################
-    print(data)
-    print(data)
-    print(data)
-    print(data)
     print(data)
     apk_filename = data['apk']['name']
 
@@ -191,9 +177,6 @@ def _service_execute_droidbot(uuid):
 
 def _service_execute_gifdroid(uuid):
     # retrieve utg file name from mongodb
-
-    notes = 'executing gifdroid to generate execution trace file'
-    update_app_attribute(uuid, 'notes', notes)
 
     ###############################################################################
     #                        Get utg filename from mongodb                        #

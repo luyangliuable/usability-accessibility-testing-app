@@ -11,7 +11,7 @@ import uuid
 #                            Set Up Flask Blueprint                           #
 ###############################################################################
 update_document_blueprint = Blueprint("file", __name__)
-file_controller = UpdateDocumentController('test', gifdroidJsonParser)
+file_controller = UpdateDocumentController('apk', gifdroidJsonParser)
 
 
 @update_document_blueprint.route("/file/get", methods=['GET'])

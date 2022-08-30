@@ -27,7 +27,7 @@ class UpdateDocumentController:
         ###############################################################################
         self._strategy = json_result_file_parser
 
-        self.c = self.mongo.get_collection(self.collection_name)
+        self.c = self.mongo.get_collection('apk')
 
 
     def insert_algorithm_result(self, uuid: str, algorithm: str, links_to_res: list, result_type:str):

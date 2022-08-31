@@ -69,6 +69,17 @@ const Upload = () => {
             "xBot specializes in accessibility testing of Android apps",
           selected: false,
         },
+        {
+          uuid: "tappable",
+          algorithmName: "Tappable",
+          requiresAdditionalInput: false,
+          additionalInputDescription: "Does not require any additional uploads",
+          additionalInputFileTypes: {},
+          additionalFiles: [],
+          description:
+            "Tappable is able to identify clickable objects which may have poor usability and be perceived as unclickable",
+          selected: false,
+        },
       ],
     });
   }

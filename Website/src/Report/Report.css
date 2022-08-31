@@ -18,23 +18,44 @@
 	height: 400px;
 	width: 100%;
 	border-radius: 10px;
-  padding-top: 15px;
-  padding-left: 15px;
+	padding-top: 15px;
+	padding-left: 15px;
 
-  overflow-x: auto;
-  white-space: nowrap;
+	overflow-x: auto;
+	white-space: nowrap;
 }
 
-.report {
-  display: flex;
-  justify-content: space-around;
+.horizontal-scroll-card {
+	background: #ffffff;
+	box-shadow: "4px 4px 8px #EEAAB";
+	padding: 10px;
+	border-radius: 10px;
+	margin-bottom: 50px;
+
+	height: 400px;
+	width: 100%;
+}
+
+.horizontal-scroll-internal {
+	display: flex;
+	justify-content: space-between;
   align-items: center;
-  background: #ffffff;
-  box-shadow: "4px 4px 8px #EEAAB";
-  padding: 20px;
-  border-radius: 10px;
-  margin-bottom: 50px;
 
-  height: 400px;
-  width: 100%;
+	height: 100%;
+
+	margin-left: 20px;
+	margin-right: 20px;
+	overflow-x: auto;
 }
+
+.report_img {
+	width: 200px;
+	height: 300px;
+	margin-left: 20px;
+	margin-right: 20px;
+  border: 1px solid black;
+}
+/*
+.image-buffer {
+  padding-left: 1000px;
+} */

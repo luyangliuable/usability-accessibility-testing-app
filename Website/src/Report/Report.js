@@ -25,7 +25,8 @@ const Report = () => {
   // }, [uuid, navigate]);
 
 
-  const [reportData, updateReportData] = useState(null);
+  const [reportData, updateReportData] = useState([1,2,3,4,5,6,7,8,9]);
+  console.log(reportData.length)
 
   const getReportData = async (uuid) => {
     const path = resultDataPath + uuid;
@@ -50,32 +51,83 @@ const Report = () => {
       <div className="root">
         {/* <p className="text">{uuid}</p>
         <p className="text">{JSON.stringify(reportData)}</p> */}
-        <div className="report">
-        <img
-            id="report_img"
-            src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
-            //src="../content/bug_screenshot.PNG"
-            //src={image}
-            //src={require({image})}
-            alt={""}
-          />
-          <img
-            id="report_img"
-            src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
-            //src="../content/bug_screenshot.PNG"
-            //src={image}
-            //src={require({image})}
-            alt={""}
-          />
-          <img
-            id="report_img"
-            src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
-            //src="../content/bug_screenshot.PNG"
-            //src={image}
-            //src={require({image})}
-            alt={""}
-          />
-          {/* {reportData.results.activities.map((screenId) => {
+        <div className="horizontal-scroll-card">
+          <div className="horizontal-scroll-internal">
+            {/* <div className="image-buffer" style={{"padding-left": `calc(${reportData.length} * 115px)`}}></div> */}
+            {/* <div className="image-buffer" style={{"padding-left": "630px"}}></div> */}
+            <img
+              className="report_img"
+              src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
+              //src="../content/bug_screenshot.PNG"
+              //src={image}
+              //src={require({image})}
+              alt={""}
+            />
+            <img
+              className="report_img"
+              src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
+              //src="../content/bug_screenshot.PNG"
+              //src={image}
+              //src={require({image})}
+              alt={""}
+            />
+            <img
+              className="report_img"
+              src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
+              //src="../content/bug_screenshot.PNG"
+              //src={image}
+              //src={require({image})}
+              alt={""}
+            />
+            <img
+              className="report_img"
+              src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
+              //src="../content/bug_screenshot.PNG"
+              //src={image}
+              //src={require({image})}
+              alt={""}
+            />
+            <img
+              className="report_img"
+              src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
+              //src="../content/bug_screenshot.PNG"
+              //src={image}
+              //src={require({image})}
+              alt={""}
+            />
+            <img
+              className="report_img"
+              src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
+              //src="../content/bug_screenshot.PNG"
+              //src={image}
+              //src={require({image})}
+              alt={""}
+            />
+            <img
+              className="report_img"
+              src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
+              //src="../content/bug_screenshot.PNG"
+              //src={image}
+              //src={require({image})}
+              alt={""}
+            />
+            <img
+              className="report_img"
+              src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
+              //src="../content/bug_screenshot.PNG"
+              //src={image}
+              //src={require({image})}
+              alt={""}
+            />
+            <img
+              className="report_img"
+              src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
+              //src="../content/bug_screenshot.PNG"
+              //src={image}
+              //src={require({image})}
+              alt={""}
+            />
+            {/* {reportData.results.activities.map((screenId) => {
               return (
                 <img
                   className="imageOverlay"
@@ -85,6 +137,7 @@ const Report = () => {
                 />);
             })
             } */}
+          </div>
         </div>
         {/* <div className="carousel">
           { }

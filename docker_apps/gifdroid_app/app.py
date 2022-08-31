@@ -89,7 +89,7 @@ def send_uid_and_signal_run():
 
         return jsonify( {"result": "SUCCESS"} ), 200
 
-    return "No HTTP POST method received"
+    return "No HTTP POST method received", 400
 
 def _service_execute_droidbot(uuid):
     """

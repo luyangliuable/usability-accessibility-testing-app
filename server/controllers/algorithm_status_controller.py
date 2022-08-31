@@ -56,14 +56,6 @@ class AlgorithmStatusController():
         # self._json_result_file_parser = json_result_file_parser
 
 
-    # def strategy(self, strategy: Strategy) -> None:
-    #     """
-    #     Usually, the Context allows replacing a Strategy object at runtime.
-    #     """
-
-    #     self._strategy = strategy
-
-
     def get_algorithm_status(self, uuid: str):
 
         # Get document ################################################################

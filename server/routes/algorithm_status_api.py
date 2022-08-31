@@ -24,10 +24,11 @@ def get_status(uuid):
     """
     Method for getting a status of each and every algorithm
     """
+    if request.method == "GET":
 
-    res = asc.get_algorithm_status(uuid)
+        res = asc.get_algorithm_status(uuid)
 
-    return json.dumps(res)
+        return json.dumps(res), 200
 
 
 @algorithm_status_blueprint.route("/status/update/<uuid>", methods=['GET', 'POST'])

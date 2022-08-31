@@ -33,7 +33,7 @@ class ReportModel:
 
         try:
             reports.insert_one(new_report)
-            return json.dumps({"Success": "Report successfully created", "report_id": new_report["id"]}), 200
+            return json.dumps({"Success": "Report successfully created"}), 200
         except:
             return json.dumps({"ERROR": "Failed to create report"}), 500
 

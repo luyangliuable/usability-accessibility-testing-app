@@ -2,7 +2,6 @@ import { getStatus } from './getStatus';
 import { uploadApk } from './upload_apk';
 import { getAdditionalFiles } from './getAdditionalFiles';
 
-
 export const startApplication = async (objectState, setObjectState, algorithmsToComplete) => {
     /////////////////////////////////////////////////////////////////////////
     //              Upload apk file to s3 bucket and set uuid              //
@@ -83,9 +82,9 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
         // Remove eslint when var is used
         // eslint-disable-next-line
         var _ = fetch(resultCreateUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: jsonData,
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: jsonData,
         });
 
         setObjectState(prev => {

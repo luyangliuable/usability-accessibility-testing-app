@@ -35,9 +35,9 @@ def get_result_of_algorithm(uuid, algorithm):
         return str(e), 400
 
 
-@update_document_blueprint.route("/file/get", methods=['GET'])
+@update_document_blueprint.route("/file/get/<uuid>", methods=['GET'])
 @cross_origin()
-def get_document():
+def get_document(uuid):
     """
     Method for getting a document from api
     """
@@ -45,8 +45,6 @@ def get_document():
     print("Starting get document")
 
     if request.method == "GET":
-        uuid = request.json['uuid']
-
         return safe_serialize( file_controller.get_document(uuid) ), 200
 
     return "Invalid request", 400

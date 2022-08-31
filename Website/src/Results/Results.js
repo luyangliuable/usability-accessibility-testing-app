@@ -4,31 +4,54 @@ import { Container, Table } from "react-bootstrap";
 import "./Results.css";
 import "../index.css";
 
-const Reports = () => {
+const Results = () => {
   const user_UUID = sessionStorage.getItem("User_UUID");
-  const pathway = "http://localhost:5005/get_results";
+  const resultKeyPath = "http://localhost:5005/get_results";
+  const resultDataPath = "http://localhost:5005/file/get/";
 
-  const [reports, updateReports] = useState([]);
+  const [reportKeys, updateReportKeys] = useState([]);
+  const [reportData, updateReportData] = useState([]);
 
-  const getReports = async () => {
-    const res = await fetch(pathway, {
+  const getReportKeys = async () => {
+    const res = await fetch(resultKeyPath, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         user_id: user_UUID,
-      }),
+      })
     });
     const data = await res.json();
     const stringData = JSON.stringify(data);
     const parsedData = JSON.parse(stringData);
-    updateReports(parsedData.results);
+    updateReportKeys(parsedData.results);
+  };
+
+  const getReportData = async (uuid) => {
+    const path = resultDataPath + uuid + "/gifdroid";
+    console.log(path);
+    const res = await fetch(path, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    const data = await res.json();
+    if (typeof reportData === "undefined") {
+      reportData = [];
+    }
+    updateReportData(reportData.push(data));
   };
 
   useEffect(() => {
-    getReports();
-    console.log(reports);
+    getReportKeys();
+
+    for (var i = 0; i < reportKeys.length; i++) {
+      const key = reportKeys[i].result_id;
+      getReportData(key);
+    }
+
   }, []);
 
   return (
@@ -54,7 +77,7 @@ const Reports = () => {
               <td>@mdo</td>
               <td>@mdo</td>
             </tr>
-            {reports.map((report, index) => {
+            {reportKeys.map((report, index) => {
               return (
                 <tr key={report._id.$oid}>
                   <td>{index + 1}</td>
@@ -74,4 +97,4 @@ const Reports = () => {
   );
 };
 
-export default Reports;
+export default Results;

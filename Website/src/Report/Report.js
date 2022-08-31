@@ -6,7 +6,7 @@ import "../index.css";
 import ReportsTable from "../Results/components/ReportsTable";
 
 // export default class Results extends Component {
-const Results = () => {
+const Report = () => {
   /* TODO link to backend */
   // Remove eslint when var is used
   // eslint-disable-next-line
@@ -51,4 +51,4 @@ const Results = () => {
   );
 };
 
-export default Results;
+export default Report;

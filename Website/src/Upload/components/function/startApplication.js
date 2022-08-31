@@ -77,6 +77,7 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
             "user_id": user_UUID,
             "result_id": response.uuid
         });
+
         var _ = fetch(resultCreateUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

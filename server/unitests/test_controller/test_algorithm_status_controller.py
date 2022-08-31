@@ -126,6 +126,15 @@ class TestDbManager(unittest.TestCase):
         self.assertEqual(r, expected)
 
 
+    def test_declare_apk_name_in_status(self):
+       expected = 'netflix_no_chill.apk'
+       t = self.asc.decalare_apk_name_in_status(self.uuid, expected)
+       write_to_view("view.txt", t)
+       r = self.db.get_document(self.uuid, self.tc)['algorithm_status']['gifdroid']['apk']
+
+       self.assertEqual(expected, r)
+
+
     def test_get_all_algorithm_status(self):
        r = self.asc.get_all_algorithm_status(self.uuid)
        expected = {'storydistiller': {'status': '', 'notes': '', 'start_time': '', 'end_time': '', 'apk': ''}, 'owleye': {'status': '', 'notes': '', 'start_time': '', 'end_time': '', 'apk': ''}, 'xbot': {'status': '', 'notes': '', 'start_time': '', 'end_time': '', 'apk': ''}, 'gifdroid': {'status': '', 'notes': '', 'start_time': '', 'end_time': '', 'apk': ''}, 'ui_checker': {'status': '', 'notes': '', 'start_time': '', 'end_time': '', 'apk': ''}}

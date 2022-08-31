@@ -9,6 +9,7 @@ import uuid
 import sys, os
 from redis import Redis
 from models.DBManager import DBManager
+from controllers.algorithm_status_controller import AlgorithmStatusController
 
 ###############################################################################
 #                            Set Up Flask Blueprint                           #
@@ -19,6 +20,7 @@ upload_blueprint = Blueprint("upload", __name__)
 #                            Start mongodb instance                           #
 ###############################################################################
 mongo = DBManager.instance()
+collection_name = 'apk'
 
 ###############################################################################
 #                                  Set Up AWS                                 #
@@ -54,8 +56,8 @@ def upload():
         #                        If post http request received                        #
         ###############################################################################
 
+        asc = AlgorithmStatusController(collection_name)
         enforce_bucket_existance([BUCKETNAME, "storydistiller-bucket", "xbot-bucket"])
-
 
         print("[0] Getting request from front-end")
 
@@ -124,6 +126,7 @@ def upload():
             os.path.join( str( unique_id ), str(apk_filename) )
         )
 
+
         print("[4] Adding apk file meta data to mongo db")
 
         apk_file_note = "user uploaded apk file"
@@ -132,6 +135,8 @@ def upload():
         data["apk"] = {"type": "apk", "name": file_key, "notes": apk_file_note}
 
         mongo.insert_document(data, mongo.get_collection('apk'))
+
+        asc.decalare_apk_name_in_status(unique_id, str(apk_filename))
 
         print("[5] return celery task id and file key")
         return json.dumps({"file_key": str( file_key ), "uuid": unique_id}), 200

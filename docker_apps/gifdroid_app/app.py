@@ -232,7 +232,7 @@ def _service_execute_gifdroid(uuid):
     type = 'json'
 
     # Download images doesn't need to know the type of file. Just need to identify the file
-    download_link = os.path.join( str( flask_backend ), "download_result", uuid, "gifdroid") + "/" + config['BUCKET_NAME']
+    download_link = os.path.join( "http://localhost:5005", "download_result", uuid, "gifdroid") + "/" + config['OUTPUT_FILE']
 
     insert_result(uuid, [download_link], 'json', [config['OUTPUT_FILE']])
 

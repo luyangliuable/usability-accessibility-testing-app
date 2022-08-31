@@ -64,6 +64,19 @@ class AlgorithmStatusController():
         return s
 
 
+    def decalare_apk_name_in_status(self, uuid: str, apk_name: str):
+        d = self._db.get_document(uuid, self.c)
+
+        algorithm_status_key = 'algorithm_status'
+
+        for _, item in d[algorithm_status_key].items():
+            item['apk']= apk_name
+
+        self._db.update_document(uuid, self.c, algorithm_status_key, d[algorithm_status_key])
+
+        return d[ algorithm_status_key ]
+
+
     def get_job_status(self, uuid: str):
         # Get document ################################################################
         d = self._db.get_document(uuid, self.c)

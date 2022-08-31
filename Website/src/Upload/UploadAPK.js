@@ -33,18 +33,18 @@ const Upload = () => {
           },
           additionalFiles: [],
           description:
-            "GifDroid does things and requires an additional video input",
+            "GifDroid generates a UTG graph",
           selected: false,
         },
         {
           uuid: "venus",
           algorithmName: "Venus",
           requiresAdditionalInput: false,
-          additionalInputDescription: "Does not require any additional uploads",
+          additionalInputDescription: "Requires a .dl file",
           additionalInputFileTypes: {},
           additionalFiles: [],
           description:
-            "Venus does things and does not require any additional inputs",
+            "Venus explores accessibility issues in an application",
           selected: false,
         },
         {

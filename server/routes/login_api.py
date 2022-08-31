@@ -1,10 +1,9 @@
-from flask import Flask
 from flask import render_template, Blueprint, jsonify, request, Response, send_file, redirect, url_for
 from flask_cors import cross_origin
-
-
-import os
+from flask import Flask
 import pymongo
+import os
+
 
 from models.User import *
 

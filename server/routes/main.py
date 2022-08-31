@@ -12,6 +12,7 @@ main_blueprint = Blueprint("main", __name__) #, static_folder='static')
 ###############################################################################
 #                                    Redis                                    #
 ###############################################################################
+# Deprecated
 # print("Redis url is", os.environ['REDIS_URL'])
 # redis = Redis.from_url(os.environ['REDIS_URL'])
 

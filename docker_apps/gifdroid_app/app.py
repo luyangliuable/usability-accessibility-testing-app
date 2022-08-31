@@ -40,6 +40,7 @@ EMULATOR = os.environ.get( "EMULATOR" )
 if EMULATOR == None:
     EMULATOR = config['EMULATOR']
 
+flask_backend = os.environ.get( "FLASK_BACKEND" )
 
 ###############################################################################
 #                                Set up AWS S3                                #
@@ -106,7 +107,8 @@ def _service_execute_droidbot(uuid):
     ###############################################################################
     print("[1] Getting session information")
 
-    data = requests.get(file_api, headers={'Content-Type': 'application/json'},  data=json.dumps( {'uuid': uuid} )).json()
+    get_file_url = os.path.join(file_api,  uuid)
+    data = requests.get(get_file_url, headers={'Content-Type': 'application/json'}).json()
 
     # Apk has an Array/List of apk files ##########################################
     apk_filename = data['apk']['name']
@@ -158,17 +160,6 @@ def _service_execute_droidbot(uuid):
     print("[5] Updating database for traceability of utg file")
     print("Saving into entry", uuid)
 
-    _db.apk.update_one(
-        {
-            "uuid": uuid
-        },
-        {
-            "$set": {
-                "utg_files": config["DEFAULT_UTG_FILENAME"]
-            }
-        }
-    )
-
 
 def _service_execute_gifdroid(uuid):
     # retrieve utg file name from mongodb
@@ -192,7 +183,15 @@ def _service_execute_gifdroid(uuid):
 
     headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
 
-    response = requests.get("http://host.docker.internal:5005/file/get", data=json.dumps( {"uuid": uuid} ), headers=headers)
+    get_file_url = os.path.join(file_api, uuid)
+
+    response = requests.get(get_file_url, headers=headers)
+
+    lookup = response.json()
+
+    for item in lookup['additional_files']:
+        if item['algorithm'] == 'gifdroid':
+            gif_file = item['name']
 
     ###############################################################################
     #                          Upload image result files                          #
@@ -200,17 +199,11 @@ def _service_execute_gifdroid(uuid):
     result_img_file_type = "png"
     image_output = "../droidbot/output"
     result_img_files = file_order_sorter(image_output, result_img_file_type)
-    print(result_img_file_type)
-    print(result_img_file_type)
     upload_directory(image_output, config["BUCKET_NAME"], uuid)
+
     download_links = [ os.path.join( "http://localhost:5005", "download_result", uuid, "gifdroid") + "/" + file for file in result_img_files ]
+
     insert_result(uuid, download_links, 'images', result_img_files)
-
-    lookup = response.json()
-
-    for item in lookup['additional_files']:
-        if item['algorithm'] == 'gifdroid':
-            gif_file = item['name']
 
     s3_client.download_file(
         Bucket=config["BUCKET_NAME"],
@@ -239,7 +232,7 @@ def _service_execute_gifdroid(uuid):
     type = 'json'
 
     # Download images doesn't need to know the type of file. Just need to identify the file
-    download_link = os.path.join( "http://localhost:5005", "download_result", uuid, "gifdroid") + "/" + config['BUCKET_NAME']
+    download_link = os.path.join( str( flask_backend ), "download_result", uuid, "gifdroid") + "/" + config['BUCKET_NAME']
 
     insert_result(uuid, [download_link], 'json', [config['OUTPUT_FILE']])
 

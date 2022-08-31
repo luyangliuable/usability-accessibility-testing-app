@@ -6,7 +6,7 @@ import json
 import tempfile
 import json
 import uuid
-import os
+import sys, os
 from redis import Redis
 from models.DBManager import DBManager
 
@@ -169,6 +169,9 @@ def check_health():
 
 @upload_blueprint.route("/task/<task_id>", methods=["GET"])
 def get_status(task_id):
+
+    stopPrint()
+
     print('getting task id', task_id)
 
     task_result = celery.AsyncResult(task_id)
@@ -180,6 +183,8 @@ def get_status(task_id):
         "task_status": task_result.status,
         "task_result": task_result.result
     }
+
+    allowPrint()
 
     return json.dumps(result), 200
 
@@ -202,6 +207,12 @@ def enforce_bucket_existance(buckets):
             s3_client.create_bucket(Bucket=bucket, CreateBucketConfiguration={'LocationConstraint': 'us-west-2'})
         except:
             print("Bucket already exists %s".format( bucket ))
+
+def stopPrint():
+    sys.stdout = open(os.devnull, 'w')
+
+def allowPrint():
+    sys.stdout = sys.__stdout__
 
 
 if __name__ == "__main__":

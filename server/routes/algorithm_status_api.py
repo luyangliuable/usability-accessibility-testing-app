@@ -18,29 +18,71 @@ algorithm_status_blueprint = Blueprint("algorithm_status", __name__)
 default_collection = 'apk'
 asc = AlgorithmStatusController(default_collection)
 
+# @algorithm_status_blueprint.route("/status/get/<uuid>/job", methods=['GET'])
+# @cross_origin()
+# def get_job_status(uuid):
+#     """
+#     Method for getting a status of each and every algorithm
+#     """
+
+#     res = asc.get_all_algorithm_status(uuid)
+
+#     return json.dumps(res)
+
+
 @algorithm_status_blueprint.route("/status/get/<uuid>", methods=['GET'])
 @cross_origin()
-def get_status(uuid):
+def get_job_status(uuid):
     """
     Method for getting a status of each and every algorithm
     """
 
-    res = asc.get_algorithm_status(uuid)
+    res = asc.get_job_status(uuid)
 
-    return json.dumps(res)
+    print(res)
+
+    return json.dumps(res), 200
 
 
-@algorithm_status_blueprint.route("/status/update/<uuid>", methods=['GET', 'POST'])
+@algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>", methods=['GET', 'POST'])
 @cross_origin()
-def update_status(uuid):
+def update_algorthm_status(uuid, algorithm):
     """
     Method for updating status of each and every algorithm
     """
     if request.method == "POST":
-        update = request.json
+        status = str( request.data.decode() )
 
-        res = asc.update_algorithm_status(uuid, update)
+        res = asc.update_algorithm_status(uuid, algorithm, status)
         return json.dumps(res), 200
+
+
+@algorithm_status_blueprint.route("/status/update/<uuid>", methods=['GET', 'POST'])
+@cross_origin()
+def update_job_status(uuid):
+    """
+    Method for updating status of each and every algorithm
+    """
+    if request.method == "POST":
+        status = str( request.data.decode() )
+
+        res = asc.update_job_status(uuid, status)
+        return json.dumps(res), 200
+
+
+@algorithm_status_blueprint.route("/status/get/<uuid>/<algorithm>", methods=['GET'])
+@cross_origin()
+def get_one_algorithm_status(uuid, algorithm):
+    """
+    Method for updating status of each and every algorithm
+    """
+    if request.method == "GET":
+
+        res = asc.get_specific_algorithm_status(uuid, algorithm)
+
+        return json.dumps(res), 200
+    else:
+        return request.method + " not valid", 400
 
 
 @algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>", methods=['GET', 'POST'])
@@ -49,7 +91,14 @@ def update_one_algorithm_status(uuid, algorithm):
     """
     Method for updating status of each and every algorithm
     """
-    pass
+    if request.method == "POST":
+        status = str( request.data.decode() )
+
+        res = asc.update_algorithm_status(uuid, algorithm, status)
+
+        return json.dumps(res), 200
+    else:
+        return request.method + " not valid", 400
 
 
 @algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>/<attribute>", methods=['GET', 'POST'])
@@ -72,18 +121,12 @@ def update_one_attribute_in_status(uuid, algorithm, attribute):
 @algorithm_status_blueprint.route("/status", methods=['GET'])
 @cross_origin()
 def status():
-    pass
+    "Status getter is online", 200
 
 
 @algorithm_status_blueprint.route("/status/update", methods=['GET'])
 @cross_origin()
 def u_status():
-    pass
-
-
-@algorithm_status_blueprint.route("/status/get", methods=['GET'])
-@cross_origin()
-def g_status():
     pass
 
 

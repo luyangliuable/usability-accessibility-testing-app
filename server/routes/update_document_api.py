@@ -2,10 +2,8 @@ from flask import Blueprint, request, jsonify
 from controllers.update_document_controller import UpdateDocumentController
 from download_parsers.gifdroid_json_parser import gifdroidJsonParser
 from flask_cors import cross_origin
-import datetime
-import json
-import uuid
-
+from utility.safe_serialise import safe_serialize
+from utility.uuid_generator import unique_id_generator
 
 ###############################################################################
 #                            Set Up Flask Blueprint                           #
@@ -61,7 +59,6 @@ def result_add(uuid, algorithm):
         #                             Get the files array                             #
         ###############################################################################
         # Assume request json looks like this
-
         # example = {
         #     "files": ["{files}"],
         #     "type": "type"
@@ -113,38 +110,17 @@ def add_documment():
     return "Not a valid request", 400
 
 ###############################################################################
-#                    TODO Add file for updating a document                    #
-###############################################################################
-
-# def update_one():
-#     _db.apk.update_one(
-#         {
-#             "uuid": uuid
-#         },
-#         {
-#             "$set": {
-#                 "utg_files": config["DEFAULT_UTG_FILENAME"]
-#             }
-#         }
-#     )
-
-###############################################################################
-#                  TODO add method file getting one document                  #
-###############################################################################
-
-
-###############################################################################
 #                              Utility Functions                              #
 ###############################################################################
-def safe_serialize(obj):
-    default = lambda o: f"<<non-serializable: {type(o).__qualname__}>>"
-    res = json.dumps(obj, default=default)
+# def safe_serialize(obj):
+#     default = lambda o: f"<<non-serializable: {type(o).__qualname__}>>"
+#     res = json.dumps(obj, default=default)
 
-    return res
+#     return res
 
-def unique_id_generator():
-    res = str( uuid.uuid4() )
-    return res
+# def unique_id_generator():
+#     res = str( uuid.uuid4() )
+#     return res
 
 
 if __name__ == "__main__":

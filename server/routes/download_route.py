@@ -30,13 +30,7 @@ s3_client = boto3.client(
     endpoint_url=ENDPOINT_URL
 )
 
-
-def unique_id_generator():
-    res = str( uuid.uuid4() )
-
-
 download_controller = DownloadController('apk', gifdroidJsonParser)
-
 
 @download_blueprint.route('/download_result/<uuid>/<algorithm>/<name>', methods=["GET", "POST"])
 @cross_origin()

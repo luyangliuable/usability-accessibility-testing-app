@@ -18,11 +18,11 @@ const ProgressBar = (props) => {
     const [progressMessage, updateMessage] = useState("Application not yet started");
 
     const update = (newMessage, percentage) => {
+        fade({ opacity: 0, delay: 1000 });
         fade({ opacity: 1, delay: 500 });
         updateMessage(newMessage);
         animate({ width: ( percentage <= 100 ? percentage : 100 ) + "%", delay: 500 });
 
-        fade({ opacity: 0, delay: 1000 });
     };
 
     useEffect(() => {
@@ -41,7 +41,7 @@ const ProgressBar = (props) => {
             </animated.div>
           </div>
 
-        <animated.p style={{ ...textOp, color: "#FFF"}}>{progressMessage}</animated.p>
+        <animated.p style={{ ...textOp, color: "#FFF", fontWeight: "bold"}}>{progressMessage}</animated.p>
         </>
     );
 };

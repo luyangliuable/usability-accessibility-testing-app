@@ -5,4 +5,3 @@ class StatusEnum(str, Enum):
     stopped = "STOPPED"
     failed = "FAILED"
     successful = "SUCCESSFUL"
-    done = "DONE"

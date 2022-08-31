@@ -14,7 +14,6 @@ class DBManager:
     # https://www.mongodb.com/docs/manual/reference/bson-types/
 
 
-
     def __init__(self):
         """
         NOTE: DO NOT ALLOW initiation directly
@@ -68,31 +67,36 @@ class DBManager:
                     "status" : "",
                     "notes": "",
                     "start_time" : "",
-                    "end_time" : ""
+                    "end_time" : "",
+                    "apk": ""
                 },
                 "owleye" : {
                     "status" : "",
                     "notes": "",
                     "start_time" : "",
-                    "end_time" : ""
+                    "end_time" : "",
+                    "apk": ""
                 },
                 "xbot" : {
                     "status" : "",
                     "notes": "",
                     "start_time" : "",
-                    "end_time" : ""
+                    "end_time" : "",
+                    "apk": ""
                 },
                 "gifdroid" : {
                     "status" : "",
                     "notes": "",
                     "start_time" : "",
-                    "end_time" : ""
+                    "end_time" : "",
+                    "apk": ""
                 },
                 "ui_checker" : {
                     "status" : "",
                     "notes": "",
                     "start_time" : "",
-                    "end_time" : ""
+                    "end_time" : "",
+                    "apk": ""
                 }
             },
             "algorithm_outputs" : {
@@ -262,6 +266,4 @@ class DBManager:
 
 
 if __name__ == "__main__":
-    a = DBManager.instance()
-    # a.insert_document({'test': 'worksl'}, a.get_collection("random"))
-    print( DBManager.get_format("dsads"))
+    pass

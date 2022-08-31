@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Container, Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 import "./Results.css";
 import "../index.css";
@@ -84,7 +85,18 @@ const Results = () => {
                   <td>ID {report.result_id}</td>
                   <td>Start Time</td>
                   <td>Status</td>
-                  <td>Link</td>
+                  <td>
+                    <div>
+                      <Link
+                        to={"/report"}
+                        state={{ uuid: report.result_id }}
+                      >
+                        <button className="button btn btn-primary">
+                          <h3>Report</h3>
+                        </button>
+                      </Link>
+                    </div>
+                  </td>
                 </tr>
               );
             })}

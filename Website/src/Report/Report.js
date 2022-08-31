@@ -1,53 +1,96 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Container } from "react-bootstrap";
 
 import "./Report.css";
 import "../index.css";
 
 import ReportsTable from "../Results/components/ReportsTable";
+import GifdroidResult from "../Results/components/GifdroidResult";
 
 // export default class Results extends Component {
 const Report = () => {
-  /* TODO link to backend */
-  // Remove eslint when var is used
-  // eslint-disable-next-line
-  const [reports, updateReport] = useState([
-    { image: "../Content/a2dp.Vol.AppChooser.png", issues: [], app: "xbot" },
-  ]);
+  const locations = useLocation();
+  const navigate = useNavigate();
 
-  // const [images, updateImages] = useState([
-  //   [
-  //     "test_file.apk",
-  //     "100 mb",
-  //     "21/04/22",
-  //     "https://ourwebsite.com.au/results/dummyid1",
-  //   ],
-  // ]);
+  const tempUUID = locations.state?.uuid;
+  const [uuid, setUuid] = useState(tempUUID);
+  const resultDataPath = "http://localhost:5005/file/get/";
+
+  // useEffect(() => {
+  //   if (typeof uuid === "undefined") {
+  //     console.log("[1.1] redirect");
+  //     navigate("/results");
+  //   }
+  // }, [uuid, navigate]);
 
 
+  const [reportData, updateReportData] = useState(null);
+
+  const getReportData = async (uuid) => {
+    const path = resultDataPath + uuid;
+    console.log(path);
+    const res = await fetch(path, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    const data = await res.json();
+    console.log(data);
+    updateReportData(data);
+  };
+
+  useEffect(() => {
+    getReportData(uuid);
+  }, []);
 
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
-        position: "absolute",
-        width: "80%",
-        left: "10%",
-        top: "10%",
-        padding: "10px",
-      }}
-    >
-      {reports.map((report) => (
-        <>
-          <ReportsTable
-            issues={report["issues"]}
-            image={report["image"]}
-            app={report["app"]}
+    <Container className="container-nav">
+      <div className="root">
+        {/* <p className="text">{uuid}</p>
+        <p className="text">{JSON.stringify(reportData)}</p> */}
+        <div className="report">
+        <img
+            id="report_img"
+            src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
+            //src="../content/bug_screenshot.PNG"
+            //src={image}
+            //src={require({image})}
+            alt={""}
           />
-        </>
-      ))}
-    </div>
+          <img
+            id="report_img"
+            src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
+            //src="../content/bug_screenshot.PNG"
+            //src={image}
+            //src={require({image})}
+            alt={""}
+          />
+          <img
+            id="report_img"
+            src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
+            //src="../content/bug_screenshot.PNG"
+            //src={image}
+            //src={require({image})}
+            alt={""}
+          />
+          {/* {reportData.results.activities.map((screenId) => {
+              return (
+                <img
+                  className="imageOverlay"
+                  src={require(screenId.image)}
+                  // onClick={() => se  tModalShow(true)}
+                  alt={""}
+                />);
+            })
+            } */}
+        </div>
+        {/* <div className="carousel">
+          { }
+        </div> */}
+      </div>
+    </Container>
   );
 };
 

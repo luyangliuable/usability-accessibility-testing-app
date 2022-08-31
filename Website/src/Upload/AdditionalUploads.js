@@ -49,7 +49,7 @@ const AdditionalUploads = () => {
     }
   }
 
-  const [buttonState, setButtonState] = useState(selectedAlgorithms !== 0);
+  const [buttonState, setButtonState] = useState(selectedAlgorithms.length !== 0);
   const [algorithmCount, setAlgorithmCount] = useState(
     new Array(selectedAlgorithms.length).fill(true)
   );

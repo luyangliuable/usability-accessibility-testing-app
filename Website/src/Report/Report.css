@@ -1,14 +1,40 @@
 .results-full-width {
-  min-width: 100%;
-  width: 100%;
-  max-width: 100%;
+	min-width: 100%;
+	width: 100%;
+	max-width: 100%;
 }
 
 .results-div-full {
-  min-width: 100%;
-  width: 100%;
-  max-width: 100%;
+	min-width: 100%;
+	width: 100%;
+	max-width: 100%;
 
-  display: inline-flex;
-  flex-wrap: wrap;
+	display: inline-flex;
+	flex-wrap: wrap;
+}
+
+.horizontal-images-card {
+	background-color: white;
+	height: 400px;
+	width: 100%;
+	border-radius: 10px;
+  padding-top: 15px;
+  padding-left: 15px;
+
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.report {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: #ffffff;
+  box-shadow: "4px 4px 8px #EEAAB";
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 50px;
+
+  height: 400px;
+  width: 100%;
 }

@@ -26,7 +26,7 @@ function App() {
                 <Route path="/login/signup" element={<SignUp />}></Route>
                 <Route path="/about" element={<About />}></Route>
                 <Route path="/results" element={<Results />}></Route>
-                <Route path="/reports" element={<Report />}></Route>
+                <Route path="/report" element={<Report />}></Route>
                 <Route path="/upload" element={<UploadAPK />}></Route>
                 <Route path="/upload/selectalgorithm" element={<SelectAlgorithms />}></Route>
                 <Route path="/upload/additionaluploads" element={<AdditionalUploads />}></Route>

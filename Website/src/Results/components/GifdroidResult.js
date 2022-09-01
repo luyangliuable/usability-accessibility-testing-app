@@ -32,7 +32,7 @@ const GifdroidResult = ({uuid}) => {
 
         getJSON(statusLink, function(err, data) {
             if (err !== null) {
-                alert('Something went wrong: ' + err);
+                console.log('error getting json' + err);
             } else {
                 updateAlgorithmStatus(data['status']);
             }
@@ -53,7 +53,7 @@ const GifdroidResult = ({uuid}) => {
         };
     }, [results]);
 
-    const traceDeets = executionTrace && executionTrace[0]['replay_traces'][0]['trace'];
+    const traceDeets = executionTrace && executionTrace[0]['replay_traces'][0] && executionTrace[0]['replay_traces'][0]['trace'];
 
     // TODO map this out
 
@@ -62,7 +62,7 @@ const GifdroidResult = ({uuid}) => {
             <div key={ "GifDroidResult" } style={{background: "#EEE", padding: "10px", borderRadius: 12}}>
               <Carousel wrapAround={false} slidesToShow={2} defaultControlsConfig={style.carousel_config} >
                 {
-                    ( results && executionTrace ) && traceDeets.map(( _, i ) => {
+                    ( results && executionTrace && executionTrace[0]['replay_traces'].length != 0 ) && traceDeets.map(( _, i ) => {
                         return (
                             <div style={style.c_div}>
                               <img className="disabledrag attenuateimg" src={results.images[i].link} style={{height: "auto", width: "40%"}}/>
@@ -81,8 +81,8 @@ const GifdroidResult = ({uuid}) => {
                                 {
                                     (executionTrace && typeof traceDeets[i].action.targetDetails == "object") ?
                                         Object.keys(traceDeets[i].action.targetDetails).map(key => {
-                                        return (
-                                            <tr className="gifdroid-tr">
+                                            return (
+                                                <tr className="gifdroid-tr">
                                                   <td className="gifdroid-td gifdroid-attribute">
                                                     { key }
                                                   </td>

@@ -18,17 +18,6 @@ algorithm_status_blueprint = Blueprint("algorithm_status", __name__)
 default_collection = 'apk'
 asc = AlgorithmStatusController(default_collection)
 
-# @algorithm_status_blueprint.route("/status/get/<uuid>/job", methods=['GET'])
-# @cross_origin()
-# def get_job_status(uuid):
-#     """
-#     Method for getting a status of each and every algorithm
-#     """
-
-#     res = asc.get_all_algorithm_status(uuid)
-
-#     return json.dumps(res)
-
 
 @algorithm_status_blueprint.route("/status/get/<uuid>", methods=['GET'])
 @cross_origin()

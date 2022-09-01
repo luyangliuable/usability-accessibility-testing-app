@@ -46,7 +46,6 @@ flask_backend = os.environ.get( "FLASK_BACKEND" )
 #                                Set up AWS S3                                #
 ###############################################################################
 
-
 boto3.setup_default_session(profile_name=config[ 'AWS_PROFILE' ])
 s3_client = boto3.client(
     "s3",
@@ -58,14 +57,14 @@ s3_client = boto3.client(
 ###############################################################################
 #                              Connect to mongodb                             #
 ###############################################################################
-try:
-    connection = pymongo.MongoClient(os.environ.get("MONGO_URL"))
-    _db = connection.fit3170
-    connection.server_info()  # Triger exception if connection fails to the database
-except Exception as ex:
-    print('failed to connect GIFDROID', ex)
-else:
-    print("Successfully connected to mongodb. GifDroid")
+# try:
+#     connection = pymongo.MongoClient(os.environ.get("MONGO_URL"))
+#     _db = connection.fit3170
+#     connection.server_info()  # Triger exception if connection fails to the database
+# except Exception as ex:
+#     print('failed to connect GIFDROID', ex)
+# else:
+#     print("Successfully connected to mongodb. GifDroid")
 
 
 @app.route("/new_job", methods=["POST"])
@@ -143,12 +142,6 @@ def _service_execute_droidbot(uuid):
     ###############################################################################
     print("[4] Saving utg.js file to bucket.")
     enforce_bucket_existance([config[ "BUCKET_NAME" ], "storydistiller-bucket", "xbot-bucket"])
-
-    # #Upload events folder
-    # upload_directory("events", config["BUCKET_NAME"])
-
-    #Upload states folder
-    # upload_directory("states", config["BUCKET_NAME"], uuid)
 
     # Upload utg
     s3_client.upload_file(config[ "DEFAULT_UTG_FILENAME" ], config[ 'BUCKET_NAME' ], os.path.join(uuid, config[ "DEFAULT_UTG_FILENAME" ]))
@@ -228,8 +221,6 @@ def _service_execute_gifdroid(uuid):
     #                            mongo: Update mongodb                            #
     ###############################################################################
     print("[5] Updating mongodb for traceability")
-
-    type = 'json'
 
     # Download images doesn't need to know the type of file. Just need to identify the file
     download_link = os.path.join( "http://localhost:5005", "download_result", uuid, "gifdroid") + "/" + config['OUTPUT_FILE']

@@ -4,18 +4,6 @@ import { getJSON } from './getJson.js';
 import "./TableStyle.css";
 
 const GifdroidResult = (props) => {
-    // constructor(props) {
-    //     super(props);
-    //     this.uuid = props.uuid;
-
-    //     // Testing uuid
-    //     this.link = "http://localhost:5005/file/get/" + "54ef37eb-f854-4ad5-8528-58c13cab9bb6";
-    //     console.log(this.getResults());
-    // }
-
-    // If no UUID just
-    // const link = "http://localhost:5005/file/get/" + typeof uuid != 'undefined' ? uuid :  "54ef37eb-f854-4ad5-8528-58c13cab9bb6" + "/gifdroid";
-    // const statusLink = "http://localhost:5005/status/get/" + typeof uuid != 'undefined' ? uuid : "54ef37eb-f854-4ad5-8528-58c13cab9bb6" + "/gifdroid";
 
     const link = "http://localhost:5005/file/get/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid";
     const statusLink = "http://localhost:5005/status/get/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid";
@@ -37,6 +25,7 @@ const GifdroidResult = (props) => {
             }
         });
     }
+
 
     useEffect(() => {
         getResult();

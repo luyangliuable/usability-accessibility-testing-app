@@ -1,8 +1,9 @@
 import React, {Component, useEffect, useState} from 'react';
 import Carousel from 'nuka-carousel';
 import { getJSON } from './getJson.js';
+import "./TableStyle.css";
 
-const GifdroidResult = ({uuid}) => {
+const GifdroidResult = (props) => {
     // constructor(props) {
     //     super(props);
     //     this.uuid = props.uuid;
@@ -12,13 +13,18 @@ const GifdroidResult = ({uuid}) => {
     //     console.log(this.getResults());
     // }
 
-    const link = "http://localhost:5005/file/get/54ef37eb-f854-4ad5-8528-58c13cab9bb6/gifdroid";
+    // If no UUID just
+    // const link = "http://localhost:5005/file/get/" + typeof uuid != 'undefined' ? uuid :  "54ef37eb-f854-4ad5-8528-58c13cab9bb6" + "/gifdroid";
+    // const statusLink = "http://localhost:5005/status/get/" + typeof uuid != 'undefined' ? uuid : "54ef37eb-f854-4ad5-8528-58c13cab9bb6" + "/gifdroid";
+
+    const link = "http://localhost:5005/file/get/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid";
+    const statusLink = "http://localhost:5005/status/get/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid";
 
     // TODO can't get this link promise thing working
 
-    const [result, updateResult] = useState([]);
+    const [algorithmStatus, updateAlgorithmStatus] = useState();
 
-    const [executionTrace, updateExecutionTrace] = useState([]);
+    const [executionTrace, updateExecutionTrace] = useState();
 
     function getResult() {
 
@@ -30,68 +36,102 @@ const GifdroidResult = ({uuid}) => {
     }
 
     useEffect(() => {
-        updateResult(prev => {
-            return fetch(link, {
-                method: "GET",
-            }).then(a => a.json());
-        });
 
-        console.log(getJSON("http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/gifdroid.json", function(err, data) {
+        updateAlgorithmStatus(fetch("http://localhost:5005/status/get/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid", {
+            method: "GET",
+        }).then(a => a.json()).then(res => res['status']));
+
+        fetch("http://localhost:5005/status/get/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid", {
+            method: "GET",
+        }).then(a => a.json()).then(res => console.log(res['status']));
+
+        console.log(algorithmStatus ? algorithmStatus : "NOT STARTED");
+
+        getJSON("http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/gifdroid.json", function(err, data) {
             if (err !== null) {
                 alert('Something went wrong: ' + err);
             } else {
-                console.log(JSON.stringify(data));
                 updateExecutionTrace([ data ]);
             }
-        }));
+        });
     }, []);
 
+    const traceDeets = executionTrace && executionTrace[0]['replay_traces'][0]['trace'];
+
+    // TODO map this out
+
+    if ( algorithmStatus === "SUCCESSFUL" ) {
     return (
         <>
-          <div style={{background: "#EEE", padding: "10px", borderRadius: 12}}>
-            { JSON.stringify(result) }
-            <Carousel wrapAround={false} slidesToShow={3} defaultControlsConfig={style.carousel_config} >
-              <div style={style.c_div}>
-                <img src="http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/artifacts_0.png" style={{height: "auto", width: "50%"}}/>
-                video: { JSON.stringify( executionTrace[0]['video'] ) } <br />
-                utg: { JSON.stringify( executionTrace[0]['utg'] ) }
-              </div>
-              <div style={style.c_div}>
-                <img src="http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/artifacts_1.png" style={{height: "auto", width: "50%"}}/>
+            <div style={{background: "#EEE", padding: "10px", borderRadius: 12}}>
+                <Carousel wrapAround={false} slidesToShow={2} defaultControlsConfig={style.carousel_config} >
+                <div style={style.c_div}>
+                    <img src="http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/artifacts_0.png" style={{height: "auto", width: "40%"}}/>
 
-              </div>
+                    <table style={{fontSize: 12}}>
+                    <tr>
+                        <td>screen id</td>
+                        <td>{ executionTrace ? JSON.stringify(traceDeets[0].sourceScreenId) : ""}</td>
+                    </tr>
+                    <tr>
+                        <td>action type</td>
+                        <td>{ executionTrace ? JSON.stringify(traceDeets[0].action.type) : ""}</td>
+                    </tr>
+                    {/* Target details */}
+                    {
+                        executionTrace ?
+                            Object.keys(traceDeets[1].action.targetDetails).map(key => {
+                                return (
+                                    <tr>
+                                        <td>
+                                        { key }
+                                        </td>
+                                        <td>
+                                        { traceDeets[1].action.targetDetails[key] }
+                                        </td>
+                                    </tr>
+                                );
+                            }): ""
+                    }
 
-              <div style={style.c_div}>
-                <img src="http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/artifacts_2.png" style={{height: "auto", width: "50%"}}/>
+                    </table>
 
-              </div>
+                    {/* video: { JSON.stringify( executionTrace[0]['video'] ) } <br /> */}
+                    {/* utg: { JSON.stringify( executionTrace[0]['utg'] ) } <br /> */}
+                </div>
+                <div style={style.c_div}>
+                    <img src="http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/artifacts_1.png" style={{height: "auto", width: "40%"}}/>
 
-              <div style={style.c_div}>
-                <img src="http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/artifacts_3.png" style={{height: "auto", width: "50%"}}/>
+                </div>
 
-              </div>
+                <div style={style.c_div}>
+                    <img src="http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/artifacts_2.png" style={{height: "auto", width: "40%"}}/>
 
-              <div style={style.c_div}>
-                <img src="http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/artifacts_4.png" style={{height: "auto", width: "50%"}}/>
+                </div>
 
-              </div>
+                <div style={style.c_div}>
+                    <img src="http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/artifacts_3.png" style={{height: "auto", width: "40%"}}/>
 
-              <div style={style.c_div}>
-                <img src="http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/artifacts_5.png" style={{height: "auto", width: "50%"}}/>
+                </div>
 
-              </div>
-            </Carousel>
-          </div>
-        </>
-    );
+                <div style={style.c_div}>
+                    <img src="http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/artifacts_4.png" style={{height: "auto", width: "40%"}}/>
+
+                </div>
+                </Carousel>
+            </div>
+            </>
+        );
+    } else {
+        console.log(algorithmStatus);
+    };
 };
 
 const style = {
     c_div: {
-        width: "500px",
         background: "#DDD",
         padding: "10px",
-        width: "95%",
+        width: "99%",
         borderRadius: 10,
         display: "flex",
         justifyContent: "space-between",
@@ -100,8 +140,8 @@ const style = {
     },
 
     carousel_config: {
-        nextButtonText: '>',
-        prevButtonText: '<',
+        nextButtonText: '►',
+        prevButtonText: '◄',
         prevButtonStyle: {borderRadius: 0, width: "30px"},
         nextButtonStyle: {borderRadius: 0, width: "30px"},
         pagingDotsStyle: {

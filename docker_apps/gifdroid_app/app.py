@@ -15,6 +15,7 @@ from converter.functions.artifact_img_converter import file_order_sorter
 
 app = Flask(__name__)
 
+
 ###############################################################################
 #        Load user config file gifdroid algorithm running configuration       #
 ###############################################################################
@@ -52,6 +53,7 @@ s3_client = boto3.client(
     region_name=config['AWS_REGION'],
     endpoint_url=endpoint_url,
 )
+
 
 result_bucket_folder = "report"
 apk_bucket_folder = "apk"
@@ -95,6 +97,7 @@ def _service_execute_droidbot(uuid):
     ###############################################################################
     print("[1] Getting session information")
 
+    OUTPUT_DIR = os.path.join( tempfile.gettempdir(), uuid )
     get_file_url = os.path.join(file_api,  uuid)
     data = requests.get(get_file_url, headers={'Content-Type': 'application/json'}).json()
 
@@ -116,14 +119,15 @@ def _service_execute_droidbot(uuid):
         Filename = target_apk
     )
 
-    OUTPUT_DIR = "./"
 
     ############################################################################
     #                      Run program with downloaded apk                     #
     ############################################################################
     print("[3] Running Droidbot app")
     os.chdir("/home/droidbot")
+
     subprocess.run([ "adb", "connect", EMULATOR])
+
     subprocess.run([ "droidbot", "-count", config[ "NUM_OF_EVENT" ], "-a", target_apk, "-o", OUTPUT_DIR])
 
     ###############################################################################
@@ -133,7 +137,7 @@ def _service_execute_droidbot(uuid):
     enforce_bucket_existance([config[ "BUCKET_NAME" ], "storydistiller-bucket", "xbot-bucket"])
 
     # Upload utg
-    s3_client.upload_file(config[ "DEFAULT_UTG_FILENAME" ], config[ 'BUCKET_NAME' ], os.path.join(uuid, config[ "DEFAULT_UTG_FILENAME" ]))
+    # s3_client.upload_file(config[ "DEFAULT_UTG_FILENAME" ], config[ 'BUCKET_NAME' ], os.path.join(uuid, config[ "DEFAULT_UTG_FILENAME" ]))
 
     ###############################################################################
     #                                Update mongodb                               #
@@ -146,6 +150,8 @@ def _service_execute_droidbot(uuid):
 def _service_execute_gifdroid(uuid):
     # retrieve utg file name from mongodb
 
+    OUTPUT_DIR = os.path.join( tempfile.gettempdir(), uuid )
+
     ###############################################################################
     #                        Get utg filename from mongodb                        #
     ###############################################################################
@@ -156,7 +162,11 @@ def _service_execute_gifdroid(uuid):
     ###############################################################################
     #                        Convert utg to correct format                        #
     ###############################################################################
-    convert_droidbot_to_gifdroid_utg(os.path.join("/home/droidbot", config['DEFAULT_UTG_FILENAME']),"/home/droidbot/events", "/home/droidbot/states")
+    utg = os.path.join(OUTPUT_DIR, config['DEFAULT_UTG_FILENAME'])
+    events = os.path.join(OUTPUT_DIR, "events" )
+    states = os.path.join(OUTPUT_DIR, "states")
+
+    convert_droidbot_to_gifdroid_utg(utg, events, states)
 
     ###############################################################################
     #                          Get gif file from frontend                         #
@@ -181,6 +191,7 @@ def _service_execute_gifdroid(uuid):
     result_img_file_type = "png"
     image_output = "../droidbot/output"
     result_img_files = file_order_sorter(image_output, result_img_file_type)
+
     upload_directory(image_output, config["BUCKET_NAME"], uuid)
 
     download_links = [ os.path.join( "http://localhost:5005", "download_result", uuid, result_bucket_folder) + "/" + file for file in result_img_files ]

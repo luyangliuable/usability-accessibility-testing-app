@@ -12,11 +12,11 @@ RESIZE_HEIGHT = 960
 
 class Heatmap:
 
-    def __init__(self, img_path, model, file_path):
+    def __init__(self, img_path, model, output_path):
         self.img_path = img_path
         self.model = model
         self.bounds = []
-        self.file_path = file_path
+        self.out_path = output_path
 
     def createHeatmap(self, object_bounds, prediction, id):
         call_model_args = {'class_idx_str': prediction,
@@ -81,6 +81,6 @@ class Heatmap:
         plot = plt.imshow(xrai, cmap='Reds', alpha=0.6)
         plt.colorbar(plot, orientation="vertical")
         name = 'heatmap_' + str(id) + '.jpg'
-        path = os.path.join(self.file_path, name)
+        path = os.path.join(self.out_path, name)
         plt.savefig(path)
         return path

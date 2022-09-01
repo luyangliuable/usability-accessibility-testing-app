@@ -26,12 +26,13 @@ def get_job_status(uuid):
     Method for getting a status of each and every algorithm
     """
     if request.method == "GET":
+        res = asc.get_job_status(uuid)
+        print(res)
 
-    res = asc.get_job_status(uuid)
+        return json.dumps(res), 200
 
-    print(res)
+    return "Invalid request", 400
 
-    return json.dumps(res), 200
 
 
 @algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>", methods=['GET', 'POST'])

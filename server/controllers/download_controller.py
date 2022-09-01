@@ -29,8 +29,15 @@ class DownloadController:
         self.cn = collection_name
         self.udc = UDContrl(collection_name, json_result_file_parser)
 
-    def download(self,uuid, algorithm, name):
 
-        s3_client.download_file(Bucket='apk-bucket', Key=os.path.join(uuid, name), Filename=name)
+    def download(self, uuid, algorithm, name):
+        print(os.path.join(uuid, algorithm ,name))
+
+        if algorithm == "gifdroid":
+            algorithm = "report"
+        print(algorithm)
+        print(os.path.join(uuid, algorithm ,name))
+
+        s3_client.download_file(Bucket='apk-bucket', Key=os.path.join(uuid, algorithm ,name), Filename=name)
 
         return name

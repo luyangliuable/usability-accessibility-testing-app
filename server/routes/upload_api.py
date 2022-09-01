@@ -96,7 +96,7 @@ def upload():
                     savefile.write(item.read())
                     savefile.close()
 
-                s3_client.upload_file(temp_file_name, BUCKETNAME, os.path.join( unique_id, str(item.filename) ))
+                s3_client.upload_file(temp_file_name, BUCKETNAME, os.path.join( unique_id, "additional_upload", str(item.filename) ))
                 data = DBManager.get_format(unique_id)
                 data["additional_files"].append({"algorithm": item.name, "type": item.content_type, "name": item.filename, "notes": ""})
 
@@ -120,12 +120,12 @@ def upload():
         ###############################################################################
         print("[3] Uploading apk to bucket")
 
+        apk_bucket_folder = "apk"
         s3_client.upload_file(
             temp_file_name,
             BUCKETNAME,
-            os.path.join( str( unique_id ), str(apk_filename) )
+            os.path.join( str( unique_id ), apk_bucket_folder, str(apk_filename) )
         )
-
 
         print("[4] Adding apk file meta data to mongo db")
 

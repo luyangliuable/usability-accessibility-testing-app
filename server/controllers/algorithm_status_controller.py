@@ -117,7 +117,6 @@ class AlgorithmStatusController():
         return specific_algorithm_status
 
 
-
     def update_algorithm_status_attribute(self, uuid: str, algorithm: str, key: str, val):
         # Get document ################################################################
         try:

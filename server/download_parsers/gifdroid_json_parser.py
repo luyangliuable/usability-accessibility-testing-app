@@ -34,7 +34,8 @@ class gifdroidJsonParser(Strategy):
 
             # TODO when files are stored in algorithm folders change this to:
             # tmp['s3_key'] = os.path.join(uuid, apl_algorithm, file[i])
-            tmp['s3_key'] = os.path.join(uuid, name[i])
+            folder_name = "report"
+            tmp['s3_key'] = os.path.join(uuid, folder_name, name[i])
 
             res[i] = copy.deepcopy(tmp)
 

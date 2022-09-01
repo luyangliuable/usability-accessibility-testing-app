@@ -3,10 +3,10 @@ import Carousel from 'nuka-carousel';
 import { getJSON } from './getJson.js';
 import "./TableStyle.css";
 
-const GifdroidResult = (props) => {
+const GifdroidResult = ({uuid}) => {
 
-    const link = "http://localhost:5005/file/get/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid";
-    const statusLink = "http://localhost:5005/status/get/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid";
+    const link = "http://localhost:5005/file/get/" + uuid +"/gifdroid";
+    const statusLink = "http://localhost:5005/status/get/" + uuid + "/gifdroid";
 
     // TODO can't get this link promise thing working
 
@@ -30,23 +30,28 @@ const GifdroidResult = (props) => {
     useEffect(() => {
         getResult();
 
-        getJSON("http://localhost:5005/status/get/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid", function(err, data) {
+        getJSON(statusLink, function(err, data) {
             if (err !== null) {
                 alert('Something went wrong: ' + err);
             } else {
                 updateAlgorithmStatus(data['status']);
             }
         });
+    },[]);
 
-        getJSON("http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/gifdroid.json", function(err, data) {
-            if (err !== null) {
-                alert('Something went wrong: ' + err);
-            } else {
-                console.log(data);
-                updateExecutionTrace([ data ]);
-            }
-        });
-    }, []);
+
+    useEffect(() => {
+        if (typeof results !== 'undefined') {
+            var jsonLink = results.json[0].link;
+            getJSON(jsonLink, function(err, data) {
+                if (err !== null) {
+                    alert('Something went wrong: ' + err);
+                } else {
+                    updateExecutionTrace([ data ]);
+                }
+            });
+        };
+    }, [results]);
 
     const traceDeets = executionTrace && executionTrace[0]['replay_traces'][0]['trace'];
 
@@ -54,56 +59,53 @@ const GifdroidResult = (props) => {
 
     if ( algorithmStatus === "SUCCESSFUL" ) {
         return (
-            <>
-              <div style={{background: "#EEE", padding: "10px", borderRadius: 12}}>
-                <Carousel wrapAround={false} slidesToShow={2} defaultControlsConfig={style.carousel_config} >
-                  {
-                      ( results && executionTrace ) && traceDeets.map(( _, i ) => {
-                          return (
-                              <div style={style.c_div}>
-                                <img src={results.images[i].link} style={{height: "auto", width: "40%"}}/>
-                                <table style={{fontSize: 12}}>
-                                  {/* screen details */}
-                                  <tr>
-                                    <td>screen id</td>
-                                    <td>{ executionTrace ? JSON.stringify(traceDeets[i].sourceScreenId) : ""}</td>
-                                  </tr>
-                                  <tr>
-                                    <td>action type</td>
-                                    <td>{ executionTrace ? JSON.stringify(traceDeets[i].action.type) : ""}</td>
-                                  </tr>
+            <div key={ "GifDroidResult" } style={{background: "#EEE", padding: "10px", borderRadius: 12}}>
+              <Carousel wrapAround={false} slidesToShow={2} defaultControlsConfig={style.carousel_config} >
+                {
+                    ( results && executionTrace ) && traceDeets.map(( _, i ) => {
+                        return (
+                            <div style={style.c_div}>
+                              <img className="disabledrag attenuateimg" src={results.images[i].link} style={{height: "auto", width: "40%"}}/>
+                              <table className="gtable" style={{fontSize: 8, width: "50%"}}>
+                                {/* screen details */}
+                                <tr className="gifdroid-tr">
+                                  <td className="gifdroid-td gifdroid-attribute">screen id</td>
+                                  <td className="gifdroid-td">{ executionTrace ? JSON.stringify(traceDeets[i].sourceScreenId) : ""}</td>
+                                </tr>
+                                <tr className="gifdroid-tr">
+                                  <td className="gifdroid-td gifdroid-attribute">action type</td>
+                                  <td className="gifdroid-td">{ executionTrace ? JSON.stringify(traceDeets[i].action.type) : ""}</td>
+                                </tr>
 
-                                  {/* Target details */}
-
-                                  { console.log(typeof traceDeets[i].action.targetDetails == "object") }
-                                  {
-                                      (executionTrace && typeof traceDeets[i].action.targetDetails == "object") ?
-                                          Object.keys(traceDeets[i].action.targetDetails).map(key => {
-                                              return (
-                                                  <tr>
-                                                    <td>
-                                                      { key }
-                                                    </td>
-                                                    <td>
+                                {/* Target details */}
+                                {
+                                    (executionTrace && typeof traceDeets[i].action.targetDetails == "object") ?
+                                        Object.keys(traceDeets[i].action.targetDetails).map(key => {
+                                        return (
+                                            <tr className="gifdroid-tr">
+                                                  <td className="gifdroid-td gifdroid-attribute">
+                                                    { key }
+                                                  </td>
+                                                  <td className="gifdroid-td">
+                                                    <p style={{overflowX: "visible", zIndex: 3}}>
                                                       { traceDeets[i].action.targetDetails[key] }
-                                                    </td>
-                                                  </tr>
-                                              );
-                                          })
-                                          : ""
-                                  }
-                                </table>
+                                                    </p>
+                                                  </td>
+                                                </tr>
+                                            );
+                                        })
+                                        : ""
+                                }
+                              </table>
 
-                              </div>
-                          );
-                      })
-                  }
-                </Carousel>
-              </div>
-            </>
+                            </div>
+                        );
+                    })
+                }
+              </Carousel>
+            </div>
         );
     } else {
-        console.log(algorithmStatus);
     };
 };
 

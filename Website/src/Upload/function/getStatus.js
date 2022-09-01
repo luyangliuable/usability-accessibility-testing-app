@@ -29,7 +29,7 @@ export function getStatus(task_url, task_id, objectState, setObjectState, i, for
                   setObjectState(prev => {
                       return {
                           ...prev,
-                          algorithmsComplete: prev.algorithmsComplete + 1,
+                          algorithmsComplete: prev.algorithmsComplete,
                           buttonState: false,
                           buttonValue: "Upload again",
                           progressBarMessage: newProgressBarMessage

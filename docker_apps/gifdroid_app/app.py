@@ -53,19 +53,8 @@ s3_client = boto3.client(
     endpoint_url=endpoint_url,
 )
 
-
-###############################################################################
-#                              Connect to mongodb                             #
-###############################################################################
-# try:
-#     connection = pymongo.MongoClient(os.environ.get("MONGO_URL"))
-#     _db = connection.fit3170
-#     connection.server_info()  # Triger exception if connection fails to the database
-# except Exception as ex:
-#     print('failed to connect GIFDROID', ex)
-# else:
-#     print("Successfully connected to mongodb. GifDroid")
-
+result_bucket_folder = "report"
+apk_bucket_folder = "apk"
 
 @app.route("/new_job", methods=["POST"])
 def send_uid_and_signal_run():
@@ -123,7 +112,7 @@ def _service_execute_droidbot(uuid):
 
     s3_client.download_file(
         Bucket='apk-bucket',
-        Key=path.join(uuid, apk_filename),
+        Key=path.join(uuid, apk_bucket_folder, apk_filename),
         Filename = target_apk
     )
 
@@ -194,13 +183,13 @@ def _service_execute_gifdroid(uuid):
     result_img_files = file_order_sorter(image_output, result_img_file_type)
     upload_directory(image_output, config["BUCKET_NAME"], uuid)
 
-    download_links = [ os.path.join( "http://localhost:5005", "download_result", uuid, "gifdroid") + "/" + file for file in result_img_files ]
+    download_links = [ os.path.join( "http://localhost:5005", "download_result", uuid, result_bucket_folder) + "/" + file for file in result_img_files ]
 
     insert_result(uuid, download_links, 'images', result_img_files)
 
     s3_client.download_file(
         Bucket=config["BUCKET_NAME"],
-        Key=path.join(uuid, gif_file),
+        Key=path.join(uuid, "additional_upload", gif_file),
         Filename = gif_file
     )
 
@@ -215,7 +204,11 @@ def _service_execute_gifdroid(uuid):
     enforce_bucket_existance([config[ "BUCKET_NAME" ], "storydistiller-bucket", "xbot-bucket"])
 
     print("[4] Uploading json file to bucket")
-    s3_client.upload_file(config[ "OUTPUT_FILE" ], config[ 'BUCKET_NAME' ], os.path.join(uuid, config[ "OUTPUT_FILE" ] ))
+    s3_client.upload_file(
+        config[ "OUTPUT_FILE" ],
+        config[ 'BUCKET_NAME' ],
+        os.path.join(uuid, result_bucket_folder, config[ "OUTPUT_FILE" ] )
+    )
 
     ###############################################################################
     #                            mongo: Update mongodb                            #
@@ -223,7 +216,7 @@ def _service_execute_gifdroid(uuid):
     print("[5] Updating mongodb for traceability")
 
     # Download images doesn't need to know the type of file. Just need to identify the file
-    download_link = os.path.join( "http://localhost:5005", "download_result", uuid, "gifdroid") + "/" + config['OUTPUT_FILE']
+    download_link = os.path.join( "http://localhost:5005", "download_result", uuid, "report") + "/" + config['OUTPUT_FILE']
 
     insert_result(uuid, [download_link], 'json', [config['OUTPUT_FILE']])
 
@@ -251,9 +244,8 @@ def bytes_to_json(byte_str: bytes):
 def upload_directory(path, bucketname, uuid):
     for root, _, files in os.walk(path):
         for file in files:
-            key = os.path.join(uuid, file)
+            key = os.path.join(uuid, result_bucket_folder, file)
 
-            # s3_client.upload_file(os.path.join(root,file), key, file)
             s3_client.upload_file(os.path.join(root, file), bucketname, key)
 
 

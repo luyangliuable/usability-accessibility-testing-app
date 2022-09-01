@@ -1,6 +1,5 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import { Component } from 'react';
-import { useSpring, animated, useSpringRef } from 'react-spring';
+import React, { useState, useEffect } from 'react';
+import { useSpring, animated } from 'react-spring';
 
 const ProgressBar = (props) => {
 
@@ -32,7 +31,7 @@ const ProgressBar = (props) => {
         }, 10);
         console.log(props.algorithmsComplete * 100 / algorithmsToComplete.length);
         console.log("sadasd");
-    }, [props.algorithmsComplete]);
+    }, [props.algorithmsComplete, props.algorithmsInfo, props.message]);
 
     return (
         <>

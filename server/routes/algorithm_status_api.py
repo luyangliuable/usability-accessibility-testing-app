@@ -25,6 +25,7 @@ def get_job_status(uuid):
     """
     Method for getting a status of each and every algorithm
     """
+    if request.method == "GET":
 
     res = asc.get_job_status(uuid)
 

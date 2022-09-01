@@ -21,7 +21,7 @@ const UploadBox = ({
     console.log("Requester is " + requester);
     console.log(objectState);
     // console.log(getResultLink("upload"));
-  }, [currentAppStatus, objectState]);
+  }, [currentAppStatus, objectState, requester]);
 
   const onDropAccepted = useCallback(
     (acceptedFiles) => {
@@ -47,7 +47,7 @@ const UploadBox = ({
         <div className="upload-box-full-width">
           <img
             className="upload-box-icon"
-            src={require("./content/apk-image.png")}
+            src={require("../content/apk-image.png")}
             alt={""}
           />
         </div>
@@ -76,7 +76,7 @@ const UploadBox = ({
           }}
         >
           <button
-            class="button btn btn-primary"
+            className="button btn btn-primary"
             disabled={objectState.buttonState}
             style={
               objectState.buttonState

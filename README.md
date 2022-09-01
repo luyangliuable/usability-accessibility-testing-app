@@ -88,11 +88,14 @@ Zhongxun Pan
 ### Gifdroid
 ### Owleye
 ### StoryDistiller
+StoryDistiller automatically generates the storyboard for an application with rich kinds of features through reverse engineering, and assists different roles to review and analyze apps efficiently.
 ### Xbot
+Xbot is a page exploration tool which outputs a file of accessibility issues. 
 ### Tappable/Tapshoe
 Tappable explores how tappable a button is perceived by a user. Given an image and .xml file, the model will output a heatmap and tappability rating on clickable objects that the model perceives as untappable. The model is a modified ResNet18 which accepts the input image and a binary mask of the tappable object.
 
 ### Venus
+Venus explores accessibility issues in an application and requires a .dl file and produces a .csv document. 
 
 ## Pre-requisites
 

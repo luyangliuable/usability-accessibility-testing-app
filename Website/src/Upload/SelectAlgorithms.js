@@ -4,7 +4,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import "./Upload.css";
 import "../index.css";
-import "./accordion.css";
+import "./components/accordion.css";
 import "../components/button.css";
 
 import {
@@ -94,7 +94,7 @@ const SelectAlgorithms = () => {
 
         <div className="back-button">
           <Link to={"/upload"} state={{ objectState: objectState }}>
-            <button class="button btn btn-primary">
+            <button className="button btn btn-primary">
               <h3>BACK</h3>
             </button>
           </Link>
@@ -106,7 +106,7 @@ const SelectAlgorithms = () => {
             style={countSelected === 0 ? { pointerEvents: "none" } : {}}
             state={{ objectState: objectState }}
           >
-            <button disabled={countSelected === 0} class="button btn btn-primary">
+            <button disabled={countSelected === 0} className="button btn btn-primary">
               <h3>NEXT</h3>
             </button>
           </Link>

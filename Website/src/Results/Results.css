@@ -1,14 +1,13 @@
-.results-full-width {
-  min-width: 100%;
-  width: 100%;
-  max-width: 100%;
+th {
+  color: rgb(255, 255, 255);
+  font-weight: 300;
 }
 
-.results-div-full {
-  min-width: 100%;
-  width: 100%;
-  max-width: 100%;
+td {
+  color: rgb(255, 255, 255);
+  font-weight: 300;
+}
 
-  display: inline-flex;
-  flex-wrap: wrap;
+thead {
+  background-color: #1c7497;
 }

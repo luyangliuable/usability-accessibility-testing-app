@@ -26,31 +26,34 @@ const GifdroidResult = (props) => {
 
     const [executionTrace, updateExecutionTrace] = useState();
 
+    const [results, updateResult] = useState();
+
     function getResult() {
-
-        const a = fetch(link, {
-            method: "GET",
-        }).then(a => a.json());
-
-        return a;
+        getJSON(link, function(err, data) {
+            if (err !== null) {
+                alert('Something went wrong: ' + err);
+            } else {
+                updateResult(data);
+            }
+        });
     }
 
     useEffect(() => {
+        getResult();
 
-        updateAlgorithmStatus(fetch("http://localhost:5005/status/get/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid", {
-            method: "GET",
-        }).then(a => a.json()).then(res => res['status']));
-
-        fetch("http://localhost:5005/status/get/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid", {
-            method: "GET",
-        }).then(a => a.json()).then(res => console.log(res['status']));
-
-        console.log(algorithmStatus ? algorithmStatus : "NOT STARTED");
+        getJSON("http://localhost:5005/status/get/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid", function(err, data) {
+            if (err !== null) {
+                alert('Something went wrong: ' + err);
+            } else {
+                updateAlgorithmStatus(data['status']);
+            }
+        });
 
         getJSON("http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/gifdroid.json", function(err, data) {
             if (err !== null) {
                 alert('Something went wrong: ' + err);
             } else {
+                console.log(data);
                 updateExecutionTrace([ data ]);
             }
         });
@@ -61,65 +64,53 @@ const GifdroidResult = (props) => {
     // TODO map this out
 
     if ( algorithmStatus === "SUCCESSFUL" ) {
-    return (
-        <>
-            <div style={{background: "#EEE", padding: "10px", borderRadius: 12}}>
+        return (
+            <>
+              <div style={{background: "#EEE", padding: "10px", borderRadius: 12}}>
                 <Carousel wrapAround={false} slidesToShow={2} defaultControlsConfig={style.carousel_config} >
-                <div style={style.c_div}>
-                    <img src="http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/artifacts_0.png" style={{height: "auto", width: "40%"}}/>
+                  {
+                      ( results && executionTrace ) && traceDeets.map(( _, i ) => {
+                          return (
+                              <div style={style.c_div}>
+                                <img src={results.images[i].link} style={{height: "auto", width: "40%"}}/>
+                                <table style={{fontSize: 12}}>
+                                  {/* screen details */}
+                                  <tr>
+                                    <td>screen id</td>
+                                    <td>{ executionTrace ? JSON.stringify(traceDeets[i].sourceScreenId) : ""}</td>
+                                  </tr>
+                                  <tr>
+                                    <td>action type</td>
+                                    <td>{ executionTrace ? JSON.stringify(traceDeets[i].action.type) : ""}</td>
+                                  </tr>
 
-                    <table style={{fontSize: 12}}>
-                    <tr>
-                        <td>screen id</td>
-                        <td>{ executionTrace ? JSON.stringify(traceDeets[0].sourceScreenId) : ""}</td>
-                    </tr>
-                    <tr>
-                        <td>action type</td>
-                        <td>{ executionTrace ? JSON.stringify(traceDeets[0].action.type) : ""}</td>
-                    </tr>
-                    {/* Target details */}
-                    {
-                        executionTrace ?
-                            Object.keys(traceDeets[1].action.targetDetails).map(key => {
-                                return (
-                                    <tr>
-                                        <td>
-                                        { key }
-                                        </td>
-                                        <td>
-                                        { traceDeets[1].action.targetDetails[key] }
-                                        </td>
-                                    </tr>
-                                );
-                            }): ""
-                    }
+                                  {/* Target details */}
 
-                    </table>
+                                  { console.log(typeof traceDeets[i].action.targetDetails == "object") }
+                                  {
+                                      (executionTrace && typeof traceDeets[i].action.targetDetails == "object") ?
+                                          Object.keys(traceDeets[i].action.targetDetails).map(key => {
+                                              return (
+                                                  <tr>
+                                                    <td>
+                                                      { key }
+                                                    </td>
+                                                    <td>
+                                                      { traceDeets[i].action.targetDetails[key] }
+                                                    </td>
+                                                  </tr>
+                                              );
+                                          })
+                                          : ""
+                                  }
+                                </table>
 
-                    {/* video: { JSON.stringify( executionTrace[0]['video'] ) } <br /> */}
-                    {/* utg: { JSON.stringify( executionTrace[0]['utg'] ) } <br /> */}
-                </div>
-                <div style={style.c_div}>
-                    <img src="http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/artifacts_1.png" style={{height: "auto", width: "40%"}}/>
-
-                </div>
-
-                <div style={style.c_div}>
-                    <img src="http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/artifacts_2.png" style={{height: "auto", width: "40%"}}/>
-
-                </div>
-
-                <div style={style.c_div}>
-                    <img src="http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/artifacts_3.png" style={{height: "auto", width: "40%"}}/>
-
-                </div>
-
-                <div style={style.c_div}>
-                    <img src="http://localhost:5005/download_result/062cafa8-88bb-4e7a-bf76-8fa597601aec/gifdroid/artifacts_4.png" style={{height: "auto", width: "40%"}}/>
-
-                </div>
+                              </div>
+                          );
+                      })
+                  }
                 </Carousel>
-            </div>
+              </div>
             </>
         );
     } else {

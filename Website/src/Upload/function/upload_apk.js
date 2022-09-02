@@ -3,7 +3,7 @@ export const uploadApk = async (formData, apkUploadUrl, setObjectState) => {
     setObjectState(prev => {
         return {
             ...prev,
-            algorithmsComplete: prev.algorithmsComplete,
+            algorithmsComplete: 0,
             progressBarMessage: "Uploading files...",
         };
     });
@@ -12,6 +12,16 @@ export const uploadApk = async (formData, apkUploadUrl, setObjectState) => {
         method: 'POST',
         body: formData,
     });
+
+    setTimeout(
+        () => {setObjectState(prev => {
+            return {
+                ...prev,
+                algorithmsComplete: prev.algorithmsComplete,
+                progressBarMessage: "Upload complete.",
+            };
+        });
+     }, 500);
 
     return response.json();
 };

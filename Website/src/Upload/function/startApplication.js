@@ -95,8 +95,9 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
 
     console.log(`Sending ${apkFile.name} to server.`);
     /////////////////////////////////////////////////////////////////////////
-    //                     Call API run storydistiller                     //
+    //                     Call API run storydistiller               //
     /////////////////////////////////////////////////////////////////////////
+
 
 
     uploadApk(formData, apkUploadUrl, setObjectState).then(response => {

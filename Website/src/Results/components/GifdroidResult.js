@@ -19,7 +19,7 @@ const GifdroidResult = ({uuid}) => {
     function getResult() {
         getJSON(link, function(err, data) {
             if (err !== null) {
-                alert('Something went wrong: ' + err);
+                console.log('Something went wrong: ' + err);
             } else {
                 updateResult(data);
             }
@@ -45,7 +45,7 @@ const GifdroidResult = ({uuid}) => {
             var jsonLink = results.json[0].link;
             getJSON(jsonLink, function(err, data) {
                 if (err !== null) {
-                    alert('Something went wrong: ' + err);
+                    console.log('Something went wrong: ' + err);
                 } else {
                     updateExecutionTrace([ data ]);
                 }

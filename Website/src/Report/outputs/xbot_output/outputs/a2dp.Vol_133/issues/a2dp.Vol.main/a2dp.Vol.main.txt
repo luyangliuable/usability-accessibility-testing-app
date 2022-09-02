@@ -1,0 +1,6 @@
+The following is a list of opportunities to improve the accessibility of A2DP Volume. Each item corresponds to an outlined area on the attached screenshot.
+
+Clickable items
+a2dp.Vol:id/ListView01
+This long clickable item has the same on-screen location ([0,388][1080,514]) as 1 other item(s) with those properties.
+

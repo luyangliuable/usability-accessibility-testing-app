@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Row, Container, Col } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { NavLink } from "react-router-dom";
@@ -6,6 +6,15 @@ import { NavLink } from "react-router-dom";
 import "./ToolBar.css";
 
 export default function ToolBar() {
+  const [user, updateUser] = useState(sessionStorage.getItem("User_UUID"));
+
+  console.log('user right now: ', user);
+
+  function signout() {
+    sessionStorage.removeItem("User_UUID");
+    window.location.reload();
+  }
+
   return (
     <Container className="nav-container" fluid="true">
       <Row>
@@ -36,10 +45,16 @@ export default function ToolBar() {
           </Col>
           <Col xs={6}></Col>
         </Col>
-        <Col xs={1} id="nav">
-          <NavLink to={"./login"}>
-            <h1>LOGIN</h1>
-          </NavLink>
+        <Col xs={1} className="centre-toolbar" id="nav">
+          {user &&
+            <div onClick={signout}>
+              <h1>SIGN OUT</h1>
+            </div>}
+          {!user &&
+            <NavLink to={"./login"}>
+              <h1>LOGIN</h1>
+            </NavLink>
+          }
         </Col>
       </Row>
     </Container>

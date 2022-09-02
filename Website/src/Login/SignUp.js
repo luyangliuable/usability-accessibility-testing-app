@@ -1,12 +1,16 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Container, Form, Button, Col } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { postForm } from "./function/postForm";
 
 import "./Login.css";
 import "../index.css";
 
 export default function SignUp() {
+  const navigate = useNavigate();
+
+  const [user, updateUser] = useState(sessionStorage.getItem("User_UUID"));
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
@@ -22,8 +26,18 @@ export default function SignUp() {
     console.log(response);
     response.then((data) => {
       sessionStorage.setItem("User_UUID", data.user_id);
+      updateUser(data.user_id);
     });
+
   };
+
+  useEffect(() => {
+    if (user !== null) {
+      console.log("[1.1] redirect");
+      window.location.reload()
+      navigate("/upload");
+    }
+  }, [user]);
 
   return (
     <Container className="container-nav">

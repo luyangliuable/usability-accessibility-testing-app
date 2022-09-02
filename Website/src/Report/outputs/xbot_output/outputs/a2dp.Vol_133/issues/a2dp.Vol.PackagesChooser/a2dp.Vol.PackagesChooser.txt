@@ -1,0 +1,82 @@
+The following is a list of opportunities to improve the accessibility of A2DP Volume. Each item corresponds to an outlined area on the attached screenshot.
+
+Text contrast
+a2dp.Vol:id/pi_tv_name
+The item's text contrast ratio is 1.04. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #FAFAFA. Consider increasing this item's text contrast ratio to 3.00 or greater.
+
+Text contrast
+a2dp.Vol:id/pi_tv_name
+The item's text contrast ratio is 1.04. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #FAFAFA. Consider increasing this item's text contrast ratio to 3.00 or greater.
+
+Text contrast
+a2dp.Vol:id/pi_tv_name
+The item's text contrast ratio is 1.04. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #FAFAFA. Consider increasing this item's text contrast ratio to 3.00 or greater.
+
+Text contrast
+a2dp.Vol:id/pi_tv_name
+The item's text contrast ratio is 1.04. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #FAFAFA. Consider increasing this item's text contrast ratio to 3.00 or greater.
+
+Text contrast
+a2dp.Vol:id/pi_tv_name
+The item's text contrast ratio is 1.04. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #FAFAFA. Consider increasing this item's text contrast ratio to 3.00 or greater.
+
+Text contrast
+a2dp.Vol:id/pi_tv_name
+The item's text contrast ratio is 1.04. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #FAFAFA. Consider increasing this item's text contrast ratio to 3.00 or greater.
+
+Text contrast
+a2dp.Vol:id/pi_tv_name
+The item's text contrast ratio is 1.04. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #FAFAFA. Consider increasing this item's text contrast ratio to 3.00 or greater.
+
+Text contrast
+a2dp.Vol:id/pi_tv_name
+The item's text contrast ratio is 1.04. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #FAFAFA. Consider increasing this item's text contrast ratio to 3.00 or greater.
+
+Text contrast
+a2dp.Vol:id/pi_tv_name
+The item's text contrast ratio is 1.04. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #FAFAFA. Consider increasing this item's text contrast ratio to 3.00 or greater.
+
+Text contrast
+a2dp.Vol:id/pi_tv_name
+The item's text contrast ratio is 1.04. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #FAFAFA. Consider increasing this item's text contrast ratio to 3.00 or greater.
+
+Touch target
+a2dp.Vol:id/checkBox1
+This item's size is 32dp x 32dp. Consider making this touch target 48dp wide and 48dp high or larger.
+
+Touch target
+a2dp.Vol:id/checkBox1
+This item's size is 32dp x 32dp. Consider making this touch target 48dp wide and 48dp high or larger.
+
+Touch target
+a2dp.Vol:id/checkBox1
+This item's size is 32dp x 32dp. Consider making this touch target 48dp wide and 48dp high or larger.
+
+Touch target
+a2dp.Vol:id/checkBox1
+This item's size is 32dp x 32dp. Consider making this touch target 48dp wide and 48dp high or larger.
+
+Touch target
+a2dp.Vol:id/checkBox1
+This item's size is 32dp x 32dp. Consider making this touch target 48dp wide and 48dp high or larger.
+
+Touch target
+a2dp.Vol:id/checkBox1
+This item's size is 32dp x 32dp. Consider making this touch target 48dp wide and 48dp high or larger.
+
+Touch target
+a2dp.Vol:id/checkBox1
+This item's size is 32dp x 32dp. Consider making this touch target 48dp wide and 48dp high or larger.
+
+Touch target
+a2dp.Vol:id/checkBox1
+This item's size is 32dp x 32dp. Consider making this touch target 48dp wide and 48dp high or larger.
+
+Touch target
+a2dp.Vol:id/checkBox1
+This item's size is 32dp x 32dp. Consider making this touch target 48dp wide and 48dp high or larger.
+
+Item descriptions
+a2dp.Vol:id/checkBox1
+This clickable item's speakable text: "Not checked" is identical to that of 9 other item(s).
+

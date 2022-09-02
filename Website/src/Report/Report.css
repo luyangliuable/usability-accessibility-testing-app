@@ -38,8 +38,8 @@
 
 .horizontal-scroll-internal {
 	display: flex;
-	justify-content: space-between;
-  align-items: center;
+	justify-content: flex-start;
+	align-items: center;
 
 	height: 100%;
 
@@ -53,9 +53,24 @@
 	height: 300px;
 	margin-left: 20px;
 	margin-right: 20px;
-  border: 1px solid black;
+	border: 1px solid black;
 }
-/*
-.image-buffer {
-  padding-left: 1000px;
-} */
+
+.carousel-content {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+
+	width: 100%;
+	height: 100%;
+
+	padding-left: 15%;
+	padding-right: 15%;
+}
+
+.carousel-text {
+	color: black;
+	height: 300px;
+	overflow-y: auto;
+  padding-left: 20px;
+}

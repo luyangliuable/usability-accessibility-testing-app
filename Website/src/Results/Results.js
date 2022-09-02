@@ -1,74 +1,112 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { Container, Table } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 import "./Results.css";
 import "../index.css";
 
-import ReportsTable from "../Results/components/ReportsTable";
-
-// export default class Results extends Component {
 const Results = () => {
-  /* TODO link to backend */
-  const [reports, updateReport] = useState([
-    { image: "../Content/a2dp.Vol.AppChooser.png", issues: [], app: "xbot" },
-  ]);
+  const user_UUID = sessionStorage.getItem("User_UUID");
+  const resultKeyPath = "http://localhost:5005/get_results";
+  const resultDataPath = "http://localhost:5005/file/get/";
 
-  const [images, updateImages] = useState([
-    [
-      "test_file.apk",
-      "100 mb",
-      "21/04/22",
-      "https://ourwebsite.com.au/results/dummyid1",
-    ],
-  ]);
+  const [reportKeys, updateReportKeys] = useState([]);
+  const [reportData, updateReportData] = useState([]);
 
-  const checkReports = async () => {
-    const pathway = "http://localhost:5005/get_results";
-    const user_UUID = sessionStorage.getItem("User_UUID");
-
-    const jsonData = JSON.stringify({
-      user_id: user_UUID,
-    });
-
-    const response = await fetch(pathway, {
+  const getReportKeys = async () => {
+    const res = await fetch(resultKeyPath, {
       method: "POST",
-
       headers: {
         "Content-Type": "application/json",
       },
-
-      body: jsonData,
+      body: JSON.stringify({
+        user_id: user_UUID,
+      })
     });
-
-    console.log("\n\n\n");
-    console.log(response.json());
+    const data = await res.json();
+    const stringData = JSON.stringify(data);
+    const parsedData = JSON.parse(stringData);
+    updateReportKeys(parsedData.results);
   };
 
-  return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
-        position: "absolute",
-        width: "80%",
-        left: "10%",
-        top: "10%",
-        padding: "10px",
-      }}
-    >
-      {reports.map((report) => (
-        <>
-          <ReportsTable
-            issues={report["issues"]}
-            image={report["image"]}
-            app={report["app"]}
-          />
-        </>
-      ))}
+  const getReportData = async (uuid) => {
+    const path = resultDataPath + uuid + "/gifdroid";
+    console.log(path);
+    const res = await fetch(path, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      }
+    });
+    const data = await res.json();
+    if (typeof reportData === "undefined") {
+      reportData = [];
+    }
+    updateReportData(reportData.push(data));
+  };
 
-      <button onClick={checkReports}>get reports</button>
-    </div>
-  );
+  useEffect(() => {
+    getReportKeys();
+
+    for (var i = 0; i < reportKeys.length; i++) {
+      const key = reportKeys[i].result_id;
+      getReportData(key);
+    }
+
+  }, []);
+
+  return (
+    <Container className="container-nav">
+      <div className="root">
+        <p className="text-header text-centre">RESULTS</p>
+        <div className="vspacing-40"> </div>
+        <Table>
+          <thead key={"testHeader"}>
+            <tr key={"testHeader1"}>
+              <th>#</th>
+              <th>APK Name</th>
+              <th>Start Time</th>
+              <th>Status</th>
+              <th>Link</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr key={"test1"}>
+              <td>Asfsfds</td>
+              <td>Mark</td>
+              <td>Otto</td>
+              <td>@mdo</td>
+              <td>@mdo</td>
+            </tr>
+            {reportKeys.map((report, index) => {
+              return (
+                <tr key={report._id.$oid}>
+                  <td>{index + 1}</td>
+                  <td>ID {report.result_id}</td>
+                  <td>Start Time</td>
+                  <td>Status</td>
+                  <td>
+                    <div>
+                      <Link
+                        to={"/report"}
+                        state={{ uuid: report.result_id }}
+                      >
+                        <button className="button btn btn-primary">
+                          <h3>Report</h3>
+                        </button>
+                      </Link>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+        <div>
+        </div>
+      </div>
+    </Container>
+);
 };
 
 export default Results;

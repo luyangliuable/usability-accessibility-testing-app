@@ -116,6 +116,5 @@ def _upload_result(uuid, apk_name):
 
 if __name__=='__main__':
     app.run(debug=True, host="0.0.0.0", port=3003)
-    
     # test run
     #_service_execute('a2dp.Vol_133')

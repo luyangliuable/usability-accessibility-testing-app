@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { Container } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { startApplication } from "./components/function/startApplication";
-import { getAdditionalFiles } from "./components/function/getAdditionalFiles";
+import { startApplication } from "./function/startApplication";
+// Remove eslint when var is used
+// eslint-disable-next-line
+import { getAdditionalFiles } from "./function/getAdditionalFiles";
 import ProgressBar from "./components/ProgressBar";
 
 import "./Upload.css";
@@ -27,7 +29,7 @@ const UploadSummary = () => {
 
 
   useEffect(() => {
-      console.log(algorithmState);
+    console.log(algorithmState);
     if (typeof objectState === "undefined") {
       console.log("[1.3] redirect");
       navigate("/upload");
@@ -122,7 +124,7 @@ const UploadSummary = () => {
             to={"/upload/additionaluploads"}
             state={{ objectState: objectState }}
           >
-            <button class="button btn btn-primary">
+            <button className="button btn btn-primary">
               <h3>BACK</h3>
             </button>
           </Link>
@@ -130,7 +132,7 @@ const UploadSummary = () => {
 
         <div className="next-button">
           {/* <Link to={"/results"}> */}
-          <button class="button btn btn-primary" onClick={start}>
+          <button className="button btn btn-primary" onClick={start}>
             <h3>START</h3>
           </button>
           {/* </Link> */}

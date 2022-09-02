@@ -1,7 +1,8 @@
 import pymongo
 from pymongo.database import Collection
-import os
 import datetime
+import json
+import os
 
 class DBManager:
     """
@@ -11,55 +12,6 @@ class DBManager:
     _instance = None  # _ means it is private
 
     # https://www.mongodb.com/docs/manual/reference/bson-types/
-
-    apk_schema = {
-        'uuid': {
-            'type': 'string',
-            'minlength': 5,
-            'required': True,
-        },
-        'date': {
-            'type': 'string',
-            'required': False
-        },
-        'additional_files': {
-            'type': 'array',
-            'required': False
-        },
-        'tapshoe_files': {
-            'type': 'array',
-            'required': False
-        },
-        'storydistiller_files': {
-            'type': 'array',
-            'required': False
-        },
-        'gifdroid_files': {
-            'type': 'array',
-            'required': False
-        },
-        'droidbot_files': {
-            'type': 'array',
-            'required': False
-        },
-        'utg_files': {
-            'type': 'array',
-            'required': False
-        },
-        'owleye_files': {
-            'type': 'array',
-            'required': False
-        },
-        'venus_files': {
-            'type': 'array',
-            'required': False
-        },
-        'algorithm_status': {
-            'type': 'object',
-            'required': False,
-            'default': {} # Currently default is not parsed
-        }
-    }
 
 
     def __init__(self):
@@ -80,6 +32,9 @@ class DBManager:
         Returns:
             data: The model to create a document
         """
+
+        date = datetime.datetime.utcnow().isoformat()
+
         ###############################################################################
         #               Store data into mongodb in the following format               #
         ###############################################################################
@@ -98,17 +53,89 @@ class DBManager:
 
         data = {
             "uuid": uuid,
-            "date": str( datetime.datetime.now() ),
-            "apk": [],
-            "additional_files": [],
-            "tapshoe_files": [],
-            "storydistiller_files": [],
-            "gifdroid_files": [],
-            "utg_files": [],
-            "owleye_files": [],
-            "venus_files": [],
-            "algorithm_status": {},
+            "date": date,
+            "apk": {
+                "type": "",
+                "name": "",
+                "s3_bucket": "",
+                "s3_key": ""
+            },
+            "additional_files" : [],
+            "status" : "",
+            "algorithm_status" : {
+                "storydistiller" : {
+                    "status" : "",
+                    "notes": "",
+                    "start_time" : "",
+                    "end_time" : "",
+                    "apk": ""
+                },
+                "owleye" : {
+                    "status" : "",
+                    "notes": "",
+                    "start_time" : "",
+                    "end_time" : "",
+                    "apk": ""
+                },
+                "xbot" : {
+                    "status" : "",
+                    "notes": "",
+                    "start_time" : "",
+                    "end_time" : "",
+                    "apk": ""
+                },
+                "gifdroid" : {
+                    "status" : "",
+                    "notes": "",
+                    "start_time" : "",
+                    "end_time" : "",
+                    "apk": ""
+                },
+                "ui_checker" : {
+                    "status" : "",
+                    "notes": "",
+                    "start_time" : "",
+                    "end_time" : "",
+                    "apk": ""
+                }
+            },
+            "algorithm_outputs" : {
+                "storydistiller" : "",
+                "xbot" : ""
+            },
+            "results" : {
+                "activities" : [
+                    {
+                        "name" : "",
+                        "image" : "",
+                        "xbot" : {
+                            "image" : "",
+                            "description" : ""
+                        },
+                        "owleye" : {
+                            "image" : ""
+                        },
+                        "tapshoe" : {
+                            "image" : "",
+                            "description" : "",
+                            "heatmap" : "{link to heatmap image}"
+                        }
+                    }
+                ],
+                "gifdroid": {
+                    "images": [],
+                    "json": []
+                },
+                "uichecker": {}
+            }
         }
+
+
+        # with open("document_format.json", "r") as f:
+        #     data = json.load(f)
+
+        data['uuid'] = uuid
+        data['date'] = datetime.datetime.now()
 
         return data
 
@@ -137,7 +164,8 @@ class DBManager:
                 # utg_filename = document['utg_files']
                 result.append(document)
 
-        return result
+        # Assume only 1 result
+        return result[0]
 
 
     @classmethod
@@ -183,7 +211,7 @@ class DBManager:
         validator = {}
 
         if schema != None:
-            validator = ApkManager.create_mongo_validator(schema)
+            validator = DBManager.create_mongo_validator(schema)
 
         # Placeholder result variable
         result = Collection(self._db, collection_name)
@@ -238,5 +266,4 @@ class DBManager:
 
 
 if __name__ == "__main__":
-    a = DBManager.instance()
-    a.insert_document({'test': 'worksl'}, a.get_collection("random"))
+    pass

@@ -6,9 +6,10 @@ import json
 import tempfile
 import json
 import uuid
-import os
+import sys, os
 from redis import Redis
 from models.DBManager import DBManager
+from controllers.algorithm_status_controller import AlgorithmStatusController
 
 ###############################################################################
 #                            Set Up Flask Blueprint                           #
@@ -19,6 +20,7 @@ upload_blueprint = Blueprint("upload", __name__)
 #                            Start mongodb instance                           #
 ###############################################################################
 mongo = DBManager.instance()
+collection_name = 'apk'
 
 ###############################################################################
 #                                  Set Up AWS                                 #
@@ -54,8 +56,8 @@ def upload():
         #                        If post http request received                        #
         ###############################################################################
 
+        asc = AlgorithmStatusController(collection_name)
         enforce_bucket_existance([BUCKETNAME, "storydistiller-bucket", "xbot-bucket"])
-
 
         print("[0] Getting request from front-end")
 
@@ -83,7 +85,7 @@ def upload():
 
         for key, item in request.files.items():
         ###############################################################################
-        #                          Save every additional file                         #
+        #                         S3: Save every additional file                      #
         ###############################################################################
             if key != "apk_file":
                 print("additional files", item.name, "detected")
@@ -94,7 +96,7 @@ def upload():
                     savefile.write(item.read())
                     savefile.close()
 
-                s3_client.upload_file(temp_file_name, BUCKETNAME, os.path.join( unique_id, str(item.filename) ))
+                s3_client.upload_file(temp_file_name, BUCKETNAME, os.path.join( unique_id, "additional_upload", str(item.filename) ))
                 data = DBManager.get_format(unique_id)
                 data["additional_files"].append({"algorithm": item.name, "type": item.content_type, "name": item.filename, "notes": ""})
 
@@ -105,23 +107,36 @@ def upload():
 
         temp_file_name = os.path.join(temp_dir, unique_id)
 
+        apk_file = request.files.get('apk_file')
+
+        apk_filename = apk_file.filename
+
         with open(temp_file_name, "wb") as savefile:
-            savefile.write(request.files.get('apk_file').read())
+            savefile.write(apk_file.read())
             savefile.close()
 
         ###############################################################################
-        #                   Upload the temporary file to git bucket                   #
+        #                    s3: Upload the apk file to s3 bucket                     #
         ###############################################################################
         print("[3] Uploading apk to bucket")
-        s3_client.upload_file(temp_file_name, BUCKETNAME, os.path.join( unique_id, file_key ))
+
+        apk_bucket_folder = "apk"
+        s3_client.upload_file(
+            temp_file_name,
+            BUCKETNAME,
+            os.path.join( str( unique_id ), apk_bucket_folder, str(apk_filename) )
+        )
 
         print("[4] Adding apk file meta data to mongo db")
 
         apk_file_note = "user uploaded apk file"
 
-        data["apk"].append({"type": "apk", "name": file_key, "notes": apk_file_note})
+        # WARNING: Changes now apk attribute only has one apk not array.
+        data["apk"] = {"type": "apk", "name": file_key, "notes": apk_file_note}
 
-        mongo.insert_document(data, mongo.get_database()["apk"])
+        mongo.insert_document(data, mongo.get_collection('apk'))
+
+        asc.decalare_apk_name_in_status(unique_id, str(apk_filename))
 
         print("[5] return celery task id and file key")
         return json.dumps({"file_key": str( file_key ), "uuid": unique_id}), 200
@@ -139,9 +154,9 @@ def signal_start(algorithm):
         print("uuid is", uuid)
         print("start task for algorithm", algorithm)
 
-###############################################################################
-#                       Add algorithm status to mongodb                       #
-###############################################################################
+        ###############################################################################
+        #                       Add algorithm status to mongodb                       #
+        ###############################################################################
 
         task_info = {"uuid": uuid, "algorithm": algorithm}
         task = run_algorithm.delay(task_info)
@@ -159,6 +174,9 @@ def check_health():
 
 @upload_blueprint.route("/task/<task_id>", methods=["GET"])
 def get_status(task_id):
+
+    stopPrint()
+
     print('getting task id', task_id)
 
     task_result = celery.AsyncResult(task_id)
@@ -170,6 +188,8 @@ def get_status(task_id):
         "task_status": task_result.status,
         "task_result": task_result.result
     }
+
+    allowPrint()
 
     return json.dumps(result), 200
 
@@ -192,6 +212,12 @@ def enforce_bucket_existance(buckets):
             s3_client.create_bucket(Bucket=bucket, CreateBucketConfiguration={'LocationConstraint': 'us-west-2'})
         except:
             print("Bucket already exists %s".format( bucket ))
+
+def stopPrint():
+    sys.stdout = open(os.devnull, 'w')
+
+def allowPrint():
+    sys.stdout = sys.__stdout__
 
 
 if __name__ == "__main__":

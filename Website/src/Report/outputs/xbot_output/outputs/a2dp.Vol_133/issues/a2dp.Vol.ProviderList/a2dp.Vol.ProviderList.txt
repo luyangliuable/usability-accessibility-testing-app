@@ -1,0 +1,6 @@
+The following is a list of opportunities to improve the accessibility of A2DP Volume. Each item corresponds to an outlined area on the attached screenshot.
+
+Text contrast
+android:id/empty
+The item's text contrast ratio is 1.04. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #FAFAFA. Consider increasing this item's text contrast ratio to 3.00 or greater.
+

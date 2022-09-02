@@ -1,1 +1,1 @@
-{cl'uuid': 'ccc9dd5f-a560-47e9-8194-1ad9886be092', 'date': '2022-08-29 09:46:00.296415', 'apk': [], 'additional_files': [], 'tapshoe_files': [], 'storydistiller_files': [], 'gifdroid_files': [], 'utg_files': [], 'owleye_files': [], 'venus_files': [], 'algorthm_status': {}}
+{'test': {'status': 'pending', 'message': 'works'}}

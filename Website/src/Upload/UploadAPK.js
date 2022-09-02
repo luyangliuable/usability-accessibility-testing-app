@@ -33,18 +33,18 @@ const Upload = () => {
           },
           additionalFiles: [],
           description:
-            "GifDroid does things and requires an additional video input",
+            "GifDroid generates a UTG graph",
           selected: false,
         },
         {
           uuid: "venus",
           algorithmName: "Venus",
           requiresAdditionalInput: false,
-          additionalInputDescription: "Does not require any additional uploads",
+          additionalInputDescription: "Requires a .dl file",
           additionalInputFileTypes: {},
           additionalFiles: [],
           description:
-            "Venus does things and does not require any additional inputs",
+            "Venus explores accessibility issues in an application",
           selected: false,
         },
         {
@@ -67,6 +67,17 @@ const Upload = () => {
           additionalFiles: [],
           description:
             "xBot specializes in accessibility testing of Android apps",
+          selected: false,
+        },
+        {
+          uuid: "tappable",
+          algorithmName: "Tappable",
+          requiresAdditionalInput: false,
+          additionalInputDescription: "Does not require any additional uploads",
+          additionalInputFileTypes: {},
+          additionalFiles: [],
+          description:
+            "Tappable is able to identify clickable objects which may have poor usability and be perceived as unclickable",
           selected: false,
         },
       ],
@@ -107,7 +118,7 @@ const Upload = () => {
             style={buttonState ? { pointerEvents: "none" } : {}}
             state={{ objectState: objectState }}
           >
-            <button class="button btn btn-primary" disabled={buttonState}>
+            <button className="button btn btn-primary" disabled={buttonState}>
               <h3>NEXT</h3>
             </button>
           </Link>

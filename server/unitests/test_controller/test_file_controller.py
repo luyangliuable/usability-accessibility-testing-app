@@ -17,21 +17,22 @@ sys.path.insert(0, parentdir)
 
 # relative import ends ########################################################
 
-from controllers.file_controller import *
-from models.Apk import *
+from controllers.update_document_controller import *
+from download_parsers.gifdroid_json_parser import gifdroidJsonParser
+from models.DBManager import *
 
 class TestFileCtr(unittest.TestCase):
     def setUp(self):
         self.tcn = "apk"
-        self.db = ApkManager.instance()
+        self.db = DBManager.instance()
 
         self.tc = self.db.create_collection(self.tcn)
 
         # Test document
         self.uuid = unique_id_generator()
 
-        format = ApkManager.get_format(self.uuid)
-        self.fc = FileController()
+        format = DBManager.get_format(self.uuid)
+        self.fc = UpdateDocumentController(self.tcn, gifdroidJsonParser)
 
         self.td = self.db.insert_document(format, self.tc)
 
@@ -39,13 +40,13 @@ class TestFileCtr(unittest.TestCase):
     def test_get_file(self):
         headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
         # data = requests.get("http://localhost:5005/file/get", data=json.dumps( {"uuid": self.uuid} ), headers=headers).json()
-        data = self.fc.get_document(self.uuid)[0]
+        data = self.fc.get_document(self.uuid)
         write_to_view("view.txt", data)
 
         data.pop('date')
         data.pop('_id')
 
-        expected = ApkManager.get_format(self.uuid)
+        expected = DBManager.get_format(self.uuid)
         expected.pop('date')
 
         # Get file route
@@ -53,6 +54,22 @@ class TestFileCtr(unittest.TestCase):
 
 
         self.assertEqual(expected, data)
+
+
+    def test_insert_result_into_algorithm_result(self):
+        result = ["google.com.aubdasdas", "finally_got_something.org.au"]
+        names = ["google", "finally_got_something"]
+
+        expected = {'images': [{'name': 'google', 'link': 'google.com.aubdasdas', 'type': 'None', 's3_bucket': 'apk', 's3_key': os.path.join(self.uuid, 'google')}, {'name': 'finally_got_something', 'link': 'finally_got_something.org.au', 'type': 'None', 's3_bucket': 'apk', 's3_key': os.path.join(self.uuid,'finally_got_something')}], 'json': []}
+
+        self.fc.insert_algorithm_result(self.uuid, 'gifdroid', result, 'images', names)
+
+        r = self.db.get_document(self.uuid, self.tc)
+
+        write_to_view("view.txt", r['results']['gifdroid'])
+        write_to_view("view1.txt", expected)
+
+        self.assertEqual(r['results']['gifdroid'], expected)
 
 
 ###############################################################################

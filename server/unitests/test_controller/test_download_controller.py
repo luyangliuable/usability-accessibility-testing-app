@@ -15,19 +15,21 @@ sys.path.insert(0, parentdir)
 # relative import ends ########################################################
 # from controllers.algorithm_status_controller import algorithm_status_controller as asc
 from controllers.download_controller import DownloadController
+from download_parsers.gifdroid_json_parser import gifdroidJsonParser
 from models.DBManager import *
 
 class TestDownloadCtrl(unittest.TestCase):
     def setUp(self):
-        self.d_ctrl = DownloadController()
         self.uuid = "57730388-de61-45c1-8098-d449491004ec"
-        self.algorithm = "gifdroid"
+        self.algorithm = "report"
+        self.tc = "test"
+        self.d_ctrl = DownloadController(self.tc, gifdroidJsonParser)
 
 
-    def test_file_downloaded(self):
-        res = self.d_ctrl.download(self.uuid, self.algorithm)
+    # def test_file_downloaded(self):
+    #     res = self.d_ctrl.download(self.uuid, "report" , "file.apk")
 
-        write_to_view("view.txt", res)
+    #     write_to_view("view.txt", res)
 
 
 ###############################################################################

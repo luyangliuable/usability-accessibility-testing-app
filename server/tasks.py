@@ -51,6 +51,7 @@ def run_algorithm(info={}):
             "xbot": xbot_api,
             "owleye": owleye_api,
             "gifdroid": gifdroid_api,
+            "tappable": "SKIP"
         }
 
         URL = start_links[algorithm_name]
@@ -65,7 +66,8 @@ def run_algorithm(info={}):
         #                      Change algorithm status to started                     #
         ###############################################################################
         # asc.update_algorithm_status(uuid, algorithm_name, Status.running)
-        requests.post(update_status_url, headers={"Content-Type": "text/plain"}, data=Status.running)
+        if URL != "SKIP":
+            requests.post(update_status_url, headers={"Content-Type": "text/plain"}, data=Status.running)
 
         ###############################################################################
         #                          Signal Algorithm to start                          #

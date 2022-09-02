@@ -31,11 +31,39 @@
 ## Introduction
 This application was built as part of a university project to develop a toolkit that would allow for the automatic testing of **usability and accessibility of target Android apps**. The purpose of this project is to allow developers to further improve their applications by addressing possible accessibility and usability flaws. This application utilises algorithms from previous research projects, some with initial source code and prototypes, and integrates them for more detailed output.
 
+
+### Current Team members
+
+System Architecture | RTE Scrum Masters | Product Managers
+--- | --- | --- |
+Ansh Bajpai | Arragon Prosser | Benjamin Woang
+Dale Thomas Beniga | Emily Lam | Jimmy Tran
+Dhanushka Perera | Javeriya Nadaf | Joshua Jaden
+Eric Chen | Sifan Mao | Pooja Seshadri
+Leonardo Prasetyo
+Luyang Liu
+Mark Diedericks
+Trevin Dilhan Wadugodapitiya
+Zhongxun Pan
+
 ## Usage
 
 Given an APK file, the app automatically explores all the different screens and, through the implementation of accessibility algorithms [2, 3, 4, 5], outputs accessibility and usability issues found. The website also has a login functionality that allows users to store and revisit their results.
 
-### Prerequisites
+### Gifdroid
+Gifdroid is a light-weight image-processing approach to automatically replay the video (GIF) based bug reports for Android apps
+### Owleye
+A tool to automatically detect and localize UI display issues in the screenshots of the application under test.
+### StoryDistiller
+StoryDistiller automatically generates the storyboard for an application with rich kinds of features through reverse engineering, and assists different roles to review and analyze apps efficiently.
+### Xbot
+Xbot is a page exploration tool which outputs a file of accessibility issues. 
+### Tappable/Tapshoe
+Tappable explores how tappable a button is perceived by a user. Given an image and .xml file, the model will output a heatmap and tappability rating on clickable objects that the model perceives as untappable. The model is a modified ResNet18 which accepts the input image and a binary mask of the tappable object.
+### Venus
+Venus explores accessibility issues in an application and requires a .dl file and produces a .csv document. 
+
+## Prerequisites
 * Docker
     * [mac os](https://docs.docker.com/desktop/install/mac-install/)
     * [mac os w/ m1 chip](https://desktop.docker.com/mac/main/arm64/Docker.dmg?utm_source=docker&utm_medium=webreferral&utm_campaign=docs-driven-download-mac-arm64)
@@ -54,8 +82,7 @@ Given an APK file, the app automatically explores all the different screens and,
 * Ensure port 3001-3006 and 5005 is not taken
 * No instance of redis or mongodb should be running already on your local environment
 
-
-### How to run app
+## Running the application
 1. Go into project directory
 2. build
 
@@ -68,40 +95,6 @@ docker-compose up --build
 ```
 
 4. Navigate to http://127.0.0.1:3001/
-
-
-### Current Team members
-
-System Architecture | RTE Scrum Masters | Product Managers
---- | --- | --- |
-Ansh Bajpai | Arragon Prosser | Benjamin Woang
-Dale Thomas Beniga | Emily Lam | Jimmy Tran
-Dhanushka Perera | Javeriya Nadaf | Joshua Jaden
-Eric Chen | Sifan Mao | Pooja Seshadri
-Leonardo Prasetyo
-Luyang Liu
-Mark Diedericks
-Trevin Dilhan Wadugodapitiya
-Zhongxun Pan
-
-
-### Gifdroid
-### Owleye
-### StoryDistiller
-StoryDistiller automatically generates the storyboard for an application with rich kinds of features through reverse engineering, and assists different roles to review and analyze apps efficiently.
-### Xbot
-Xbot is a page exploration tool which outputs a file of accessibility issues. 
-### Tappable/Tapshoe
-Tappable explores how tappable a button is perceived by a user. Given an image and .xml file, the model will output a heatmap and tappability rating on clickable objects that the model perceives as untappable. The model is a modified ResNet18 which accepts the input image and a binary mask of the tappable object.
-
-### Venus
-Venus explores accessibility issues in an application and requires a .dl file and produces a .csv document. 
-
-## Pre-requisites
-
-## Environment & Setup
-
-## Running the application
 
 ## Known Issues
 

@@ -6,7 +6,7 @@ import datetime
 import json
 
 ###############################################################################
-#                                    Schema                                   #
+#                                    Schema                          #
 ###############################################################################
 data = {
     "uuid": None,
@@ -38,7 +38,7 @@ class FileController:
     """
     def __init__(self):
         ###############################################################################
-        #                          Initiate database instance                         #
+        #                          Initiate database instance                  #
         ###############################################################################
         self.collection_name = "apk"
         self.mongo = DBManager.instance()
@@ -77,7 +77,7 @@ class FileController:
 
         try:
             ###############################################################################
-            #                         Add file metadata to mongodb                        #
+            #                         Add file metadata to mongodb                  #
             ###############################################################################
 
             document = data
@@ -92,7 +92,7 @@ class FileController:
             return document['uuid'], 200
         except Exception as e:
             ###############################################################################
-            #                                Error Handling                               #
+            #                                Error Handling                       #
             ###############################################################################
             return str(e), 400
 

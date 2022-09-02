@@ -19,9 +19,6 @@ from models.DBManager import DBManager
 
 # relative import ends ########################################################
 
-
-
-
 class Test_GifDDroid_Parser(unittest.TestCase):
     def setUp(self):
         self.db = DBManager.instance()
@@ -40,18 +37,13 @@ class Test_GifDDroid_Parser(unittest.TestCase):
         p = gifdroidJsonParser
         uuid = self.uuid
 
-        expected = [{'name': 'fa', 'link': 'a', 'type': 'None', 's3_bucket': 'apk', 's3_key': uuid + '/fa'}, {'name': 'fb', 'link': 'b', 'type': 'None', 's3_bucket': 'apk', 's3_key': uuid + '/fb'}, {'name': 'fc', 'link': 'c', 'type': 'None', 's3_bucket': 'apk', 's3_key': uuid +'/fc'}]
+        expected = [{'name': 'fa', 'link': 'a', 'type': 'None', 's3_bucket': 'apk', 's3_key': uuid + '/report' + '/fa'}, {'name': 'fb', 'link': 'b', 'type': 'None', 's3_bucket': 'apk', 's3_key': uuid + '/report' + '/fb'}, {'name': 'fc', 'link': 'c', 'type': 'None', 's3_bucket': 'apk', 's3_key': uuid + '/report' + '/fc'}]
 
         res = p.do_algorithm(self.uuid, ['a', 'b', 'c'], ['fa', 'fb', 'fc'])
 
         write_to_view("view.txt", res)
 
         self.assertEqual(res, expected)
-
-
-
-
-
 
 ###############################################################################
 #                              Untility functions                             #

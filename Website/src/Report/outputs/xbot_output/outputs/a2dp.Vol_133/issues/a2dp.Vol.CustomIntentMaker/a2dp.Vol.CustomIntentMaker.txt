@@ -1,0 +1,38 @@
+The following is a list of opportunities to improve the accessibility of A2DP Volume. Each item corresponds to an outlined area on the attached screenshot.
+
+Item label
+a2dp.Vol:id/ci_et_action
+This item may not have a label readable by screen readers.
+
+Item label
+a2dp.Vol:id/ci_et_data
+This item may not have a label readable by screen readers.
+
+Item label
+a2dp.Vol:id/ci_et_type
+This item may not have a label readable by screen readers.
+
+Text contrast
+[0,211][263,315]
+The item's text contrast ratio is 1.23. This ratio is based on an estimated foreground color of #E3E3E3 and an estimated background color of #FAFAFA. Consider increasing this item's text contrast ratio to 3.00 or greater.
+
+Text contrast
+[0,332][263,436]
+The item's text contrast ratio is 1.04. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #FAFAFA. Consider increasing this item's text contrast ratio to 3.00 or greater.
+
+Text contrast
+[0,453][263,557]
+The item's text contrast ratio is 1.04. This ratio is based on an estimated foreground color of #FFFFFF and an estimated background color of #FAFAFA. Consider increasing this item's text contrast ratio to 3.00 or greater.
+
+Touch target
+a2dp.Vol:id/ci_et_action
+This item's height is 45dp. Consider making the height of this touch target 48dp or larger.
+
+Touch target
+a2dp.Vol:id/ci_et_data
+This item's height is 45dp. Consider making the height of this touch target 48dp or larger.
+
+Touch target
+a2dp.Vol:id/ci_et_type
+This item's height is 45dp. Consider making the height of this touch target 48dp or larger.
+

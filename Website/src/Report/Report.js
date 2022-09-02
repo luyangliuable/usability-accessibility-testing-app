@@ -8,6 +8,8 @@ import "../index.css";
 import ReportsTable from "../Results/components/ReportsTable";
 import GifdroidResult from "../Results/components/GifdroidResult";
 
+import readFile from "./function/readFile.js";
+
 // export default class Results extends Component {
 const Report = () => {
   const locations = useLocation();
@@ -25,90 +27,64 @@ const Report = () => {
   // }, [uuid, navigate]);
 
 
-  const [reportData, updateReportData] = useState([1, 2, 3, 4, 5, 6, 7, 8, 9]);
-  console.log(reportData.length);
+  const [reportData, updateReportData] = useState(["a2dp.Vol.AppChooser", "a2dp.Vol.CustomIntentMaker", "a2dp.Vol.EditDevice", "a2dp.Vol.main", "a2dp.Vol.ManageData", "a2dp.Vol.PackagesChooser", "a2dp.Vol.Preferences", "a2dp.Vol.ProviderList"]);
 
-  const getReportData = async (uuid) => {
-    const path = resultDataPath + uuid;
-    console.log(path);
-    const res = await fetch(path, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      }
-    });
-    const data = await res.json();
-    console.log(data);
-    updateReportData(data);
-  };
+  // const getReportData = async (uuid) => {
+  //   const path = resultDataPath + uuid;
+  //   console.log(path);
+  //   const res = await fetch(path, {
+  //     method: "GET",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     }
+  //   });
+  //   const data = await res.json();
+  //   console.log(data);
+  //   updateReportData(data);
+  // };
 
-  useEffect(() => {
-    getReportData(uuid);
-  }, []);
+  // useEffect(() => {
+  //   getReportData(uuid);
+  // }, []);
 
 
-  const [carouselItems, updateCarouselItems] = useState(
-    <Carousel.Item>
-      <div className="carousel-content">
-
-        <p className="text carousel-text">
-          Click on an image from the section above to show the results for that screen.
-        </p>
-      </div>
-    </Carousel.Item>
-  );
+  const [carouselItems, updateCarouselItems] = useState("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png");
 
   const carouselTemplate = (screenshot, description) => {
-    return (
-      <Carousel.Item>
-        <div className="carousel-content">
-          <img
-            className="report_img"
-            src={require(screenshot)}
-            alt={""}
-          />
-          <p className="text carousel-text">
-            {description}
-          </p>
-        </div>
-      </Carousel.Item>
-    );
+    return 0;
   };
-  // function showCarousel(screenId) {
-  //   const data = reportData.results.activities[screenId];
-  //   var retVal = carouselTemplate();
 
-  //   if (data["owleye"] !== "") {
-  //     retVal += carouselTemplate(data["owleye"].image, "");
-  //   }
 
-  //   if (data["tapshoe"] !== "") {
-  //     retVal += carouselTemplate(data["tapshoe"].image, data["tapshoe"].description);
-  //   }
+  function updateImage(screenId) {
+    const owleye = ["a2dp.Vol.AppChooser", "a2dp.Vol.CustomIntentMaker", "a2dp.Vol.EditDevice", "a2dp.Vol.main", "a2dp.Vol.ManageData", "a2dp.Vol.PackagesChooser", "a2dp.Vol.Preferences", "a2dp.Vol.ProviderList"];
+    const xbot = ["a2dp.Vol.AppChooser", "a2dp.Vol.CustomIntentMaker", "a2dp.Vol.main", "a2dp.Vol.PackagesChooser", "a2dp.Vol.ProviderList"];
 
-  //   if (data["xbot"] !== "") {
-  //     retVal += carouselTemplate(data["xbot"].image, data["xbot"].description);
-  //   }
+    console.log(screenId);
 
-  // return retVal;
-  //   {/* {reportData.results.activities.map((screenId) => {
-  //             return (
-  //               <Carousel.Item>
-  //                 <div className="carousel-content">
-  //                   <img
-  //                     className="report_img"
-  //                     src={require(screenshot)}
-  //                     alt={""}
-  //                   />
-  //                   <p className="text carousel-text">
-  //                     {description}
-  //                   </p>
-  //                 </div>
-  //               </Carousel.Item>
-  //             );
-  //           })
-  //           } */}
-  // }
+    document.getElementById('base-img').src = require("./outputs/storydistiller_output/outputs/a2dp.Vol_133/screenshots/" + screenId + ".png");
+    document.getElementById('base-text').innerHTML = "This is the base screenshot that the algorithms analysed as a point of reference. Click on another image above to display the results for that screen";
+
+
+    if (owleye.includes(screenId)) {
+      document.getElementById('owleye-img').src = require("./outputs/owleye_output/output_pic/" + screenId + ".jpg");
+      document.getElementById('owleye-text').innerHTML = "owleye's heatmaps show areas where there is likely to be a bug in the GUI, where blue is generally ok and red indicates a high likelihood of an UI Display Issue.";
+    }
+    else {
+      document.getElementById('owleye-img').src = require("./outputs/storydistiller_output/outputs/a2dp.Vol_133/screenshots/" + screenId + ".png");
+      document.getElementById('owleye-text').innerHTML = "owleye did not find any issues with this screenshot";
+
+    }
+
+    if (xbot.includes(screenId)) {
+      document.getElementById('xbot-img').src = require("./outputs/xbot_output/outputs/a2dp.Vol_133/issues/" + screenId + "/" + screenId + ".png");
+      var text = readFile(screenId);
+      document.getElementById('xbot-text').innerHTML = text;
+    }
+    else {
+      document.getElementById('xbot-img').src = require("./outputs/storydistiller_output/outputs/a2dp.Vol_133/screenshots/" + screenId + ".png");
+      document.getElementById('xbot-text').innerHTML = "xBot did not find any issues with this screenshot";
+    }
+  }
 
   return (
     <Container className="container-nav">
@@ -117,32 +93,17 @@ const Report = () => {
         <p className="text">{JSON.stringify(reportData)}</p> */}
         <div className="horizontal-scroll-card">
           <div className="horizontal-scroll-internal">
-            <img
-              className="report_img"
-              src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
-              //src="../content/bug_screenshot.PNG"
-              //src={image}
-              //src={require({image})}
-              alt={""}
-            />
-            <img
-              className="report_img"
-              src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
-              //src="../content/bug_screenshot.PNG"
-              //src={image}
-              //src={require({image})}
-              alt={""}
-            />
-            {/* {reportData.results.activities.map((screenId) => {
+            {reportData.map((screenId) => {
               return (
                 <img
-                  className="imageOverlay"
-                  src={require(screenId.image)}
-                  // onClick={() => showCarousel(screenId)}
+                  className="report_img"
+                  src={require("./outputs/storydistiller_output/outputs/a2dp.Vol_133/screenshots/" + screenId + ".png")}
                   alt={""}
+                  onClick={() => { updateImage(screenId); }}
+                  style={{ "width": "200px", "height": "300px" }}
                 />);
             })
-            } */}
+            }
           </div>
         </div>
         <div className="carousel">
@@ -150,45 +111,41 @@ const Report = () => {
             <Carousel.Item>
               <div className="carousel-content">
                 <img
+                  id="base-img"
                   className="report_img"
-                  src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
-                  //src="../content/bug_screenshot.PNG"
-                  //src={image}
-                  //src={require({image})}
-                  alt={"First Slide"}
+                  alt={""}
                 />
-              </div>
-            </Carousel.Item>
-
-            <Carousel.Item>
-              <div className="carousel-content">
-                <img
-                  className="report_img"
-                  src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
-                  //src="../content/bug_screenshot.PNG"
-                  //src={image}
-                  //src={require({image})}
-                  alt={"Second Slide"}
-                />
-              </div>
-            </Carousel.Item>
-
-            <Carousel.Item>
-              <div className="carousel-content">
-                <img
-                  className="report_img"
-                  src={require("../Results/content/xbot/a2dp.Vol.CustomIntentMaker.png")}
-                  //src="../content/bug_screenshot.PNG"
-                  //src={image}
-                  //src={require({image})}
-                  alt={"Third Slide"}
-                />
-                <p className="text carousel-text">
-                  this is a bunch of text
+                <p id="base-text" className="text carousel-text">
+                  Click on an image from the section above to show the results for that screen.
                 </p>
               </div>
             </Carousel.Item>
-            {carouselItems}
+
+            <Carousel.Item>
+              <div className="carousel-content">
+                <img
+                  id="owleye-img"
+                  className="report_img"
+                  alt={""}
+                />
+                <p id="owleye-text" className="text carousel-text">
+                  Click on an image from the section above to show the results for that screen.
+                </p>
+              </div>
+            </Carousel.Item>
+
+            <Carousel.Item>
+              <div className="carousel-content">
+                <img
+                  id="xbot-img"
+                  className="report_img"
+                  alt={""}
+                />
+                <p id="xbot-text" className="text carousel-text">
+                  Click on an image from the section above to show the results for that screen.
+                </p>
+              </div>
+            </Carousel.Item>
           </Carousel>
         </div>
       </div>

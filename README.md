@@ -4,6 +4,7 @@
 
 <!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
 **Table of Contents**
+<!-- TOC -->
 
 - [FIT3170 Usability Accessibility Testing App](#fit3170-usability-accessibility-testing-app)
     - [Introduction](#introduction)

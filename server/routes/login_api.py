@@ -4,7 +4,6 @@ from flask import Flask
 import pymongo
 import os
 
-
 from models.User import *
 
 login_blueprint = Blueprint('login', __name__)

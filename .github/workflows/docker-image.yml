@@ -2,7 +2,7 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "ci-cd", "master", "main", "#merge_branch", "#setup-cicd" ]
+    branches: [ "ci-cd", "master", "main", "#merge_branch", "#setup_cicd" ]
   pull_request:
     branches: [ "ci-cd", "master", "main" ]
 
@@ -15,4 +15,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker-compose build
+      run: docker-compose build gifdroid worker storydistiller owleye xbot

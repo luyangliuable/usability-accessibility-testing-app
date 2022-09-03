@@ -5,7 +5,7 @@ name: Python application
 
 on:
   push:
-    branches: [ "ci-cd", "master", "main", "#merge_branch", "#setup-cicd" ]
+    branches: [ "ci-cd", "master", "main", "#merge_branch", "#setup_cicd" ]
   pull_request:
     branches: [ "ci-cd", "master", "main" ]
 

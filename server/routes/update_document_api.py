@@ -79,48 +79,34 @@ def result_add(uuid, algorithm):
 
 
 
-@update_document_blueprint.route("/file/add", methods=['GET', "POST"])
-@cross_origin()
-def add_documment():
-    if request.method == "POST":
-        try:
-            ###############################################################################
-            #                         Add file metadata to mongodb                        #
-            ###############################################################################
+# @update_document_blueprint.route("/file/add", methods=['GET', "POST"])
+# @cross_origin()
+# def add_documment():
+#     if request.method == "POST":
+#         try:
+#             ###############################################################################
+#             #                         Add file metadata to mongodb                 #
+#             ###############################################################################
 
-            collection = "apk"
-            document = data
+#             document = data
 
-            for each_key, _ in document.items():
-                document[each_key] = request.args.get(each_key)
+#             for each_key, _ in document.items():
+#                 document[each_key] = request.args.get(each_key)
 
-            document['uuid'] = unique_id_generator()
-            print(document)
+#             document['uuid'] = unique_id_generator()
+#             print(document)
 
-            mongo.insert_document(document, mongo.get_collection('apk')).inserted_id
+#             mongo.insert_document(document, mongo.get_collection('apk')).inserted_id
 
-            return document['uuid'], 200
-        except Exception as e:
-            ###############################################################################
-            #                                Error Handling                               #
-            ###############################################################################
-            return str(e), 400
+#             return document['uuid'], 200
+#         except Exception as e:
+#             ###############################################################################
+#             #                                Error Handling                       #
+#             ###############################################################################
+#             return str(e), 400
 
 
-    return "Not a valid request", 400
-
-###############################################################################
-#                              Utility Functions                              #
-###############################################################################
-# def safe_serialize(obj):
-#     default = lambda o: f"<<non-serializable: {type(o).__qualname__}>>"
-#     res = json.dumps(obj, default=default)
-
-#     return res
-
-# def unique_id_generator():
-#     res = str( uuid.uuid4() )
-#     return res
+#     return "Not a valid request", 400
 
 
 if __name__ == "__main__":

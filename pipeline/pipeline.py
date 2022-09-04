@@ -15,6 +15,7 @@ import sys
 
 def pipeline(img_path, json_path, output_path):
     bounds = []
+    colours = []
 
 
     json_file = open(json_path).read()
@@ -48,7 +49,7 @@ def pipeline(img_path, json_path, output_path):
     model.load_state_dict(torch.load(os.getcwd() + "/trained_models/resnet_v3.pt", map_location=torch.device('cpu')))
     model.eval()
 
-    untappable_bounds = {}
+    json_out = {}
     bounding_boxes_all = []
     counter = 0
     labels = ["tappable", "not tappable"]
@@ -63,31 +64,36 @@ def pipeline(img_path, json_path, output_path):
         percentage = torch.nn.functional.softmax(outputs, dim=1)[0] * 100
         _, index = torch.max(outputs, 1) 
         print([(labels[idx], percentage[idx].item()) for idx in indices[0][:2]])
+        bounding_boxes = []
+        bounding_boxes_all.append(item['bounds'])
+        for i in range(len(item['bounds'])):
+            if isinstance(item['bounds'][i], torch.Tensor):
+                bounding_boxes.append(item['bounds'][i].cpu().item())
+            else:
+                bounding_boxes.append(item['bounds'][i])
 
         if int(index[0]) == 1:
-            bounding_boxes = []
-            bounding_boxes_all.append(item['bounds'])
-            for i in range(len(item['bounds'])):
-                if isinstance(item['bounds'][i], torch.Tensor):
-                    bounding_boxes.append(item['bounds'][i].cpu().item())
-                else:
-                    bounding_boxes.append(item['bounds'][i])
+            colours.append("red")
             heatmap_path = heatmap.createHeatmap(item['bounds'], index[0], counter)
-            untappable = {'bounds': bounding_boxes, 'percentage': percentage[index[0]].item(), 'heatmap': heatmap_path}
-            untappable_bounds[str(counter)] = untappable
-            counter += 1
+        else:
+            colours.append("black")
+            heatmap_path = None
+            
+        details_out = {'bounds': bounding_boxes, 'percentage': percentage[index[0]].item(), 'heatmap': heatmap_path}
+        json_out[str(counter)] = details_out
+        counter += 1
 
     #Store bounding boxes for those rated untappable
     if bounding_boxes_all:
         img = read_image(img_path)
         boxes = torch.tensor(bounding_boxes_all, dtype=torch.float)
-        result = draw_bounding_boxes(img, boxes, width=8)
+        result = draw_bounding_boxes(img, boxes, width=8, colors=colours)
         img = torchvision.transforms.ToPILImage()(result)
         img.save(os.path.join(output_path, 'screenshot.jpg'))
 
     #Save json file 
     with open(os.path.join(output_path, 'description.json'), 'w+') as file:
-        json.dump(untappable_bounds, file)
+        json.dump(json_out, file)
 
 
 def run_pipeline(img_dir, json_dir, output_dir):

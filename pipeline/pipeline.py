@@ -13,26 +13,31 @@ import json
 import re
 import sys
 
-def pipeline(img_path, xml_path, output_path):
-
-    output = {}
+def pipeline(img_path, json_path, output_path):
     bounds = []
 
 
-    xml_file = open(xml_path).read() #TODO: XML FILE FROM XBOT
-
-    #Extract bounds and item details from xml file 
-    regex_text = r"<node[\s\S]*?text=\"([\s\S]*?)\"[\s\S]*?class=\"([a-zA-z.]*?)\"[\s\S]*?clickable=\"([a-z]*)\"[\s\S]*?bounds=\"([\s\S]*?)\""
-    regex_out = re.findall(regex_text, xml_file)
-    for i in range(len(regex_out)):
-        #Store xml output in json file 
-        output[str(i)] = {"title": regex_out[i][0], "class": regex_out[i][1], "clickable": regex_out[i][2], "bounds": regex_out[i][3]}
-        #Get bounds for clickable items
-        if regex_out[i][2] == "true":
-            re_text = r"\[(\d*?),(\d*?)\]\[(\d*?),(\d*?)\]"
-            bounds_out = re.findall(re_text, regex_out[i][3])[0]
-            bounds_item = [int(bounds_out[0]), int(bounds_out[1]), int(bounds_out[2]), int(bounds_out[3])]
+    json_file = open(json_path).read()
+    json_data = json.loads(json_file)
+    for view in json_data['views']:
+        if view['clickable'] == True: 
+            bounds_out = view['bounds']
+            bounds_item = [int(bounds_out[0][0]), int(bounds_out[0][1]), int(bounds_out[1][0]), int(bounds_out[1][1])]
             bounds.append(bounds_item)
+    
+    # #Extract bounds and item details from xml file 
+    # xml_file = open(xml_path).read()
+    # regex_text = r"<node[\s\S]*?text=\"([\s\S]*?)\"[\s\S]*?class=\"([a-zA-z.]*?)\"[\s\S]*?clickable=\"([a-z]*)\"[\s\S]*?bounds=\"([\s\S]*?)\""
+    # regex_out = re.findall(regex_text, xml_file)
+    # for i in range(len(regex_out)):
+    #     #Store xml output in json file 
+    #     output[str(i)] = {"title": regex_out[i][0], "class": regex_out[i][1], "clickable": regex_out[i][2], "bounds": regex_out[i][3]}
+    #     #Get bounds for clickable items
+    #     if regex_out[i][2] == "true":
+    #         re_text = r"\[(\d*?),(\d*?)\]\[(\d*?),(\d*?)\]"
+    #         bounds_out = re.findall(re_text, regex_out[i][3])[0]
+    #         bounds_item = [int(bounds_out[0]), int(bounds_out[1]), int(bounds_out[2]), int(bounds_out[3])]
+    #         bounds.append(bounds_item)
 
     #Create dataset and dataloader 
     dataset = Tappable(img_path = img_path, bounds = bounds)
@@ -85,16 +90,16 @@ def pipeline(img_path, xml_path, output_path):
         json.dump(untappable_bounds, file)
 
 
-def run_pipeline(img_dir, xml_dir, output_dir):
+def run_pipeline(img_dir, json_dir, output_dir):
     for images in os.listdir(img_dir):
         img_path = img_dir + images
-        img_name = images.strip('.jpg')
-        xml_path = xml_dir + img_name + '.xml'
-        if os.path.exists(xml_path):
+        img_name = images.strip('.jpg').strip('screen')
+        json_path = json_dir + 'state' + img_name + '.json'
+        if os.path.exists(json_path):
             output_path = output_dir + img_name + "/"
             if not os.path.exists(output_path):
                 os.makedirs(output_path)
-            pipeline(img_path , xml_path, output_path)
+            pipeline(img_path , json_path, output_path)
 
 if __name__=='__main__':
     args = sys.argv[1:]

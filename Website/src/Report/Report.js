@@ -5,7 +5,6 @@ import { Container, Carousel } from "react-bootstrap";
 import "./Report.css";
 import "../index.css";
 
-import ReportsTable from "../Results/components/ReportsTable";
 import GifdroidResult from "../Results/components/GifdroidResult";
 
 import readFile from "./function/readFile.js";

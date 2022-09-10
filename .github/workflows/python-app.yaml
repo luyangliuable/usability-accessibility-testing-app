@@ -15,8 +15,6 @@ permissions:
 jobs:
 
   unitest-linting-flask-backend:
-
-  build:
     runs-on: ubuntu-latest
     steps:
 

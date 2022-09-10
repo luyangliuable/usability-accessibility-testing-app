@@ -95,7 +95,7 @@ class AlgorithmStatusController():
 
         self._db.update_document(uuid, self.c, 'status', status)
 
-        return True
+        return self._db.get_document(uuid, self.c)['status']
 
 
     def get_collection(self):

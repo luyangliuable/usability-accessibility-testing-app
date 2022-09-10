@@ -40,7 +40,7 @@ def download(uuid, algorithm, name):
     return send_file(result_file_from_algorithm, as_attachment=True), 200
 
 
-@download_blueprint.route('/download_result/zipped/<uuid>/<algorithm>', methods=["GET", "POST"])
+@download_blueprint.route('/download_result/zipped/<uuid>/', methods=["GET", "POST"])
 @cross_origin()
 def download_zipped(uuid,algorithm):
     ###############################################################################

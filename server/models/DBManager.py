@@ -107,16 +107,16 @@ class DBManager:
                 "activities" : [
                     {
                         "name" : "",
-                        "image" : "",
+                        "image" : [],
                         "xbot" : {
                             "image" : "",
                             "description" : ""
                         },
                         "owleye" : {
-                            "image" : ""
+                            "image" : []
                         },
                         "tapshoe" : {
-                            "image" : "",
+                            "image" : [],
                             "description" : "",
                             "heatmap" : "{link to heatmap image}"
                         }

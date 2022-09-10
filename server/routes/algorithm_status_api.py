@@ -27,7 +27,6 @@ def get_job_status(uuid):
     """
     if request.method == "GET":
         res = asc.get_job_status(uuid)
-        print(res)
 
         return json.dumps(res), 200
 

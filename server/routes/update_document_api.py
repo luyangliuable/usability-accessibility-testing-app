@@ -12,7 +12,7 @@ update_document_blueprint = Blueprint("file", __name__)
 file_controller = UpdateDocumentController('apk', gifdroidJsonParser)
 
 
-@update_document_blueprint.route("/file/get/<uuid>/<algorithm>", methods=['GET'])
+@update_document_blueprint.route("/result/get/<uuid>/<algorithm>", methods=['GET'])
 @cross_origin()
 def get_result_of_algorithm(uuid, algorithm):
     """
@@ -33,7 +33,7 @@ def get_result_of_algorithm(uuid, algorithm):
         return str(e), 400
 
 
-@update_document_blueprint.route("/file/get/<uuid>", methods=['GET'])
+@update_document_blueprint.route("/result/get/<uuid>", methods=['GET'])
 @cross_origin()
 def get_document(uuid):
     """

@@ -8,7 +8,6 @@ from models.User import *
 
 login_blueprint = Blueprint('login', __name__)
 
-
 @login_blueprint.route('/signUp', methods=['POST'])
 @cross_origin()
 def signUpUser():

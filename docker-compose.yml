@@ -111,6 +111,8 @@ services:
 
 
   storydistiller:
+    build:
+      context: ./algorithms/docker_apps/storydistiller_app
     image: trevinwadu/bxer:storydistiller
     container_name: bxer.storydistiller
     ports:
@@ -120,6 +122,8 @@ services:
       - STORYDISTILLER_EMULATOR=host.docker.internal:5555
 
   xbot:
+    build:
+      context: ./algorithms/docker_apps/xbot_app
     image: trevinwadu/bxer:xbot
     container_name: bxer.xbot
     ports:
@@ -129,6 +133,8 @@ services:
       - XBOT_EMULATOR=host.docker.internal:5557
 
   owleye:
+    build:
+      context: ./algorithms/docker_apps/owleye_app
     image: trevinwadu/bxer:owleye
     container_name: bxer.owleye
     ports:
@@ -138,7 +144,7 @@ services:
 
   gifdroid:
     build:
-      context: ./docker_apps/gifdroid_app
+      context: ./algorithms/docker_apps/gifdroid_app
     command: python3 app.py
     image: bwoa0001/gifdroid
     container_name: bxer.gifdroid

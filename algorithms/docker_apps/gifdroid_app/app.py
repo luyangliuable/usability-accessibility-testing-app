@@ -5,6 +5,7 @@ import boto3
 import json
 import requests
 import os
+
 from os import path
 import subprocess
 import tempfile
@@ -14,8 +15,6 @@ from converter.run import convert_droidbot_to_gifdroid_utg
 from converter.functions.artifact_img_converter import file_order_sorter
 
 app = Flask(__name__)
-
-
 ###############################################################################
 #        Load user config file gifdroid algorithm running configuration       #
 ###############################################################################
@@ -54,7 +53,6 @@ s3_client = boto3.client(
     endpoint_url=endpoint_url,
 )
 
-
 result_bucket_folder = "report"
 apk_bucket_folder = "apk"
 
@@ -81,6 +79,7 @@ def send_uid_and_signal_run():
         return jsonify( {"result": "SUCCESS"} ), 200
 
     return "No HTTP POST method received", 400
+
 
 def _service_execute_droidbot(uuid):
     """
@@ -153,13 +152,6 @@ def _service_execute_gifdroid(uuid):
     OUTPUT_DIR = os.path.join( tempfile.gettempdir(), uuid )
 
     ###############################################################################
-    #                        Get utg filename from mongodb                        #
-    ###############################################################################
-    print("[1] Getting utg filename from mongodb")
-
-    print("[2] Creating temporary file to save utg file")
-
-    ###############################################################################
     #                        Convert utg to correct format                        #
     ###############################################################################
     utg = os.path.join(OUTPUT_DIR, config['DEFAULT_UTG_FILENAME'])
@@ -211,8 +203,11 @@ def _service_execute_gifdroid(uuid):
 
     subprocess.run([ "python3", "main.py", "--video=./" + gif_file, "--utg=" + "../droidbot/utg.json", "--artifact=../droidbot/output", "--out=" + config["OUTPUT_FILE"]])
 
-    #save output file to bucket
     enforce_bucket_existance([config[ "BUCKET_NAME" ], "storydistiller-bucket", "xbot-bucket"])
+
+    ###############################################################################
+    #                          Save result onto s3 bucket                         #
+    ###############################################################################
 
     print("[4] Uploading json file to bucket")
     s3_client.upload_file(

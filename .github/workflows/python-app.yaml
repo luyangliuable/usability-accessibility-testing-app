@@ -1,20 +1,22 @@
 # This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
-name: Python application
+name: Flask Backend Pytest/Unittest & linting
 
 on:
   push:
-    branches: [ "ci-cd", "master", "main", "#merge_branch", "#setup_cicd" ]
+    branches: [ "ci-cd", "master", "main", "#merge_branch", "#setup_cicd", "#refactor" ]
   pull_request:
-    branches: [ "ci-cd", "master", "main" ]
+    branches: [ "main" ]
 
 permissions:
   contents: read
 
 jobs:
-  build:
 
+  unitest-linting-flask-backend:
+
+  build:
     runs-on: ubuntu-latest
     steps:
 

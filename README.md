@@ -29,6 +29,8 @@
 
 <!-- markdown-toc end -->
 
+[![Flask Backend Test](https://github.com/luyangliuable/Usability-Accessibility-Testing-App/actions/workflows/python-app.yaml/badge.svg)](https://github.com/luyangliuable/Usability-Accessibility-Testing-App/actions/workflows/python-app.yaml)
+
 ## Introduction
 This application was built as part of a university project to develop a toolkit that would allow for the automatic testing of **usability and accessibility of target Android apps**. The purpose of this project is to allow developers to further improve their applications by addressing possible accessibility and usability flaws. This application utilises algorithms from previous research projects, some with initial source code and prototypes, and integrates them for more detailed output.
 

@@ -1,10 +1,10 @@
-name: Docker Image CI
+name: Testing-Build-Docker-Containers-Successful
 
 on:
   push:
-    branches: [ "ci-cd", "master", "main", "#merge_branch", "#setup_cicd" ]
+    branches: [ "ci-cd", "master", "main", "#merge_branch", "#setup_cicd", "#refactor" ]
   pull_request:
-    branches: [ "ci-cd", "master", "main" ]
+    branches: [ "main" ]
 
 jobs:
 

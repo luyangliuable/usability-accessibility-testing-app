@@ -152,7 +152,7 @@ services:
 
   gifdroid:
     build:
-      context: ./docker_apps/gifdroid_app
+      context: ./algorithms/docker_apps/gifdroid_app
     command: python3 app.py
     image: bwoa0001/gifdroid
     container_name: bxer.gifdroid

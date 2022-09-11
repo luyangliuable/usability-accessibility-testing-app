@@ -1,0 +1,49 @@
+{
+  "tag": "2022-09-11_014426",
+  "event": {
+    "event_type": "touch",
+    "log_lines": null,
+    "x": null,
+    "y": null,
+    "view": {
+      "package": "a2dp.Vol",
+      "visible": true,
+      "checkable": true,
+      "child_count": 0,
+      "editable": false,
+      "clickable": true,
+      "is_password": false,
+      "focusable": true,
+      "enabled": true,
+      "content_description": null,
+      "children": [],
+      "focused": false,
+      "bounds": [
+        [
+          0,
+          631
+        ],
+        [
+          1080,
+          715
+        ]
+      ],
+      "resource_id": "a2dp.Vol:id/enableTTSBox",
+      "checked": true,
+      "text": "Enable Reading Text Messages?",
+      "class": "android.widget.CheckBox",
+      "scrollable": false,
+      "selected": false,
+      "long_clickable": false,
+      "parent": 8,
+      "temp_id": 14,
+      "size": "1080*84",
+      "signature": "[class]android.widget.CheckBox[resource_id]a2dp.Vol:id/enableTTSBox[text]Enable Reading Text Messages?[enabled,checked,]",
+      "view_str": "4e33aecb0241cc3bf71c110a071b7644",
+      "content_free_signature": "[class]android.widget.CheckBox[resource_id]a2dp.Vol:id/enableTTSBox"
+    }
+  },
+  "start_state": "5f6b97f57d43bd9c1afa2822147032aa",
+  "stop_state": "4a6915854ff54f9563b4590c28028e60",
+  "event_str": "TouchEvent(state=5f6b97f57d43bd9c1afa2822147032aa, view=4e33aecb0241cc3bf71c110a071b7644(EditDevice/CheckBox-Enable Rea))"
+}

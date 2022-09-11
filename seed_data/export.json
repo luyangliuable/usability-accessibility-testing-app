@@ -1,0 +1,190 @@
+[
+    {
+        "_id": {
+            "$oid": "630f6dbdefe72a67744242ec"
+        },
+        "uuid": "28f666de-9a79-4a03-ac74-da77acf5924a",
+        "date": {
+            "$date": {
+                "$numberLong": "1661955517779"
+            }
+        },
+        "apk": {
+            "type": "apk",
+            "name": "a2dp.Vol_133.apk",
+            "notes": "user uploaded apk file"
+        },
+        "additional_files": [
+            {
+                "algorithm": "gifdroid",
+                "type": "image/gif",
+                "name": "sample.gif",
+                "notes": ""
+            }
+        ],
+        "status": "",
+        "algorithm_status": {
+            "storydistiller": {
+                "status": "SUCCESSFUL",
+                "notes": "",
+                "start_time": "",
+                "end_time": "",
+                "apk": "a2dp.Vol_133.apk"
+            },
+            "owleye": {
+                "status": "SUCCESSFUL",
+                "notes": "",
+                "start_time": "",
+                "end_time": "",
+                "apk": "a2dp.Vol_133.apk"
+            },
+            "xbot": {
+                "status": "SUCCESSFUL",
+                "notes": "",
+                "start_time": "",
+                "end_time": "",
+                "apk": "a2dp.Vol_133.apk"
+            },
+            "gifdroid": {
+                "status": "SUCCESSFUL",
+                "notes": "",
+                "start_time": "",
+                "end_time": "",
+                "apk": "a2dp.Vol_133.apk"
+            },
+            "ui_checker": {
+                "status": "FAILED",
+                "notes": "",
+                "start_time": "",
+                "end_time": "",
+                "apk": "a2dp.Vol_133.apk"
+            }
+        },
+        "algorithm_outputs": {
+            "storydistiller": "",
+            "xbot": ""
+        },
+        "results": {
+            "activities": [
+                {
+                    "name": "a2dp.Vol.main",
+                    "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/activity/images/a2dp.Vol.main",
+                    "xbot": {
+                        "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/xbot/images/a2dp.Vol.main",
+                        "issue": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/xbot/issues/a2dp.Vol.main",
+                        "description": ""
+                    },
+                    "owleye": {
+                        "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/owleye/images/a2dp.Vol.main",
+                    },
+                    "tapshoe": {
+                        "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/tappable/images/a2dp.Vol.main",
+                        "description": "",
+                        "heatmap": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/tappable/heatmap/a2dp.Vol.main"
+                    }
+            },
+                {
+                    "name": "a2dp.Vol.ProviderList",
+                    "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/activity/images/a2dp.Vol.ProviderList",
+                    "xbot": {
+                        "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/xbot/images/a2dp.Vol.ProviderList",
+                        "issue": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/xbot/issues/a2dp.Vol.ProviderList",
+                        "description": ""
+                    },
+                    "owleye": {
+                        "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/owleye/images/a2dp.Vol.ProviderList",
+                    },
+                    "tapshoe": {
+                        "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/tappable/images/a2dp.Vol.ProviderList",
+                        "description": "",
+                        "heatmap": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/tappable/heatmap/a2dp.Vol.ProviderList"
+                    }
+                },
+                {
+                    "name": "a2dp.Vol.Preferences",
+                    "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/activity/images/a2dp.Vol.Preferences",
+                    "xbot": {
+                        "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/xbot/images/a2dp.Vol.Preferences",
+                        "issue": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/xbot/issues/a2dp.Vol.Preferences",
+                        "description": ""
+                    },
+                    "owleye": {
+                        "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/owleye/images/a2dp.Vol.Preferences",
+                    },
+                    "tapshoe": {
+                        "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/tappable/images/a2dp.Vol.Preferences",
+                        "description": "",
+                        "heatmap": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/tappable/heatmap/a2dp.Vol.Preferences"
+                    }
+                },
+                {
+                    "name": "a2dp.Vol.PackagesChooser",
+                    "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/activity/images/a2dp.Vol.PackagesChooser",
+                    "xbot": {
+                        "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/xbot/images/a2dp.Vol.PackagesChooser",
+                        "issue": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/xbot/issues/a2dp.Vol.PackagesChooser",
+                        "description": ""
+                    },
+                    "owleye": {
+                        "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/owleye/images/a2dp.Vol.PackagesChooser",
+                    },
+                    "tapshoe": {
+                        "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/tappable/images/a2dp.Vol.PackagesChooser",
+                        "description": "",
+                        "heatmap": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/tappable/heatmap/a2dp.Vol.PackagesChooser"
+                    }
+                },
+
+            ],
+            "gifdroid": {
+                "images": [
+                    {
+                        "name": "a2dp.Vol.main",
+                        "link": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/activity/images/a2dp.Vol.main",
+                        "type": "image/png",
+                        "s3_bucket": "apk",
+                        "s3_key": "28f666de-9a79-4a03-ac74-da77acf5924a/artifacts_0.png"
+                    },
+                    {
+                        "name": "a2dp.Vol.ProviderList",
+                        "link": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/activity/images/a2dp.Vol.ProviderList",
+                        "type": "image/png",
+                        "s3_bucket": "apk",
+                        "s3_key": "28f666de-9a79-4a03-ac74-da77acf5924a/artifacts_1.png"
+                    },
+                    {
+                        "name": "a2dp.Vol.Preferences",
+                        "link": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/activity/images/a2dp.Vol.Preferences",
+                        "type": "image/png",
+                        "s3_bucket": "apk",
+                        "s3_key": "28f666de-9a79-4a03-ac74-da77acf5924a/artifacts_2.png"
+                    },
+                    {
+                        "name": "a2dp.Vol.PackagesChooser",
+                        "link": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/activity/images/a2dp.Vol.PackagesChooser",
+                        "type": "image/png",
+                        "s3_bucket": "apk",
+                        "s3_key": "28f666de-9a79-4a03-ac74-da77acf5924a/artifacts_3.png"
+                    },
+                    {
+                        "name": "a2dp.Vol.ManageData",
+                        "link": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/activity/images/a2dp.Vol.ManageData",
+                        "type": "image/png",
+                        "s3_bucket": "apk",
+                        "s3_key": "28f666de-9a79-4a03-ac74-da77acf5924a/artifacts_4.png"
+                    }
+                ],
+                "json": [
+                    {
+                        "name": "gifdroid.json",
+                        "link": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/gifdroid/json/gifdroid.json",
+                        "type": "application/json",
+                        "s3_bucket": "apk",
+                        "s3_key": "28f666de-9a79-4a03-ac74-da77acf5924a/gifdroid.json"
+                    }
+                ]
+            },
+            "uichecker": {}
+        }
+    }
+]

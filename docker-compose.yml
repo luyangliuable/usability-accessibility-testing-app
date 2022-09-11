@@ -153,19 +153,19 @@ services:
     - S3_URL=http://host.docker.internal:4566
     - EMULATOR=host.docker.internal:5555
 
-  ui_checker:
-    build:
-      context: ./docker_apps/ui_checker
-    command: python3 app.py
-    image: triplejays/ui-checker:1.2
-    container_name: bxer.ui_checker
-    ports:
-      - '3006:3006'
-    environment:
-    - debug_mode=1
-    - status_api=http://host.docker.internal:5005/status
-    - flask_backend=http://host.docker.internal:5005
-    - mongo_url=mongodb://host.docker.internal:27017/
-    - s3_url=http://host.docker.internal:4566
-    - emulator=host.docker.internal:5555
-    - FILE_API=http://host.docker.internal:5005/file/get
+  # ui_checker:
+  #   build:
+  #     context: ./docker_apps/ui_checker
+  #   command: python3 app.py
+  #   image: triplejays/ui-checker:1.2
+  #   container_name: bxer.ui_checker
+  #   ports:
+  #     - '3006:3006'
+  #   environment:
+  #   - debug_mode=1
+  #   - status_api=http://host.docker.internal:5005/status
+  #   - flask_backend=http://host.docker.internal:5005
+  #   - mongo_url=mongodb://host.docker.internal:27017/
+  #   - s3_url=http://host.docker.internal:4566
+  #   - emulator=host.docker.internal:5555
+  #   - FILE_API=http://host.docker.internal:5005/file/get

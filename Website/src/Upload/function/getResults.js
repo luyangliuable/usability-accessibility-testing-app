@@ -1,6 +1,5 @@
 import AWS from 'aws-sdk';
 
-
 AWS.config.update({
     accessKeyId: process.env.BUCKET_ACCESS_ID || "foo",
     secretAccessKey: process.env.BUCKET_ACCESS_KEY || "bar",

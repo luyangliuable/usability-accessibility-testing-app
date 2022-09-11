@@ -7,6 +7,14 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
     //              Upload apk file to s3 bucket and set uuid              //
     /////////////////////////////////////////////////////////////////////////
 
+    const lookup = {
+        gifdroid: "Gifdroid: Generating an executing trace of the app...",
+        venus: "Ui-checker: Checking ui for assessibility issues...",
+        tappable: "Tappability: Identifying clickable objects...",
+        xbot: "Xbot: Performing accessibility testing of the app...",
+        owleye: "Owleye: Checking for bugs on app displays...",
+    };
+
     // const task_url = process.env.TASK_URL;
     const task_url = "http://localhost:5005/task";
     // const apkUploadUrl = process.env.APK_UPLOAD_URL;
@@ -21,13 +29,6 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
     function postData(i, formData) {
         if (i < algorithmsToComplete.length) {
 
-            const lookup = {
-                gifdroid: "Gifdroid: Generating an executing trace of the app...",
-                venus: "Ui-checker: Checking ui for assessibility issues...",
-                tappable: "Tappability: Identifying clickable objects...",
-                xbot: "Xbot: Performing accessibility testing of the app...",
-                owleye: "Owleye: Checking for bugs on app displays...",
-            };
 
             setTimeout(
                 () => {setObjectState(prev => {
@@ -46,6 +47,7 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
                 console.log(`celery task id is ${data.task_id}.`);
                 getStatus(task_url, data.task_id, objectState, setObjectState, i, formData, postData);
             });
+
         } else {
             setTimeout(
                 () => {setObjectState(prev => {
@@ -55,7 +57,7 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
                         progressBarMessage: "Job finished",
                     };
                 });
-                      }, 500);
+            }, 500);
         }
     };
 
@@ -68,14 +70,7 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
     // Apk file ///////////////////////////////////////////////////////////////
     const apkFile = objectState.algorithmFiles.apkFile;
 
-    // Gif file for gifdroid //////////////////////////////////////////////////
-    // Remove eslint when var is used
-    // eslint-disable-next-line
-    const gifFile = objectState.algorithmFiles.apkFile;
-
     formData.append("apk_file", apkFile);
-
-    formData.append("filename", apkFile.name);
 
     ///////////////////////////////////////////////////////////////////////////
     //                       Scan for additional files                       //
@@ -97,8 +92,6 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
     /////////////////////////////////////////////////////////////////////////
     //                     Call API run storydistiller               //
     /////////////////////////////////////////////////////////////////////////
-
-
 
     uploadApk(formData, apkUploadUrl, setObjectState).then(response => {
 

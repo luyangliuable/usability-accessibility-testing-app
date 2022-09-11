@@ -109,7 +109,6 @@ services:
       - './.localstack:/tmp/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
 
-
   storydistiller:
     build:
       context: ./algorithms/storydistiller/
@@ -141,14 +140,14 @@ services:
       - './algorithms/app/.data:/home/data'
   
   tappability:
-  build:
-    context: ./algorithms/tappability/
-  command: python3 app.py
-  container_name: bxer.tappable
-  ports:
-    - '3007:3007'
-  volumes:
-    - './algorithms/app/.data:/home/data'
+    build:
+      context: ./algorithms/tappability/
+    command: python3 app.py
+    container_name: bxer.tappable
+    ports:
+      - '3007:3007'
+    volumes:
+      - './algorithms/app/.data:/home/data'
 
   gifdroid:
     build:

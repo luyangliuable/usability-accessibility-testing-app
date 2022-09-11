@@ -30,14 +30,38 @@ class DownloadController:
         self.udc = UDContrl(collection_name, json_result_file_parser)
 
 
-    def download(self, uuid, algorithm, name):
-        print(os.path.join(uuid, algorithm ,name))
+    def download(self, uuid, algorithm, type, name):
+        # if algorithm == "gifdroid":
+        #     algorithm = "gifdroid"
+
+        # print(algorithm)
+        # print(os.path.join(uuid, algorithm ,name))
+
+        path = ""
+        output = ""
 
         if algorithm == "gifdroid":
-            algorithm = "report"
-        print(algorithm)
-        print(os.path.join(uuid, algorithm ,name))
+            output = "gifdroid.json"
+            path = os.path.join(uuid, algorithm , output)
+        elif algorithm == "xbot":
+            # For issues type is issues
+            if type == "issues":
+                output = name+".txt"
+                path = os.path.join(uuid, "activity", name, algorithm, type, output)
+            if type == "images":
+                output = name+".png"
+                path = os.path.join(uuid, "activity", name, algorithm, type, output)
+        elif algorithm == "owleye":
+            output = name+".jpg"
+            path = os.path.join(uuid, "activity", name, algorithm, output)
+        elif algorithm == "activity":
+            if type == "images":
+                output = name+".jpg"
+                path = os.path.join(uuid, "activity", name, type, name+".png")
 
-        s3_client.download_file(Bucket='apk-bucket', Key=os.path.join(uuid, algorithm ,name), Filename=name)
+        print("Downloading from", path)
+        print("Filename is", output)
 
-        return name
+        s3_client.download_file(Bucket='apk-bucket', Key=path, Filename=output)
+
+        return output

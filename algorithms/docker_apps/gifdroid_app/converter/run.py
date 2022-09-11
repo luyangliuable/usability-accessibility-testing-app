@@ -44,8 +44,6 @@ def convert_droidbot_to_gifdroid_utg(utg_file=None, events_folder=None, states_f
     # rm .jpg
     target_files = [re.sub("." + droidbot_img_file_type + "\Z", "", each_img_file) for each_img_file in target_files]
 
-    print(target_files)
-
     with tempfile.TemporaryDirectory() as tmp:
         tempdirname = tmp
 
@@ -104,8 +102,6 @@ def convert_droidbot_to_gifdroid_utg(utg_file=None, events_folder=None, states_f
 
     with open('utg.json', 'w') as f:
         json.dump(json_output, f, indent=4)
-
-    print(json_output)
 
     return 0
 

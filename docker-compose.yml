@@ -152,7 +152,7 @@ services:
     ports:
       - '3005:3005'
     environment:
-    - FILE_API=http://host.docker.internal:5005/file/get
+    - FILE_API=http://host.docker.internal:5005/result/get
     - STATUS_API=http://host.docker.internal:5005/status
     - FLASK_BACKEND=http://host.docker.internal:5005
     - MONGO_URL=mongodb://host.docker.internal:27017/

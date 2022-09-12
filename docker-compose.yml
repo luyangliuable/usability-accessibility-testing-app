@@ -109,38 +109,45 @@ services:
       - './.localstack:/tmp/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
 
-
   storydistiller:
     build:
-      context: ./algorithms/docker_apps/storydistiller_app
-    image: trevinwadu/bxer:storydistiller
+      context: ./algorithms/storydistiller/
+    command: python3 app.py
     container_name: bxer.storydistiller
     ports:
       - '3002:3002'
-    environment:
-      - S3_URL=http://host.docker.internal:4566
-      - STORYDISTILLER_EMULATOR=host.docker.internal:5555
+    volumes:
+      - './algorithms/app/.data:/home/data'
 
   xbot:
-    build:
-      context: ./algorithms/docker_apps/xbot_app
-    image: trevinwadu/bxer:xbot
+    build: 
+      context: ./algorithms/xbot/
+    command: python3 app.py
     container_name: bxer.xbot
     ports:
       - '3003:3003'
-    environment:
-      - S3_URL=http://host.docker.internal:4566
-      - XBOT_EMULATOR=host.docker.internal:5557
+    volumes:
+      - './algorithms/app/.data:/home/data'
 
   owleye:
     build:
-      context: ./algorithms/docker_apps/owleye_app
-    image: trevinwadu/bxer:owleye
+      context: ./algorithms/owleye/
+    command: python3 app.py
     container_name: bxer.owleye
     ports:
       - '3004:3004'
-    environment:
-    - S3_URL=http://host.docker.internal:4566
+    volumes:
+      - './algorithms/app/.data:/home/data'
+  
+  tappability:
+    build:
+      context: ./algorithms/tappability/
+    command: python3 app.py
+    container_name: bxer.tappable
+    ports:
+      - '3007:3007'
+    volumes:
+      - './algorithms/app/.data:/home/data'
 
   gifdroid:
     build:
@@ -152,13 +159,15 @@ services:
     ports:
       - '3005:3005'
     environment:
-    - FILE_API=http://host.docker.internal:5005/result/get
+    - FILE_API=http://host.docker.internal:5005/file/get
     - STATUS_API=http://host.docker.internal:5005/status
     - FLASK_BACKEND=http://host.docker.internal:5005
     - MONGO_URL=mongodb://host.docker.internal:27017/
     - S3_URL=http://host.docker.internal:4566
     - EMULATOR=host.docker.internal:5555
     # - DEBUG_MODE=1
+    volumes:
+    - './algorithms/app/.data:/home/data'
 
   # ui_checker:
   #   build:

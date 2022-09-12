@@ -1,7 +1,0 @@
-numpy >=1.20
-pandas >= 1.4
-torch >=1.12
-scikit-image >= 0.18
-matplotlib >= 3.4
-saliency
-torchvision

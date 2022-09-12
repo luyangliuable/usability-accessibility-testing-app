@@ -182,13 +182,13 @@ class ApkDetails:
         # copy screenshots into temp folder convert PNGs to JPEG & get annotations
         img_path = os.path.join(TEMP_PATH,"tappability", "screenshots")
         json_path = os.path.join(TEMP_PATH,"tappability", "annotations")
-        self.__move_files_xb(img_path, json_path, jpg=True)
-        self.__move_files_db(img_path, json_path)
+        self._move_files_xb(img_path, json_path, jpg=True)
+        self._move_files_db(img_path, json_path)
         # run tappability
         tappability = Tappability(img_path, json_path, os.path.join(self.output_dir,"tappability"), threshold=50)
         self.execute_task(tappability)
         # copy results into activity folders
-        self.__get_ui_display_issues(tappability=True)
+        self._get_ui_display_issues(tappability=True)
         return None
     
     def get_execution_trace(self) -> str:

@@ -5,6 +5,7 @@ from resources.resource_types import ResourceType
 T = TypeVar('T')
 
 class ResourceWrapper(Generic[T]):
+    """Class to manage a single APK resource"""
 
     def __init__(self, path : str, origin : str, metadata : T = None):
         self._path = path
@@ -43,6 +44,7 @@ class ResourceGroup(Generic[T]):
         return not done
 
     def get_all_resources(self) -> List[ResourceWrapper[T]]:
+        """get list of resources"""
         return self._resources
     
     

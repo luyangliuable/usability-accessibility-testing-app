@@ -3,15 +3,19 @@ from resources import *
 from typing import List, Callable
 
 class Emulator:
-    """Class to manage emulators
-    When a task requires an emulator it can subscribe to a queue and provide a callback
-    When the emulator is available it will call the next subscriber with the emulator name 
+    """Class to manage queue for using emulators emulators
+    
+    When a task requires an emulator it can subscribe to a queue and provide a callback 
+    When the emulator is available it will notify next subscriber with the emulator name 
     """
     
     def __init__(self, name) -> None:
         self.name = name
         self.is_free = True
         self.subscribers = []
+        
+    def get_name(self) -> str:
+        return self.name
     
     def subscribe(self, subscriber : Callable(str)) -> None:
         """Subscriber for emulator"""

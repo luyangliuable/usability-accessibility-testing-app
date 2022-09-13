@@ -11,6 +11,18 @@ class ResourceWrapper(Generic[T]):
         self._origin = origin
         self._metadata = metadata
 
+    def get_path(self) -> str:
+        return self._path
+    
+    def get_origin(self) -> str:
+        return self._origin
+    
+    def get_metadata(self) -> T:
+        return self._metadata
+
+    def set_metadata(self, metadata):
+        self._metadata = metadata
+
 
 class ResourceGroup(Generic[T]):
 
@@ -21,7 +33,6 @@ class ResourceGroup(Generic[T]):
         self._resources = []
         self._subscribers = []
         self._providers = {}
-
 
     def is_active(self) -> bool:
         done = True
@@ -45,7 +56,7 @@ class ResourceGroup(Generic[T]):
         if not self._validator(self._resources, resource):
             return
         
-        self._providers[resource.origin] = completed
+        self._providers[resource.get_origin()] = completed
         self._resources.append(resource)
 
         ## TODO store dispatched resources in JSON or something and not just memory

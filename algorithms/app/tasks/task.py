@@ -5,8 +5,8 @@ from atexit import register
 import os
 import requests
 from typing import TypeVar, Generic, List, Callable, Dict
-from resources.resource import ResourceGroup, ResourceWrapper
-from resources.resource_types import ResourceType
+from resources.resource import ResourceGroup
+from resources.resource import ResourceType
 
 class TaskMetaclass(type):
     def __new__(meta, name, bases, attrs):

@@ -39,6 +39,3 @@ class ApkAnalysis:
         # TODO create resource groups
         pass
             
-    def _get_tasks(self) -> None:
-        # TODO get tasks from TaskFactory
-        pass

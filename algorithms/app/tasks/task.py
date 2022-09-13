@@ -1,13 +1,12 @@
 from venv import create
-from resources.resource import resource, resource_types 
 from abc import ABC, abstractmethod
 from atexit import register
 import os
 import requests
 
 from typing import TypeVar, Generic, List, Callable, Dict
-from resources.resource import ResourceGroup, ResourceWrapper
-from resources.resource_types import ResourceType
+from resources.resource import ResourceGroup
+from resources.resource import ResourceType
 
 class TaskMetaclass(type):
     def __new__(meta, name, bases, attrs):
@@ -60,11 +59,12 @@ class TaskFactory:
 class Task(ABC, metaclass=TaskMetaclass):
     """Class to manage an algorithm."""
     
-    def __init__(self) -> None:
+    def __init__(self, output_dir, resource_dict) -> None:
         super().__init__()
-        ##self.output_dir = output_dir
-        ##if not os.path.exists(self.output_dir):
-        ##    os.makedirs(self.output_dir)
+        self.output_dir = output_dir
+        if not os.path.exists(self.output_dir):
+           os.makedirs(self.output_dir)
+        self.resource_dict = resource_dict
         
 
     @abstractmethod

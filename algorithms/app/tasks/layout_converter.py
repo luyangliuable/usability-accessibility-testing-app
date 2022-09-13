@@ -1,25 +1,70 @@
-from tasks.task import Task
 import re
 import json
 import xmltodict
+import os
+from tasks.task import Task
+from resources.resource import ResourceGroup, ResourceWrapper
 
 class LayoutConverter(Task):
-    def __init__(self, xml_path, json_path):
-        self.xml_path = xml_path
-        self.json_path = json_path
+    def __init__(self, output_dir, dict):
+        super.__init__()
+        self.output_dir = output_dir
+        self.dict = dict
 
-    def __update_list(self, json_children):
+
+    @classmethod
+    def get_name() -> str:
+        return LayoutConverter.__name__
+
+
+    @classmethod
+    def get_input_types(self) -> str:
+        return "XML_LAYOUT"
+
+
+    @classmethod
+    def get_output_types(self) -> str:
+        return "JSON_LAYOUT"
+
+
+    def execute(self):
+        item_lst = self.dict["XML_LAYOUT"].get_all_resources()
+        
+        for item in item_lst:
+
+            #convert xml to json
+            path = item.get_path()
+            item_json = json.loads(item.get_metadata())
+            activity_name = item_json["activity_name"]
+            out_path = os.path.join(self.output_dir, activity_name + ".json")
+            self._convert_xml_to_json(path, out_path)
+
+            #update existing metadata
+            item_json["json_path"] = out_path
+            item.set_metadata(item_json)
+
+            #add new resource wrapper
+            metadata = {
+                "activity_name" : activity_name,
+                "xml_path" : path
+            }
+            resource = ResourceWrapper(out_path, item.get_origin(), json.dumps(metadata))
+            rg = ResourceGroup(self.get_output_types(), None)
+            rg.dispatch(resource, False)
+
+
+    def _update_list(self, json_children):
         """
         Loops through list of children and calls update on individual dictionary
         """
         out = []
         for child in json_children:
-            child_out = self.__update_dict(child)
+            child_out = self._update_dict(child)
             out.append(child_out)
         return out
 
 
-    def __update_dict(self, child):
+    def _update_dict(self, child):
         """
         Updates json file for dictionary item and children. Renames keys, change type of values and format null. 
         """
@@ -36,9 +81,9 @@ class LayoutConverter(Task):
                     else:
                         child["child_count"] = 1
                     if child["child_count"] > 1:
-                        child["children"] = self.__update_list(child["children"])
+                        child["children"] = self._update_list(child["children"])
                     else:
-                        child["children"] = self.__update_dict(child["children"])
+                        child["children"] = self._update_dict(child["children"])
                 elif key =="bounds":
                     re_text = r"\[(\d*?),(\d*?)\]\[(\d*?),(\d*?)\]"
                     bounds_out = re.findall(re_text, val)[0]
@@ -61,16 +106,17 @@ class LayoutConverter(Task):
                     child[key] = None
         return child
 
-    def __node_list(self, a, final, counter):
+
+    def _node_list(self, a, final, counter):
         if "children" in a:
             out = []
             if type(a["children"])==list:
                 for child in a["children"]:
-                    final, counter= self.__node_list(child.copy(), final.copy(), counter)
+                    final, counter= self._node_list(child.copy(), final.copy(), counter)
                     out.append(counter)
                     counter +=1
             else:
-                final, counter= self.__node_list(a["children"].copy(), final.copy(), counter)
+                final, counter= self._node_list(a["children"].copy(), final.copy(), counter)
                 out.append(counter)
                 counter +=1
             a["children"] = out.copy()
@@ -78,24 +124,24 @@ class LayoutConverter(Task):
         return final, counter
 
 
-    def convert_xml_to_json(self):
+    def _convert_xml_to_json(self, xml_path, json_path):
         """
         Converts storydistiller xml file to json format
         """
-        with open(self.xml_path) as xml_file:
+        with open(xml_path) as xml_file:
             data_dict = xmltodict.parse(xml_file.read(),attr_prefix='')
             data_node = data_dict["hierarchy"]["node"]
 
-        json_file_updated= self.__update_dict(data_node)
+        json_file_updated= self._update_dict(data_node)
 
         final = []
         counter = 0
-        json_node_out, _= self.__node_list(json_file_updated, final, counter)
+        json_node_out, _= self._node_list(json_file_updated, final, counter)
 
         views_out = {"views": json_node_out}
 
         json_str = json.dumps(views_out, indent=4)
 
-        json_out = open(self.json_path, "w+")
+        json_out = open(json_path, "w+")
         json_out.write(json_str)
         json_out.close()

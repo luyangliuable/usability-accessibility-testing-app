@@ -2,6 +2,7 @@ import mimetypes
 from download_parsers.strategy import Strategy
 import os
 from typing import List
+import copy
 
 class gifdroidJsonParser(Strategy):
 
@@ -20,10 +21,10 @@ class gifdroidJsonParser(Strategy):
         if type( file ) != list: raise ValueError("file must be a list")
 
         res = [{} for _ in range(len(file))]
-        print(name)
+
+        tmp = gifdroidJsonParser.gifdroid_result_file_json_format
 
         for i in range(len(file)):
-            tmp = gifdroidJsonParser.gifdroid_result_file_json_format
 
             tmp['link'] = file[i]
             tmp['name'] = name[i]
@@ -33,8 +34,12 @@ class gifdroidJsonParser(Strategy):
 
             # TODO when files are stored in algorithm folders change this to:
             # tmp['s3_key'] = os.path.join(uuid, apl_algorithm, file[i])
-            tmp['s3_key'] = os.path.join(uuid, name[i])
+            folder_name = "report"
+            tmp['s3_key'] = os.path.join(uuid, folder_name, name[i])
 
-            res[i] = tmp
+            res[i] = copy.deepcopy(tmp)
 
+
+        print(res)
         return res
+

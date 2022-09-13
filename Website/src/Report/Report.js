@@ -147,6 +147,7 @@ const Report = () => {
             </Carousel.Item>
           </Carousel>
         </div>
+      <GifdroidResult uuid={uuid}/>
       </div>
     </Container>
   );

@@ -52,37 +52,68 @@ class AlgorithmStatusController():
         self._db = DBManager.instance()
         self.c = self._db.get_collection(collection_name)
 
-        # self._strategy = json_result_file_parser
-        # self._json_result_file_parser = json_result_file_parser
 
-
-    # def strategy(self, strategy: Strategy) -> None:
-    #     """
-    #     Usually, the Context allows replacing a Strategy object at runtime.
-    #     """
-
-    #     self._strategy = strategy
-
-
-    def get_algorithm_status(self, uuid: str):
+    def get_all_algorithm_status(self, uuid: str):
 
         # Get document ################################################################
         d = self._db.get_document(uuid, self.c)
 
-        try:
-            d = d[0]
-
-            # Get status ##################################################################
-            s = d['algorithm_status']
-        except Exception as e:
-            print(e)
-            # exit(1)
-        else:
-            return s
+        # Get status ##################################################################
+        s = d['algorithm_status']
+        return s
 
 
-    def get_colletion(self):
+    def decalare_apk_name_in_status(self, uuid: str, apk_name: str):
+        d = self._db.get_document(uuid, self.c)
+
+        algorithm_status_key = 'algorithm_status'
+
+        for _, item in d[algorithm_status_key].items():
+            item['apk']= apk_name
+
+        self._db.update_document(uuid, self.c, algorithm_status_key, d[algorithm_status_key])
+
+        return d[ algorithm_status_key ]
+
+
+    def get_job_status(self, uuid: str):
+        # Get document ################################################################
+        d = self._db.get_document(uuid, self.c)
+
+        # Get status ##################################################################
+        status = d['status']
+
+        return status
+
+
+    def update_job_status(self, uuid: str, status: str):
+        # Get document ################################################################
+        d = self._db.get_document(uuid, self.c)
+
+        # Get status ##################################################################
+
+        self._db.update_document(uuid, self.c, 'status', status)
+
+        return True
+
+
+    def get_collection(self):
         return self.c
+
+
+    def update_algorthm_status_apk_file_name(self, uuid: str, algorithm: str, status: str):
+
+        key = "apk"
+
+        return self.update_algorithm_status_attribute(uuid, algorithm, key, status)
+
+
+    def get_specific_algorithm_status(self, uuid: str, algorithm: str):
+        all_algorithm_status = self.get_all_algorithm_status(uuid)
+
+        specific_algorithm_status = all_algorithm_status[algorithm]
+
+        return specific_algorithm_status
 
 
     def update_algorithm_status_attribute(self, uuid: str, algorithm: str, key: str, val):
@@ -123,9 +154,6 @@ class AlgorithmStatusController():
             print(e)
         else:
             return status
-
-
-
 
 
 if __name__ == "__main__":

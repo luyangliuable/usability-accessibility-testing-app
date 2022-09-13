@@ -58,17 +58,18 @@ class TestFileCtr(unittest.TestCase):
 
     def test_insert_result_into_algorithm_result(self):
         result = ["google.com.aubdasdas", "finally_got_something.org.au"]
+        names = ["google", "finally_got_something"]
 
-        expected = {'images': [{'name': 'finally_got_something.org.au', 'type': 'audio/basic', 's3_bucket': 'apk', 's3_key': os.path.join(self.uuid, 'finally_got_something.org.au' )}, {'name': 'finally_got_something.org.au', 'type': 'audio/basic', 's3_bucket': 'apk', 's3_key': os.path.join(self.uuid, "finally_got_something.org.au" )}], 'json': {'name': '', 'data': '', 's3_bucket': '', 's3_key': ''}}
+        expected = {'images': [{'name': 'google', 'link': 'google.com.aubdasdas', 'type': 'None', 's3_bucket': 'apk', 's3_key': os.path.join(self.uuid, 'report', 'google')}, {'name': 'finally_got_something', 'link': 'finally_got_something.org.au', 'type': 'None', 's3_bucket': 'apk', 's3_key': os.path.join(self.uuid, 'report', 'finally_got_something')}], 'json': []}
 
-        self.fc.insert_algorithm_result(self.uuid, 'gifdroid', result, 'images')
+        self.fc.insert_algorithm_result(self.uuid, 'gifdroid', result, 'images', names)
 
         r = self.db.get_document(self.uuid, self.tc)
 
         write_to_view("view.txt", r['results']['gifdroid'])
-        write_to_view("view1.txt", result)
+        write_to_view("view1.txt", expected)
 
-        self.assertEqual(r['results']['gifdroid']['images'], expected['images'])
+        self.assertEqual(r['results']['gifdroid'], expected)
 
 
 ###############################################################################

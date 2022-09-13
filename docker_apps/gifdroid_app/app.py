@@ -40,11 +40,11 @@ EMULATOR = os.environ.get( "EMULATOR" )
 if EMULATOR == None:
     EMULATOR = config['EMULATOR']
 
+flask_backend = os.environ.get( "FLASK_BACKEND" )
 
 ###############################################################################
 #                                Set up AWS S3                                #
 ###############################################################################
-
 
 boto3.setup_default_session(profile_name=config[ 'AWS_PROFILE' ])
 s3_client = boto3.client(
@@ -54,18 +54,8 @@ s3_client = boto3.client(
 )
 
 
-###############################################################################
-#                              Connect to mongodb                             #
-###############################################################################
-try:
-    connection = pymongo.MongoClient(os.environ.get("MONGO_URL"))
-    _db = connection.fit3170
-    connection.server_info()  # Triger exception if connection fails to the database
-except Exception as ex:
-    print('failed to connect GIFDROID', ex)
-else:
-    print("Successfully connected to mongodb. GifDroid")
-
+result_bucket_folder = "report"
+apk_bucket_folder = "apk"
 
 @app.route("/new_job", methods=["POST"])
 def send_uid_and_signal_run():
@@ -89,7 +79,7 @@ def send_uid_and_signal_run():
 
         return jsonify( {"result": "SUCCESS"} ), 200
 
-    return "No HTTP POST method received"
+    return "No HTTP POST method received", 400
 
 def _service_execute_droidbot(uuid):
     """
@@ -106,10 +96,11 @@ def _service_execute_droidbot(uuid):
     ###############################################################################
     print("[1] Getting session information")
 
-    data = requests.get(file_api, headers={'Content-Type': 'application/json'},  data=json.dumps( {'uuid': uuid} )).json()
+    OUTPUT_DIR = os.path.join( tempfile.gettempdir(), uuid )
+    get_file_url = os.path.join(file_api,  uuid)
+    data = requests.get(get_file_url, headers={'Content-Type': 'application/json'}).json()
 
     # Apk has an Array/List of apk files ##########################################
-    print(data)
     apk_filename = data['apk']['name']
 
     ############################################################################
@@ -123,18 +114,19 @@ def _service_execute_droidbot(uuid):
 
     s3_client.download_file(
         Bucket='apk-bucket',
-        Key=path.join(uuid, apk_filename),
+        Key=path.join(uuid, apk_bucket_folder, apk_filename),
         Filename = target_apk
     )
 
-    OUTPUT_DIR = "./"
 
     ############################################################################
     #                      Run program with downloaded apk                     #
     ############################################################################
     print("[3] Running Droidbot app")
     os.chdir("/home/droidbot")
+
     subprocess.run([ "adb", "connect", EMULATOR])
+
     subprocess.run([ "droidbot", "-count", config[ "NUM_OF_EVENT" ], "-a", target_apk, "-o", OUTPUT_DIR])
 
     ###############################################################################
@@ -143,14 +135,8 @@ def _service_execute_droidbot(uuid):
     print("[4] Saving utg.js file to bucket.")
     enforce_bucket_existance([config[ "BUCKET_NAME" ], "storydistiller-bucket", "xbot-bucket"])
 
-    # #Upload events folder
-    # upload_directory("events", config["BUCKET_NAME"])
-
-    #Upload states folder
-    # upload_directory("states", config["BUCKET_NAME"], uuid)
-
     # Upload utg
-    s3_client.upload_file(config[ "DEFAULT_UTG_FILENAME" ], config[ 'BUCKET_NAME' ], os.path.join(uuid, config[ "DEFAULT_UTG_FILENAME" ]))
+    # s3_client.upload_file(config[ "DEFAULT_UTG_FILENAME" ], config[ 'BUCKET_NAME' ], os.path.join(uuid, config[ "DEFAULT_UTG_FILENAME" ]))
 
     ###############################################################################
     #                                Update mongodb                               #
@@ -159,20 +145,11 @@ def _service_execute_droidbot(uuid):
     print("[5] Updating database for traceability of utg file")
     print("Saving into entry", uuid)
 
-    _db.apk.update_one(
-        {
-            "uuid": uuid
-        },
-        {
-            "$set": {
-                "utg_files": config["DEFAULT_UTG_FILENAME"]
-            }
-        }
-    )
-
 
 def _service_execute_gifdroid(uuid):
     # retrieve utg file name from mongodb
+
+    OUTPUT_DIR = os.path.join( tempfile.gettempdir(), uuid )
 
     ###############################################################################
     #                        Get utg filename from mongodb                        #
@@ -184,7 +161,11 @@ def _service_execute_gifdroid(uuid):
     ###############################################################################
     #                        Convert utg to correct format                        #
     ###############################################################################
-    convert_droidbot_to_gifdroid_utg(os.path.join("/home/droidbot", config['DEFAULT_UTG_FILENAME']),"/home/droidbot/events", "/home/droidbot/states")
+    utg = os.path.join(OUTPUT_DIR, config['DEFAULT_UTG_FILENAME'])
+    events = os.path.join(OUTPUT_DIR, "events" )
+    states = os.path.join(OUTPUT_DIR, "states")
+
+    convert_droidbot_to_gifdroid_utg(utg, events, states)
 
     ###############################################################################
     #                          Get gif file from frontend                         #
@@ -193,18 +174,9 @@ def _service_execute_gifdroid(uuid):
 
     headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
 
-    response = requests.get("http://host.docker.internal:5005/file/get", data=json.dumps( {"uuid": uuid} ), headers=headers)
+    get_file_url = os.path.join(file_api, uuid)
 
-    ###############################################################################
-    #                          Upload image result files                          #
-    ###############################################################################
-    result_img_file_type = "png"
-    result_type = "images"
-    image_output = "../droidbot/output"
-    result_img_files = file_order_sorter(image_output, result_img_file_type)
-    upload_directory(image_output, config["BUCKET_NAME"], uuid)
-    download_links = [ os.path.join( "http://localhost:5005", "download_result", uuid, "gifdroid") + "/" + file for file in result_img_files ]
-    insert_result(uuid, download_links, 'images', result_img_files)
+    response = requests.get(get_file_url, headers=headers)
 
     lookup = response.json()
 
@@ -212,9 +184,22 @@ def _service_execute_gifdroid(uuid):
         if item['algorithm'] == 'gifdroid':
             gif_file = item['name']
 
+    ###############################################################################
+    #                          Upload image result files                          #
+    ###############################################################################
+    result_img_file_type = "png"
+    image_output = "../droidbot/output"
+    result_img_files = file_order_sorter(image_output, result_img_file_type)
+
+    upload_directory(image_output, config["BUCKET_NAME"], uuid)
+
+    download_links = [ os.path.join( "http://localhost:5005", "download_result", uuid, result_bucket_folder) + "/" + file for file in result_img_files ]
+
+    insert_result(uuid, download_links, 'images', result_img_files)
+
     s3_client.download_file(
         Bucket=config["BUCKET_NAME"],
-        Key=path.join(uuid, gif_file),
+        Key=path.join(uuid, "additional_upload", gif_file),
         Filename = gif_file
     )
 
@@ -229,17 +214,19 @@ def _service_execute_gifdroid(uuid):
     enforce_bucket_existance([config[ "BUCKET_NAME" ], "storydistiller-bucket", "xbot-bucket"])
 
     print("[4] Uploading json file to bucket")
-    s3_client.upload_file(config[ "OUTPUT_FILE" ], config[ 'BUCKET_NAME' ], os.path.join(uuid, config[ "OUTPUT_FILE" ] ))
+    s3_client.upload_file(
+        config[ "OUTPUT_FILE" ],
+        config[ 'BUCKET_NAME' ],
+        os.path.join(uuid, result_bucket_folder, config[ "OUTPUT_FILE" ] )
+    )
 
     ###############################################################################
     #                            mongo: Update mongodb                            #
     ###############################################################################
     print("[5] Updating mongodb for traceability")
 
-    type = 'json'
-
     # Download images doesn't need to know the type of file. Just need to identify the file
-    download_link = os.path.join( "http://localhost:5005", "download_result", uuid, "gifdroid") + "/" + config['BUCKET_NAME']
+    download_link = os.path.join( "http://localhost:5005", "download_result", uuid, "report") + "/" + config['OUTPUT_FILE']
 
     insert_result(uuid, [download_link], 'json', [config['OUTPUT_FILE']])
 
@@ -267,9 +254,8 @@ def bytes_to_json(byte_str: bytes):
 def upload_directory(path, bucketname, uuid):
     for root, _, files in os.walk(path):
         for file in files:
-            key = os.path.join(uuid, file)
+            key = os.path.join(uuid, result_bucket_folder, file)
 
-            # s3_client.upload_file(os.path.join(root,file), key, file)
             s3_client.upload_file(os.path.join(root, file), bucketname, key)
 
 
@@ -291,8 +277,6 @@ def update_status(uuid: str, status: str):
     }
 
     res = requests.post(request_url, headers={'Content-Type': 'application/json'}, data=json.dumps(data))
-    print(request_url)
-    print(res.content)
 
     return res
 
@@ -309,8 +293,6 @@ def insert_result(uuid, result_files: list, type: str, file_names: list):
     }
 
     res = requests.post(request_url, headers={'Content-Type': 'application/json'}, data=json.dumps(data))
-    print(request_url)
-    print(res.content)
 
     return res
 

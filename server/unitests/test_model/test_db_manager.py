@@ -52,19 +52,19 @@ class Test_Db_Manager(unittest.TestCase):
         self.assertEqual(str( res ), str( format ))
 
 
-    def test_get_format(self):
-        val = DBManager.get_format(self.uuid)
+    # def test_get_format(self):
+    #     val = DBManager.get_format(self.uuid)
 
-        val.pop('date')
-        val.pop('uuid')
+    #     val.pop('date')
+    #     val.pop('uuid')
 
-        with open("../../models/document_format.json", "w") as f:
-            expected = json.load(f)
+    #     with open("../../models/document_format.json", "w") as f:
+    #         expected = json.load(f)
 
-        expected.pop('date')
-        expected.pop('uuid')
+    #     expected.pop('date')
+    #     expected.pop('uuid')
 
-        self.assertEqual(expected, val) 
+    #     self.assertEqual(expected, val) 
 
 
     def test_update_d(self):

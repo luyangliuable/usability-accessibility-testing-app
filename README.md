@@ -1,12 +1,18 @@
 # FIT3170 Usability Accessibility Testing App
 
 **Table of Contents**
+
+<!-- markdown-toc start - Don't edit this section. Run M-x markdown-toc-refresh-toc -->
+**Table of Contents**
 <!-- TOC -->
 
 - [FIT3170 Usability Accessibility Testing App](#fit3170-usability-accessibility-testing-app)
     - [Introduction](#introduction)
-        - [Current Team members](#current-team-members)
     - [Usage](#usage)
+        - [Prerequisites](#prerequisites)
+            - [Note](#note)
+        - [How to run app](#how-to-run-app)
+        - [Current Team members](#current-team-members)
         - [Gifdroid](#gifdroid)
         - [Owleye](#owleye)
         - [StoryDistiller](#storydistiller)
@@ -21,11 +27,49 @@
         - [Algorithm Papers](#algorithm-papers)
         - [Related Git Repositories](#related-git-repositories)
 
-<!-- /TOC -->
+<!-- markdown-toc end -->
 
 ## Introduction
+This application was built as part of a university project to develop a toolkit that would allow for the automatic testing of **usability and accessibility of target Android apps**. The purpose of this project is to allow developers to further improve their applications by addressing possible accessibility and usability flaws. This application utilises algorithms from previous research projects, some with initial source code and prototypes, and integrates them for more detailed output.
 
-This application was built as part of a university project to develop a toolkit that would allow for the automatic testing of **usability and accessibility of target Android apps**. The purpose of this project is to allow developers to further improve their applications by addressing possible accessibility and usability flaws. This application utilises algorithms from previous research projects, some with initial source code and prototypes, and integrates them for more detailed output. 
+## Usage
+
+Given an APK file, the app automatically explores all the different screens and, through the implementation of accessibility algorithms [2, 3, 4, 5], outputs accessibility and usability issues found. The website also has a login functionality that allows users to store and revisit their results.
+
+### Prerequisites
+* Docker
+    * [mac os](https://docs.docker.com/desktop/install/mac-install/)
+    * [mac os w/ m1 chip](https://desktop.docker.com/mac/main/arm64/Docker.dmg?utm_source=docker&utm_medium=webreferral&utm_campaign=docs-driven-download-mac-arm64)
+    * [windows](https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe)
+
+
+* Docker-compose
+    * mac os
+    ```bash
+        brew install docker-compose
+    ```
+
+    * [windows](https://docs.docker.com/compose/install/)
+
+#### Note
+* Ensure port 3001-3006 and 5005 is not taken
+* No instance of redis or mongodb should be running already on your local environment
+
+
+### How to run app
+1. Go into project directory
+2. build
+
+```bash
+docker-compose build
+```
+3. run
+```bash
+docker-compose up --build
+```
+
+4. Navigate to http://127.0.0.1:3001/
+
 
 ### Current Team members
 
@@ -41,28 +85,24 @@ Mark Diedericks
 Trevin Dilhan Wadugodapitiya
 Zhongxun Pan
 
-## Usage 
-
-Given an APK file, the app automatically explores all the different screens and, through the implementation of accessibility algorithms [2, 3, 4, 5], outputs accessibility and usability issues found. The website also has a login functionality that allows users to store and revisit their results. 
 
 ### Gifdroid
-Gifdroid is an image-processing algorithm which generates a UTG from a video input and apk file. 
-### Owleye 
-OwlEye is a tool which automatically detects and localizes UI display issues in the screenshots of the application under test.
+### Owleye
 ### StoryDistiller
 StoryDistiller automatically generates the storyboard for an application with rich kinds of features through reverse engineering, and assists different roles to review and analyze apps efficiently.
 ### Xbot
 Xbot is a page exploration tool which outputs a file of accessibility issues. 
 ### Tappable/Tapshoe
-Tappable explores how tappable a button is perceived by a user. Given an image and .xml file, the model will output a heatmap and tappability rating on clickable objects that the model perceives as untappable. 
+Tappable explores how tappable a button is perceived by a user. Given an image and .xml file, the model will output a heatmap and tappability rating on clickable objects that the model perceives as untappable. The model is a modified ResNet18 which accepts the input image and a binary mask of the tappable object.
+
 ### Venus
 Venus explores accessibility issues in an application and requires a .dl file and produces a .csv document. 
 
-## Pre-requisites 
+## Pre-requisites
 
 ## Environment & Setup
 
-## Running the application 
+## Running the application
 
 ## Known Issues
 
@@ -83,4 +123,3 @@ https://github.com/MulongXie/UIED <br>
 https://github.com/chenjshnn/WAE <br>
 https://github.com/GUIDesignResearch/GUIGAN <br>
 https://github.com/budtmo/docker-android
-

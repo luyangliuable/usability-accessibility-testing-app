@@ -29,32 +29,15 @@ class DownloadController:
         self.cn = collection_name
         self.udc = UDContrl(collection_name, json_result_file_parser)
 
-    def download(self,uuid, algorithm, name):
 
-        # data = {'uuid': uuid}
-        # headers = {'Content-type': 'application/json', 'Accept': 'text/plain'}
+    def download(self, uuid, algorithm, name):
+        print(os.path.join(uuid, algorithm ,name))
 
-        # response = requests.get('http://docker.host.internal:5005/file/get', data=json.dumps( data ), headers=headers)
-        # lookup = get_document(uuid)[0]
-        # lookup = self.udc.get_document(uuid)
+        if algorithm == "gifdroid":
+            algorithm = "report"
+        print(algorithm)
+        print(os.path.join(uuid, algorithm ,name))
 
-        # print(algorithm)
-
-        print("attempting to get file from bucket location", os.path.join(uuid, name), "for download" )
-
-        ###############################################################################
-        #      If the file is json just respond with json instead of sendinf file     #
-        ###############################################################################
-        # try:
-        #     result_file_from_algorithm = [o for o in lookup['results'][algorithm][type] if o['name'] == name][0]
-        # except:
-        #     raise IndexError("File is not stored")
-
-        ###############################################################################
-        #                        TODO Update more buckets here                        #
-        ###############################################################################
-
-
-        s3_client.download_file(Bucket='apk-bucket', Key=os.path.join(uuid, name), Filename=name)
+        s3_client.download_file(Bucket='apk-bucket', Key=os.path.join(uuid, algorithm ,name), Filename=name)
 
         return name

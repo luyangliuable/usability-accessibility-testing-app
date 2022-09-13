@@ -29,7 +29,7 @@ export function getStatus(task_url, task_id, objectState, setObjectState, i, for
                   setObjectState(prev => {
                       return {
                           ...prev,
-                          algorithmsComplete: prev.algorithmsComplete + 1,
+                          algorithmsComplete: prev.algorithmsComplete,
                           buttonState: false,
                           buttonValue: "Upload again",
                           progressBarMessage: newProgressBarMessage
@@ -58,7 +58,7 @@ export function getStatus(task_url, task_id, objectState, setObjectState, i, for
               /////////////////////////////////////////////////////////////////////////
               setTimeout(function() {
                   getStatus(task_url, task_id, objectState, setObjectState, i, formData, callback);
-              }, 1000);
+              }, 4800);
           });
 
 

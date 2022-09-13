@@ -1,8 +1,10 @@
 import os
 import sys
+import json
 import uuid
 import inspect
 import unittest
+
 
 ###############################################################################
 #                              relative importing                             #
@@ -12,25 +14,36 @@ currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentfram
 parentdir = os.path.dirname(os.path.dirname(currentdir))
 sys.path.insert(0, parentdir)
 
-# relative import ends ########################################################
-# from controllers.algorithm_status_controller import algorithm_status_controller as asc
-from controllers.download_controller import DownloadController
 from download_parsers.gifdroid_json_parser import gifdroidJsonParser
-from models.DBManager import *
+from models.DBManager import DBManager
 
-class TestDownloadCtrl(unittest.TestCase):
+# relative import ends ########################################################
+
+class Test_GifDDroid_Parser(unittest.TestCase):
     def setUp(self):
-        self.uuid = "57730388-de61-45c1-8098-d449491004ec"
-        self.algorithm = "report"
-        self.tc = "test"
-        self.d_ctrl = DownloadController(self.tc, gifdroidJsonParser)
+        self.db = DBManager.instance()
+        # Test collection
+        self.tcn = "test"
+        self.tc = self.db.create_collection(self.tcn)
+
+        # Test document
+        self.uuid = unique_id_generator()
+        format = DBManager.get_format(self.uuid)
+
+        self.td = self.db.insert_document(format, self.tc)
 
 
-    # def test_file_downloaded(self):
-    #     res = self.d_ctrl.download(self.uuid, "report" , "file.apk")
+    def test_gifdroid_parser(self):
+        p = gifdroidJsonParser
+        uuid = self.uuid
 
-    #     write_to_view("view.txt", res)
+        expected = [{'name': 'fa', 'link': 'a', 'type': 'None', 's3_bucket': 'apk', 's3_key': uuid + '/report' + '/fa'}, {'name': 'fb', 'link': 'b', 'type': 'None', 's3_bucket': 'apk', 's3_key': uuid + '/report' + '/fb'}, {'name': 'fc', 'link': 'c', 'type': 'None', 's3_bucket': 'apk', 's3_key': uuid + '/report' + '/fc'}]
 
+        res = p.do_algorithm(self.uuid, ['a', 'b', 'c'], ['fa', 'fb', 'fc'])
+
+        write_to_view("view.txt", res)
+
+        self.assertEqual(res, expected)
 
 ###############################################################################
 #                              Untility functions                             #
@@ -43,7 +56,6 @@ def write_to_view(filename: str, content):
     with open(filename, "w") as f:
         f.write(str(content))
 
-
 def unique_id_generator() -> str:
     res = str( uuid.uuid4() )
     return res
@@ -51,7 +63,7 @@ def unique_id_generator() -> str:
 
 def main():
     # Create a test suit
-    suit = unittest.TestLoader().loadTestsFromTestCase(TestDownloadCtrl)
+    suit = unittest.TestLoader().loadTestsFromTestCase(Test_GifDDroid_Parser)
     # Run the test suit
     unittest.TextTestRunner(verbosity=2).run(suit)
 

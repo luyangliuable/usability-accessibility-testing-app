@@ -2,10 +2,8 @@ from flask import Blueprint, request, jsonify
 from controllers.update_document_controller import UpdateDocumentController
 from download_parsers.gifdroid_json_parser import gifdroidJsonParser
 from flask_cors import cross_origin
-import datetime
-import json
-import uuid
-
+from utility.safe_serialise import safe_serialize
+from utility.uuid_generator import unique_id_generator
 
 ###############################################################################
 #                            Set Up Flask Blueprint                           #
@@ -61,7 +59,6 @@ def result_add(uuid, algorithm):
         #                             Get the files array                             #
         ###############################################################################
         # Assume request json looks like this
-
         # example = {
         #     "files": ["{files}"],
         #     "type": "type"
@@ -82,69 +79,34 @@ def result_add(uuid, algorithm):
 
 
 
-@update_document_blueprint.route("/file/add", methods=['GET', "POST"])
-@cross_origin()
-def add_documment():
-    if request.method == "POST":
-        try:
-            ###############################################################################
-            #                         Add file metadata to mongodb                        #
-            ###############################################################################
+# @update_document_blueprint.route("/file/add", methods=['GET', "POST"])
+# @cross_origin()
+# def add_documment():
+#     if request.method == "POST":
+#         try:
+#             ###############################################################################
+#             #                         Add file metadata to mongodb                 #
+#             ###############################################################################
 
-            collection = "apk"
-            document = data
+#             document = data
 
-            for each_key, _ in document.items():
-                document[each_key] = request.args.get(each_key)
+#             for each_key, _ in document.items():
+#                 document[each_key] = request.args.get(each_key)
 
-            document['uuid'] = unique_id_generator()
-            print(document)
+#             document['uuid'] = unique_id_generator()
+#             print(document)
 
-            mongo.insert_document(document, mongo.get_collection('apk')).inserted_id
+#             mongo.insert_document(document, mongo.get_collection('apk')).inserted_id
 
-            return document['uuid'], 200
-        except Exception as e:
-            ###############################################################################
-            #                                Error Handling                               #
-            ###############################################################################
-            return str(e), 400
-
-
-    return "Not a valid request", 400
-
-###############################################################################
-#                    TODO Add file for updating a document                    #
-###############################################################################
-
-# def update_one():
-#     _db.apk.update_one(
-#         {
-#             "uuid": uuid
-#         },
-#         {
-#             "$set": {
-#                 "utg_files": config["DEFAULT_UTG_FILENAME"]
-#             }
-#         }
-#     )
-
-###############################################################################
-#                  TODO add method file getting one document                  #
-###############################################################################
+#             return document['uuid'], 200
+#         except Exception as e:
+#             ###############################################################################
+#             #                                Error Handling                       #
+#             ###############################################################################
+#             return str(e), 400
 
 
-###############################################################################
-#                              Utility Functions                              #
-###############################################################################
-def safe_serialize(obj):
-    default = lambda o: f"<<non-serializable: {type(o).__qualname__}>>"
-    res = json.dumps(obj, default=default)
-
-    return res
-
-def unique_id_generator():
-    res = str( uuid.uuid4() )
-    return res
+#     return "Not a valid request", 400
 
 
 if __name__ == "__main__":

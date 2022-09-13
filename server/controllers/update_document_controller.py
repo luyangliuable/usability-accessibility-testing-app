@@ -72,10 +72,6 @@ class UpdateDocumentController:
 
         # Change document and insert result link ######################################
         prev = result[self.lookup[algorithm]][result_type]
-        print(file_names)
-        print(file_names)
-        print(file_names)
-        print(file_names)
         tmp = self._strategy.do_algorithm(uuid, links_to_res, file_names)
         print(tmp)
 
@@ -108,7 +104,7 @@ class UpdateDocumentController:
         return result
 
 
-    def add_document(self, request_parameters: list):
+    def add_document(self, request_parameters: list, document):
         """
         Add file metadata that matches the job uuid
 
@@ -121,8 +117,6 @@ class UpdateDocumentController:
             ###############################################################################
             #                         Add file metadata to mongodb                        #
             ###############################################################################
-
-            document = data
 
             for each_key, _ in document.items():
                 document[each_key] = request_parameters.get(each_key)

@@ -1,12 +1,12 @@
-requests
+requests==2.28.1
 flask
 flask_cors
-boto3
-pymongo
+boto3==1.24.59
 bson
+pymongo==4.2.0
 celery==4.4.7
 redis==3.5.3
-python-dotenv
+# python-dotenv
 # fastapi==0.78.0
 # flower==0.9.7
 # Pillow==9.1.1

@@ -31,8 +31,7 @@ class ResourceGroup(Generic[T]):
         self._validator = validate
 
         self._resources = []
-
-        self._subscribers = List[ Callable[[ResourceWrapper[T]], bool] ]
+        self._subscribers = []
         self._providers = {}
 
     def is_active(self) -> bool:
@@ -43,15 +42,18 @@ class ResourceGroup(Generic[T]):
 
         return not done
 
-    def get_all_resources(self):
+    def get_all_resources(self) -> List[ResourceWrapper[T]]:
         return self._resources
-
+    
+    
     def subscribe(self, callback : Callable[[ResourceWrapper[T]], bool]) -> None:
+        """Adds new subscriber to list"""
         self._subscribers.append(callback)
 
 
     def dispatch(self, resource : ResourceWrapper[T], completed : bool) -> None:
-        if not self._validator and not self._validator(self._resources, resource):
+        """Adds new resource to resources list and notifies all subscribers"""
+        if not self._validator(self._resources, resource):
             return
         
         self._providers[resource.get_origin()] = completed

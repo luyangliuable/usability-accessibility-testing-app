@@ -1,9 +1,9 @@
 from venv import create
+from resources import *
 from abc import ABC, abstractmethod
 from atexit import register
 import os
 import requests
-
 from typing import TypeVar, Generic, List, Callable, Dict
 from resources.resource import ResourceGroup
 from resources.resource import ResourceType
@@ -38,7 +38,6 @@ class TaskFactory:
 
             cls(resource_groups)
 
-
     @classmethod
     def get_tasks_with_outputs(resource_types : List[ResourceType]) -> List[str]:
         names = []
@@ -51,15 +50,10 @@ class TaskFactory:
         return list(set(names))
 
 
-
-
-
-
-
 class Task(ABC, metaclass=TaskMetaclass):
     """Class to manage an algorithm."""
     
-    def __init__(self, output_dir, resource_dict) -> None:
+    def __init__(self, output_dir : str, resource_dict : Dict[ResourceType, ResourceGroup]) -> None:
         super().__init__()
         self.output_dir = output_dir
         if not os.path.exists(self.output_dir):
@@ -69,33 +63,30 @@ class Task(ABC, metaclass=TaskMetaclass):
 
     @abstractmethod
     @classmethod
-    def get_name(self) -> str:
+    def get_name() -> str:
         """Name of the task"""
         return
     
     @abstractmethod
     @classmethod
-    def get_input_types(self) -> List[ResourceType]:
+    def get_input_types() -> List[ResourceType]:
         """Input resource types of the task"""
         return
 
     @abstractmethod
     @classmethod
-    def get_output_types(self) -> List[ResourceType]:
+    def get_output_types() -> List[ResourceType]:
         """Output resource types of the task"""
         return
 
-
-    
     @abstractmethod
     def get_output_dir(self) -> str:
         """Output directory of the task"""
         return 
 
 
-
     @classmethod
-    def http_request(self, url, body):
+    def http_request(url, body):
         """Makes a http request with url and body
         
         returns response body

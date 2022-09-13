@@ -1,4 +1,6 @@
 from tasks.task import Task
+from resources import *
+from typing import List
 import os
 
 class Gifdroid(Task):

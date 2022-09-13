@@ -13,4 +13,5 @@ class ResourceType(Enum):
     UTG = 9,
     GIF = 10,
     ZIPS = 11,
+    EMULATOR = 12,
 

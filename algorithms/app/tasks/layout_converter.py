@@ -61,6 +61,7 @@ class LayoutConverter(Task):
                     child[key] = None
         return child
 
+
     def __node_list(self, a, final, counter):
         if "children" in a:
             out = []

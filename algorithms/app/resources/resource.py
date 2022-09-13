@@ -18,9 +18,8 @@ class ResourceGroup(Generic[T]):
         self._type = type
         self._validator = validate
 
-        self._resources = List[ResourceWrapper[T]]
-
-        self._subscribers = List[ Callable[[ResourceWrapper[T]], bool] ]
+        self._resources = []
+        self._subscribers = []
         self._providers = {}
 
 
@@ -32,14 +31,19 @@ class ResourceGroup(Generic[T]):
 
         return not done
 
-
+    def get_all_resources(self) -> List[ResourceWrapper[T]]:
+        return self._resources
+    
+    
     def subscribe(self, callback : Callable[[ResourceWrapper[T]], bool]) -> None:
+        """Adds new subscriber to list"""
         self._subscribers.append(callback)
 
 
     def dispatch(self, resource : ResourceWrapper[T], completed : bool) -> None:
+        """Adds new resource to resources list and notifies all subscribers"""
         if not self._validator(self._resources, resource):
-            return;
+            return
         
         self._providers[resource.origin] = completed
         self._resources.append(resource)

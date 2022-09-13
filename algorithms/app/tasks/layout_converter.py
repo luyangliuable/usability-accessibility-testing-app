@@ -1,8 +1,9 @@
+from tasks.task import Task
 import re
 import json
 import xmltodict
 
-class xmlConverter():
+class LayoutConverter(Task):
     def __init__(self, xml_path, json_path):
         self.xml_path = xml_path
         self.json_path = json_path

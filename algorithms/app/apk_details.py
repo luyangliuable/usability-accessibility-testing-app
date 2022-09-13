@@ -2,7 +2,6 @@ from algorithm_controllers import *
 import os
 import json
 import shutil
-from xml_converter import xmlConverter
 from PIL import Image
 
 TEMP_PATH = ""

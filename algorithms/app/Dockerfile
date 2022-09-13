@@ -1,6 +1,4 @@
-# FROM python:3.9.1-slim-buster
-# FROM luyangliuable/fit3170_alpine_image:6.3
-FROM alpine:3.14
+FROM alpine:3.14 as base
 
 ENV PYTHONUNBUFFERED=1
 
@@ -12,18 +10,21 @@ RUN pip3 install --no-cache --upgrade pip setuptools
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
+# webservice dependencies
 #Server will reload itself on file changes if in dev mode
 ENV FLASK_ENV=development 
-
 RUN pip3 install --upgrade pip
 COPY ./requirements.txt .
 RUN pip3 install -r requirements.txt
 
+# expose 3050
 EXPOSE 3050
 
 # aws 
 COPY .aws /root/.aws
 
-WORKDIR /home
-
-COPY . .
+# copy app
+COPY resources ./resources
+COPY tasks ./tasks
+COPY apk_analysis.py ./apk_analysis.py
+COPY apk_analysis_api.py ./apk_analysis_api.py

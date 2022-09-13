@@ -1,4 +1,4 @@
-from algorithm_controllers.task import Task
+from tasks.task import Task
 import os
 
 class Droidbot(Task):

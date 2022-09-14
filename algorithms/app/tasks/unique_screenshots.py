@@ -84,7 +84,7 @@ class UniqueScreenshots(Task):
         # JPEG was unique, keep track of it and disptach to SCREENSHOT_UNIQUEPAIR
         self.pairs[new_jpeg] = new_json
         
-        result = ResourceWrapper[Tuple[ResourceWrapper, ResourceWrapper[Screenshot]]](new_jpeg.get_path(), self.get_name(), (new_jpeg, new_json))
+        result = ResourceWrapper[Tuple[ResourceWrapper[Screenshot], ResourceWrapper]](new_jpeg.get_path(), self.get_name(), (new_jpeg, new_json))
         self.resource_dict[ResourceType.SCREENSHOT_UNIQUEPAIR].dispatch(result, False)
 
 

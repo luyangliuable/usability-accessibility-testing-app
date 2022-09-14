@@ -43,7 +43,7 @@ class Tappability(Task):
 
 
     
-    def tappable_callback(self, resource : ResourceWrapper[Tuple[ResourceWrapper, ResourceWrapper[Screenshot]]]) -> None:
+    def tappable_callback(self, resource : ResourceWrapper[Tuple[ResourceWrapper[Screenshot], ResourceWrapper]]) -> None:
         (jpeg, json) = resource.get_metadata(); 
         
         # TODO execute tappability with the provided JPEG and JSON

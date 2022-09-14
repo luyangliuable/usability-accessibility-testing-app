@@ -2,6 +2,7 @@ from typing import List, Callable
 from tasks.task import Task
 
 class Screenshot(Task):
+    
     def __init__(self, img_name, activity_name, jpeg_path = "", png_path = "", xml_path = "", json_path = ""):
         self._tappability_prediction = False
         self._json_path = json_path
@@ -11,16 +12,6 @@ class Screenshot(Task):
         self.img_name = img_name
         self.activity_name = activity_name
         self.subscribers = []
-
-
-    def subscribe(self, subscriber : Callable(str)) -> None:
-        self.subscribers.append(subscriber) # add subscriber to queue
-        self._update_queue()
-
-    def _update_queue(self) -> None:
-        if len(self.subscribers) > 0:  
-            self.subscribers.pop(0)(self.name)
-            self.is_free = False
         
     
     def add_tappability_prediction(self) -> None:

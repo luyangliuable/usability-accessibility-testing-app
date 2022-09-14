@@ -1,15 +1,14 @@
 from task import *
-from app.resources import *
+from resources import *
 from typing import List, Dict
 import os
-import sys
 
 class Storydistiller(Task):
     """Class for managing Storydistiller algorithm"""
     
     _input_types = [ResourceType.APK_FILE, ResourceType.EMULATOR]
     _output_types = [ResourceType.SCREENSHOT_PNG, ResourceType.XML_LAYOUT]
-    _url = 'http://host.docker.internal:3002'
+    _url = 'http://host.docker.internal:3002/execute'
     
     def __init__(self, output_dir, resource_dict : Dict[ResourceType, ResourceGroup]) -> None:
         super().__init__(output_dir, resource_dict)
@@ -37,13 +36,14 @@ class Storydistiller(Task):
             "emulator": emulator
         }
         
-        Storydistiller.http_request('http://host.docker.internal:3002/execute', data)
+        Storydistiller.http_request(Storydistiller._url, data)
     
     
     def _sub_to_apks(self) -> None:
         """Get notified when a new APK is available"""
         if ResourceType.APK_FILE in self.resource_dict:
             self.resource_dict[ResourceType.APK_FILE].subscribe(self.apk_callback) # calls add_apk() when new apk is available
+            
             
     def _sub_to_emulators(self) -> None:
         """Get notified when an emulator is available"""
@@ -69,23 +69,42 @@ class Storydistiller(Task):
             self._sub_to_emulators()
             return
         
-        apk_path = self._get_next() # get next apk
-        Storydistiller.run(apk_path, self.output_dir, emulator) # run algorithm
-        self.apks[apk_path] = True  # set complete
+        apk_path = self._get_next()                                 # get next apk
+        Storydistiller.run(apk_path, self.output_dir, emulator)     # run algorithm
+        self.apks[apk_path] = True                                  # set complete
+        self._dispatch_outputs()                                    # dispatch results
         
-        
+    
+    def _dispatch_outputs(self) -> None:
+        """Dispatch all outputs for processed apk"""
+        pass
+    
+    
+    def _get_screenshots(self) -> List[str]:
+        """Gets list of paths to all screenshots in output_path"""
+        pass
+    
+    def _get_layouts(self) -> List[str]:
+        """Gets list of paths to all layouts in output_path"""
+        pass
+    
     def apk_callback(self, new_apk : ResourceWrapper) -> None:
         """callback method to add apk and run algorithm"""
         if new_apk.get_path() not in self.apks:
             self._add_apk(new_apk.get_path())
             self._process_apks()
-        
     
     
     def emulator_callback(self, emulator) -> None:
         """callback method for using emulator"""
         
         self._process_apks(emulator=emulator)
+    
+    
+    def is_complete(self) -> bool:
+        pass
+        # return if subscriptions are complete and apk list is empty
+    
         
 if __name__ == '__main__':
     #TODO

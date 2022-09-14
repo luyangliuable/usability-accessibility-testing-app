@@ -24,17 +24,14 @@ class Tappability(Task):
             self._image_lst[screenshot] = False
         
 
-    @classmethod
     def get_name() -> str:
         return Tappability.__name__
 
 
-    @classmethod
     def get_input_types(self) -> List[ResourceType]:
         return [ResourceType.SCREENSHOT_JPEG]
 
 
-    @classmethod
     def get_output_types(self) -> List[ResourceType]:
        return [ResourceType.TAPPABILITY_PREDICT]
 

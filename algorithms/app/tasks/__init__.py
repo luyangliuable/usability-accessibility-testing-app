@@ -1,4 +1,3 @@
-from __future__ import absolute_import
 from tasks.task import Task
 from tasks.storydistiller import Storydistiller
 from tasks.xbot import Xbot

@@ -14,17 +14,14 @@ class LayoutConverter(Task):
         self.dict = dict
 
 
-    @classmethod
     def get_name() -> str:
         return LayoutConverter.__name__
 
 
-    @classmethod
     def get_input_types(self) -> List[ResourceType]:
         return [ResourceType.XML_LAYOUT]
 
 
-    @classmethod
     def get_output_types(self) -> List[ResourceType]:
         return [ResourceType.JSON_LAYOUT]
 

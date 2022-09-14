@@ -1,12 +1,10 @@
 from venv import create
-from app.resources import *
+from resources import *
 from abc import ABC, abstractmethod
 from atexit import register
 import os
 import requests
 from typing import TypeVar, Generic, List, Callable, Dict
-from resources.resource import ResourceGroup
-from resources.resource import ResourceType
 
 class TaskMetaclass(type):
     def __new__(meta, name, bases, attrs):

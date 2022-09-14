@@ -15,12 +15,10 @@ class ImageConverter(Task):
         self.png_type = png
 
 
-    @classmethod
     def get_name() -> str:
         return ImageConverter.__name__
 
 
-    @classmethod
     def get_input_types(self) -> List[ResourceType]:
         if self.jpeg_type:
             return [ResourceType.SCREENSHOT_PNG]
@@ -29,7 +27,6 @@ class ImageConverter(Task):
         return None
 
 
-    @classmethod
     def get_output_types(self) -> List[ResourceType]:
         if self.jpeg_type:
             return [ResourceType.SCREENSHOT_JPEG]

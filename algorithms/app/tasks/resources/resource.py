@@ -50,6 +50,9 @@ class ResourceGroup(Generic[T]):
     def subscribe(self, callback : Callable[[ResourceWrapper[T]], bool]) -> None:
         """Adds new subscriber to list"""
         self._subscribers.append(callback)
+    
+    def reg_provider(self, origin : str) -> None:
+        self._providers[origin] = False
 
 
     def dispatch(self, resource : ResourceWrapper[T], completed : bool) -> None:

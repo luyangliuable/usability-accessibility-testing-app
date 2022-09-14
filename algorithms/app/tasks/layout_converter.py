@@ -3,7 +3,9 @@ import json
 import xmltodict
 import os
 from tasks.task import Task
-from resources.resource import ResourceGroup, ResourceWrapper
+from resources import *
+from typing import List
+
 
 class LayoutConverter(Task):
     def __init__(self, output_dir, dict):
@@ -18,39 +20,39 @@ class LayoutConverter(Task):
 
 
     @classmethod
-    def get_input_types(self) -> str:
-        return "XML_LAYOUT"
+    def get_input_types(self) -> List[ResourceType]:
+        return [ResourceType.XML_LAYOUT]
 
 
     @classmethod
-    def get_output_types(self) -> str:
-        return "JSON_LAYOUT"
+    def get_output_types(self) -> List[ResourceType]:
+        return [ResourceType.JSON_LAYOUT]
 
 
     def execute(self):
-        item_lst = self.dict["XML_LAYOUT"].get_all_resources()
+        for type in self.get_input_types():
+            item_lst = self.dict[type].get_all_resources()
         
-        for item in item_lst:
+            for item in item_lst:
 
-            #convert xml to json
-            path = item.get_path()
-            item_json = json.loads(item.get_metadata())
-            activity_name = item_json["activity_name"]
-            out_path = os.path.join(self.output_dir, activity_name + ".json")
-            self._convert_xml_to_json(path, out_path)
+                #convert xml to json
+                path = item.get_path()
+                item_metadata = item.get_metadata()
+                out_path = os.path.join(self.output_dir, item_metadata.get_name() + ".json")
+                self._convert_xml_to_json(path, out_path)
 
-            #update existing metadata
-            item_json["json_path"] = out_path
-            item.set_metadata(item_json)
+                #add json path to metadata
+                item_metadata.set_json_path(out_path)
 
-            #add new resource wrapper
-            metadata = {
-                "activity_name" : activity_name,
-                "xml_path" : path
-            }
-            resource = ResourceWrapper(out_path, item.get_origin(), json.dumps(metadata))
-            rg = ResourceGroup(self.get_output_types(), None)
-            rg.dispatch(resource, False)
+                #add new resource wrapper
+                resource = ResourceWrapper(out_path, item.get_origin(), item_metadata)
+                for item in self.get_output_types():
+                    if item in self.dict:
+                        rg = self.dict[item]
+                        rg.dispatch(resource, False)
+                    else:
+                        rg = ResourceGroup(self.get_output_types(), None)
+                        rg.dispatch(resource, False)
 
 
     def _update_list(self, json_children):
@@ -89,9 +91,17 @@ class LayoutConverter(Task):
                     bounds_out = re.findall(re_text, val)[0]
                     bounds_json = [[int(bounds_out[0]), int(bounds_out[1])], [int(bounds_out[2]), int(bounds_out[3])]]
                     child[key] = bounds_json
+                elif key == "focused":
+                    focused = bool(child.pop("focused"))
+                    child["visible"] = focused
                 elif key =="password":
                     pw = bool(child.pop("password"))
                     child["is_password"] = pw
+                elif key =="resource-id":
+                    ri = child.pop("resource-id")
+                    if ri =="":
+                        ri = None
+                    child["resource_id"] = ri
                 elif key =="content-desc":
                     cd = child.pop("content-desc")
                     if cd =="":

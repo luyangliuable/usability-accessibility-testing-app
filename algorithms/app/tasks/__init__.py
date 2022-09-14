@@ -6,4 +6,4 @@ from tasks.owleye import Owleye
 from tasks.tappability import Tappability
 from tasks.image_converter import ImageConverter
 from tasks.layout_converter import LayoutConverter
-from resources import *
+from tasks.unique_screenshots import UniqueScreenshots

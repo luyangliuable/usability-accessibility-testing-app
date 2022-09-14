@@ -1,8 +1,8 @@
 from importlib.resources import Resource
-from algorithms.app.resources.screenshot import Screenshot
+from resources.screenshot import Screenshot
 from resources.resource import *
 from tasks.task import Task
-from typing import List
+from typing import List, Tuple
 import json
 
 class UniqueScreenshots(Task):
@@ -84,7 +84,7 @@ class UniqueScreenshots(Task):
         # JPEG was unique, keep track of it and disptach to SCREENSHOT_UNIQUEPAIR
         self.pairs[new_jpeg] = new_json
         
-        result = ResourceWrapper[(ResourceWrapper, ResourceWrapper[Screenshot])](new_jpeg.get_path(), self.get_name(), (new_jpeg, new_json))
+        result = ResourceWrapper[Tuple[ResourceWrapper, ResourceWrapper[Screenshot]]](new_jpeg.get_path(), self.get_name(), (new_jpeg, new_json))
         self.resource_dict[ResourceType.SCREENSHOT_UNIQUEPAIR].dispatch(result, False)
 
 

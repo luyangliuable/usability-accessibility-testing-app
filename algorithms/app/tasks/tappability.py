@@ -5,7 +5,7 @@ import os
 from resources.resource import *
 from resources.screenshot import *
 from tasks.task import Task
-from typing import List, Callable
+from typing import List, Callable, Tuple
 import shutil
 import subprocess
 
@@ -43,18 +43,18 @@ class Tappability(Task):
 
 
     
-    def tappable_callback(self, resource : ResourceWrapper[(T, ResourceWrapper[Screenshot])]) -> None:
+    def tappable_callback(self, resource : ResourceWrapper[Tuple[ResourceWrapper, ResourceWrapper[Screenshot]]]) -> None:
         (jpeg, json) = resource.get_metadata(); 
         
         # TODO execute tappability with the provided JPEG and JSON
-        pass
+        return
 
                 
-    def tappable_callback(self, new_img: ResourceWrapper) -> None:
-         """Callback method to add img and run converter method"""
-         if new_img.get_path() not in self.img_lst:
-             self._add_img(new_img)
-             self._process_img()
+    # def tappable_callback(self, new_img: ResourceWrapper) -> None:
+    #      """Callback method to add img and run converter method"""
+    #      if new_img.get_path() not in self.img_lst:
+    #          self._add_img(new_img)
+    #          self._process_img()
 
     def _add_img(self, img: ResourceWrapper) -> None:
         """Add img to img list"""

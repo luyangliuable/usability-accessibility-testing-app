@@ -17,7 +17,9 @@ def create_screen_json(events_folder: str=None, state_folder: str=None):
     states_folder = sys.argv[2]
 
     files = [f for f in listdir(states_folder) if isfile(join(states_folder, f))]
+
     screen_files = []
+
     for i in range(len(files)):
         if files[i][-3:] == 'jpg':
             screen_files.append(files[i])

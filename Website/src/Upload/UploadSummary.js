@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Container } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { startApplication } from "./function/startApplication";
+import { startJob } from "./function/start_job";
+
 // Remove eslint when var is used
 // eslint-disable-next-line
 import { getAdditionalFiles } from "./function/getAdditionalFiles";
@@ -56,7 +57,7 @@ const UploadSummary = () => {
       (algorithm) => algorithm.selected
     );
 
-    startApplication(algorithmState, setAlgorithmState, algorithmsToComplete);
+    startJob(algorithmState, setAlgorithmState, algorithmsToComplete);
   };
 
   var additionalInputDiv = "";

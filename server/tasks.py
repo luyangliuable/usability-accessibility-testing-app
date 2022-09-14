@@ -43,14 +43,12 @@ def run_algorithm(info={}):
         xbot_api = os.environ.get("XBOT")
         # xbot api url to be obtained from the enrionemtn ##########################
         owleye_api = os.environ.get("OWLEYE")
-        # gifdroid api url to be obtained from the enrionemtn ##########################
-        gifdroid_api = os.environ.get("GIFDROID")
 
         start_links = {
             "storydistiller": story_distiller_api,
             "xbot": xbot_api,
             "owleye": owleye_api,
-            "gifdroid": gifdroid_api,
+            "gifdroid": os.environ['GIFDROID'],
             "tappable": "SKIP"
         }
 
@@ -59,8 +57,8 @@ def run_algorithm(info={}):
         ###############################################################################
         #                      Print some usefull debugging info                      #
         ###############################################################################
-        print("Running " + str( algorithm_name ) + " url: "+ str( URL ))
-        print("Algorithm cluster uuid is", uuid)
+        print("TASK: Running " + str( algorithm_name ) + " url: "+ str( URL ))
+        print("TASK: Algorithm cluster uuid is", uuid)
 
         ###############################################################################
         #                      Change algorithm status to started                     #
@@ -88,10 +86,10 @@ def run_algorithm(info={}):
     except Exception as ex:
         algorithm_name = info['algorithm']
 
-        print('failed to complete tasks', str( algorithm_name ), " with url", str( URL ), "because", ex)
+        print('TASK: failed to complete tasks', str( algorithm_name ), " with url", str( URL ), "because", ex)
         errors.append(ex)
     else:
-        print("Successfully connected completed tasks", algorithm_name)
+        print("TASK: Successfully connected completed tasks", algorithm_name)
         state = {"task_id": "", "task_status": ['distiller'], "task_result": ""}
 
     result = {"files": ["file_url_placeholder"], "images": ["image_url_placeholder"], "errors": str( errors ) }

@@ -5,16 +5,16 @@ name: Flask Backend Pytest/Unittest & linting
 
 on:
   push:
-    branches: [ "ci-cd", "master", "main", "#merge_branch", "#setup_cicd" ]
+    branches: [ "ci-cd", "master", "main", "#merge_branch", "#setup_cicd", "#refactor" ]
   pull_request:
-    branches: [ "ci-cd", "master", "main" ]
+    branches: [ "main" ]
 
 permissions:
   contents: read
 
 jobs:
-  build:
 
+  unitest-linting-flask-backend:
     runs-on: ubuntu-latest
     steps:
 

@@ -51,7 +51,7 @@ def main(droidbot_utg_file: str=None, events_folder: str=None):
             utg_event_template["startTimeSeconds"] = cumulative_counter
             previous_time = event_time
             cumulative_counter+=time_spent
-            utg_event_template["endTimeSeconds"] = cumulative_counter            
+            utg_event_template["endTimeSeconds"] = cumulative_counter
 
             # add to utg events
             utg_template["events"].append(utg_event_template)

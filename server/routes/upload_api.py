@@ -61,7 +61,6 @@ def upload():
 
         print("[0] Getting request from front-end")
 
-        # To get files use request.files.get() ########################################
         # To get form data use request.form.get() #####################################
 
         ###############################################################################
@@ -74,8 +73,6 @@ def upload():
         # Document template to be inserted into mongodb
         data = DBManager.get_format(unique_id)
 
-        # File name is the original uploaded file name ################################
-        file_key = request.form.get('filename')
 
         # File name is the original uploaded file name ################################
 
@@ -107,8 +104,9 @@ def upload():
 
         temp_file_name = os.path.join(temp_dir, unique_id)
 
-        apk_file = request.files.get('apk_file')
+        apk_file = request.files['apk_file']
 
+        # File name is the original uploaded file name ################################
         apk_filename = apk_file.filename
 
         with open(temp_file_name, "wb") as savefile:
@@ -132,36 +130,45 @@ def upload():
         apk_file_note = "user uploaded apk file"
 
         # WARNING: Changes now apk attribute only has one apk not array.
-        data["apk"] = {"type": "apk", "name": file_key, "notes": apk_file_note}
+        data["apk"] = {"type": "apk", "name": apk_filename, "notes": apk_file_note}
 
         mongo.insert_document(data, mongo.get_collection('apk'))
 
         asc.decalare_apk_name_in_status(unique_id, str(apk_filename))
 
         print("[5] return celery task id and file key")
-        return json.dumps({"file_key": str( file_key ), "uuid": unique_id}), 200
+        return json.dumps({"file_key": str( apk_filename ), "uuid": unique_id}), 200
 
     return json.dumps({"message": "failed to upload"}), 400
 
 
-@upload_blueprint.route('/signal_start/<algorithm>', methods=["GET", "POST"])
-@cross_origin()
-def signal_start(algorithm):
+@upload_blueprint.route('/signal_start/<uuid>', methods=["GET", "POST"])
+@cross_origin(uuid)
+def signal_start(uuid):
     if request.method == "POST":
         print("[1] creating celery task")
-        uuid = request.form.get("uuid")
 
-        print("uuid is", uuid)
-        print("start task for algorithm", algorithm)
+        if request.json != None:
+            print("uuid is", uuid)
 
-        ###############################################################################
-        #                       Add algorithm status to mongodb                       #
-        ###############################################################################
+            algorithms_to_complete_key = "algorithmsToComplete"
 
-        task_info = {"uuid": uuid, "algorithm": algorithm}
-        task = run_algorithm.delay(task_info)
+            algorithms_to_complete = request.json[algorithms_to_complete_key]
 
-        return json.dumps({"task_id": task.id, "task_for_algorithm": "algorithm"}), 200
+            print("algorithm to complete is", algorithms_to_complete)
+
+            print("start task for algorithm", algorithms_to_complete[0]['uuid'])
+
+            ###############################################################################
+            #                       Add algorithm status to mongodb                       #
+            ###############################################################################
+            task_info = {"uuid": uuid, "algorithm": algorithms_to_complete[0]['uuid']}
+
+            task = run_algorithm.delay(task_info)
+
+            return json.dumps({"task_id": task.id, "task_for_algorithm": "algorithm"}), 200
+        else:
+            return "No request body for starting algorithms", 400
 
     return json.dumps({"message": "No POST request received."}), 400
 

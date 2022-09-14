@@ -32,10 +32,10 @@ s3_client = boto3.client(
 
 download_controller = DownloadController('apk', gifdroidJsonParser)
 
-@download_blueprint.route('/download_result/<uuid>/<algorithm>/<name>', methods=["GET", "POST"])
+@download_blueprint.route('/download_result/<uuid>/<algorithm>/<type>/<name>', methods=["GET", "POST"])
 @cross_origin()
-def download(uuid, algorithm, name):
-    result_file_from_algorithm = download_controller.download(uuid, algorithm, name)
+def download(uuid, algorithm, name, type):
+    result_file_from_algorithm = download_controller.download(uuid, algorithm, type, name)
 
     return send_file(result_file_from_algorithm, as_attachment=True), 200
 

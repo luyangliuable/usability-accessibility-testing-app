@@ -1,6 +1,5 @@
 from botocore import endpoint
 from botocore.compat import accepts_kwargs
-import pymongo
 import boto3
 import json
 import requests
@@ -98,6 +97,7 @@ def _service_execute_droidbot(uuid):
 
     OUTPUT_DIR = os.path.join( tempfile.gettempdir(), uuid )
     get_file_url = os.path.join(file_api,  uuid)
+
     data = requests.get(get_file_url, headers={'Content-Type': 'application/json'}).json()
 
     # Apk has an Array/List of apk files ##########################################

@@ -2,7 +2,7 @@
     "AWS_REGION": "us-west-2",
     "AWS_PROFILE": "localstack",
     "ENDPOINT_URL": "http://localhost:4566",
-    "FILE_API": "http://localhost:5005/file/get",
+    "FILE_API": "http://localhost:5005/result/get",
     "BUCKET_NAME": "apk-bucket",
     "SAVE_BUCKET_NAME": "gifdroid-bucket",
     "MONGO_DB": "",

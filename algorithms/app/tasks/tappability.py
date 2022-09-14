@@ -1,8 +1,8 @@
 from PIL import Image
 import json
 import os
-from resources import *
-from task import Task
+from resources.resource import *
+from tasks.task import Task
 from typing import List, Callable
 import shutil
 import subprocess

@@ -1,5 +1,4 @@
-from resources.resource import ResourceGroup, ResourceWrapper
-from resources.resource import ResourceType
+from resources.resource import *
 from tasks.task import Task
 from typing import List
 

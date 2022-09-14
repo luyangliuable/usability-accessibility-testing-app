@@ -1,8 +1,7 @@
 from typing import List, Callable
-from task import Task
 from resources import *
 
-class Screenshot(Task):
+class Screenshot():
     
     def __init__(self, img_name, activity_name, jpeg_path = "", png_path = "", xml_path = "", json_path = ""):
         self.tappability_prediction = False

@@ -14,3 +14,7 @@ class ResourceType(Enum):
     ZIPS = 10,
     EMULATOR = 11,
 
+
+class ResourceUsage(Enum):
+    CONCURRENT = 0,
+    SEQUENTIAL = 1,

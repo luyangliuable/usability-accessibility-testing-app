@@ -1,5 +1,5 @@
-from tasks import *
-from resources import *
+from tasks.task import *
+from resources.resource import *
 from typing import List
 import os
 

@@ -1,7 +1,7 @@
 from PIL import Image
 import os
-from resources import *
-from task import Task
+from resources.resource import *
+from tasks.task import Task
 from typing import Callable, List
 
 

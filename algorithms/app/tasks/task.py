@@ -1,10 +1,12 @@
 from venv import create
-from resources import *
 from abc import ABC, abstractmethod
 from atexit import register
 import os
 import requests
 from typing import TypeVar, Generic, List, Callable, Dict
+
+
+from resources.resource import *
 
 class TaskMetaclass(type):
     def __new__(meta, name, bases, attrs):
@@ -60,16 +62,19 @@ class Task(ABC):
         self.resource_dict = resource_dict
         
 
+    @classmethod
     @abstractmethod
     def get_name() -> str:
         """Name of the task"""
         return
     
+    @classmethod
     @abstractmethod
     def get_input_types() -> List[ResourceType]:
         """Input resource types of the task"""
         return
 
+    @classmethod
     @abstractmethod
     def get_output_types() -> List[ResourceType]:
         """Output resource types of the task"""

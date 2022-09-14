@@ -7,7 +7,9 @@ from resources.resource_types import ResourceType, ResourceUsage
 T = TypeVar('T')    ## Metadata type
 
 class ResourceWrapper(Generic[T]):
-    """Class to manage a single APK resource"""
+    """
+    Wraps and manages a singular resource
+    """
 
     def __init__(self, path : str, origin : str, metadata : T = None):
         self._path = path
@@ -31,10 +33,16 @@ class ResourceWrapper(Generic[T]):
     
 
     def lock(self, released):
+        """
+        Enforce a lock on the resource, providing an ON RELEASED callback
+        """
         assert self._released is None
         self._released = released
 
     def release(self) -> None:
+        """
+        Release the lock on the resource, calling the ON RELEASED callback if it exists
+        """
         callback = self._released
         self._released = None
 
@@ -44,6 +52,10 @@ class ResourceWrapper(Generic[T]):
 
 
 class ResourceGroup(Generic[T]):
+    """
+    Keeps track of a specific type of resource, containing all the singular resources of that
+    type within itself. Manages the publishing and subscribing to a resource type
+    """
 
     def __init__(self, type: ResourceType, usage: ResourceUsage = ResourceUsage.CONCURRENT):
         self._type = type
@@ -53,30 +65,28 @@ class ResourceGroup(Generic[T]):
         self._providers = {}
         self._usage = usage
 
+
     def is_active(self) -> bool:
+        ## TODO rework active status of resource group
         done = True
 
         for (_, completed) in self._providers:
             done = done and completed
 
         return not done
-
-    def get_all_resources(self) -> List[ResourceWrapper[T]]:
-        """get list of resources"""
-        return self._resources
     
     
     def subscribe(self, callback : Callable[[ResourceWrapper[T]], None]) -> None:
-        """Adds new subscriber to list"""
+        """
+        Subscribe to the resource group
+        """
         self._subscribers.append(callback)
-
-    
-    def reg_provider(self, origin : str) -> None:
-        self._providers[origin] = False
 
 
     def publish(self, resource : ResourceWrapper[T], completed : bool) -> None:
-        """Adds new resource to resources list and notifies all subscribers"""
+        """
+        Add a resource to the group and notify all subscribers
+        """
         
         self._providers[resource.get_origin()] = completed
         self._resources.append(resource)
@@ -94,8 +104,12 @@ class ResourceGroup(Generic[T]):
             self.lock_resource(resource, 0)
             
 
-
     def lock_resource(self, resource : ResourceWrapper[T], index : Number) -> None:
+        """
+        INTERNAL USE ONLY
+        Place a sequential lock on a resource, allows a resource to be dispatches sequentially
+        instead of concurrently
+        """
         if index >= len(self._subscribers):
             return
 

@@ -1,3 +1,4 @@
+from urllib import response
 from PIL import Image
 import json
 import os
@@ -17,7 +18,9 @@ class Tappability(Task):
         self.running = False
         input_type_img = self.get_input_types(cls)[0]
         self.threshold = threshold
-        self._sub_to_input_types(input_type_img, self.tappable_callback)
+        self._sub_to_unique_pairs()
+
+        self.pairs = {}
         
 
     @classmethod
@@ -26,7 +29,7 @@ class Tappability(Task):
 
     @classmethod
     def get_input_types(cls) -> List[ResourceType]:
-        return [ResourceType.SCREENSHOT_JPEG]
+        return [ResourceType.SCREENSHOT_UNIQUEPAIR]
 
     @classmethod
     def get_output_types(cls) -> List[ResourceType]:
@@ -34,10 +37,18 @@ class Tappability(Task):
 
 
    
-    def _sub_to_input_types(self, input_type: ResourceType, callback_func: Callable) -> None:
+    def _sub_to_unique_pair(self) -> None:
         """Get notified when new img/json is added"""
-        if input_type in self.resource_dict:
-                self.resource_dict[input_type].subscribe(callback_func) 
+        self.resource_dict[ResourceType.SCREENSHOT_UNIQUEPAIR].subscribe(tappable_callback) 
+
+
+    
+    def tappable_callback(self, resource : ResourceWrapper[(T, ResourceWrapper[Screenshot])]) -> None:
+        (jpeg, json) = resource.get_metadata(); 
+        
+        # TODO execute tappability with the provided JPEG and JSON
+        pass
+
                 
     def tappable_callback(self, new_img: ResourceWrapper) -> None:
          """Callback method to add img and run converter method"""
@@ -65,7 +76,8 @@ class Tappability(Task):
             return
         self.img_lst[next_img.get_path()]["ready"] = True # set ready
         self._run()
-        
+    
+    
     def _sub_to_json(self) -> None:
         """Subscribe to screenshot json"""
         if ResourceType.JSON_LAYOUT in self.resource_dict:

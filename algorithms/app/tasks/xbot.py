@@ -59,9 +59,6 @@ class Xbot(Task):
         """Get notified when an emulator is available"""
         if ResourceType.EMULATOR in self.resource_dict:
             self.resource_dict[ResourceType.EMULATOR].subscribe(self.emulator_callback)
-
-        #    for resource in self.resource_dict[ResourceType.EMULATOR].get_all_resources():
-        #        resource.get_metadata().subscribe(self.emulator_callback)
     
     
     def _process_apks(self, emulator) -> None:

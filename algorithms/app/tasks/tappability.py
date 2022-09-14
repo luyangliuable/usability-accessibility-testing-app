@@ -1,23 +1,36 @@
-from tasks.task import Task
+from PIL import Image
+import json
 import os
+from resources.resource import ResourceGroup, ResourceWrapper
+from resources.resource_types import ResourceType
+from tasks.task import Task
+from typing import List
+
 
 class Tappability(Task):
     """Class for managing Tappability algorithm"""
     
-    def __init__(self, image_dir, layout_dir, output_dir) -> None:
-        self.image_dir = image_dir
-        self.layout_dir = layout_dir
-        super().__init__(output_dir, "tappable", None)
+    def __init__(self, output_dir, resource_dict, threshold = 50) -> None:
+        super().__init__(output_dir, resource_dict)
+        self._threshold = threshold
+        self._image_lst = {}
+        self._running = False
 
-    def execute(self) -> None:
-        data = {
-            "image_dir" : self.image_dir,
-            "layout_dir" : self.layout_dir,
-            "output_dir" : self.output_dir
-        }
-        response = self.http_request(url=self.url, data=data)
+
+    def add_screenshot(self, screenshot: ResourceWrapper) -> None:
+        if screenshot.get_jpeg_path() == "":
+            screenshot.subscribe()
+        else:
+            self._image_lst[screenshot] = False
         
-        self.status = 'SUCCESSFUL' if response and response.status_code==200 else 'FAILED'    def get_input_types(self) -> List[ResourceType]:
+
+    @classmethod
+    def get_name() -> str:
+        return Tappability.__name__
+
+
+    @classmethod
+    def get_input_types(self) -> List[ResourceType]:
         return [ResourceType.SCREENSHOT_JPEG]
 
 

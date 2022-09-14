@@ -1,0 +1,25 @@
+{
+    gifdroid: {
+        file_type: "json",
+        result_file_name: "gifdroid.json",
+        location: ['gifdroid', 'gifdroid.json']
+    },
+    xbot:
+        issues: {
+            file_type: "txt"
+            location: ['activity', 'name', 'algorithm', 'issues', 'output']
+    },
+        images: {
+            file_type: "txt",
+            location: ['activity', 'name', 'algorithm', 'images', 'output']
+        },
+    owleye: {
+        file_type: "jpg",
+        location: ['acitivity', 'name', 'type', 'algorithm']
+    }
+    activity: {
+        file_type: "jpg",
+        location: ['acitivity', 'name', 'type', 'algorithm'
+        ]
+    }
+}

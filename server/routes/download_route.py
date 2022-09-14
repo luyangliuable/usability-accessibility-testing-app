@@ -1,8 +1,7 @@
 from flask import Blueprint, request, jsonify, send_file
 from flask_cors import cross_origin
 import boto3
-import json
-import uuid
+import typing as t
 import os
 
 from download_parsers.gifdroid_json_parser import gifdroidJsonParser
@@ -12,6 +11,12 @@ from controllers.download_controller import DownloadController
 #                            Set Up Flask Blueprint                           #
 ###############################################################################
 download_blueprint = Blueprint("download", __name__)
+
+if t.TYPE_CHECKING:  # pragma: no cover
+    from werkzeug.wrappers import Response as BaseResponse
+    from .wrappers import Response
+    import typing_extensions as te
+
 
 ###############################################################################
 #                                  Set Up AWS                                 #
@@ -34,7 +39,7 @@ download_controller = DownloadController('apk', gifdroidJsonParser)
 
 @download_blueprint.route('/download_result/<uuid>/<algorithm>/<type>/<name>', methods=["GET", "POST"])
 @cross_origin()
-def download(uuid, algorithm, name, type):
+def download(uuid, algorithm, name, type) -> "Response":
     result_file_from_algorithm = download_controller.download(uuid, algorithm, type, name)
 
     return send_file(result_file_from_algorithm, as_attachment=True), 200

@@ -175,7 +175,7 @@ def signal_start(uuid):
 
 
 @upload_blueprint.route('/upload/health')
-def check_health():
+def check_health() -> str:
     return "Upload Is Online"
 
 

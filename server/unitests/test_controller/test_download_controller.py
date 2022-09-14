@@ -26,12 +26,6 @@ class TestDownloadCtrl(unittest.TestCase):
         self.d_ctrl = DownloadController(self.tc, gifdroidJsonParser)
 
 
-    # def test_file_downloaded(self):
-    #     res = self.d_ctrl.download(self.uuid, "report" , "file.apk")
-
-    #     write_to_view("view.txt", res)
-
-
 ###############################################################################
 #                              Untility functions                             #
 ###############################################################################

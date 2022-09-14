@@ -1,11 +1,10 @@
-from botocore.exceptions import requests
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request
 from flask_cors import cross_origin
-import datetime
-import requests
 import json
 import uuid
 from controllers.algorithm_status_controller import *
+import typing as t
+
 
 ###############################################################################
 #                            Set Up Flask Blueprint                           #
@@ -19,24 +18,29 @@ default_collection = 'apk'
 asc = AlgorithmStatusController(default_collection)
 
 
+if t.TYPE_CHECKING:  # pragma: no cover
+    from werkzeug.wrappers import Response as BaseResponse
+    from .wrappers import Response
+    import typing_extensions as te
+
+
 @algorithm_status_blueprint.route("/status/get/<uuid>", methods=['GET'])
 @cross_origin()
-def get_job_status(uuid):
+def get_job_status(uuid: str) -> t.Tuple[str, int]:
     """
     Method for getting a status of each and every algorithm
     """
     if request.method == "GET":
         res = asc.get_job_status(uuid)
 
-        return json.dumps(res), 200
+        return res, 200
 
     return "Invalid request", 400
 
 
-
 @algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>", methods=['GET', 'POST'])
 @cross_origin()
-def update_algorthm_status(uuid, algorithm):
+def update_algorthm_status(uuid: str, algorithm: str) -> t.Tuple[str, int]:
     """
     Method for updating status of each and every algorithm
     """
@@ -44,12 +48,16 @@ def update_algorthm_status(uuid, algorithm):
         status = str( request.data.decode() )
 
         res = asc.update_algorithm_status(uuid, algorithm, status)
-        return json.dumps(res), 200
+
+        res = ""
+        return res, 200
+
+    return "Invalid request", 400
 
 
 @algorithm_status_blueprint.route("/status/update/<uuid>", methods=['GET', 'POST'])
 @cross_origin()
-def update_job_status(uuid):
+def update_job_status(uuid: str) -> t.Tuple[str, int]:
     """
     Method for updating status of each and every algorithm
     """
@@ -57,12 +65,16 @@ def update_job_status(uuid):
         status = str( request.data.decode() )
 
         res = asc.update_job_status(uuid, status)
-        return json.dumps(res), 200
+
+        res = ""
+        return res, 200
+
+    return "Invalid request", 400
 
 
 @algorithm_status_blueprint.route("/status/get/<uuid>/<algorithm>", methods=['GET'])
 @cross_origin()
-def get_one_algorithm_status(uuid, algorithm):
+def get_one_algorithm_status(uuid: str, algorithm: str) -> t.Tuple[str, int]:
     """
     Method for updating status of each and every algorithm
     """
@@ -77,7 +89,7 @@ def get_one_algorithm_status(uuid, algorithm):
 
 @algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>", methods=['GET', 'POST'])
 @cross_origin()
-def update_one_algorithm_status(uuid, algorithm):
+def update_one_algorithm_status(uuid: str, algorithm: str) -> t.Tuple[str, int]:
     """
     Method for updating status of each and every algorithm
     """
@@ -93,19 +105,19 @@ def update_one_algorithm_status(uuid, algorithm):
 
 @algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>/<attribute>", methods=['GET', 'POST'])
 @cross_origin()
-def update_one_attribute_in_status(uuid, algorithm, attribute):
+def update_one_attribute_in_status(uuid: str, algorithm: str, attribute: str) -> t.Tuple[str, int]:
     """
     Method for updating one attribute inside status of each and every algorithm
     """
     if request.method == "POST":
-        # Assume result is a string
+        # Assume new attribute value is a string
         update = str( request.data.decode() )
 
         res = asc.update_algorithm_status_attribute(uuid, algorithm, attribute, update)
 
-        print(res)
-
         return safe_serialize( res ), 200
+    else:
+        return request.method + " not valid", 400
 
 
 @algorithm_status_blueprint.route("/status", methods=['GET'])
@@ -114,10 +126,25 @@ def status():
     "Status getter is online", 200
 
 
-@algorithm_status_blueprint.route("/status/update", methods=['GET'])
-@cross_origin()
-def u_status():
-    pass
+# @algorithm_status_blueprint.route("/status/test", methods=['GET'])
+# @cross_origin()
+# def p_status():
+#     threading.Thread(target=test, args=(1,))
+
+#     return "Started thread", 200
+
+
+# @algorithm_status_blueprint.route("/status/test2", methods=['GET'])
+# @cross_origin()
+# def c_status():
+#     print("started")
+#     time.sleep(2000)
+#     return "finished thread", 200
+
+def test(name):
+    logging.info("Thread %s: starting", name)
+    time.sleep(200)
+    logging.info("Thread %s: finishing", name)
 
 
 ###############################################################################

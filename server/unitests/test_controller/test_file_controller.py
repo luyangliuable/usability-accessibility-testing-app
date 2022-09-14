@@ -39,7 +39,6 @@ class TestFileCtr(unittest.TestCase):
 
     def test_get_file(self):
         headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
-        # data = requests.get("http://localhost:5005/file/get", data=json.dumps( {"uuid": self.uuid} ), headers=headers).json()
         data = self.fc.get_document(self.uuid)
         write_to_view("view.txt", data)
 

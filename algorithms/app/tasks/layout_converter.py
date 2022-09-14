@@ -92,9 +92,17 @@ class LayoutConverter(Task):
                     bounds_out = re.findall(re_text, val)[0]
                     bounds_json = [[int(bounds_out[0]), int(bounds_out[1])], [int(bounds_out[2]), int(bounds_out[3])]]
                     child[key] = bounds_json
+                elif key == "focused":
+                    focused = bool(child.pop("focused"))
+                    child["visible"] = focused
                 elif key =="password":
                     pw = bool(child.pop("password"))
                     child["is_password"] = pw
+                elif key =="resource-id":
+                    ri = child.pop("resource-id")
+                    if ri =="":
+                        ri = None
+                    child["resource_id"] = ri
                 elif key =="content-desc":
                     cd = child.pop("content-desc")
                     if cd =="":

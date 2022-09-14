@@ -10,7 +10,7 @@ class Xbot(Task):
     _input_types = [ResourceType.APK_FILE, ResourceType.EMULATOR]
     _output_types = [ResourceType.SCREENSHOT_PNG, ResourceType.XML_LAYOUT, ResourceType.ACCESSABILITY_ISSUE]
     _url = 'http://host.docker.internal:3003/execute'
-    
+
     
     def __init__(self, output_dir, resource_dict : Dict[ResourceType, ResourceGroup]) -> None:
         super().__init__(output_dir, resource_dict)
@@ -70,12 +70,13 @@ class Xbot(Task):
         
         print("XBOT RUNNING")
 
-        while len(self.apk_queue) > 0:                                  # get next apk
+        while len(self.apk_queue) > 0:                              # get next apk
             apk = self.apk_queue.pop(0)
 
             apk_path = apk.get_path()
-            Xbot.run(apk_path, self.output_dir, emulator)     # run algorithm
-            self._dispatch_outputs()                                    # dispatch results
+            emulator_path = emulator.get_path()
+            Xbot.run(apk_path, self.output_dir, emulator_path)      # run algorithm
+            self._dispatch_outputs()                                # dispatch results
 
             apk.release()
 

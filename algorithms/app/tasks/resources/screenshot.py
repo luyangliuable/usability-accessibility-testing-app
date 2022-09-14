@@ -23,8 +23,8 @@ class Screenshot(Task):
     def get_output_types(self) -> List[ResourceType]:
         return None
     
-    def add_tappability_prediction(self) -> None:
-        self.tappability_prediction = True
+    def set_tappability_prediction(self, check) -> None:
+        self.tappability_prediction = check
     
     def get_tappability_prediction(self) -> bool: 
         return self.tappability_prediction

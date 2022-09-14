@@ -9,27 +9,27 @@ class UniqueScreenshots(Task):
 
 
     @classmethod
-    def get_name() -> str:
+    def get_name(cls) -> str:
         return UniqueScreenshots.__name__
 
 
     @classmethod
-    def get_input_types(self) -> List[ResourceType]:
+    def get_input_types(cls) -> List[ResourceType]:
         return [ResourceType.SCREENSHOT_JPEG]
 
 
     @classmethod
-    def get_output_types(self) -> List[ResourceType]:
+    def get_output_types(cls) -> List[ResourceType]:
         return [ResourceType.SCREENSHOT_UNIQUE]
 
 
     def execute(self):
         #get existing unique images
-        output_type = self.get_output_types()[0]
+        output_type = self.get_output_types(cls)[0]
         if output_type not in self.resource_dict:
-            ResourceGroup(self.get_output_types(), None)
+            ResourceGroup(self.get_output_types(cls), None)
 
-        for type in self.get_input_types():
+        for type in self.get_input_types(cls):
             unique_img_lst = self.dict[output_type].get_all_resources()
             item_lst = self.dict[type].get_all_resources()
 

@@ -1,5 +1,14 @@
 from resources.resource import *
+from tasks.task import *
+
+from tasks.droidbot import *
+from tasks.gifdroid import *
+from tasks.image_converter import *
+from tasks.layout_converter import *
+from tasks.owleye import *
 from tasks.storydistiller import *
+from tasks.tappability import *
+from tasks.unique_screenshots import *
 from tasks.xbot import *
 
 
@@ -12,11 +21,11 @@ if __name__ == '__main__':
     resource_dict[ResourceType.EMULATOR] = ResourceGroup(ResourceType.EMULATOR, usage=ResourceUsage.SEQUENTIAL)
 
 
-    storydistiller = Storydistiller('/home/data/test_apks/a2dp.Vol_133/storydistiller/', resource_dict)
-    xbot = Xbot('/home/data/test_apks/a2dp.Vol_133/xbot/', resource_dict)
-    
+    tasks = ["Storydistiller", "Xbot"]
+    base_dir = "/home/data/test_apks/a2dp.Vol_133/"
+    TaskFactory.create_tasks(tasks, base_dir, resource_dict)
 
-    
+
     apk = ResourceWrapper('/home/data/test_apks/a2dp.Vol_133/a2dp.Vol_133.apk', 'upload')
     emulator = ResourceWrapper('', 'host.docker.internal:5555')
 

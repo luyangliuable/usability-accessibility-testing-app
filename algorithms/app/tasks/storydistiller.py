@@ -23,17 +23,17 @@ class Storydistiller(Task):
 
 
     @classmethod
-    def get_name() -> str:
+    def get_name(cls) -> str:
         """Name of the task"""
         return Storydistiller.__name__
     
     @classmethod
-    def get_input_types() -> List[ResourceType]:
+    def get_input_types(cls) -> List[ResourceType]:
         """Input resource types of the task"""
         return Storydistiller._input_types
 
     @classmethod
-    def get_output_types() -> List[ResourceType]:
+    def get_output_types(cls) -> List[ResourceType]:
         """Output resource types of the task"""
         return Storydistiller._output_types
 

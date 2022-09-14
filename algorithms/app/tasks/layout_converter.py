@@ -13,17 +13,22 @@ class LayoutConverter(Task):
     def __init__(self, output_dir, dict):
         super().__init__(output_dir, dict)
         self.xml_lst = {}
-        input_type = self.get_input_types()[0]
+        input_type = self.get_input_types(cls)[0]
         self._sub_to_input_types(input_type, self.xml_callback)
 
-    def get_name() -> str:
+    @classmethod
+    def get_name(cls) -> str:
         return LayoutConverter.__name__
 
-    def get_input_types(self) -> List[ResourceType]:
+    @classmethod
+    def get_input_types(cls) -> List[ResourceType]:
         return [ResourceType.XML_LAYOUT]
 
-    def get_output_types(self) -> List[ResourceType]:
+    @classmethod
+    def get_output_types(cls) -> List[ResourceType]:
         return [ResourceType.JSON_LAYOUT]
+
+
     
     def _sub_to_input_types(self, input_type: ResourceType, callback_func: Callable) -> None:
         """Get notified when new xml is added"""
@@ -54,7 +59,7 @@ class LayoutConverter(Task):
         self.xml_lst[next_xml.get_path()]["is_completed"] = True # set complete
         
     def _run(self, item: ResourceWrapper) -> None:
-        """Converts xml to json and dispatches new resource wrapper"""
+        """Converts xml to json and publishes new resource wrapper"""
         #convert xml to json
         path = item.get_path()
         item_metadata = item.get_metadata()
@@ -66,13 +71,13 @@ class LayoutConverter(Task):
 
         #add new resource wrapper
         resource = ResourceWrapper(out_path, item.get_origin(), item_metadata)
-        for item in self.get_output_types():
+        for item in self.get_output_types(cls):
             if item in self.resource_dict:
                 rg = self.resource_dict[item]
-                rg.dispatch(resource, False)
+                rg.publish(resource, False)
             else:
                 rg = ResourceGroup(item)
-                rg.dispatch(resource, False)
+                rg.publish(resource, False)
                 
     def _update_list(self, json_children: list) -> list:
         """Loops through list of children and calls update on individual dictionary"""
@@ -183,5 +188,5 @@ if __name__ == '__main__':
     
     xml = ResourceWrapper('/Users/em.ily/Desktop/xbot/a2dp.Vol.main.xml', '', Screenshot('a2dp.Vol_.main','a2dp.Vol_.main',png_path='/Users/em.ily/Desktop/temp/a2dp.Vol_.main.png', xml_path='/Users/em.ily/Desktop/xbot/a2dp.Vol.main.xml'))
     
-    xml_resource.dispatch(xml, False)
+    xml_resource.publish(xml, False)
     print(layout_converter.is_complete())

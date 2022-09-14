@@ -1,5 +1,6 @@
 from typing import List, Callable
-from resources import *
+from resources.resource import *
+from resources.resource_types import *
 
 class Screenshot():
     
@@ -13,7 +14,7 @@ class Screenshot():
         self.activity_name = activity_name
         self.subscribers = []
         
-    def get_name() -> str:
+    def get_name(cls) -> str:
         return Screenshot._name__
 
     def get_input_types(self) -> List[ResourceType]:

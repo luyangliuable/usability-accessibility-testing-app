@@ -13,25 +13,31 @@ class ImageConverter(Task):
         self.jpeg_type = jpeg
         self.png_type = png
         self.img_lst = {}
-        input_type = self.get_input_types()[0]
+        input_type = self.get_input_types(cls)[0]
         self._sub_to_input_types(input_type, self.img_callback)
 
-    def get_name() -> str:
+
+    @classmethod
+    def get_name(cls) -> str:
         return ImageConverter.__name__
 
-    def get_input_types(self) -> List[ResourceType]:
-        if self.jpeg_type:
-            return [ResourceType.SCREENSHOT_PNG]
-        if self.png_type:
-            return [ResourceType.SCREENSHOT_JPEG]
-        return None
+    @classmethod
+    def get_input_types(cls) -> List[ResourceType]:
+        # if self.jpeg_type:
+        #     return [ResourceType.SCREENSHOT_PNG]
+        # if self.png_type:
+        #     return [ResourceType.SCREENSHOT_JPEG]
+        return [ResourceType.SCREENSHOT_PNG]
 
-    def get_output_types(self) -> List[ResourceType]:
-        if self.jpeg_type:
-            return [ResourceType.SCREENSHOT_JPEG]
-        if self.png_type:
-            return [ResourceType.SCREENSHOT_PNG]
-        return None
+    @classmethod
+    def get_output_types(cls) -> List[ResourceType]:
+        # if self.jpeg_type:
+        #     return [ResourceType.SCREENSHOT_JPEG]
+        # if self.png_type:
+        #     return [ResourceType.SCREENSHOT_PNG]
+        return [ResourceType.SCREENSHOT_JPEG]
+
+
 
     def _sub_to_input_types(self, type : ResourceType, callback_func: Callable) -> None:
         """Get notified when new jpeg/png is added"""
@@ -84,13 +90,13 @@ class ImageConverter(Task):
             item_metadata.set_png_path(out_path)
 
         resource = ResourceWrapper(out_path, item.get_origin(), item_metadata)
-        for item in self.get_output_types():
+        for item in self.get_output_types(cls):
             if item in self.resource_dict:
                 rg = self.resource_dict[item]
-                rg.dispatch(resource, False)
+                rg.publish(resource, False)
             else:
                 rg = ResourceGroup(item)
-                rg.dispatch(resource, False)  
+                rg.publish(resource, False)  
                 
     def is_complete(self) -> bool:
         """Checks if all images in list have been convertered"""
@@ -113,5 +119,5 @@ if __name__ == '__main__':
     png = ResourceWrapper('/Users/em.ily/Desktop/temp/a2dp.Vol_.main.png', '', Screenshot('a2dp.Vol_.main','a2dp.Vol_.main',png_path='/Users/em.ily/Desktop/temp/a2dp.Vol_.main.png'))
     jpeg = ResourceWrapper('/Users/em.ily/Desktop/temp/droidbot/states/screen_2022-08-17_063729.jpeg', '', Screenshot('2022-08-17_063729','a2dp.Vol_.PackagesChooser','/Users/em.ily/Desktop/temp/droidbot/states/screen_2022-08-17_063729.jpeg'))
     
-    png_resources.dispatch(png, False)
-    jpeg_resources.dispatch(jpeg, False)
+    png_resources.publish(png, False)
+    jpeg_resources.publish(jpeg, False)

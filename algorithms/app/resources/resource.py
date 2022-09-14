@@ -1,4 +1,4 @@
-from typing import TypeVar, Generic, List, Callable
+from typing import TypeVar, Generic, List, Callable, Dict
 from wsgiref.validate import validator
 from resources.resource_types import ResourceType
 
@@ -27,9 +27,8 @@ class ResourceWrapper(Generic[T]):
 
 class ResourceGroup(Generic[T]):
 
-    def __init__(self, type: ResourceType, validate : Callable[[List[ResourceWrapper[T]], ResourceWrapper[T]], bool]):
+    def __init__(self, type: ResourceType):
         self._type = type
-        self._validator = validate
 
         self._resources = []
         self._subscribers = []
@@ -55,8 +54,6 @@ class ResourceGroup(Generic[T]):
 
     def dispatch(self, resource : ResourceWrapper[T], completed : bool) -> None:
         """Adds new resource to resources list and notifies all subscribers"""
-        if not self._validator(self._resources, resource):
-            return
         
         self._providers[resource.get_origin()] = completed
         self._resources.append(resource)
@@ -64,4 +61,4 @@ class ResourceGroup(Generic[T]):
         ## TODO store dispatched resources in JSON or something and not just memory
 
         for callback in self._subscribers:
-            self._active = self._active and callback(resource)
+            callback(resource)

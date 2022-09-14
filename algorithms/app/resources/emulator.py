@@ -1,5 +1,3 @@
-from typing_extensions import Self
-from resources import *
 from typing import List, Callable
 
 class Emulator:
@@ -17,7 +15,7 @@ class Emulator:
     def get_name(self) -> str:
         return self.name
     
-    def subscribe(self, subscriber : Callable(str)) -> None:
+    def subscribe(self, subscriber : Callable[[str],None]) -> None:
         """Subscriber for emulator"""
         self.subscribers.append(subscriber) # add subscriber to queue
         self._update_queue()

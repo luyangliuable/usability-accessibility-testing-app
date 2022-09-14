@@ -63,7 +63,7 @@ class Tappability(Task):
         """Subscribe to screenshot json"""
         if ResourceType.JSON_LAYOUT in self.resource_dict:
             for resource in self.resource_dict[ResourceType.JSON_LAYOUT].get_all_resources():
-                resource.get_metadata().subscribe(self.json_callback)
+                resource.get_metadata().subscribe(self.json_callback, "json")
                 
     def json_callback(self, json: ResourceWrapper) -> None:
         """Callback to process image"""

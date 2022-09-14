@@ -56,3 +56,16 @@ class Screenshot(Task):
     def get_activity_name(self) -> str:
         return self.activity_name
     
+    def subscribe(self, subscriber : Callable[[str],None], type: str) -> None:
+        """Subscriber for json"""
+        self.subscribers.append(subscriber) # add subscriber to queue
+        self._update_queue(type)
+    
+    def _update_queue(self, type:str) -> None:
+        """Notifies next subscriber if json is exists"""
+        # if there are more subscribers and emulator is free, notify the next
+        if type == "json":
+            check = self.json_path
+        if len(self.subscribers) > 0 and check != "":  
+            self.subscribers.pop(0)(self.img_name)
+    

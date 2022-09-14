@@ -1,7 +1,6 @@
 from re import S
 from tasks.task import *
 from resources.resource import *
-from resources.emulator import *
 from typing import List, Dict
 import os
 
@@ -107,7 +106,7 @@ class Storydistiller(Task):
             self.apk_queue.append(new_apk)
 
     
-    def emulator_callback(self, emulator : ResourceWrapper[Emulator]) -> None:
+    def emulator_callback(self, emulator : ResourceWrapper) -> None:
         """callback method for using emulator"""
         
         self._process_apks(emulator=emulator)

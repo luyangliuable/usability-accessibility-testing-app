@@ -1,6 +1,5 @@
 from tasks.task import *
 from resources.resource import *
-from resources.emulator import *
 from typing import List, Dict
 import os
 
@@ -106,7 +105,7 @@ class Xbot(Task):
             self.apk_queue.append(new_apk)
 
     
-    def emulator_callback(self, emulator : ResourceWrapper[Emulator]) -> None:
+    def emulator_callback(self, emulator : ResourceWrapper) -> None:
         """callback method for using emulator"""
         
         self._process_apks(emulator=emulator)
@@ -116,19 +115,3 @@ class Xbot(Task):
     def is_complete(self) -> bool:
         pass
         # return if subscriptions are complete and apk list is empty
-        
-if __name__=='__main__':
-    apk_resources = ResourceGroup(ResourceType.APK_FILE)
-    emulator_resources = ResourceGroup[Emulator](ResourceType.EMULATOR)
-    resource_dict = {} # make resource dict
-    resource_dict[ResourceType.APK_FILE] = apk_resources
-    resource_dict[ResourceType.EMULATOR] = emulator_resources
-    
-    storydistiller = Storydistiller('/home/data/test_apks/a2dp.Vol_133/storydistiller/', resource_dict)
-    xbot = Xbot('/home/data/test_apks/a2dp.Vol_133/xbot/', resource_dict)
-    
-    apk = ResourceWrapper('/home/data/test_apks/a2dp.Vol_133/a2dp.Vol_133.apk', 'upload')
-    emulator = ResourceWrapper('', 'upload', Emulator('host.docker.internal:5555'))
-    
-    emulator_resources.dispatch(emulator, False)
-    apk_resources.dispatch(apk, False)

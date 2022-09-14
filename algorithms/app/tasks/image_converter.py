@@ -1,8 +1,7 @@
 from PIL import Image
 import json
 import os
-from resources.resource import ResourceGroup, ResourceWrapper
-from resources.resource import ResourceType
+from resources import *
 from tasks.task import Task
 from typing import List
 

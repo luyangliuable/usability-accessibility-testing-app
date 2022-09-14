@@ -3,9 +3,8 @@ import json
 import xmltodict
 import os
 from tasks.task import Task
-from resources.resource import ResourceGroup, ResourceWrapper
+from resources import *
 from typing import List
-from resources.resource import ResourceType
 
 
 class LayoutConverter(Task):

@@ -33,10 +33,6 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - MONGO_URL=mongodb://host.docker.internal:27017/
       - S3_URL=http://host.docker.internal:4566
-      - STORYDISTILLER=http://host.docker.internal:3002
-      - XBOT=http://host.docker.internal:3003
-      - OWLEYE=http://host.docker.internal:3004
-      - FLASK_BACKEND=http://host.docker.internal:5005
     extra_hosts:
       - "host.docker.internal:host-gateway"
     depends_on:

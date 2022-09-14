@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+    import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Container, Carousel } from "react-bootstrap";
 
@@ -17,13 +17,6 @@ const Report = () => {
   const tempUUID = locations.state?.uuid;
   const [uuid, setUuid] = useState(tempUUID);
   const resultDataPath = "http://localhost:5005/file/get/";
-
-  // useEffect(() => {
-  //   if (typeof uuid === "undefined") {
-  //     console.log("[1.1] redirect");
-  //     navigate("/results");
-  //   }
-  // }, [uuid, navigate]);
 
 
   const [reportData, updateReportData] = useState(["a2dp.Vol.AppChooser", "a2dp.Vol.CustomIntentMaker", "a2dp.Vol.EditDevice", "a2dp.Vol.main", "a2dp.Vol.ManageData", "a2dp.Vol.PackagesChooser", "a2dp.Vol.Preferences", "a2dp.Vol.ProviderList"]);

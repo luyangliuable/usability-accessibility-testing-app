@@ -68,8 +68,7 @@ const UploadBox = ({
           <p className="upload-box-text-20 upload-text-center">or</p>
         </div>
 
-        <div
-          className="upload-box-full-width"
+        <div className="upload-box-full-width"
           style={{
             display: "flexbox",
             flexDirection: "column",

@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Testing-Build-Docker-Containers-Successful
 
 on:
   push:

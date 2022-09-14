@@ -110,21 +110,6 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
             "user_id": user_UUID,
             "result_id": response.uuid
         });
-        // Remove eslint when var is used
-        // eslint-disable-next-line
-        var _ = fetch(resultCreateUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: jsonData,
-        });
-
-        setObjectState(prev => {
-            return {
-                ...prev,
-                algorithmsComplete: prev.algorithmsComplete + 1,
-                progressBarMessage: "Upload done",
-            };
-        });
 
 
         // Remove eslint when var is used

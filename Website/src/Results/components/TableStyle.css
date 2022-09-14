@@ -1,9 +1,9 @@
 // sets
 
-.gtable {
+.gifdroid-table {
     width: 40px;
     table-layout: fixed;
-    background: red !important;
+    font-size: 12px !important;
 }
 
 .tbl-content{
@@ -11,13 +11,14 @@
     overflow-x:auto;
     margin-top: 0px;
     border: 1px solid #000;
+    font-size: 12px !important;
 }
 
 .gifdroid-th{
     padding: 20px 15px;
     text-align: left;
     font-weight: 500;
-    font-size: 12px;
+    font-size: 40px;
     color: #000;
     text-transform: uppercase;
 }
@@ -32,13 +33,15 @@
     text-align: left;
     vertical-align: middle;
     font-weight: 200;
-    font-size: 12px;
     color: #000;
     border-bottom: solid 1px rgba(255,255,255,0.5);
+    font-size: 14px !important;
+    font-weight: 250;
 }
 
 .gifdroid-attribute {
     font-weight: bold;
+    font-size: 14px !important;
 }
 
 .disabledrag {

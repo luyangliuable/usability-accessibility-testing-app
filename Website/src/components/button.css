@@ -1,6 +1,6 @@
-button {
-  color: white !important;
-  background: #1e90ff;
+.custbutton {
+  color: black !important;
+  background: #EEE;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -13,7 +13,7 @@ button {
   -moz-border-radius: 20px;
   -ms-border-radius: 20px;
   cursor: pointer;
-  box-shadow: 1px 1px 2px #a98;
+  box-shadow: 1px 1px 2px #121212;
   -webkit-box-shadow: 1px 1px 2px #121212;
   -moz-box-shadow: 1px 1px 2px #121212;
   -ms-box-shadow: 1px 1px 2px #121212;
@@ -27,7 +27,7 @@ button {
   /*Firefox*/
 }
 
-button:hover {
+.cust_button:hover {
   box-shadow: 2px 2px 15px #121212;
   -webkit-box-shadow: 2px 2px 15px #121212;
   -moz-box-shadow: 2px 2px 15px #121212;
@@ -36,11 +36,16 @@ button:hover {
   -moz-opacity: 0.8;
 }
 
-button:active {
-  -webkit-box-shadow: inset 2px 2px black;
-  -moz-box-shadow: inset 2px 2px black;
+.cust_button:active {
+  -webkit-box-shadow: inset 2px black;
+  -moz-box-shadow: inset 2px black;
 }
 
-button:disabled {
-  opacity: 30%;
+.dots {
+    background: 'white';
+    width: '100px'
+}
+
+.cust_button:disabled {
+    opacity: 30%;
 }

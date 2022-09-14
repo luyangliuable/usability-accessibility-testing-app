@@ -72,19 +72,11 @@ const Results = () => {
           </thead>
           <tbody>
             <tr key={"test1"}>
-              <td>1</td>
-              <td>a2dp.Vol_133.apk</td>
-              <td>01/09/2022 6:54pm</td>
-              <td>Completed</td>
-              <td>
-                <Link
-                  to={"/report"}
-                  state={{ uuid: ""}}
-                >
-                  <button className="button btn btn-primary">
-                    <h3>Report</h3>
-                  </button>
-                </Link></td>
+              <td>Asfsfds</td>
+              <td>Mark</td>
+              <td>Otto</td>
+              <td>@mdo</td>
+              <td>@mdo</td>
             </tr>
             {reportKeys.map((report, index) => {
               return (
@@ -114,7 +106,7 @@ const Results = () => {
         </div>
       </div>
     </Container>
-  );
+);
 };
 
 export default Results;

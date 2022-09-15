@@ -1,5 +1,4 @@
 from os.path import isfile
-from socket import _SendableFile
 from flask import Blueprint, request, jsonify, send_file
 from flask_cors import cross_origin
 import boto3

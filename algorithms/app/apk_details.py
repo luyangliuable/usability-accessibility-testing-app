@@ -1,4 +1,4 @@
-from algorithm_controllers import *
+#from algorithm_controllers import *
 import os
 import json
 import shutil
@@ -23,7 +23,7 @@ class ApkDetails:
     
     def execute_task(self, task: Task) -> None:
         """Executes task"""
-        task_name = task.get_name()
+        task_name = task.get_name(cls)
         if task_name not in self.tasks:
             task.execute()
             self.tasks[task_name] = task

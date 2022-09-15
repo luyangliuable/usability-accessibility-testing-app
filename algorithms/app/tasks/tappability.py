@@ -1,9 +1,11 @@
+from urllib import response
 from PIL import Image
 import json
 import os
-from resources import *
-from task import Task
-from typing import List, Callable
+from resources.resource import *
+from resources.screenshot import *
+from tasks.task import Task
+from typing import List, Callable, Tuple
 import shutil
 import subprocess
 
@@ -14,29 +16,45 @@ class Tappability(Task):
         super().__init__(output_dir, resource_dict)
         self.img_lst = {}
         self.running = False
-        input_type_img = self.get_input_types()[0]
+        input_type_img = self.get_input_types(cls)[0]
         self.threshold = threshold
-        self._sub_to_input_types(input_type_img, self.tappable_callback)
+        self._sub_to_unique_pairs()
 
-    def get_name() -> str:
+        self.pairs = {}
+        
+
+    @classmethod
+    def get_name(cls) -> str:
         return Tappability._name__
 
-    def get_input_types(self) -> List[ResourceType]:
-        return [ResourceType.SCREENSHOT_JPEG]
+    @classmethod
+    def get_input_types(cls) -> List[ResourceType]:
+        return [ResourceType.SCREENSHOT_UNIQUEPAIR]
 
-    def get_output_types(self) -> List[ResourceType]:
+    @classmethod
+    def get_output_types(cls) -> List[ResourceType]:
        return [ResourceType.TAPPABILITY_PREDICT]
+
+
    
-    def _sub_to_input_types(self, input_type: ResourceType, callback_func: Callable) -> None:
+    def _sub_to_unique_pair(self) -> None:
         """Get notified when new img/json is added"""
-        if input_type in self.resource_dict:
-                self.resource_dict[input_type].subscribe(callback_func) 
+        self.resource_dict[ResourceType.SCREENSHOT_UNIQUEPAIR].subscribe(tappable_callback) 
+
+
+    
+    def tappable_callback(self, resource : ResourceWrapper[Tuple[ResourceWrapper[Screenshot], ResourceWrapper]]) -> None:
+        (jpeg, json) = resource.get_metadata(); 
+        
+        # TODO execute tappability with the provided JPEG and JSON
+        return
+
                 
-    def tappable_callback(self, new_img: ResourceWrapper) -> None:
-         """Callback method to add img and run converter method"""
-         if new_img.get_path() not in self.img_lst:
-             self._add_img(new_img)
-             self._process_img()
+    # def tappable_callback(self, new_img: ResourceWrapper) -> None:
+    #      """Callback method to add img and run converter method"""
+    #      if new_img.get_path() not in self.img_lst:
+    #          self._add_img(new_img)
+    #          self._process_img()
 
     def _add_img(self, img: ResourceWrapper) -> None:
         """Add img to img list"""
@@ -58,7 +76,8 @@ class Tappability(Task):
             return
         self.img_lst[next_img.get_path()]["ready"] = True # set ready
         self._run()
-        
+    
+    
     def _sub_to_json(self) -> None:
         """Subscribe to screenshot json"""
         if ResourceType.JSON_LAYOUT in self.resource_dict:
@@ -92,11 +111,11 @@ class Tappability(Task):
             item_lst = self._move_items(path)
             #run tappable
             subprocess.call(['python3','PATH TO TAPPABLE', '-i', os.path.join(path, 'images'), '-x', os.path.join(path, 'annotations'), '-o', self.output_dir, '-t', str(self.threshold)])
-            #dispatch
-            self._dispatch(item_lst, path)
+            #publish
+            self._publish(item_lst, path)
     
-    def _dispatch(self, item_lst: list, path: str) -> None:
-        """Dispatches and updates item"""
+    def _publish(self, item_lst: list, path: str) -> None:
+        """publishes and updates item"""
         for item in item_lst:
             #set item as complete 
             self.img_lst[item.get_path()]["is_completed"] = True
@@ -104,13 +123,13 @@ class Tappability(Task):
             item_metadata.set_tappability_prediction(True)
             #add new tappability prediction resources
             resource = ResourceWrapper(os.path.join(path, item_metadata.get_img_name()), item.get_origin(), item_metadata)
-            for item in self.get_output_types():
+            for item in self.get_output_types(cls):
                 if item in self.resource_dict:
                     rg = self.resource_dict[item]
-                    rg.dispatch(resource, False)
+                    rg.publish(resource, False)
                 else:
                     rg = ResourceGroup(item)
-                    rg.dispatch(resource, False)
+                    rg.publish(resource, False)
         #clear temp folder
         shutil.rmtree(os.path.join(path, 'images'))
         shutil.rmtree(os.path.join(path, 'annotations'))
@@ -143,5 +162,5 @@ if __name__ == '__main__':
     jpeg = ResourceWrapper('/Users/em.ily/Desktop/xbot/a2dp.Vol.main.jpeg', '', screenshot_item)
     json_item = ResourceWrapper('/Users/em.ily/Desktop/xbot/a2dp.Vol.main.json', '', screenshot_item)
     
-    json_resources.dispatch(json_item, False)
-    jpeg_resources.dispatch(jpeg, False)
+    json_resources.publish(json_item, False)
+    jpeg_resources.publish(jpeg, False)

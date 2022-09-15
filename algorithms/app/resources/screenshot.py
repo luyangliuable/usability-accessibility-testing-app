@@ -1,8 +1,8 @@
 from typing import List, Callable
-from task import Task
-from resources import *
+from resources.resource import *
+from resources.resource_types import *
 
-class Screenshot(Task):
+class Screenshot():
     
     def __init__(self, img_name, activity_name, jpeg_path = "", png_path = "", xml_path = "", json_path = ""):
         self.tappability_prediction = False
@@ -14,7 +14,7 @@ class Screenshot(Task):
         self.activity_name = activity_name
         self.subscribers = []
         
-    def get_name() -> str:
+    def get_name(cls) -> str:
         return Screenshot._name__
 
     def get_input_types(self) -> List[ResourceType]:

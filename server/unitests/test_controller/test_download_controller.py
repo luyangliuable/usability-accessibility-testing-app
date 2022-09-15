@@ -25,6 +25,9 @@ class TestDownloadCtrl(unittest.TestCase):
         self.tc = "test"
         self.d_ctrl = DownloadController(self.tc, gifdroidJsonParser)
 
+    def test_download_summary_works(self):
+        self.d_ctrl.download_all_objects_in_folder("57730388-de61-45c1-8098-d449491004ec")
+
 
 ###############################################################################
 #                              Untility functions                             #

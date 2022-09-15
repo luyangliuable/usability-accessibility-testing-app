@@ -14,6 +14,20 @@
     color: #F2F2F2;
 }
 
-h1 {
-    font-weight: 600 !important;
+
+.landing_button {
+    font-size: 30px;
+    cursor: pointer;
+    background: #1e90ff;
+    width: 300px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    border-radius: 24px;
+}
+
+.landing_button: hover {
+    box-shadow: 2px 2px 12px #000;
 }

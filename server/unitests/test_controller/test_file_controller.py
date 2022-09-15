@@ -48,10 +48,6 @@ class TestFileCtr(unittest.TestCase):
         expected = DBManager.get_format(self.uuid)
         expected.pop('date')
 
-        # Get file route
-        print(data)
-
-
         self.assertEqual(expected, data)
 
 

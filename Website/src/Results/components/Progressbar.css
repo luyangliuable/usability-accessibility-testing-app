@@ -1,0 +1,29 @@
+.progressBarBackground {
+	width: 90%;
+	height: 30px;
+	background: #FFF;
+	border-radius: 14px;
+	padding: 4px;
+}
+
+.stage {
+	animation: animateBg 10s linear infinite;
+	background-image: linear-gradient(
+		90deg,
+		#00bfff 0%,
+		#897ed3 50%,
+		#00bfff 100%
+	);
+	background-size: 1100% 100%;
+    height: "99%";
+    border-radius: 17px;
+}
+
+@keyframes animateBg {
+	0% {
+		background-position: 100% 0%;
+	}
+	100% {
+		background-position: 0% 0%;
+	}
+}

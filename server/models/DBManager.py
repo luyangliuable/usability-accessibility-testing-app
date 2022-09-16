@@ -4,6 +4,7 @@ import datetime
 import json
 import os
 
+
 class DBManager:
     """
         This class is a *singleton* that provides a global access point for API in this project. It access the api key inside .env file. It must be initiated to be used and only one instance can exist at a time
@@ -13,13 +14,12 @@ class DBManager:
 
     # https://www.mongodb.com/docs/manual/reference/bson-types/
 
-
     def __init__(self):
         """
         NOTE: DO NOT ALLOW initiation directly
         """
-        raise RuntimeError('Cannot initialise an api singleton, call instance() instead')
-
+        raise RuntimeError(
+            'Cannot initialise an api singleton, call instance() instead')
 
     @staticmethod
     def get_format(uuid: str) -> dict:
@@ -58,67 +58,71 @@ class DBManager:
                 "type": "",
                 "name": "",
                 "s3_bucket": "",
-                "s3_key": ""
+                "s3_key": "",
             },
-            "additional_files" : [],
-            "status" : "",
-            "algorithm_status" : {
-                "storydistiller" : {
-                    "status" : "",
+            "additional_files": [],
+            "overall_status": {
+                "status": "",
+                "percentage": 0,
+                "logs": [],
+            },
+            "algorithm_status": {
+                "storydistiller": {
+                    "status": "",
                     "notes": "",
-                    "start_time" : "",
-                    "end_time" : "",
+                    "start_time": "",
+                    "end_time": "",
                     "apk": ""
                 },
-                "owleye" : {
-                    "status" : "",
+                "owleye": {
+                    "status": "",
                     "notes": "",
-                    "start_time" : "",
-                    "end_time" : "",
+                    "start_time": "",
+                    "end_time": "",
                     "apk": ""
                 },
-                "xbot" : {
-                    "status" : "",
+                "xbot": {
+                    "status": "",
                     "notes": "",
-                    "start_time" : "",
-                    "end_time" : "",
+                    "start_time": "",
+                    "end_time": "",
                     "apk": ""
                 },
-                "gifdroid" : {
-                    "status" : "",
+                "gifdroid": {
+                    "status": "",
                     "notes": "",
-                    "start_time" : "",
-                    "end_time" : "",
+                    "start_time": "",
+                    "end_time": "",
                     "apk": ""
                 },
-                "ui_checker" : {
-                    "status" : "",
+                "ui_checker": {
+                    "status": "",
                     "notes": "",
-                    "start_time" : "",
-                    "end_time" : "",
+                    "start_time": "",
+                    "end_time": "",
                     "apk": ""
                 }
             },
-            "algorithm_outputs" : {
-                "storydistiller" : "",
-                "xbot" : ""
+            "algorithm_outputs": {
+                "storydistiller": "",
+                "xbot": ""
             },
-            "results" : {
-                "activities" : [
+            "results": {
+                "activities": [
                     {
-                        "name" : "",
-                        "image" : [],
-                        "xbot" : {
-                            "image" : "",
-                            "description" : ""
+                        "name": "",
+                        "image": [],
+                        "xbot": {
+                            "image": "",
+                            "description": ""
                         },
-                        "owleye" : {
-                            "image" : []
+                        "owleye": {
+                            "image": []
                         },
-                        "tapshoe" : {
-                            "image" : [],
-                            "description" : "",
-                            "heatmap" : "{link to heatmap image}"
+                        "tapshoe": {
+                            "image": [],
+                            "description": "",
+                            "heatmap": "{link to heatmap image}"
                         }
                     }
                 ],
@@ -130,7 +134,6 @@ class DBManager:
             }
         }
 
-
         # with open("document_format.json", "r") as f:
         #     data = json.load(f)
 
@@ -138,7 +141,6 @@ class DBManager:
         data['date'] = datetime.datetime.now()
 
         return data
-
 
     @classmethod
     def instance(cls):
@@ -153,7 +155,6 @@ class DBManager:
 
         return cls._instance
 
-
     def get_document(self, uuid: str, collection: Collection):
         cursor = collection.find({"uuid": uuid})
 
@@ -167,21 +168,18 @@ class DBManager:
         # Assume only 1 result
         return result[0]
 
-
     @classmethod
-    def get_db_status(cls, db_name:str):
+    def get_db_status(cls, db_name: str):
         try:
             client = pymongo.MongoClient(cls.url)
-            exec("%s%s" % ( "client.", db_name ) )
+            exec("%s%s" % ("client.", db_name))
         except:
             return False
         else:
             return True
 
-
     def get_database(self):
         return self._db
-
 
     @staticmethod
     def create_mongo_validator(user_schema: dict):
@@ -206,7 +204,6 @@ class DBManager:
 
         return validator
 
-
     def create_collection(self, collection_name: str, schema=None):
         validator = {}
 
@@ -217,7 +214,8 @@ class DBManager:
         result = Collection(self._db, collection_name)
 
         try:
-            result = self._db.create_collection(collection_name, validator=validator)
+            result = self._db.create_collection(
+                collection_name, validator=validator)
         except Exception as e:
             # Collection may already exist
             print(e)
@@ -225,7 +223,6 @@ class DBManager:
             print("Collection", collection_name, "created")
 
         return result
-
 
     def update_document(self, uuid: str, collection: Collection, attribute: str, value):
 
@@ -240,10 +237,8 @@ class DBManager:
             }
         )
 
-
-    def get_collection(self, collection_name:str):
+    def get_collection(self, collection_name: str):
         return self._db.get_collection(collection_name)
-
 
     def insert_document(self, document, collection: Collection):
         post_id = collection.insert_one(document)
@@ -251,7 +246,6 @@ class DBManager:
         print(post_id)
 
         return post_id
-
 
     @classmethod
     def connect(cls):

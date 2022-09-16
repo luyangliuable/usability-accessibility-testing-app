@@ -1,0 +1,49 @@
+{
+  "tag": "2022-09-11_014305",
+  "event": {
+    "event_type": "touch",
+    "log_lines": null,
+    "x": null,
+    "y": null,
+    "view": {
+      "package": "a2dp.Vol",
+      "visible": true,
+      "checkable": true,
+      "child_count": 0,
+      "editable": false,
+      "clickable": true,
+      "is_password": false,
+      "focusable": true,
+      "enabled": true,
+      "content_description": null,
+      "children": [],
+      "focused": false,
+      "bounds": [
+        [
+          0,
+          379
+        ],
+        [
+          1080,
+          463
+        ]
+      ],
+      "resource_id": "a2dp.Vol:id/checkCaptLoc",
+      "checked": false,
+      "text": "Capture location on disconnect?",
+      "class": "android.widget.CheckBox",
+      "scrollable": false,
+      "selected": false,
+      "long_clickable": false,
+      "parent": 8,
+      "temp_id": 11,
+      "size": "1080*84",
+      "signature": "[class]android.widget.CheckBox[resource_id]a2dp.Vol:id/checkCaptLoc[text]Capture location on disconnect?[enabled,,]",
+      "view_str": "16dc4432a7d03cd91abf3f6fbcf5bb9f",
+      "content_free_signature": "[class]android.widget.CheckBox[resource_id]a2dp.Vol:id/checkCaptLoc"
+    }
+  },
+  "start_state": "f0d9af12fb9b2ad0bb9811664623631e",
+  "stop_state": "5f6b97f57d43bd9c1afa2822147032aa",
+  "event_str": "TouchEvent(state=f0d9af12fb9b2ad0bb9811664623631e, view=16dc4432a7d03cd91abf3f6fbcf5bb9f(EditDevice/CheckBox-Capture lo))"
+}

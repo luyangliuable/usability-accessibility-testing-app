@@ -1,0 +1,49 @@
+{
+  "tag": "2022-09-11_014054",
+  "event": {
+    "event_type": "touch",
+    "log_lines": null,
+    "x": null,
+    "y": null,
+    "view": {
+      "package": "a2dp.Vol",
+      "visible": true,
+      "checkable": false,
+      "child_count": 0,
+      "editable": false,
+      "clickable": true,
+      "is_password": false,
+      "focusable": true,
+      "enabled": true,
+      "content_description": null,
+      "children": [],
+      "focused": false,
+      "bounds": [
+        [
+          26,
+          236
+        ],
+        [
+          417,
+          362
+        ]
+      ],
+      "resource_id": "a2dp.Vol:id/Locationbtn",
+      "checked": false,
+      "text": "STORED LOCATION",
+      "class": "android.widget.Button",
+      "scrollable": false,
+      "selected": false,
+      "long_clickable": true,
+      "parent": 10,
+      "temp_id": 11,
+      "size": "391*126",
+      "signature": "[class]android.widget.Button[resource_id]a2dp.Vol:id/Locationbtn[text]STORED LOCATION[enabled,,]",
+      "view_str": "6a4a5d7076cc68d9ec0c2aad532e128f",
+      "content_free_signature": "[class]android.widget.Button[resource_id]a2dp.Vol:id/Locationbtn"
+    }
+  },
+  "start_state": "15a3cd2072780077efcd12024e4ad3dc",
+  "stop_state": "15a3cd2072780077efcd12024e4ad3dc",
+  "event_str": "TouchEvent(state=15a3cd2072780077efcd12024e4ad3dc, view=6a4a5d7076cc68d9ec0c2aad532e128f(main/Button-STORED LOC))"
+}

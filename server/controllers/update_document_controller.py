@@ -1,24 +1,24 @@
 from utility.uuid_generator import unique_id_generator
-from flask import Blueprint, request, jsonify
-from flask_cors import cross_origin
 from models.DBManager import DBManager
-import datetime
-import json
 
-from download_parsers.gifdroid_json_parser import gifdroidJsonParser
 from download_parsers.strategy import Strategy
 from enums.status_enum import StatusEnum
 
+from typing import TypeVar, Generic, List, Dict, Tuple
 
-class UpdateDocumentController:
+
+T = TypeVar('T')
+
+
+class UpdateDocumentController(Generic[T]):
     """
     This controller class is used to update metadata for files on mongodb for traceability purpose.
     """
-    def __init__(self, collection_name: str, json_result_file_parser: Strategy):
+
+    def __init__(self, collection_name: str, json_result_file_parser: Strategy) -> None:
         ###############################################################################
         #                          Initiate database instance                         #
-        # ###############################################################################
-        # self.collection_name = "apk"
+        ###############################################################################
         self.collection_name = collection_name
         self.mongo = DBManager.instance()
 
@@ -39,11 +39,11 @@ class UpdateDocumentController:
         }
 
 
-    def get_lookup(self):
+    def get_lookup(self) -> Dict[str, str]:
         return self.lookup
 
 
-    def insert_algorithm_result(self, uuid: str, algorithm: str, links_to_res: list, result_type:str, file_names: list):
+    def insert_algorithm_result(self, uuid: str, algorithm: str, links_to_res: List, result_type: str, file_names: List) -> Tuple[ Dict[str, T], int]:
         """
         This function inserts the links to the algorithm results into the document matching uuid
 
@@ -51,6 +51,8 @@ class UpdateDocumentController:
             uuid - uuid for the job which is the cluster of algorithms tasked to run
             algorithm - the algorithm the result links for
             links_to_res - the single link to result. NOTE that element in list is dynamically typed so it can be a string
+
+        Returns: Dictionary for the updated document and a bool if the method is successful.
 
         """
 
@@ -72,16 +74,15 @@ class UpdateDocumentController:
 
         # Change document and insert result link ######################################
         prev = result[self.lookup[algorithm]][result_type]
-        tmp = self._strategy.do_algorithm(uuid, links_to_res, file_names)
-        print(tmp)
+        parsed_json_for_schema = self._strategy.do_algorithm(uuid, links_to_res, file_names)
 
-        print(result['gifdroid'])
-        result[self.lookup[algorithm]][result_type] = prev + tmp
+        # Append new parsed json to schema ############################################
+        result[self.lookup[algorithm]][result_type] = prev + parsed_json_for_schema
 
         # Update result back #####################################################
         self.mongo.update_document(uuid, self.c, result_key_in_d, result)
 
-        return result
+        return result, 200
 
 
     def get_document(self, uuid: str):
@@ -98,13 +99,10 @@ class UpdateDocumentController:
             collection=self.c
         )
 
-        # # The result for mongodb get document returns a list ##########################
-        # result = [item for item in result]
-
         return result
 
 
-    def add_document(self, request_parameters: list, document):
+    def add_document(self, request_parameters: List, document: Dict) -> bool:
         """
         Add file metadata that matches the job uuid
 
@@ -119,16 +117,34 @@ class UpdateDocumentController:
             ###############################################################################
 
             for each_key, _ in document.items():
-                document[each_key] = request_parameters.get(each_key)
+                document[each_key] = request_parameters[each_key]
 
             document['uuid'] = unique_id_generator()
 
             self.mongo.insert_document(document, self.c).inserted_id
 
-            return document['uuid'], 200
+            return True
         except Exception as e:
             ###############################################################################
             #                                Error Handling                               #
             ###############################################################################
-            return str(e), 400
+            raise IndexError(str(e))
 
+
+    def get_result_of_algorithm(self, uuid: str, algorithm: str) -> Dict[str, T]:
+        """
+        Method for getting a document from api
+
+        Parameters:
+            uuid - the unique id for the job containing algorithm run.
+            algorithm - the algorithm
+
+        Returns: The result slice in the schema for the algorithm
+        """
+
+        schema_result_key = 'results';
+        document = self.get_document(uuid)
+        print(document)
+        result = document[schema_result_key][algorithm]
+
+        return result

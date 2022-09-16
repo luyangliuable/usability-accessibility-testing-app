@@ -1,118 +1,114 @@
-import numpy as np
-import torch
-from configparser import ConfigParser
-from skimage import io, transform
-from model import ResNet, Block
-from heatmap import Heatmap
 import os
+
+from heatmap import Heatmap
+from dataset import Tappable
+from torch.utils.data import DataLoader
+from model import ResNet, Block
+import torch
+from torchvision.utils import draw_bounding_boxes
+from torchvision.io import read_image
 import matplotlib.pyplot as plt
+import torchvision
+import json
+import sys
+import getopt
 
-class ModelPipeline:
+def pipeline(img_path, json_path, output_path, threshold):
+    bounds = []
+    colours = []
 
-    def __init__(self, img_path, bounds, model):
-        self.img_path = img_path
-        self.bounds = self.updateArray(bounds)
-        self.img = self.getImage()
-        self.model_path = model
-        self.prediction = None 
 
-    #Gets stored image [TODO: update to get image from s3 bucket]
-    def getImage(self):
-        self.validateImage()
-        return io.imread(os.getcwd() + self.img_path)
+    json_file = open(json_path).read()
+    json_data = json.loads(json_file)
+    for view in json_data['views']:
+        if view['clickable'] == True: 
+            bounds_out = view['bounds']
+            bounds_item = [int(bounds_out[0][0]), int(bounds_out[0][1]), int(bounds_out[1][0]), int(bounds_out[1][1])]
+            bounds.append(bounds_item)
 
-    def updateArray(self, bounds):
-        for i in range(len(bounds)):
-            bounds[i] = int(bounds[i])
-        return bounds
+    #Create dataset and dataloader 
+    dataset = Tappable(img_path = img_path, bounds = bounds)
+    dataloader = DataLoader(dataset, batch_size=1, shuffle=False)
+
+    #Create model from saved state
+    model = ResNet(18, Block, 4, 2)
+    model.load_state_dict(torch.load(os.getcwd() + "/trained_models/resnet_v3.pt", map_location=torch.device('cpu')))
+    model.eval()
+
+    json_out = {}
+    bounding_boxes_all = []
+    counter = 0
+    labels = ["tappable", "not tappable"]
+
+    #Create heatmap
+    heatmap = Heatmap(img_path, model, output_path)
+
+    #Run model on dataset 
+    for batch_idx, item in enumerate(dataloader):
+        outputs = model(item['image'].type(torch.FloatTensor))
+        _, indices = torch.sort(outputs, descending=True)
+        percentage = torch.nn.functional.softmax(outputs, dim=1)[0] * 100
+        _, index = torch.max(outputs, 1) 
+        print([(labels[idx], percentage[idx].item()) for idx in indices[0][:2]])
+        bounding_boxes = []
+        bounding_boxes_all.append(item['bounds'])
+        for i in range(len(item['bounds'])):
+            if isinstance(item['bounds'][i], torch.Tensor):
+                bounding_boxes.append(item['bounds'][i].cpu().item())
+            else:
+                bounding_boxes.append(item['bounds'][i])
+
+        if index[0] == 1 and percentage[index[0]].item()>=threshold:
+            colours.append("red")
+            heatmap_path = heatmap.createHeatmap(item['bounds'], index[0], counter)
+        else:
+            colours.append("black")
+            heatmap_path = None
             
-    #Applies binary mask of button onto image matrix
-    def applyMask(self, resizeImg):
-        width = resizeImg.shape[0]
-        height = resizeImg.shape[1]
+        details_out = {'bounds': bounding_boxes, 'percentage': percentage[index[0]].item(), 'heatmap': heatmap_path}
+        json_out[str(counter)] = details_out
+        counter += 1
 
-        binary_mask = np.zeros(shape=(width, height))
-        x_ratio_min = self.bounds[0]/width
-        x_ratio_max = self.bounds[2]/width
-        y_ratio_min = self.bounds[1]/height
-        y_ratio_max = self.bounds[3]/height
-            
-        for x in range(width):
-            for y in range(height):
-                if x_ratio_min <= x/width < x_ratio_max and y_ratio_min <= y/height < y_ratio_max:
-                    binary_mask[x,y] = 1 
-        concat = np.dstack((resizeImg, binary_mask)) 
-        return concat
+    #Store bounding boxes for those rated untappable
+    if bounding_boxes_all:
+        img = read_image(img_path)
+        boxes = torch.tensor(bounding_boxes_all, dtype=torch.float)
+        result = draw_bounding_boxes(img, boxes, width=8, colors=colours)
+        img = torchvision.transforms.ToPILImage()(result)
+        img.save(os.path.join(output_path, 'screenshot.jpg'))
 
-    #Converts image to tensor
-    def toTensor(self, maskImg):
-        transpose_img = maskImg.transpose((2, 0, 1))
-        return torch.from_numpy(transpose_img)
+    #Save json file 
+    with open(os.path.join(output_path, 'description.json'), 'w+') as file:
+        json.dump(json_out, file)
 
-    #Apply Transformations
-    def image_transformations(self):
-        img_resize = transform.resize(self.img, (960, 540))
-        mask_img = self.applyMask(img_resize)
-        tensor_img = self.toTensor(mask_img)
-        tensor = tensor_img.unsqueeze(0)
-        float_tensor = tensor.type(torch.FloatTensor)
-        return float_tensor
 
-    #Image validation
-    def validateImage(self):
-        if self.img_path[-3:] != 'jpg':
-            raise Exception("File must be of type jpg")
+def run_pipeline(img_dir, json_dir, output_dir, threshold):
+    for images in os.listdir(img_dir):
+        img_path = os.path.join(img_dir, images)
+        img_name = images.strip('.jpeg')
+        json_path = os.path.join(json_dir, img_name + '.json')
+        if os.path.exists(json_path):
+            output_path = os.path.join(output_dir, img_name)
+            if not os.path.exists(output_path):
+                os.makedirs(output_path)
+            pipeline(img_path , json_path, output_path, threshold)
 
-    def modelPipeline(self):
-        #Apply Image Transformations
-        input = self.image_transformations()
-
-        #Create model from saved state
-        model = ResNet(18, Block, 4, 2)
-        model.load_state_dict(torch.load(os.getcwd() + self.model_path, map_location=torch.device('cpu')))
-        model.eval()
-
-        #Prediction
-        labels = ['tappable' ,'not tappable'] 
-        with torch.no_grad():
-            predictions = model(input)
-            percentage = torch.nn.functional.softmax(predictions, dim=1)[0] * 100
-            _, indices = torch.sort(predictions, descending=True)
-            print([(labels[idx], percentage[idx].item()) for idx in indices[0][:5]])
-            _, index = torch.max(predictions, 1) 
-            return str(round(percentage[index[0]].item(),2)) + "%; rated " + labels[index[0]],index[0]
-
-    def showImage(self, pred_str):
-        fig = plt.figure()
-        fig.suptitle(pred_str, fontsize=15)
-        ax1 = fig.add_subplot(1,2,1)
-        ax1.imshow(self.img)
-        ax2 = fig.add_subplot(1,2,2)
-        cropped = self.img[self.bounds[1]:self.bounds[3], self.bounds[0]:self.bounds[2]]
-        ax2.imshow(cropped)
-        ax1.title.set_text("Original Image")
-        ax2.title.set_text("Cropped Image")
-        plt.show()
-
-if __name__ == '__main__':
-    #Read config file
-    config = ConfigParser()
-    config.read('config.ini')
-
-    #Get image path
-    img_path = config.get('main', 'image')
-
-    #Get object bounds
-    bounds = config.get('main', 'bounds')
-    bounds_array = bounds.strip('[]').split(',')
-
-    #Get model
-    model_path = config.get('main', 'model')
-
-    prediction = ModelPipeline(img_path, bounds_array,model_path)
-    prediction_str, pred_val = prediction.modelPipeline()
-    prediction.showImage(prediction_str)
-
-    #Heatmap
-    heatmap = Heatmap(model_path)
-    heatmap.createHeatmap(img_path,pred_val,bounds_array,object_array=None)
+if __name__=='__main__':
+    args = sys.argv[1:]
+    options, args = getopt.getopt(args, "i:x:o:t:",
+                               ["image_dir =",
+                                "xml_dir =",
+                                "output_dir =",
+                                "threshold ="])
+    image_dir, xml_dir, output_dir = "", "", ""
+    threshold = 50
+    for name, value in options:
+        if name in ['-i', '--image_dir']:
+            image_dir = value
+        elif name in ['-x', '--xml_dir']:
+            xml_dir = value
+        elif name in ['-o', '--output_dir']:
+            output_dir = value
+        elif name in ['-t', '--threshold']:
+            threshold = int(value)
+    run_pipeline(image_dir, xml_dir, output_dir, threshold)

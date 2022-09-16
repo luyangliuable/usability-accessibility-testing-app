@@ -1,9 +1,29 @@
+body {
+    background: #BFBFBF;
+}
+
+.main {
+    z-index: 1;
+    height: 98vh;
+    background: #BFBFBF;
+    background-size: cover;
+    /* background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("./hero.jpg"); */
+    background-position: left;
+    background-repeat: no-repeat;
+    perspective: 300px;
+}
+
 .hero {
+    position: absolute;
+    top: 45vh;
+    left: -2%;
+    width: 104%;
     height: 98vh;
     background-size: cover;
     background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("./hero.jpg");
     background-position: left;
     background-repeat: no-repeat;
+    filter: blur(.2em);
 }
 
 .hero-text {
@@ -17,7 +37,7 @@
 
 .landing_button {
     font-size: 30px;
-    cursor: pointer;
+cursor: pointer;
     background: #1e90ff;
     width: 300px;
     height: 100px;
@@ -30,4 +50,22 @@
 
 .landing_button: hover {
     box-shadow: 2px 2px 12px #000;
+}
+
+.parallax-group.focus-pieces {
+    z-index: 0;
+}
+/* Remember that the .layer-1 child will have this transform */
+.parallax-layer.foreground.layer-1 {
+    transform: translateZ(100px) scale(1);
+}
+
+.parallax-layer.layer-1 {
+    transform: translateZ(100px) scale(1);
+}
+.parallax-layer.layer-2 {
+    transform: translateY(100px) scale(1);
+}
+.parallax-layer.layer-3 {
+    transform: translateZ(100px) scale(.5);
 }

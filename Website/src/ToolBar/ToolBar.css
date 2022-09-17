@@ -1,12 +1,13 @@
 .nav-container {
 	position: relative;
 	width: 100%;
-	height: max(7vmin, 40px);
-	padding: 0.5% 0px 0.5% 0px;
+	height: max(60px, 6vh);
+	padding: 3px 3px;
 	background-color: #0d0d0d;
 	z-index: 2;
 	border-bottom: 0.2px solid #fff;
 	text-align: center;
+	justify-content: center;
 	box-shadow: 0 0 0.75rem rgb(0, 0, 0);
 }
 
@@ -21,10 +22,10 @@ h1 {
 	height: 100%;
 	color: white;
 	display: flex;
-	justify-content: space-around;
+	justify-content: center;
 	align-items: center;
 	/* background: #EEE; */
-	font-size: 100%;
+	font-size: max(15px, 1.5vh);
 	transition: opacity 0.5s ease;
 }
 

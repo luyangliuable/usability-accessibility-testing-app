@@ -21,6 +21,7 @@ const SelectAlgorithms = () => {
 
   const tempState = locations.state?.objectState;
   const [objectState, setObjectState] = useState(tempState);
+  const [algorithmsSelectedCount, setAlgorithmsSelectedCount] = useState(0);
 
   const algorithms =
     typeof objectState === "undefined" ? [] : objectState.algorithms;
@@ -32,42 +33,28 @@ const SelectAlgorithms = () => {
     }
   }, [objectState, navigate]);
 
-  // const [countSelected, setCountSelected] = useState(0);
+  const noOfAlgorithmsSelected = () => {
+    var algoSelectedCount = 0;
+    algorithms.map((_algorithm, index) => {
+      if (objectState.algorithms[index].selected) {
+        algoSelectedCount++;
+      }
+    })
+    setAlgorithmsSelectedCount(algoSelectedCount);
+  }
 
-  // useEffect = () => {
-  //   console.log('use effect from select algorithms')
-  //   console.log(countSelected)
-  // }
-
-  // const updateAlgorithmSelectedCount = () => {
-  //   algorithms.map((algorithm, index) => {
-  //     if (objectState.algorithms[index].selected)
-  //       setCountSelected(countSelected += 1)
-  //       console.log(algorithm)
-  //   })
-  // }
+  useEffect(() => {
+    noOfAlgorithmsSelected();
+  }, []);
 
   const handleOnChange = (position) => {
     objectState.algorithms[position].selected =
       !objectState.algorithms[position].selected;
 
     setObjectState(objectState);
-    countAlgorithmsSelected();
-    // if (objectState.algorithms[position].selected) {
-    //   updateAlgorithmSelectedCount()
-    //   // setCountSelected(countSelected + 1); // this is not done correctly  
-    // } else {
-    //   updateAlgorithmSelectedCount()
-    //   // setCountSelected(countSelected - 1); // this is not done correctly 
-    // }
+    noOfAlgorithmsSelected();
   };
 
-  const countAlgorithmsSelected = () => {
-    objectState.algorithms.map((alg, index) => {
-      console.log('inside loop, iter ', index)
-      console.log(alg.selected)
-    })
-  }
 
   return (
     <Container className="container-nav">
@@ -127,11 +114,10 @@ const SelectAlgorithms = () => {
           <Link
             to={"/upload/additionaluploads"}
 
-            // style={countSelected === 0 ? { pointerEvents: "none" } : {}}
+            style={algorithmsSelectedCount === 0 ? { pointerEvents: "none" } : {}}
             state={{ objectState: objectState }}
           >
-            {/* <button disabled={countSelected === 0} className="button btn btn-primary"> */}
-            <button className="button btn btn-primary">
+            <button disabled={algorithmsSelectedCount === 0} className="button btn btn-primary">
               <h3>NEXT</h3>
             </button>
           </Link>

@@ -32,19 +32,42 @@ const SelectAlgorithms = () => {
     }
   }, [objectState, navigate]);
 
-  const [countSelected, setCountSelected] = useState(0);
+  // const [countSelected, setCountSelected] = useState(0);
+
+  // useEffect = () => {
+  //   console.log('use effect from select algorithms')
+  //   console.log(countSelected)
+  // }
+
+  // const updateAlgorithmSelectedCount = () => {
+  //   algorithms.map((algorithm, index) => {
+  //     if (objectState.algorithms[index].selected)
+  //       setCountSelected(countSelected += 1)
+  //       console.log(algorithm)
+  //   })
+  // }
 
   const handleOnChange = (position) => {
     objectState.algorithms[position].selected =
       !objectState.algorithms[position].selected;
 
     setObjectState(objectState);
-    if (objectState.algorithms[position].selected) {
-      setCountSelected(countSelected + 1);
-    } else {
-      setCountSelected(countSelected - 1);
-    }
+    countAlgorithmsSelected();
+    // if (objectState.algorithms[position].selected) {
+    //   updateAlgorithmSelectedCount()
+    //   // setCountSelected(countSelected + 1); // this is not done correctly  
+    // } else {
+    //   updateAlgorithmSelectedCount()
+    //   // setCountSelected(countSelected - 1); // this is not done correctly 
+    // }
   };
+
+  const countAlgorithmsSelected = () => {
+    objectState.algorithms.map((alg, index) => {
+      console.log('inside loop, iter ', index)
+      console.log(alg.selected)
+    })
+  }
 
   return (
     <Container className="container-nav">
@@ -79,7 +102,7 @@ const SelectAlgorithms = () => {
                   type="checkbox"
                   className="bigCheckbox"
                   id={`checkbox-${algorithm.uuid}`}
-                  defaultChecked={false}
+                  defaultChecked={objectState.algorithms[index].selected}
                   onChange={() => handleOnChange(index)}
                 />
                 <AccordionItemPanel>
@@ -103,10 +126,12 @@ const SelectAlgorithms = () => {
         <div className="next-button">
           <Link
             to={"/upload/additionaluploads"}
-            style={countSelected === 0 ? { pointerEvents: "none" } : {}}
+
+            // style={countSelected === 0 ? { pointerEvents: "none" } : {}}
             state={{ objectState: objectState }}
           >
-            <button disabled={countSelected === 0} className="button btn btn-primary">
+            {/* <button disabled={countSelected === 0} className="button btn btn-primary"> */}
+            <button className="button btn btn-primary">
               <h3>NEXT</h3>
             </button>
           </Link>

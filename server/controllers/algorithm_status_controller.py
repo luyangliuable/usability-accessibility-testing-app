@@ -1,5 +1,5 @@
 # from __future__ import annotations
-from typing import TypeVar
+from typing import TypeVar, Generic, List, Callable, Dict
 from enums.algorithm_enum import AlgorithmEnum as Algorithm
 from flask import Blueprint, request, jsonify
 from flask_cors import cross_origin
@@ -8,21 +8,15 @@ from enums.result_types import ResultTypeEnum
 from typing import List
 from download_parsers.gifdroid_json_parser import gifdroidJsonParser
 from download_parsers.strategy import Strategy
-import os
-import datetime
-import json
+from pymongo import database
+from pymongo.database import Collection
 
 
 from enums.status_enum import StatusEnum
 
-# from models.Apk import DBManager
+T = TypeVar('T')
 
-###############################################################################
-#    @Trevin insert your strategy for parsing owleye/xbot/story files here    #
-###############################################################################
-
-
-class AlgorithmStatusController():
+class AlgorithmStatusController(Generic[T]):
     """
         Updates algorithm_status. Gets algorithm_status
     """
@@ -45,7 +39,7 @@ class AlgorithmStatusController():
     }
 
 
-    def __init__(self, collection_name: str):
+    def __init__(self, collection_name: str) -> None:
         ###############################################################################
         #                          Initiate database instance                         #
         ###############################################################################
@@ -53,7 +47,7 @@ class AlgorithmStatusController():
         self.c = self._db.get_collection(collection_name)
 
 
-    def get_all_algorithm_status(self, uuid: str):
+    def get_all_algorithm_status(self, uuid: str) -> Dict[str, str]:
 
         # Get document ################################################################
         d = self._db.get_document(uuid, self.c)
@@ -63,7 +57,7 @@ class AlgorithmStatusController():
         return s
 
 
-    def decalare_apk_name_in_status(self, uuid: str, apk_name: str):
+    def decalare_apk_name_in_status(self, uuid: str, apk_name: str) -> Dict[str, str]:
         d = self._db.get_document(uuid, self.c)
 
         algorithm_status_key = 'algorithm_status'
@@ -76,7 +70,7 @@ class AlgorithmStatusController():
         return d[ algorithm_status_key ]
 
 
-    def get_job_status(self, uuid: str):
+    def get_job_status(self, uuid: str) -> str:
         # Get document ################################################################
         d = self._db.get_document(uuid, self.c)
 
@@ -86,7 +80,7 @@ class AlgorithmStatusController():
         return status
 
 
-    def update_job_status(self, uuid: str, status: str):
+    def update_job_status(self, uuid: str, status: str) -> None:
         # Get document ################################################################
         d = self._db.get_document(uuid, self.c)
 
@@ -97,7 +91,7 @@ class AlgorithmStatusController():
         return self._db.get_document(uuid, self.c)['status']
 
 
-    def get_collection(self):
+    def get_collection(self) -> Collection:
         return self.c
 
 
@@ -108,7 +102,7 @@ class AlgorithmStatusController():
         return self.update_algorithm_status_attribute(uuid, algorithm, key, status)
 
 
-    def get_specific_algorithm_status(self, uuid: str, algorithm: str):
+    def get_specific_algorithm_status(self, uuid: str, algorithm: str) -> str:
         all_algorithm_status = self.get_all_algorithm_status(uuid)
 
         specific_algorithm_status = all_algorithm_status[algorithm]
@@ -116,7 +110,7 @@ class AlgorithmStatusController():
         return specific_algorithm_status
 
 
-    def update_algorithm_status_attribute(self, uuid: str, algorithm: str, key: str, val):
+    def update_algorithm_status_attribute(self, uuid: str, algorithm: str, key: str, val: T):
         # Get document ################################################################
         try:
             d = self._db.get_document(uuid, self.c)

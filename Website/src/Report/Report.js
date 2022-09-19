@@ -6,6 +6,7 @@ import "./Report.css";
 import "../index.css";
 
 import GifdroidResult from "../Results/components/GifdroidResult";
+import DroidbotMap from "../Results/components/DroidBotMap";
 
 import readFile from "./function/readFile.js";
 
@@ -142,6 +143,7 @@ const Report = () => {
         </div>
       <GifdroidResult uuid={uuid}/>
       </div>
+     <DroidbotMap/>
     </Container>
   );
 };

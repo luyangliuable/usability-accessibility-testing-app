@@ -1,4 +1,6 @@
-from algorithm_controllers.task import Task
+from tasks.task import Task
+from resources.resource import *
+from typing import List
 import os
 
 class Gifdroid(Task):

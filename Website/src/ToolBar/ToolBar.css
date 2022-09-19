@@ -4,8 +4,7 @@
 	height: max(7vmin, 40px);
 	padding: 0.5% 0px 0.5% 0px;
 	background-color: #0d0d0d;
-	z-index: 2;
-	border-bottom: 0.2px solid #fff;
+	z-index: 10;
 	text-align: center;
 	box-shadow: 0 0 0.75rem rgb(0, 0, 0);
 }

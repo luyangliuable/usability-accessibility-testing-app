@@ -1,20 +1,42 @@
 body {
-    background: #BFBFBF;
+    background: #2F2F2F !important;
 }
 
 .main {
+    position: absolute;
     z-index: 1;
     height: 98vh;
-    background: #BFBFBF;
+    background: #2F2F2F;
     background-size: cover;
     /* background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("./hero.jpg"); */
     background-position: left;
     background-repeat: no-repeat;
     perspective: 300px;
+    margin-bottom: -10px !important;
+    border-bottom: 0px !important;
+}
+
+.layer-1 {
+    z-index: 2;
+    top: 0;
+    left: 0;
+    width: 101%;
+    height: 100% !important;
+}
+
+
+.layer-2 {
+    border-top: 1px solid white;
+    z-index: 0;
+    top: 145%;
+    width: 101%
 }
 
 .hero {
+    margin: 0px !important;
+    border: 0px !important;
     position: absolute;
+    z-index: 1;
     top: 45vh;
     left: -2%;
     width: 104%;
@@ -37,7 +59,7 @@ body {
 
 .landing_button {
     font-size: 30px;
-cursor: pointer;
+    cursor: pointer;
     background: #1e90ff;
     width: 300px;
     height: 100px;
@@ -50,22 +72,4 @@ cursor: pointer;
 
 .landing_button: hover {
     box-shadow: 2px 2px 12px #000;
-}
-
-.parallax-group.focus-pieces {
-    z-index: 0;
-}
-/* Remember that the .layer-1 child will have this transform */
-.parallax-layer.foreground.layer-1 {
-    transform: translateZ(100px) scale(1);
-}
-
-.parallax-layer.layer-1 {
-    transform: translateZ(100px) scale(1);
-}
-.parallax-layer.layer-2 {
-    transform: translateY(100px) scale(1);
-}
-.parallax-layer.layer-3 {
-    transform: translateZ(100px) scale(.5);
 }

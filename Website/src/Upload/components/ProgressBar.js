@@ -8,7 +8,7 @@ const ProgressBar = (props) => {
     // const [progress, updateProgress] = useState(10);
 
     const [progress, animate] = useSpring(() => ({
-        config: { duration: 1800 },
+        config: { duration: props.duration },
         width: 0 + "%",
     }));
 
@@ -27,13 +27,13 @@ const ProgressBar = (props) => {
     };
 
     useEffect(() => {
-        const algorithmsToComplete = props.algorithmsInfo.filter(algorithm => algorithm.selected);
+        // const algorithmsToComplete = props.algorithmsInfo.filter(algorithm => algorithm.selected);
         setTimeout(() => {
-            update(props.message, props.algorithmsComplete * 100 / (algorithmsToComplete.length + 1));
+            update("", props.percentage);
         }, 10);
-        console.log(props.algorithmsComplete * 100 / algorithmsToComplete.length);
-        console.log("sadasd");
-    }, [props.algorithmsComplete, props.algorithmsInfo, props.message]);
+        // console.log(props.algorithmsComplete * 100 / algorithmsToComplete.length);
+        // console.log("sadasd");
+    }, [props.percentage]);
 
     return (
         <>

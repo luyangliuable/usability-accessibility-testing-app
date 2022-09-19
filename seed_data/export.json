@@ -22,7 +22,7 @@
                 "notes": ""
             }
         ],
-        "status": "",
+        "status": "SUCCESSFUL",
         "algorithm_status": {
             "storydistiller": {
                 "status": "SUCCESSFUL",

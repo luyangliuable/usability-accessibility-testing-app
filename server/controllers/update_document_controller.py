@@ -55,8 +55,6 @@ class UpdateDocumentController(Generic[T]):
         Returns: Dictionary for the updated document and a bool if the method is successful.
 
         """
-
-
         ###############################################################################
         #                             Convert file to json                            #
         ###############################################################################
@@ -93,13 +91,7 @@ class UpdateDocumentController(Generic[T]):
             uuid (str) - The job uuid the identifies the cluster of algorithms to run
         """
 
-        # Get document that match uui in apk colletion #########################
-        result = self.mongo.get_document(
-            uuid=uuid,
-            collection=self.c
-        )
-
-        return result
+        return self.mongo.get_document(uuid=uuid, collection=self.c)
 
 
     def add_document(self, request_parameters: List, document: Dict) -> bool:

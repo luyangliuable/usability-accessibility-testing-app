@@ -137,10 +137,6 @@ class DBManager:
             }
         }
 
-
-        # with open("document_format.json", "r") as f:
-        #     data = json.load(f)
-
         data['uuid'] = uuid
         data['date'] = datetime.datetime.now()
 

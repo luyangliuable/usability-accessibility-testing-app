@@ -5,7 +5,6 @@ AWS.config.update({
     secretAccessKey: process.env.BUCKET_ACCESS_KEY || "bar",
 });
 
-
 export const getResultLink = (algorithm) => {
     // const endpoint = new AWS.EndPoint();
     const s3 = new AWS.S3({endpoint: process.env.ENDPOINT || 'http://localhost:4566'});

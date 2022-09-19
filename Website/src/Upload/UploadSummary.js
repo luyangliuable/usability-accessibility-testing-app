@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react"; import { Container } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-// import { startJob } from "./function/startJob";
 
-// Remove eslint when var is used
-// eslint-disable-next-line
+// /Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/Website/src/Upload/function/
+import { startJob } from "./function/startJob";
+
 import { getAdditionalFiles } from "./function/getAdditionalFiles";
 import ProgressBar from "./components/ProgressBar";
 
@@ -56,7 +56,7 @@ const UploadSummary = () => {
             (algorithm) => algorithm.selected
         );
 
-        // startJob(algorithmState, setAlgorithmState, algorithmsToComplete);
+        startJob(algorithmState, setAlgorithmState, algorithmsToComplete);
     };
 
     var additionalInputDiv = "";

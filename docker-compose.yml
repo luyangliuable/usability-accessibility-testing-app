@@ -109,45 +109,45 @@ services:
       - './.localstack:/tmp/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
 
-  storydistiller:
-    build:
-      context: ./algorithms/storydistiller/
-    command: python3 app.py
-    container_name: bxer.storydistiller
-    ports:
-      - '3002:3002'
-    volumes:
-      - './algorithms/app/.data:/home/data'
+  # storydistiller:
+  #   build:
+  #     context: ./algorithms/storydistiller/
+  #   command: python3 app.py
+  #   container_name: bxer.storydistiller
+  #   ports:
+  #     - '3002:3002'
+  #   volumes:
+  #     - './algorithms/app/.data:/home/data'
 
-  xbot:
-    build: 
-      context: ./algorithms/xbot/
-    command: python3 app.py
-    container_name: bxer.xbot
-    ports:
-      - '3003:3003'
-    volumes:
-      - './algorithms/app/.data:/home/data'
+  # xbot:
+  #   build:
+  #     context: ./algorithms/xbot/
+  #   command: python3 app.py
+  #   container_name: bxer.xbot
+  #   ports:
+  #     - '3003:3003'
+  #   volumes:
+  #     - './algorithms/app/.data:/home/data'
 
-  owleye:
-    build:
-      context: ./algorithms/owleye/
-    command: python3 app.py
-    container_name: bxer.owleye
-    ports:
-      - '3004:3004'
-    volumes:
-      - './algorithms/app/.data:/home/data'
-  
-  tappability:
-    build:
-      context: ./algorithms/tappability/
-    command: python3 app.py
-    container_name: bxer.tappable
-    ports:
-      - '3007:3007'
-    volumes:
-      - './algorithms/app/.data:/home/data'
+  # owleye:
+  #   build:
+  #     context: ./algorithms/owleye/
+  #   command: python3 app.py
+  #   container_name: bxer.owleye
+  #   ports:
+  #     - '3004:3004'
+  #   volumes:
+  #     - './algorithms/app/.data:/home/data'
+
+  # tappability:
+  #   build:
+  #     context: ./algorithms/tappability/
+  #   command: python3 app.py
+  #   container_name: bxer.tappable
+  #   ports:
+  #     - '3007:3007'
+  #   volumes:
+  #     - './algorithms/app/.data:/home/data'
 
   gifdroid:
     build:

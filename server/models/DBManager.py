@@ -4,6 +4,8 @@ import datetime
 import json
 import os
 
+from enums.status_enum import *
+
 class DBManager:
     """
         This class is a *singleton* that provides a global access point for API in this project. It access the api key inside .env file. It must be initiated to be used and only one instance can exist at a time
@@ -61,7 +63,12 @@ class DBManager:
                 "s3_key": ""
             },
             "additional_files" : [],
-            "status" : "",
+            "overall-status" : {
+                "status": StatusEnum.none,
+                "start_time": "",
+                "end_time": "",
+                "progress": 0
+            },
             "algorithm_status" : {
                 "storydistiller" : {
                     "status" : "",

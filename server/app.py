@@ -15,6 +15,7 @@ def create_app(script_info=None):
     # register blueprints
     from routes.main import main_blueprint
     from routes.algorithm_status_api import algorithm_status_blueprint
+    from routes.job_status_api import job_status_blueprint
     from routes.upload_api import upload_blueprint
     from routes.update_document_api import update_document_blueprint
     from routes.login_api import login_blueprint
@@ -37,6 +38,9 @@ def create_app(script_info=None):
 
     # Used for getting algorithm status, notes, estimated remaining time and results
     app.register_blueprint(algorithm_status_blueprint)
+
+    # Used for getting job status, notes, estimated remaining time and results
+    app.register_blueprint(job_status_blueprint)
 
     app.register_blueprint(login_blueprint)
 

@@ -36,30 +36,6 @@ class TestDbManager(unittest.TestCase):
         self.asc = AlgorithmStatusController(self.tcn)
 
 
-    def test_get_job_status(self):
-        new_status = Status.successful
-
-        self.db.update_document(self.uuid, self.tc, 'status', new_status)
-
-        r = self.db.get_document(self.uuid, self.tc)['status']
-
-        expected = "SUCCESSFUL"
-
-        self.assertEqual(r, expected)
-
-
-    def test_get_update_job_status(self):
-        new_status = Status.successful
-
-        self.asc.update_job_status(self.uuid, new_status)
-
-        r = self.db.get_document(self.uuid, self.tc)['status']
-
-        expected = "SUCCESSFUL"
-
-        self.assertEqual(r, expected)
-
-
     def test_get_status_of_specific_algorithm(self):
         new_status = Status.running
 
@@ -140,7 +116,6 @@ class TestDbManager(unittest.TestCase):
        expected = {'storydistiller': {'status': '', 'notes': '', 'start_time': '', 'end_time': '', 'apk': ''}, 'owleye': {'status': '', 'notes': '', 'start_time': '', 'end_time': '', 'apk': ''}, 'xbot': {'status': '', 'notes': '', 'start_time': '', 'end_time': '', 'apk': ''}, 'gifdroid': {'status': '', 'notes': '', 'start_time': '', 'end_time': '', 'apk': ''}, 'ui_checker': {'status': '', 'notes': '', 'start_time': '', 'end_time': '', 'apk': ''}}
 
        self.assertEqual(expected, r)
-
 
 
 ###############################################################################

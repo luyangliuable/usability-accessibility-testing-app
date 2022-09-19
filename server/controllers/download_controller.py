@@ -95,7 +95,7 @@ class DownloadController(Generic[T]):
         return output
 
 
-    def download_all_objects_in_folder(self, uuid: str) -> str:
+    def _download_all_objects_in_folder(self, uuid: str) -> str:
         """
         Gets all the files out of folder on s3 bucket matching uuid for user to download
 
@@ -104,22 +104,6 @@ class DownloadController(Generic[T]):
 
         Returns: str Path leading to stored summary location.
         """
-
-        # TODO add threading
-
-        # TODO figure out how to use the commented out code to not use subprocess
-        # objects = s3_client.objects.filter(Prefix=uuid)
-        # objects = s3_client.list_objects(Bucket='apk-bucket')
-        # objects = s3_client.Bucket.objects
-        # objects = s3_client.list_objects(Bucket='apk-bucket', Prefix=f"/{uuid}/",)
-        # print(objects)
-        # for obj in objects:
-            # _, filename = os.path.split(obj.key)
-            # pass
-            # print(filename)
-            # print(obj)
-            # # print(filename)
-            # # s3_client.download_file(self.bucket_name, obj.key, filename)
 
         uuid = "ef1e3bcb-adb7-4980-ab77-f7e094f01871"
         print(uuid)
@@ -131,21 +115,6 @@ class DownloadController(Generic[T]):
             subprocess.run(['aws', f'--endpoint-url={ENDPOINT_URL}', 's3', 'cp', f's3://{BUCKETNAME}/{uuid}/', local_tmp_save_dir, '--recursive'])
 
         return local_tmp_save_dir
-
-
-
-    # def downloadDirectoryFroms3(self,bucketName, remoteDirectoryName):
-    #     s3_resource = boto3.resource(
-    #     "s3",
-    #     region_name=AWS_REGION,
-    #     endpoint_url=ENDPOINT_URL
-    #     )
-
-    #     bucket = s3_resource.Bucket(bucketName)
-    #     for obj in bucket.objects.filter(Prefix = remoteDirectoryName):
-    #         if not os.path.exists(os.path.dirname(obj.key)):
-    #             os.makedirs(os.path.dirname(obj.key))
-    #         bucket.download_file(obj.key, obj.key) # save to same path
 
 
     @staticmethod

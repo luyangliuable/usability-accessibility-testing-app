@@ -1,7 +1,7 @@
 [
     {
         "_id": {
-            "$oid": "630f6dbdefe72a67744242ec"
+            "$oid": "650f6dbdefe72a67744242ec"
         },
         "uuid": "28f666de-9a79-4a03-ac74-da77acf5924a",
         "date": {
@@ -22,7 +22,12 @@
                 "notes": ""
             }
         ],
-        "status": "SUCCESSFUL",
+        "overall-status": {
+            "status": "SUCCESSFUL",
+            "start_time": "",
+            "end_time": "",
+            "progress": 0
+        },
         "algorithm_status": {
             "storydistiller": {
                 "status": "SUCCESSFUL",
@@ -82,7 +87,7 @@
                         "description": "",
                         "heatmap": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/tappable/heatmap/a2dp.Vol.main"
                     }
-            },
+                },
                 {
                     "name": "a2dp.Vol.ProviderList",
                     "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/activity/images/a2dp.Vol.ProviderList",
@@ -134,7 +139,6 @@
                         "heatmap": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/tappable/heatmap/a2dp.Vol.PackagesChooser"
                     }
                 },
-
             ],
             "gifdroid": {
                 "images": [

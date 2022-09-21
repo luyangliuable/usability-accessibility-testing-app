@@ -39,8 +39,8 @@ class TestDbManager(unittest.TestCase):
     def test_get_status_of_specific_algorithm(self):
         new_status = Status.running
 
-        self.asc.update_algorithm_status(self.uuid, 'xbot', new_status)
-        r = self.asc.get_specific_algorithm_status(self.uuid, 'xbot')
+        self.asc.update(self.uuid, 'xbot', status=new_status)
+        r = self.asc.get(self.uuid, 'xbot')
 
         self.assertEqual(r['status'], new_status)
 
@@ -51,7 +51,7 @@ class TestDbManager(unittest.TestCase):
 
     def test_update_algorithm_status(self):
 
-        self.asc.update_algorithm_status(self.uuid, 'gifdroid', Status.running)
+        self.asc.update(self.uuid, 'gifdroid', status=Status.running)
 
         expected = {
             'gifdroid': {
@@ -67,8 +67,8 @@ class TestDbManager(unittest.TestCase):
 
         expected = expected['gifdroid']
 
-        # write_to_view("view.txt", r)
-        # write_to_view("view2.txt", expected)
+        write_to_view("real.txt", r)
+        write_to_view("expect.txt", expected)
         self.assertEqual(r, expected)
 
 

@@ -1,13 +1,10 @@
-import boto3
-import os, shutil
-from controllers.update_document_controller import UpdateDocumentController as UDContrl
-from download_parsers.strategy import Strategy
+from utility.uuid_generator import *
+from models.DBManager import *
 import typing as t
 import tempfile
+import boto3
+import os
 
-from utility.uuid_generator import *
-from download_parsers.gifdroid_json_parser import gifdroidJsonParser
-from models.DBManager import *
 
 ###############################################################################
 #                                  Set Up AWS                                 #
@@ -53,13 +50,11 @@ class UploadController(t.Generic[T]):
 
         return data
 
-    def additional_files(self, uuid: str, files: 'werkzeug.datastructures.ImmutableMultiDict', data: t.Dict[str, T]) -> t.Dict[str, T]:
+
+    def save_additional_files(self, uuid: str, files: 'werkzeug.datastructures.ImmutableMultiDict', data: t.Dict[str, T]) -> t.Dict[str, T]:
         ###############################################################################
         #                         S3: Save every additional file                      #
         ###############################################################################
-
-        print(type(files))
-
         for key, item in files.items():
             if key != "apk_file":
                 print("additional files", item.name, "detected")
@@ -77,7 +72,7 @@ class UploadController(t.Generic[T]):
         return data
 
 
-    def apk_file(self, uuid: str, files: 'werkzeug.datastructures.ImmutableMultiDict', data: t.Dict[str, T]) -> str:
+    def save_apk_file(self, uuid: str, files: 'werkzeug.datastructures.ImmutableMultiDict', data: t.Dict[str, T]) -> str:
         ###############################################################################
         #                Create a temporary file to store file content                #
         ###############################################################################
@@ -124,9 +119,8 @@ class UploadController(t.Generic[T]):
         uuid = unique_id_generator()
         data = self._get_format(uuid)
 
-        self.additional_files(uuid, files, data)
-
-        apk_file_name = self.apk_file(uuid, files, data)
+        self.save_additional_files(uuid, files, data)
+        self.save_apk_file(uuid, files, data)
 
         self.acknowlege(uuid, data)
 

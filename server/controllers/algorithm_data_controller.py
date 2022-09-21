@@ -1,16 +1,14 @@
 from utility.uuid_generator import unique_id_generator
-from models.DBManager import DBManager
-
+from typing import TypeVar, Generic, List, Dict, Tuple
 from download_parsers.strategy import Strategy
 from enums.status_enum import StatusEnum
-
-from typing import TypeVar, Generic, List, Dict, Tuple
+from models.DBManager import DBManager
 
 
 T = TypeVar('T')
 
 
-class UpdateDocumentController(Generic[T]):
+class AlgorithmDataController(Generic[T]):
     """
     This controller class is used to update metadata for files on mongodb for traceability purpose.
     """

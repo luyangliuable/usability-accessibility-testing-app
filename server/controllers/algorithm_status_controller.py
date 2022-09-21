@@ -1,4 +1,5 @@
 # from __future__ import annotations
+from os import stat_result
 from typing import TypeVar, Generic, List, Callable, Dict
 from enums.algorithm_enum import AlgorithmEnum as Algorithm
 from flask import Blueprint, request, jsonify
@@ -70,27 +71,6 @@ class AlgorithmStatusController(Generic[T]):
         return d[ algorithm_status_key ]
 
 
-    def get_job_status(self, uuid: str) -> str:
-        # Get document ################################################################
-        d = self._db.get_document(uuid, self.c)
-
-        # Get status ##################################################################
-        status = d['status']
-
-        return status
-
-
-    def update_job_status(self, uuid: str, status: str) -> None:
-        # Get document ################################################################
-        d = self._db.get_document(uuid, self.c)
-
-        # Get status ##################################################################
-
-        self._db.update_document(uuid, self.c, 'status', status)
-
-        return self._db.get_document(uuid, self.c)['status']
-
-
     def get_collection(self) -> Collection:
         return self.c
 
@@ -102,12 +82,33 @@ class AlgorithmStatusController(Generic[T]):
         return self.update_algorithm_status_attribute(uuid, algorithm, key, status)
 
 
-    def get_specific_algorithm_status(self, uuid: str, algorithm: str) -> str:
+    def get(self, uuid: str, algorithm: str) -> str:
         all_algorithm_status = self.get_all_algorithm_status(uuid)
 
         specific_algorithm_status = all_algorithm_status[algorithm]
 
         return specific_algorithm_status
+
+
+    def update(self, uuid: str, algorithm: str, **kwargs):
+        try:
+            d = self._db.get_document(uuid, self.c)
+            status_key = 'algorithm_status'
+            status = d[status_key]
+
+            print(status[algorithm])
+
+            parameters = [key for key in self._db.get_format("")['overall-status']]
+            for p in parameters:
+                if p in kwargs:
+                    status[algorithm][p] = kwargs[p]
+
+            self._db.update_document(uuid, self.c, status_key, status)
+
+        except Exception as e:
+            print(e)
+        else:
+            return d
 
 
     def update_algorithm_status_attribute(self, uuid: str, algorithm: str, key: str, val: T):
@@ -126,28 +127,6 @@ class AlgorithmStatusController(Generic[T]):
             print(e)
         else:
             return d
-
-
-    def update_algorithm_status(self, uuid: str, algorithm: str, new_status: str):
-        # Get document ################################################################
-
-        try:
-            d = self._db.get_document(uuid, self.c)
-
-            status_key = 'algorithm_status'
-
-            status = d[status_key]
-
-            status[algorithm]['status'] = new_status # TODO find a way here to use StatusEnum
-
-            # Get status ##################################################################
-
-            self._db.update_document(uuid, self.c, status_key, status)
-
-        except Exception as e:
-            print(e)
-        else:
-            return status
 
 
 if __name__ == "__main__":

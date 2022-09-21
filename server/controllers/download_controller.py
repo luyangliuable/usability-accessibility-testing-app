@@ -1,13 +1,12 @@
-import boto3
-import os, shutil
-from controllers.update_document_controller import UpdateDocumentController as UDContrl
+from controllers.algorithm_data_controller import AlgorithmDataController as ADC
 from download_parsers.strategy import Strategy
 from typing import TypeVar, Generic
 import tempfile
+import boto3
+import os
 
 import subprocess
 
-from download_parsers.gifdroid_json_parser import gifdroidJsonParser
 
 ###############################################################################
 #                                  Set Up AWS                                 #
@@ -44,7 +43,7 @@ class DownloadController(Generic[T]):
         """
 
         self.cn = collection_name
-        self.udc = UDContrl(collection_name, json_result_file_parser)
+        self.adc = ADC(collection_name, json_result_file_parser)
 
 
     def download(self, uuid: str, algorithm: str, type: str, name: str) -> str:

@@ -33,7 +33,7 @@ def update_algorthm_status(uuid: str, algorithm: str) -> t.Tuple[str, int]:
     if request.method == "POST":
         status = str( request.data.decode() )
 
-        res = asc.update_algorithm_status(uuid, algorithm, status)
+        res = asc.update(uuid, algorithm, status=status)
 
         res = ""
         return res, 200
@@ -49,7 +49,7 @@ def get(uuid: str, algorithm: str) -> t.Tuple[str, int]:
     """
     if request.method == "GET":
 
-        res = asc.get_specific_algorithm_status(uuid, algorithm)
+        res = asc.get(uuid, algorithm)
 
         return json.dumps(res), 200
     else:
@@ -63,9 +63,9 @@ def update(uuid: str, algorithm: str) -> t.Tuple[str, int]:
     Method for updating status of each and every algorithm
     """
     if request.method == "POST":
-        status = str( request.data.decode() )
 
-        res = asc.update_algorithm_status(uuid, algorithm, status)
+        status = str( request.data.decode() )
+        res = asc.update(uuid, algorithm, status)
 
         return json.dumps(res), 200
     else:

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Container, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import ProgressBar from "../Upload/components/ProgressBar";
 
 import "./Results.css";
 import "../index.css";
@@ -74,8 +75,10 @@ const Results = () => {
             <tr key={"test1"}>
               <td>Asfsfds</td>
               <td>Mark</td>
-              <td>Otto</td>
-              <td>@mdo</td>
+              <td>Otto</td>   {/* get from status api */}
+              <td>    {/* status */}
+                <ProgressBar />
+              </td>
               <td>@mdo</td>
             </tr>
             {reportKeys.map((report, index) => {
@@ -84,7 +87,10 @@ const Results = () => {
                   <td>{index + 1}</td>
                   <td>ID {report.result_id}</td>
                   <td>Start Time</td>
-                  <td>Status</td>
+                  <td>
+                    {/* status */}
+                    <ProgressBar uuid={report.result_id} />
+                  </td>
                   <td>
                     <div>
                       <Link
@@ -106,7 +112,7 @@ const Results = () => {
         </div>
       </div>
     </Container>
-);
+  );
 };
 
 export default Results;

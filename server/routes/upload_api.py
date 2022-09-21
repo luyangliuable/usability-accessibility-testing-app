@@ -6,7 +6,6 @@ from flask import Blueprint, request
 from flask_cors import cross_origin
 import sys, os
 import json
-import uuid
 
 ###############################################################################
 #                            Set Up Flask Blueprint                           #
@@ -29,15 +28,13 @@ def upload():
     The key in json for the apk file must be apk_file.
     """
     if request.method == "POST":
-        ###############################################################################
-        #                        If post http request received                        #
-        ###############################################################################
         enforce_bucket_existance([ BUCKETNAME ])
 
         data = uc.upload(request.files)
 
         ret = {'uuid': data['uuid'], 'apk': data['apk']['name']}
-        return json.dumps(ret), 400
+
+        return json.dumps(ret), 200
 
     return json.dumps({"message": "failed to upload"}), 400
 

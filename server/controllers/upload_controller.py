@@ -96,6 +96,7 @@ class UploadController(t.Generic[T]):
 
         return apk_filename
 
+
     def acknowlege(self, uuid: str, data: t.Dict["str", T]) -> bool:
         temp_file_name = os.path.join(self.temp_dir, uuid)
 

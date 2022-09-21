@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react"; import { Container } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
-// /Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/Website/src/Upload/function/
 import { startJob } from "./function/startJob";
+import { getStatus } from "./function/getStatus";
+import ProgressBar from "./components/ProgressBar";
 
 import { getAdditionalFiles } from "./function/getAdditionalFiles";
-import ProgressBar from "./components/ProgressBar";
 
 import "./Upload.css";
 import "../index.css";
@@ -19,21 +19,18 @@ const UploadSummary = () => {
     const algorithms = typeof objectState === "undefined" ? [] : objectState.algorithms;
 
     const [algorithmState, setAlgorithmState] = useState({
-        buttonState: false,
-        buttonValue: "UPLOAD FILE",
         algorithmFiles: { apkFile: objectState.apk },
-        algorithmsComplete: 0,
         algorithmsInfo: algorithms,
-        progressBarMessage: "Ready To Begin",
+        uuid: ""
     });
 
-
     useEffect(() => {
-        console.log(algorithmState);
         if (typeof objectState === "undefined") {
-            console.log("[1.3] redirect");
             navigate("/upload");
         }
+
+        console.log(algorithmState);
+
     }, [objectState, navigate, algorithmState]);
 
     const selectedAlgorithms = [];
@@ -50,8 +47,6 @@ const UploadSummary = () => {
     }
 
     const start = () => {
-        console.log("[0] Starting Algorithms");
-
         const algorithmsToComplete = algorithmState.algorithmsInfo.filter(
             (algorithm) => algorithm.selected
         );
@@ -147,11 +142,8 @@ const UploadSummary = () => {
                   paddingTop: "50px",
               }}
             >
-              <ProgressBar
-                message={algorithmState.progressBarMessage}
-                algorithmsInfo={algorithmState.algorithmsInfo}
-                algorithmsComplete={algorithmState.algorithmsComplete}
-              />
+            { algorithmState.uuid != "" ? (<ProgressBar uuid={algorithmState.uuid} />) : ""}
+
             </div>
           </div>
         </Container>

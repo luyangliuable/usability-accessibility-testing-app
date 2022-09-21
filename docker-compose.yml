@@ -48,6 +48,7 @@ services:
       - API_URL=flask_backend:5005
       - TASK_URL=http://localhost:5005/task
       - APK_UPLOAD_URL=http://localhost:5005/upload
+      - STATUS_URL=http://localhost:5005/status/get
     container_name: bxer.react-ui
     stdin_open: true
     volumes:
@@ -155,17 +156,15 @@ services:
     command: python3 app.py
     image: bwoa0001/gifdroid
     container_name: bxer.gifdroid
-    # network_mode: "host"
     ports:
       - '3005:3005'
     environment:
-    - FILE_API=http://host.docker.internal:5005/file/get
+    - FILE_API=http://host.docker.internal:5005/result/get
     - STATUS_API=http://host.docker.internal:5005/status
     - FLASK_BACKEND=http://host.docker.internal:5005
     - MONGO_URL=mongodb://host.docker.internal:27017/
     - S3_URL=http://host.docker.internal:4566
     - EMULATOR=host.docker.internal:5555
-    # - DEBUG_MODE=1
     volumes:
     - './algorithms/app/.data:/home/data'
 

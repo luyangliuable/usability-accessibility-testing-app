@@ -34,7 +34,7 @@ def get_document(uuid) -> Tuple:
     Method for getting a document from api
     """
     if request.method == "GET":
-        return safe_serialize( algorithm_database_controller.get_document(uuid) ), 200
+        return safe_serialize( algorithm_database_controller.get(uuid) ), 200
 
     return "Invalid request", 400
 

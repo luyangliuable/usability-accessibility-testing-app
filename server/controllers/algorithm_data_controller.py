@@ -1,6 +1,7 @@
 from utility.uuid_generator import unique_id_generator
 from typing import TypeVar, Generic, List, Dict, Tuple
 from download_parsers.strategy import Strategy
+from controllers.controller import Controller
 from enums.status_enum import StatusEnum
 from models.DBManager import DBManager
 
@@ -8,7 +9,7 @@ from models.DBManager import DBManager
 T = TypeVar('T')
 
 
-class AlgorithmDataController(Generic[T]):
+class AlgorithmDataController(Generic[T], Controller):
     """
     This controller class is used to update metadata for files on mongodb for traceability purpose.
     """
@@ -17,17 +18,16 @@ class AlgorithmDataController(Generic[T]):
         ###############################################################################
         #                          Initiate database instance                         #
         ###############################################################################
-        self.collection_name = collection_name
-        self.mongo = DBManager.instance()
+        self.cn = collection_name
+        self._db = DBManager.instance()
 
         ###############################################################################
         #                               Update stratefy                               #
         ###############################################################################
         self._strategy = json_result_file_parser
 
-        self.c = self.mongo.get_collection('apk')
+        self.c = self._db.get_collection('apk')
 
-        # Attribute lookup for algorithm
         self.lookup = {
             "owleye": "activity",
             "storydisitiller": "activity",
@@ -35,10 +35,6 @@ class AlgorithmDataController(Generic[T]):
             "gifdroid": "gifdroid",
             "droidbot": "gifdroid",
         }
-
-
-    def get_lookup(self) -> Dict[str, str]:
-        return self.lookup
 
 
     def insert_algorithm_result(self, uuid: str, algorithm: str, links_to_res: List, result_type: str, file_names: List) -> Tuple[ Dict[str, T], int]:
@@ -58,12 +54,8 @@ class AlgorithmDataController(Generic[T]):
         ###############################################################################
         result_key_in_d = "results"
 
-        ###############################################################################
-        #   TODO Allow to insert strategy to have different algorithms for parsing    #
-        ###############################################################################
-
         # Get document matching uuid ############################################
-        d = self.mongo.get_document(uuid, self.c)
+        d = self._db.get_document(uuid, self.c)
 
         # Get the results segment #####################################################
         result = d[result_key_in_d]
@@ -76,12 +68,12 @@ class AlgorithmDataController(Generic[T]):
         result[self.lookup[algorithm]][result_type] = prev + parsed_json_for_schema
 
         # Update result back #####################################################
-        self.mongo.update_document(uuid, self.c, result_key_in_d, result)
+        self._db.update_document(uuid, self.c, result_key_in_d, result)
 
         return result, 200
 
 
-    def get_document(self, uuid: str):
+    def get(self, uuid: str):
         """
         Get file metadata that matches the job uuid
 
@@ -89,10 +81,10 @@ class AlgorithmDataController(Generic[T]):
             uuid (str) - The job uuid the identifies the cluster of algorithms to run
         """
 
-        return self.mongo.get_document(uuid=uuid, collection=self.c)
+        return self._db.get_document(uuid=uuid, collection=self.c)
 
 
-    def add_document(self, request_parameters: List, document: Dict) -> bool:
+    def post(self, request_parameters: List, document: Dict) -> bool:
         """
         Add file metadata that matches the job uuid
 
@@ -111,7 +103,7 @@ class AlgorithmDataController(Generic[T]):
 
             document['uuid'] = unique_id_generator()
 
-            self.mongo.insert_document(document, self.c).inserted_id
+            self._db.insert_document(document, self.c).inserted_id
 
             return True
         except Exception as e:
@@ -133,8 +125,12 @@ class AlgorithmDataController(Generic[T]):
         """
 
         schema_result_key = 'results';
-        document = self.get_document(uuid)
+        document = self.get(uuid)
         print(document)
         result = document[schema_result_key][algorithm]
 
         return result
+
+
+    def get_lookup(self) -> Dict[str, str]:
+        return self.lookup

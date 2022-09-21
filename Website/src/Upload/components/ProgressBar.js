@@ -1,48 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { useSpring, animated } from 'react-spring';
+import { getStatus } from "../function/getStatus";
 
 import "./Progressbar.css";
 
 const ProgressBar = (props) => {
-
-    // const [progress, updateProgress] = useState(10);
-
     const [progress, animate] = useSpring(() => ({
         config: { duration: props.duration },
         width: 0 + "%",
     }));
 
     const [textOp, fade] = useSpring(() => ({
-        opacity: 0,
+        opacity: 1,
     }));
 
     const [progressMessage, updateMessage] = useState("Application not yet started");
 
     const update = (newMessage, percentage) => {
-        fade({ opacity: 0, delay: 1000 });
-        fade({ opacity: 1, delay: 500 });
+        // fade({ opacity: 1, delay: 500 });
+        // fade({ opacity: 0, delay: 1000 });
         updateMessage(newMessage);
-        animate({ width: ( percentage <= 100 ? percentage : 100 ) + "%", delay: 500 });
+        animate({ width: (percentage <= 100 ? percentage : 100) + "%", delay: 500 });
 
     };
 
     useEffect(() => {
-        // const algorithmsToComplete = props.algorithmsInfo.filter(algorithm => algorithm.selected);
-        setTimeout(() => {
-            update("", props.percentage);
-        }, 10);
-        // console.log(props.algorithmsComplete * 100 / algorithmsToComplete.length);
-        // console.log("sadasd");
-    }, [props.percentage]);
+        getStatus(props.uuid, update);
+    }, []);
 
     return (
         <>
-          <div style={{ width: 900, height: 50, background: "#FFF", borderRadius: 14, mariginLeft: 150, padding: 4, ...props.style, marginTop: 100 }}>
+          <div className="progressBarBackground">
             <animated.div className="stage" style={{ borderRadius: 17, height: "99%", ...progress }}>
             </animated.div>
           </div>
 
-        <animated.p style={{ ...textOp, color: "#FFF", fontWeight: "bold"}}>{progressMessage}</animated.p>
+          <animated.p style={{ ...textOp, color: "#FFF", fontWeight: "bold" }}>{progressMessage}</animated.p>
         </>
     );
 };

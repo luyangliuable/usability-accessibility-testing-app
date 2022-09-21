@@ -1,1 +1,1 @@
-{'images': [{'name': 'google', 'link': 'google.com.aubdasdas', 'type': 'None', 's3_bucket': 'apk', 's3_key': 'e07b256e-e8bf-4448-8a82-5058da4be4e8/report/google'}, {'name': 'finally_got_something', 'link': 'finally_got_something.org.au', 'type': 'None', 's3_bucket': 'apk', 's3_key': 'e07b256e-e8bf-4448-8a82-5058da4be4e8/report/finally_got_something'}], 'json': []}
+{'status': 'NOT_STARTED', 'start_time': datetime.datetime(2018, 1, 1, 0, 0), 'end_time': '', 'progress': 0, 'logs': [], 'ert': 0}

@@ -10,7 +10,7 @@ export const startJob = async (objectState, setObjectState, algorithmsToComplete
     const signalStartUrl = "http://localhost:5005/signal_start/";
     const resultCreateUrl = "http://localhost:5005/create_result";
     const task_url = "http://localhost:5005/task";
-    const apkUploadUrl = "http://localhost:5005/upload";
+    let data;
 
     /**
     * This lookup table is useful for displaying the description of the algorithm in progress
@@ -42,15 +42,7 @@ export const startJob = async (objectState, setObjectState, algorithmsToComplete
     /**
     * Upload apk file then send to result and official signal start
     */
-    uploadApk(formData, apkUploadUrl, setObjectState).then(response => {
-
-        updateProgressBarMsg(
-            descriptionLookup['gifdroid'], // TODO use dynamic
-            setObjectState,
-            500,
-            true
-        );
-
+    uploadApk(formData, setObjectState).then(response => {
         const user_UUID = sessionStorage.getItem('User_UUID');
 
         const jsonData = JSON.stringify({
@@ -67,12 +59,18 @@ export const startJob = async (objectState, setObjectState, algorithmsToComplete
             body: jsonData,
         });
 
-        const data = {};
+        data = {
+            algorithmsToComplete: algorithmsToComplete,
+            uuid: response.uuid
+        };
 
-        data.algorithmsToComplete = algorithmsToComplete;
-        data.uuid = response.uuid;
-
-        console.log(JSON.stringify( data ));
+        setObjectState(prev => {
+            return {
+                ...prev,
+                uuid: response.uuid
+            };
+        }
+        );
 
         /**
         * Signal algorithm to start with all algorithms
@@ -81,8 +79,6 @@ export const startJob = async (objectState, setObjectState, algorithmsToComplete
             method: 'POST',
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
-        }).then(response => response.json()).then(data => {
-            getStatus(task_url, data.task_id, undefined);
         });
 
     });

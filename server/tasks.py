@@ -1,8 +1,6 @@
 from flask import jsonify, send_file
 from celery import Celery, current_task
 from celery.result import AsyncResult
-# from scan_app.app import *
-import time
 import os
 import requests
 
@@ -57,39 +55,36 @@ def run_algorithm(info={}):
         ###############################################################################
         #                      Print some usefull debugging info                      #
         ###############################################################################
-        print("TASK: Running " + str( algorithm_name ) + " url: "+ str( URL ))
-        print("TASK: Algorithm cluster uuid is", uuid)
+        print(f'TASK: Running { str( algorithm_name ) } url: { str( URL ) }')
+        print(f'TASK: Algorithm cluster uuid is { uuid }')
 
         ###############################################################################
         #                      Change algorithm status to started                     #
         ###############################################################################
-        # asc.update_algorithm_status(uuid, algorithm_name, Status.running)
         if URL != "SKIP":
-            requests.post(update_status_url, headers={"Content-Type": "text/plain"}, data=Status.running)
+            requests.post(update_status_url, headers={"Content-Type": "text/plain"}, data=Status.running.value )
 
         ###############################################################################
         #                          Signal Algorithm to start                          #
         ###############################################################################
         result = requests.post(str( URL ), json={ "uid": uuid })
 
-
         ###############################################################################
         #           Update status according to the success of the algorithm           #
         ###############################################################################
         if result.status_code < 400:
-            # asc.update_algorithm_status(uuid, algorithm_name, Status.successful)
-            requests.post(update_status_url, headers={"Content-Type": "text/plain"}, data=Status.successful)
+            requests.post(update_status_url, headers={"Content-Type": "text/plain"}, data=Status.successful )
+            print("TASK: Successfully completed task", algorithm_name)
         else:
-            # asc.update_algorithm_status(uuid, algorithm_name, Status.failed)
-            requests.post(update_status_url, headers={"Content-Type": "text/plain"}, data=Status.failed)
+            print(f'TASK: algorithm url { update_status_url }.')
+            requests.post(update_status_url, headers={"Content-Type": "text/plain"}, data=Status.failed )
+            print("TASK: FAILED complete task", algorithm_name)
 
     except Exception as ex:
         algorithm_name = info['algorithm']
-
-        print('TASK: failed to complete tasks', str( algorithm_name ), " with url", str( URL ), "because", ex)
+        print(f'TASK: failed to complete tasks with url { str( URL ) } because { ex }')
         errors.append(ex)
     else:
-        print("TASK: Successfully connected completed tasks", algorithm_name)
         state = {"task_id": "", "task_status": ['distiller'], "task_result": ""}
 
     result = {"files": ["file_url_placeholder"], "images": ["image_url_placeholder"], "errors": str( errors ) }

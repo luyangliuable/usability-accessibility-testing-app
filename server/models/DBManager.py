@@ -1,9 +1,7 @@
 import pymongo
 from pymongo.database import Collection
 import datetime
-import json
 import os
-
 from enums.status_enum import *
 
 class DBManager:
@@ -67,7 +65,9 @@ class DBManager:
                 "status": StatusEnum.none,
                 "start_time": "",
                 "end_time": "",
-                "progress": 0
+                "progress": 0,
+                "logs": [],
+                "ert": 0
             },
             "algorithm_status" : {
                 "storydistiller" : {
@@ -75,35 +75,50 @@ class DBManager:
                     "notes": "",
                     "start_time" : "",
                     "end_time" : "",
-                    "apk": ""
+                    "apk": "",
+                    "progress": 0,
+                    "logs": [],
+                    "ert": 0
                 },
                 "owleye" : {
                     "status" : "",
                     "notes": "",
                     "start_time" : "",
                     "end_time" : "",
-                    "apk": ""
+                    "apk": "",
+                    "progress": 0,
+                    "logs": [],
+                    "ert": 0
                 },
                 "xbot" : {
                     "status" : "",
                     "notes": "",
                     "start_time" : "",
                     "end_time" : "",
-                    "apk": ""
+                    "apk": "",
+                    "progress": 0,
+                    "logs": [],
+                    "ert": 0
                 },
                 "gifdroid" : {
                     "status" : "",
                     "notes": "",
                     "start_time" : "",
                     "end_time" : "",
-                    "apk": ""
+                    "apk": "",
+                    "progress": 0,
+                    "logs": [],
+                    "ert": 0
                 },
                 "ui_checker" : {
                     "status" : "",
                     "notes": "",
                     "start_time" : "",
                     "end_time" : "",
-                    "apk": ""
+                    "apk": "",
+                    "progress": 0,
+                    "logs": [],
+                    "ert": 0
                 }
             },
             "algorithm_outputs" : {

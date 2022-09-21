@@ -44,10 +44,8 @@ def update(uuid: str) -> t.Tuple[t.Dict, int]:
     Method for updating status of each and every algorithm
     """
     if request.method == "POST":
-        status = str( request.data.decode() )
-
-        res = jsc.update(uuid, status)
-
+        data = request.json
+        res = jsc.update(uuid, status=data.get('status'), progress=data.get('progress'), logs=data.get('logs'))
         return res, 200
     else:
         return {"error": request.method + " not valid" }, 400

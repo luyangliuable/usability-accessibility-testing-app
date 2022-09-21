@@ -2,13 +2,14 @@
 import typing as t
 from models.DBManager import DBManager
 from pymongo.database import Collection
+from controllers.controller import Controller
 from datetime import datetime
 
 from enums.status_enum import StatusEnum
 
 T = t.TypeVar('T')
 
-class JobStatusController(t.Generic[T]):
+class JobStatusController(t.Generic[T], Controller):
     """
         Updates algorithm_status. Gets algorithm_status
     """
@@ -59,9 +60,13 @@ class JobStatusController(t.Generic[T]):
 
         for p in parameters:
             if p in kwargs:
-                d[p] = kwargs[p]
+                if p == 'logs':
+                    d['logs'].append(kwargs[p])
+                elif p == 'progress':
+                    d['progress'] += kwargs[p]
+                else:
+                    d[p] = kwargs[p]
 
-        # Get status ##################################################################
         self._db.update_document(uuid, self.c, job_status_key, d)
 
         return d
@@ -70,6 +75,13 @@ class JobStatusController(t.Generic[T]):
     def get_collection(self) -> Collection:
         return self.c
 
+
+    def insert(self, uuid: str):
+        pass
+
+
+    def post(self, uuid: str):
+        pass
 
 if __name__ == "__main__":
     pass

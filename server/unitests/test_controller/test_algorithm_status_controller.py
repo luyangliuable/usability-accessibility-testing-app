@@ -39,7 +39,7 @@ class TestDbManager(unittest.TestCase):
     def test_get_status_of_specific_algorithm(self):
         new_status = Status.running
 
-        self.asc.update(self.uuid, 'xbot', status=new_status)
+        self.asc.post(self.uuid, 'xbot', status=new_status)
         r = self.asc.get(self.uuid, 'xbot')
 
         self.assertEqual(r['status'], new_status)
@@ -51,31 +51,19 @@ class TestDbManager(unittest.TestCase):
 
     def test_update_algorithm_status(self):
 
-        self.asc.update(self.uuid, 'gifdroid', status=Status.running)
+        self.asc.post(self.uuid, 'gifdroid', status=Status.running)
 
-        expected = {
-            'gifdroid': {
-                'status': 'RUNNING',
-                'notes': '',
-                'start_time': '',
-                'end_time': '',
-                'apk': '',
-            }
-        }
+        expected = {'status': 'RUNNING', 'notes': '', 'start_time': '', 'end_time': '', 'apk': '', 'progress': 0, 'logs': [], 'ert': 0}
 
         r = self.db.get_document(self.uuid, self.tc)['algorithm_status']['gifdroid']
 
-        expected = expected['gifdroid']
-
-        write_to_view("real.txt", r)
-        write_to_view("expect.txt", expected)
         self.assertEqual(r, expected)
 
 
     def test_update_apk_in_status(self):
         expected = 'netflix.apk'
 
-        self.asc.update_algorthm_status_apk_file_name(self.uuid, 'owleye', expected)
+        self.asc.update_apk_filename(self.uuid, 'owleye', expected)
 
         r = self.db.get_document(self.uuid, self.tc)['algorithm_status']['owleye']['apk']
 
@@ -83,39 +71,22 @@ class TestDbManager(unittest.TestCase):
 
 
     def test_update_algorithm_attribute(self):
-        self.asc.update_algorithm_status_attribute(self.uuid, 'gifdroid', 'notes', 'random_notes for testing')
+        self.asc.update_status_attribute(self.uuid, 'gifdroid', 'notes', 'random_notes for testing')
 
-        expected = {
-            'gifdroid': {
-                'status': '',
-                'notes': 'random_notes for testing',
-                'start_time': '',
-                'end_time': '',
-                'apk': ''
-            }
-        }
+        expected = {'status': '', 'notes': 'random_notes for testing', 'start_time': '', 'end_time': '', 'apk': '', 'progress': 0, 'logs': [], 'ert': 0}
 
         r = self.db.get_document(self.uuid, self.tc)['algorithm_status']['gifdroid']
-
-        expected = expected['gifdroid']
 
         self.assertEqual(r, expected)
 
 
     def test_declare_apk_name_in_status(self):
-       expected = 'netflix_no_chill.apk'
-       t = self.asc.decalare_apk_name_in_status(self.uuid, expected)
-       write_to_view("view.txt", t)
-       r = self.db.get_document(self.uuid, self.tc)['algorithm_status']['gifdroid']['apk']
+        expected = 'netflix_no_chill.apk'
+        t = self.asc.declare_apk_name_in_status(self.uuid, expected)
 
-       self.assertEqual(expected, r)
+        r = self.db.get_document(self.uuid, self.tc)['algorithm_status']['gifdroid']['apk']
 
-
-    def test_get_all_algorithm_status(self):
-       r = self.asc.get_all_algorithm_status(self.uuid)
-       expected = {'storydistiller': {'status': '', 'notes': '', 'start_time': '', 'end_time': '', 'apk': ''}, 'owleye': {'status': '', 'notes': '', 'start_time': '', 'end_time': '', 'apk': ''}, 'xbot': {'status': '', 'notes': '', 'start_time': '', 'end_time': '', 'apk': ''}, 'gifdroid': {'status': '', 'notes': '', 'start_time': '', 'end_time': '', 'apk': ''}, 'ui_checker': {'status': '', 'notes': '', 'start_time': '', 'end_time': '', 'apk': ''}}
-
-       self.assertEqual(expected, r)
+        self.assertEqual(expected, r)
 
 
 ###############################################################################

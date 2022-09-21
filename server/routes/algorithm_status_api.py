@@ -33,7 +33,7 @@ def update_algorthm_status(uuid: str, algorithm: str) -> t.Tuple[str, int]:
     if request.method == "POST":
         status = str( request.data.decode() )
 
-        res = asc.update(uuid, algorithm, status=status)
+        res = asc.post(uuid, algorithm, status=status)
 
         res = ""
         return res, 200
@@ -65,7 +65,7 @@ def update(uuid: str, algorithm: str) -> t.Tuple[str, int]:
     if request.method == "POST":
 
         status = str( request.data.decode() )
-        res = asc.update(uuid, algorithm, status)
+        res = asc.post(uuid, algorithm, status)
 
         return json.dumps(res), 200
     else:
@@ -82,7 +82,7 @@ def update_one_attr(uuid: str, algorithm: str, attribute: str) -> t.Tuple[str, i
         # Assume new attribute value is a string
         update = str( request.data.decode() )
 
-        res = asc.update_algorithm_status_attribute(uuid, algorithm, attribute, update)
+        res = asc.update_status_attribute(uuid, algorithm, attribute, update)
 
         return safe_serialize( res ), 200
     else:

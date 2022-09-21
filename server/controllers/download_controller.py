@@ -1,34 +1,15 @@
 from controllers.algorithm_data_controller import AlgorithmDataController as ADC
 from download_parsers.strategy import Strategy
 from typing import TypeVar, Generic
+from utility.enforce_bucket_existance import *
+from controllers.controller import Controller
 import tempfile
-import boto3
-import os
-
 import subprocess
-
-
-###############################################################################
-#                                  Set Up AWS                                 #
-###############################################################################
-AWS_PROFILE = 'localstack'
-AWS_REGION = 'us-west-2'
-ENDPOINT_URL = os.environ['S3_URL']
-print(ENDPOINT_URL)
-BUCKETNAME = "apk-bucket"
-
-boto3.setup_default_session(profile_name=AWS_PROFILE)
-
-
-s3_client = boto3.client(
-    "s3",
-    region_name=AWS_REGION,
-    endpoint_url=ENDPOINT_URL
-)
+import os
 
 T = TypeVar('T')
 
-class DownloadController(Generic[T]):
+class DownloadController(Generic[T], Controller):
 
     bucket_name = 'apk-bucket'
 
@@ -46,7 +27,7 @@ class DownloadController(Generic[T]):
         self.adc = ADC(collection_name, json_result_file_parser)
 
 
-    def download(self, uuid: str, algorithm: str, type: str, name: str) -> str:
+    def get(self, uuid: str, algorithm: str, type: str, name: str) -> str:
         """
         This controller is responsible for download file stored from previous job into the s3 bucket.
 
@@ -54,6 +35,22 @@ class DownloadController(Generic[T]):
             collection_name - The collection name to refer to for database.
             json_result_file_parser - A strategy for parsing result files into a json to update file names mongodb schema.
 
+
+        Gifdroid files are stored in:
+            - /
+                - gifdroid/
+
+        xbot images files are stored in:
+            - /
+                - activity/{ screen_name }/xbot/images/
+
+        xbot issues files are stored in:
+            - /
+                - activity/{ screen_name }/xbot/issues/
+
+        tappable issues files are stored in:
+            - /
+                - activity/{ screen_name }/tappable/
         """
 
         path = ""
@@ -63,8 +60,8 @@ class DownloadController(Generic[T]):
             output = "gifdroid.json"
             path = os.path.join(uuid, algorithm, output)
         elif algorithm == "xbot":
-            if type == "issues":
 
+            if type == "issues":
                 file_type=".txt"
                 output = DownloadController.join_str(name, file_type)
 
@@ -78,23 +75,24 @@ class DownloadController(Generic[T]):
 
             file_type = ".jpg"
             output = DownloadController.join_str(name, file_type)
+            path = os.path.join(uuid, "activity", name, algorithm, output)
 
-            path = os.path.join(uuid, "activity", name, type, output)
         elif algorithm == "activity":
+
             if type == "images":
-                file_type = ".jpg"
+                file_type = ".png"
                 output = DownloadController.join_str(name, file_type)
 
             path = os.path.join(uuid, "activity", name, type, output)
 
-        print("DOWNLOAD: Downloading file from", os.path.join( "apk-bucket", path ))
+        print(f'DOWNLOAD: Downloading file from { os.path.join( "apk-bucket", path ) }')
 
         s3_client.download_file(Bucket='apk-bucket', Key=path, Filename=output)
 
         return output
 
 
-    def _download_all_objects_in_folder(self, uuid: str) -> str:
+    def download_all_objects_in_folder(self, uuid: str) -> str:
         """
         Gets all the files out of folder on s3 bucket matching uuid for user to download
 
@@ -104,9 +102,6 @@ class DownloadController(Generic[T]):
         Returns: str Path leading to stored summary location.
         """
 
-        uuid = "ef1e3bcb-adb7-4980-ab77-f7e094f01871"
-        print(uuid)
-
         with tempfile.TemporaryDirectory() as sys_tmp_folder:
             cwd = os.getcwd()
             local_tmp_save_dir = tempfile.mkdtemp(dir=cwd)
@@ -114,6 +109,10 @@ class DownloadController(Generic[T]):
             subprocess.run(['aws', f'--endpoint-url={ENDPOINT_URL}', 's3', 'cp', f's3://{BUCKETNAME}/{uuid}/', local_tmp_save_dir, '--recursive'])
 
         return local_tmp_save_dir
+
+
+    def post(self, uuid: str, **kwargs):
+        pass
 
 
     @staticmethod

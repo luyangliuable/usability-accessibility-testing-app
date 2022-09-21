@@ -46,19 +46,21 @@ class TestDbManager(unittest.TestCase):
         # r = self.db.get_document(self.uuid, self.tc)['status']
         r = self.asc.get(self.uuid)
 
-        expected = {'end_time': '', 'progress': 0, 'start_time': '', 'status': 'NOT_STARTED'}
+        expected = DBManager.get_format(self.uuid)['overall-status']
+        expected['status'] = 'NOT_STARTED'
 
         self.assertEqual(r, expected)
 
 
     def test_get_update_start_time_status(self):
-        new_status = datetime.datetime(2018,1,1)
+        test_start_time = datetime.datetime(2018,1,1)
 
-        self.asc.update(self.uuid, start_time=new_status)
+        self.asc.update(self.uuid, start_time=test_start_time)
 
         r = self.db.get_document(self.uuid, self.tc)['overall-status']
 
-        expected = {'status': 'NOT_STARTED', 'start_time': new_status, 'end_time': '', 'progress': 0}
+        expected = DBManager.get_format(self.uuid)['overall-status']
+        expected['start_time'] = test_start_time
 
         write_to_view("view1.txt", r)
 
@@ -72,7 +74,10 @@ class TestDbManager(unittest.TestCase):
 
         r = self.db.get_document(self.uuid, self.tc)['overall-status']
 
-        expected = {'status': 'SUCCESSFUL', 'start_time': '', 'end_time': '', 'progress': 0}
+        expected = DBManager.get_format(self.uuid)['overall-status']
+        expected['status'] = StatusEnum.successful.value
+        # write_to_view("expected.txt", expected)
+        # write_to_view("real.txt", r)
 
         self.assertEqual(r, expected)
 

@@ -26,7 +26,9 @@
             "status": "SUCCESSFUL",
             "start_time": "",
             "end_time": "",
-            "progress": 0
+            "progress": 100,
+            "logs": ["gifdroid started", "gifdroid done", "owleye started", "owleye done", "Job finished"],
+            "ert": 0
         },
         "algorithm_status": {
             "storydistiller": {
@@ -34,35 +36,50 @@
                 "notes": "",
                 "start_time": "",
                 "end_time": "",
-                "apk": "a2dp.Vol_133.apk"
+                "apk": "a2dp.Vol_133.apk",
+                "progress": 100,
+                "logs": [],
+                "ert": 0
             },
             "owleye": {
                 "status": "SUCCESSFUL",
                 "notes": "",
                 "start_time": "",
                 "end_time": "",
-                "apk": "a2dp.Vol_133.apk"
+                "apk": "a2dp.Vol_133.apk",
+                "progress": 100,
+                "logs": [],
+                "ert": 0
             },
             "xbot": {
                 "status": "SUCCESSFUL",
                 "notes": "",
                 "start_time": "",
                 "end_time": "",
-                "apk": "a2dp.Vol_133.apk"
+                "apk": "a2dp.Vol_133.apk",
+                "progress": 100,
+                "logs": [],
+                "ert": 0
             },
             "gifdroid": {
                 "status": "SUCCESSFUL",
                 "notes": "",
                 "start_time": "",
                 "end_time": "",
-                "apk": "a2dp.Vol_133.apk"
+                "apk": "a2dp.Vol_133.apk",
+                "progress": 100,
+                "logs": [],
+                "ert": 0
             },
             "ui_checker": {
                 "status": "FAILED",
                 "notes": "",
                 "start_time": "",
                 "end_time": "",
-                "apk": "a2dp.Vol_133.apk"
+                "apk": "a2dp.Vol_133.apk",
+                "progress": 100,
+                "logs": [],
+                "ert": 0
             }
         },
         "algorithm_outputs": {

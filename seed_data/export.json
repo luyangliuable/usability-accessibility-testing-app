@@ -93,8 +93,23 @@
                     "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/activity/images/a2dp.Vol.main",
                     "xbot": {
                         "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/xbot/images/a2dp.Vol.main",
-                        "issue": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/xbot/issues/a2dp.Vol.main",
-                        "description": ""
+                        "issues": [
+                            {
+                                "component_type": "button",
+                                "issue_type": "small button",
+                                "issue_desc": "This item may not have a label readable by screen readers."
+                            },
+                            {
+                                "component_type": "button",
+                                "issue_type": "small button",
+                                "issue_desc": "This item may not have a label readable by screen readers."
+                            },
+                            {
+                                "component_type": "text",
+                                "issue_type": "small text",
+                                "issue_desc": "The image's contrast ratio is 1.25. This ratio is based on an estimated foreground color of #2F7E99 and an estimated background color of #358FAD. Consider increasing this ratio to 3.00 or greater."
+                            }
+                        ]
                     },
                     "owleye": {
                         "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/owleye/images/a2dp.Vol.main",
@@ -110,8 +125,23 @@
                     "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/activity/images/a2dp.Vol.ProviderList",
                     "xbot": {
                         "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/xbot/images/a2dp.Vol.ProviderList",
-                        "issue": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/xbot/issues/a2dp.Vol.ProviderList",
-                        "description": ""
+                        "issues": [
+                            {
+                                "component_type": "button",
+                                "issue_type": "small button",
+                                "issue_desc": "This item may not have a label readable by screen readers."
+                            },
+                            {
+                                "component_type": "button",
+                                "issue_type": "small button",
+                                "issue_desc": "This item may not have a label readable by screen readers."
+                            },
+                            {
+                                "component_type": "text",
+                                "issue_type": "small text",
+                                "issue_desc": "The image's contrast ratio is 1.25. This ratio is based on an estimated foreground color of #2F7E99 and an estimated background color of #358FAD. Consider increasing this ratio to 3.00 or greater."
+                            }
+                        ]
                     },
                     "owleye": {
                         "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/owleye/images/a2dp.Vol.ProviderList",
@@ -127,8 +157,23 @@
                     "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/activity/images/a2dp.Vol.Preferences",
                     "xbot": {
                         "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/xbot/images/a2dp.Vol.Preferences",
-                        "issue": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/xbot/issues/a2dp.Vol.Preferences",
-                        "description": ""
+                        "issues": [
+                            {
+                                "component_type": "button",
+                                "issue_type": "small button",
+                                "issue_desc": "This item may not have a label readable by screen readers."
+                            },
+                            {
+                                "component_type": "button",
+                                "issue_type": "small button",
+                                "issue_desc": "This item may not have a label readable by screen readers."
+                            },
+                            {
+                                "component_type": "text",
+                                "issue_type": "small text",
+                                "issue_desc": "The image's contrast ratio is 1.25. This ratio is based on an estimated foreground color of #2F7E99 and an estimated background color of #358FAD. Consider increasing this ratio to 3.00 or greater."
+                            }
+                        ]
                     },
                     "owleye": {
                         "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/owleye/images/a2dp.Vol.Preferences",
@@ -144,8 +189,23 @@
                     "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/activity/images/a2dp.Vol.PackagesChooser",
                     "xbot": {
                         "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/xbot/images/a2dp.Vol.PackagesChooser",
-                        "issue": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/xbot/issues/a2dp.Vol.PackagesChooser",
-                        "description": ""
+                        "issues": [
+                            {
+                                "component_type": "button",
+                                "issue_type": "small button",
+                                "issue_desc": "This item may not have a label readable by screen readers."
+                            },
+                            {
+                                "component_type": "button",
+                                "issue_type": "small button",
+                                "issue_desc": "This item may not have a label readable by screen readers."
+                            },
+                            {
+                                "component_type": "text",
+                                "issue_type": "small text",
+                                "issue_desc": "The image's contrast ratio is 1.25. This ratio is based on an estimated foreground color of #2F7E99 and an estimated background color of #358FAD. Consider increasing this ratio to 3.00 or greater."
+                            }
+                        ]
                     },
                     "owleye": {
                         "image": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/owleye/images/a2dp.Vol.PackagesChooser",

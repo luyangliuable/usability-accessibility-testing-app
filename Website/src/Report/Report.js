@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Container, TabContainer } from "react-bootstrap";
+import { Container, ListGroupItem, TabContainer } from "react-bootstrap";
 import Tab from "react-bootstrap/Tab";
 import Tabs from "react-bootstrap/Tabs";
+import Col from "react-bootstrap/Col";
+import ListGroup from "react-bootstrap/ListGroup";
+import Row from "react-bootstrap/Row";
 
 import "./Report.css";
 import "../index.css";
@@ -37,11 +40,12 @@ const Report = () => {
       headers: {
         "Content-Type": "application/json",
       },
-    }).then(response => {
-      response.json().then(json => {
-        updateReportData(json)
-      })
-    })
+    }).then((response) => {
+      response.json().then((json) => {
+        updateReportData(json);
+        console.log(json);
+      });
+    });
   };
 
   useEffect(() => {
@@ -59,15 +63,13 @@ const Report = () => {
       setTapshoeImage(screenId["tapshoe"]["image"]);
     if (screenId["tapshoe"]["heatmap"] != "")
       setTapshoeHeatmap(screenId["tapshoe"]["heatmap"]);
-    
+
     setShowIssues(true);
   }
 
   return (
     <Container className="container-nav">
       <div className="root">
-        {/* <p className="text">{uuid}</p>
-        <p className="text">{JSON.stringify(reportData)}</p> */}
         <p className="text-header text-centre">REPORT</p>
         <div className="horizontal-scroll-card">
           <Tabs
@@ -102,10 +104,12 @@ const Report = () => {
           </Tabs>
         </div>
         <div className="carousel">
-          {!showIssues && <div className="horizontal-images-card">
-            Please click on the above images to see the issues for each screen.
-          </div>
-          }
+          {!showIssues && (
+            <div className="horizontal-images-card">
+              Please click on the above images to see the issues for each
+              screen.
+            </div>
+          )}
           {showIssues && (
             <Tabs
               defaultActiveKey="profile"
@@ -125,50 +129,47 @@ const Report = () => {
                   eventKey="profile"
                   title="Accessibility"
                 >
-                  <div className="tab-div">
+                  <div className="xbot-tab-div">
                     <img className="issue_img" src={xbotImage} />
                   </div>
-                  <div id="list-example" class="list-group">
-                    <a
-                      class="list-group-item list-group-item-action"
-                      href="#list-item-1"
+                  <div className="xbot-issues">
+                    <Tab.Container
+                      id="list-group-tabs-example"
+                      defaultActiveKey="#0"
                     >
-                      Item 1
-                    </a>
-                    <a
-                      class="list-group-item list-group-item-action"
-                      href="#list-item-2"
-                    >
-                      Item2
-                    </a>
-                    <a
-                      class="list-group-item list-group-item-action"
-                      href="#list-item-3"
-                    >
-                      Item 3
-                    </a>
-                    <a
-                      class="list-group-item list-group-item-action"
-                      href="#list-item-4"
-                    >
-                      Item 4
-                    </a>
+                      <Row>
+                        <Col sm={4}>
+                          {selectedScreen["xbot"]["issues"].map(
+                            (issue, index) => {
+                              return (
+                                <ListGroup>
+                                  <ListGroup.Item action href={`#${index}`}>
+                                    {issue["component_type"]}
+                                  </ListGroup.Item>
+                                </ListGroup>
+                              );
+                            }
+                          )}
+                        </Col>
+                        <Col sm={8}>
+                          {selectedScreen["xbot"]["issues"].map(
+                            (issue, index) => {
+                              return (
+                                <Tab.Content>
+                                  <Tab.Pane eventKey={`#${index}`}>
+                                    {issue["issue_type"]}<br></br>
+                                    {issue["issue_desc"]}
+                                  </Tab.Pane>
+                                </Tab.Content>
+                              );
+                            }
+                          )}
+                        </Col>
+                      </Row>
+                    </Tab.Container>
                   </div>
-                  <div
-                    data-spy="scroll"
-                    data-target="#list-example"
-                    data-offset="0"
-                    class="scrollspy-example"
-                  >
-                    <h4 id="list-item-1">Item 1</h4>
-                    <p>...</p>
-                    <h4 id="list-item-2">Item 2</h4>
-                    <p>...</p>
-                    <h4 id="list-item-3">Item 3</h4>
-                    <p>...</p>
-                    <h4 id="list-item-4">Item 4</h4>
-                    <p>...</p>
-                  </div>
+
+                  <div style={{ clear: "left" }}></div>
                 </Tab>
               )}
               {tapshoeImage != "" && (

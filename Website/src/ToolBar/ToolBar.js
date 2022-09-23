@@ -31,30 +31,30 @@ export default function ToolBar() {
         <Col style={{width: "max(300px, 90vw)"}} className="centre-toolbar" id="nav">
           <Col>
             <NavLink to={"./about"}>
-              <h1>ABOUT</h1>
+              <h1 className="toolbar-h1">ABOUT</h1>
             </NavLink>
           </Col>
           <Col style={{width: "max(10px, 10vw)"}}></Col>
           <Col>
             <NavLink to={"./upload"}>
-              <h1>UPLOAD</h1>
+              <h1 className="toolbar-h1">UPLOAD</h1>
             </NavLink>
           </Col>
           <Col style={{width: "max(10px, 10vw"}}></Col>
           <Col>
             <NavLink to={"./results"}>
-              <h1>RESULTS</h1>
+              <h1 className="toolbar-h1">RESULTS</h1>
             </NavLink>
           </Col>
         </Col>
         <Col style={{width: "max(5px, 5vw)"}} className="centre-toolbar" id="nav">
           {user &&
             <div onClick={signout}>
-              <h1>SIGN OUT</h1>
+              <h1 className="toolbar-h1">SIGN OUT</h1>
             </div>}
           {!user &&
             <NavLink to={"./login"}>
-              <h1>LOGIN</h1>
+              <h1 className="toolbar-h1">LOGIN</h1>
             </NavLink>
           }
         </Col>

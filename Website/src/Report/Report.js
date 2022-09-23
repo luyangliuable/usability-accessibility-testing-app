@@ -26,19 +26,22 @@ const Report = () => {
   const [reportData, updateReportData] = useState([]);
 
   const getReportData = async (uuid) => {
+    /**
+     * TO DO: replace seed UUID with actual uuid
+     */
     const path =
       resultDataPath + "28f666de-9a79-4a03-ac74-da77acf5924a" + "/activities";
     console.log(path);
-    const res = await fetch(path, {
+    await fetch(path, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
       },
-    });
-    const data = await res.json();
-    console.log("from getREportData");
-    console.log(data);
-    updateReportData(data);
+    }).then(response => {
+      response.json().then(json => {
+        updateReportData(json)
+      })
+    })
   };
 
   useEffect(() => {

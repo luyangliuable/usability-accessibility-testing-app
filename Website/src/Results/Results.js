@@ -73,13 +73,12 @@ const Results = () => {
           </thead>
           <tbody>
             <tr key={"test1"}>
-              <td>Asfsfds</td>
-              <td>Mark</td>
-              <td>Otto</td>   {/* get from status api */}
+              <td></td>
+              <td></td>
+              <td></td>   {/* get from status api */}
               <td>    {/* status */}
-                <ProgressBar />
               </td>
-              <td>@mdo</td>
+              <td></td>
             </tr>
             {reportKeys.map((report, index) => {
               return (

@@ -5,47 +5,71 @@ body {
 .main {
     position: absolute;
     z-index: 1;
-    height: 98vh;
+    height: 100vh;
     background: #2F2F2F;
-    background-size: cover;
-    /* background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("./hero.jpg"); */
-    background-position: left;
-    background-repeat: no-repeat;
-    perspective: 300px;
-    margin-bottom: -10px !important;
-    border-bottom: 0px !important;
+    border-bottom: 3px solid #888;
 }
 
 .layer-1 {
     z-index: 2;
     top: 0;
     left: 0;
-    width: 101%;
+    width: 100%;
     height: 100% !important;
 }
 
 
 .layer-2 {
-    border-top: 1px solid white;
-    z-index: 0;
+    z-index: 2;
     top: 145%;
+    width: 100%
+}
+
+.layer-3 {
+    z-index: 2;
+    top: 245%;
+    width: 100%
+}
+
+
+.layer-4 {
+    z-index: 2;
+    top: 365%;
     width: 101%
 }
 
+.wrap-carousel {
+    width: 53vw;
+    height: 40vw;
+    overflow: hidden;
+}
+
+
+.main-carousel {
+    border-radius: 14px;
+    background: #FFF;
+    height: 20vw;
+}
+
+.main-screenshots {
+    position: relative;
+    width: 11vw;
+    height: 19vw;
+    background: #888;
+    margin-left: 16px;
+}
+
 .hero {
-    margin: 0px !important;
-    border: 0px !important;
     position: absolute;
+    top: 0;
+    left: 0;
     z-index: 1;
-    top: 45vh;
-    left: -2%;
-    width: 104%;
-    height: 98vh;
-    background-size: cover;
-    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("./hero.jpg");
+    height: 200vw;
+    width: 100vw;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("https://w.wallhaven.cc/full/od/wallhaven-odg719.jpg");
     background-position: left;
-    background-repeat: no-repeat;
-    filter: blur(.2em);
+    background-repeat: repeat;
+    filter: blur(0.1em);
 }
 
 .hero-text {
@@ -72,4 +96,46 @@ body {
 
 .landing_button: hover {
     box-shadow: 2px 2px 12px #000;
+}
+
+.main-txt{
+    width: 40%;
+    color: white;
+    font-weight: 500;
+    font-size: 28px;
+}
+
+#graphics_2 {
+    background-repeat: no-repeat;
+    background-image: url("https://clipground.com/images/google-pixel-frame-png-5.png");
+    background-size:100% 100%;
+    width: 22vw;
+    height: 45vw;
+}
+
+#graphics_3 {
+    position: absolute;
+    background-repeat: no-repeat;
+    background-image: url('./BXER.png');
+    background-size:100% 100%;
+    width: 22vw;
+    height: 22vw;
+    left: 70vw;
+}
+
+#nest_graphics_2 {
+    position: absolute;
+    margin-top: 1.1vw;
+    width: 19.2vw;
+    height: 41vw;
+    border-radius: 1vw;
+}
+
+
+#nest_graphics_3 {
+    position: absolute;
+    margin-top: 1.1vw;
+    width: 19.2vw;
+    height: 41vw;
+    border-radius: 1vw;
 }

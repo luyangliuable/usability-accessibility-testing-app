@@ -14,15 +14,18 @@ const ProgressBar = (props) => {
         opacity: 1,
     }));
 
-    const [progressMessage, updateMessage] = useState("Application not yet started");
+    const [progressMessage, updateMessage] = useState("");
 
     const update = (newMessage, percentage) => {
         // fade({ opacity: 1, delay: 500 });
         // fade({ opacity: 0, delay: 1000 });
         updateMessage(newMessage);
         animate({ width: (percentage <= 100 ? percentage : 100) + "%", delay: 500 });
-
     };
+
+    useEffect(() => {
+        animate({ width: (props.progress <= 100 ? props.progress : 100) + "%", delay: 1 });
+    }, [props.progress]);
 
     useEffect(() => {
         getStatus(props.uuid, update);
@@ -30,7 +33,7 @@ const ProgressBar = (props) => {
 
     return (
         <>
-          <div className="progressBarBackground">
+            <div className="progressBarBackground" style={props.style}>
             <animated.div className="stage" style={{ borderRadius: 17, height: "99%", ...progress }}>
             </animated.div>
           </div>

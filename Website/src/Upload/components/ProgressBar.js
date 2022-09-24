@@ -24,7 +24,7 @@ const ProgressBar = (props) => {
     };
 
     useEffect(() => {
-        animate({ width: (props.progress <= 100 ? props.progress : 100) + "%", delay: 1 });
+        animate({ width: (props.progress <= 100 ? props.progress : 100) + "%", delay: 0 });
     }, [props.progress]);
 
     useEffect(() => {

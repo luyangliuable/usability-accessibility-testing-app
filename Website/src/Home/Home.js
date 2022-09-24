@@ -20,6 +20,8 @@ const Home = (props) => {
                    };
         });
 
+        setTimeout(function(){ $("#scroll_down_logo").hide() }, 1500);
+
     }, []);
 
 
@@ -47,6 +49,7 @@ const Home = (props) => {
     const [layer_css, store_layer_css] = useState({});
 
     function parallax(){
+        var window_height = window.innerHeight;
         var scrolled = $(window).scrollTop();
         var opacity = (230-scrolled)/230;
         var blur = 'blur('+ (scrolled)/1000 +'em)';
@@ -57,16 +60,17 @@ const Home = (props) => {
         $('.fadeout').css('opacity', opacity);
 
         // $('.hero').css('filter', 'blur('+ (scrolled)/1000 +'em)');
+        var detached = false;
 
-        if (scrolled > 150) {
-            $('.nav-container').css({ 'position': 'fixed', 'top': 0 });
-            $('.nav-container').css({ 'opacity': 0.8 });
+        if (scrolled > window_height/5.4 && !detached) {
+            $('.nav-container').css({ 'position': 'fixed', 'top': 0, 'opacity': 0.8  });
+            detached = !detached;
         } else {
-            $('.nav-container').css({ 'position': 'relative'});
-            $('.nav-container').css({ 'opacity': 1 });
+            $('.nav-container').css({ 'position': 'relative',  'opacity': 1 });
+            detached = !detached;
         }
 
-        var layer_2_progress_start = 1000;
+        var layer_2_progress_start = 1.18*window_height;
         var virtual_progress = 0;
 
         if (scrolled > layer_2_progress_start) {
@@ -74,9 +78,14 @@ const Home = (props) => {
             updateScroll(virtual_progress);
 
             if (virtual_progress > 100) {
-                $("#nest_graphics_3, .main-txt1-c1").fadeIn();
+                // $("#nest_graphics_3, .main-txt1-c1").animate({opacity: '1'}, 500);
+                // $("#nest_graphics_3, .main-txt1-c1").fadeIn({queue: false}, 300);
+                $("#nest_graphics_3, .main-txt1-c1").fadeIn(500);
+                $(".progressbar_msg").fadeOut();
             } else {
-                $("#nest_graphics_3, .main-txt1-c1").fadeOut();
+                // $("#nest_graphics_3, .main-txt1-c1").animate({opacity: '0'}, 500);
+                $(".progressbar_msg").fadeIn();
+                $("#nest_graphics_3, .main-txt1-c1").fadeOut(300);
             }
 
             var virtual_height_layer_2 = layer_css.height_layer_2 + ( layer_2_progress_start-scrolled )*0.25+'px';
@@ -86,22 +95,18 @@ const Home = (props) => {
             updateScroll(0);
         }
 
-        var layer_3_progress_start = 1600;
+        var layer_3_progress_start = 1.93*window_height;
         if (scrolled > layer_3_progress_start) {
-            var carousel_left = (layer_3_progress_start - scrolled) * 0.55;
-            console.log(carousel_left);
-
+            var carousel_left = (layer_3_progress_start - scrolled) * 0.85;
             $(".main-carousel").css({'margin-left': carousel_left});
         } else {
         }
 
-        var layer_4_progress_start = 2800;
+        var layer_4_progress_start = 3.39*window_height;
         if (scrolled > layer_4_progress_start) {
-            // console.log(layer_4_progress_start - scrolled);
             $(".main-txt2").fadeIn();
             $(".main-txt2").fadeIn();
             $("#graphics_3").fadeIn();
-            console.log(layer_4_progress_start - scrolled);
         } else {
             $(".main-txt2").fadeOut();
             $("#graphics_3").fadeOut();
@@ -111,31 +116,40 @@ const Home = (props) => {
 
 
     return (
-        <Container fluid="true" style={{height: "100000px"}}>
+        <Container fluid="true">
+          <div id="tmp" className="hero parallax-layer" >
+          </div>
 
           <div className="main layer-1" style={style.center} >
             <div className="fadeout">
-              <div className="landing_button" style={style.button}>Get Started</div>
-              <br />
               <div className="main-txt" style={{ width: '20vw' }}>
                 HELPING DEVELOPERS. <br /> HELPING USERS.
               </div>
+              <br />
+              <p style={{color: "#FFF", fontSize: '1vw'}}>Let AI analyse your android application for issues.</p>
+              <br />
+              <div className="landing_button" style={style.button}>Get Started</div>
             </div>
-            <img id="graphics_1" style={style.graphics_1} src="https://demos.onepagelove.com/html/tivo/images/header-software-app.png"/>
+            <img id="graphics_1" src="https://demos.onepagelove.com/html/tivo/images/header-software-app.png"/>
+
+            <img src="https://cdn4.iconfinder.com/data/icons/navigation-40/24/chevron-force-down-512.png" id="scroll_down_logo"/>
           </div>
 
-          <div id="tmp" className="hero parallax-layer" >
-          </div>
 
           <div className="main layer-2" style={style.center}>
             <div className="main-txt">
               <p className="main-txt1-c0">
                 Can you spot any accessbility issues?
               </p >
-              <ProgressBar style={{width: "22vw"}} progress={scroll} duration={1} />
-              <p className="main-txt1-c1">
-                Using previously labelled data from experts, let AI handle analysing for display issues and accessibility issues.
-              </p >
+              <ProgressBar style={{width: "22vw", height: "2vw"}} progress={scroll} duration={1} />
+              <div style={{height: "2.8vw", position: 'absolute'}}>
+                <p className="progressbar_msg">Analysing...</p>
+              </div>
+              <div style={{height: "140px"}}>
+                <p className="main-txt1-c1">
+                  Using previously labelled data from experts, you can let AI look for display and accessibility issues for you. With a precise accuract, accessibility issues will no longer be there.
+                </p>
+              </div>
             </div>
 
             <div style={{ width: "20%" }}>
@@ -160,9 +174,10 @@ const Home = (props) => {
                 };
               </div>
             </div>
-              <div className="main-txt">
-                Hundreds of screenshots can be can be generated for your android app. You simply have to upload the apk file.
-              </div>
+            <div className="main-txt">
+              Hundreds of screenshots can be can be generated from your android app for accessibility analysis.
+              <p className="main-txt2-c">You simply have to upload the apk file.</p>
+            </div>
           </div>
 
           <div id="about" className="main layer-4" style={style.center}>
@@ -186,10 +201,6 @@ const Home = (props) => {
 
 
 const style = {
-    graphics_1: {
-        width: '700px',
-        height: 'auto'
-    },
     center: {
         display: 'flex',
         flexDiretion: 'column',
@@ -213,18 +224,6 @@ const style = {
         flexDiretion: 'column',
         alignItems: 'center',
     },
-    button: {
-        cursor: "pointer",
-        fontSize: "30px",
-        background: "#AA6DA3",
-        width: '300px',
-        height: '100px',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        color: 'white',
-        borderRadius: '24px',
-    }
 
 };
 

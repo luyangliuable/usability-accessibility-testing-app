@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Row, Container, Form, Button, Col } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import { postForm } from "./function/postForm";
+import { GoogleLogin } from '@react-oauth/google';
 
 import "./Login.css";
 import "../index.css";
@@ -14,20 +15,20 @@ export default function Login() {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    const jsonData = JSON.stringify({
-      email: event.target.in_email.value,
-      password: event.target.in_pass.value,
-    });
+    // const jsonData = JSON.stringify({
+    //   email: event.target.in_email.value,
+    //   password: event.target.in_pass.value,
+    // });
 
-    console.log(jsonData);
+    // console.log(jsonData);
 
-    var response = postForm(jsonData, "http://localhost:5005/login");
+    // var response = postForm(jsonData, "http://localhost:5005/login");
 
-    console.log(response);
-    response.then((data) => {
-      sessionStorage.setItem("User_UUID", data.user_id);
-      updateUser(data.user_id);
-    });
+    // console.log(response);
+    // response.then((data) => {
+    //   sessionStorage.setItem("User_UUID", data.user_id);
+    //   updateUser(data.user_id);
+    // });
 
   };
 
@@ -48,8 +49,34 @@ export default function Login() {
               <Col lg={12} className="login-title">
                 <h2 className="login">LOGIN</h2>
               </Col>
-
-              <form onSubmit={handleSubmit}>
+              <GoogleLogin
+                  onSuccess={credentialResponse => {
+                    console.log(credentialResponse);
+                    const parseJWT = (credentialResponse) => {
+                      // return JSON.parse(atob(credentialResponse.credential.split('.')[1]))
+                      return JSON.parse(Buffer.from(credentialResponse.credential.split('.')[1], 'base64').toString());
+                    };
+                    const jsonData = JSON.stringify({
+                      email: parseJWT.email
+                      // password: event.target.in_pass.value,
+                      // credential_id:credentialResponse.credential
+                    });
+                
+                    console.log(jsonData);
+                
+                    var response = postForm(jsonData, "http://localhost:5005/login");
+                
+                    console.log(response);
+                    response.then((data) => {
+                      sessionStorage.setItem("User_UUID", data.user_id);
+                      updateUser(data.user_id);
+                    });
+                  }}
+                  onError={() => {
+                    // console.log('Login Failed');
+                  }}
+                />
+              {/* <form onSubmit={handleSubmit}>
                 <div className="form-div-1">
                   <Form.Group className="mb-3" controlId="formBasicEmail">
                     <Form.Control
@@ -75,13 +102,7 @@ export default function Login() {
                     LOGIN
                   </Button>
                 </div>
-              </form>
-
-              <Col lg={12}>
-                <Link to={"/login/signup"}>
-                  <p className="new-user">New User? Create Account.</p>
-                </Link>
-              </Col>
+              </form> */}
             </div>
           </Col>
 

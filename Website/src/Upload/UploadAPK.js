@@ -112,17 +112,15 @@ const Upload = () => {
           />
         </div>
 
-        <div className="next-button">
+        <button className="cust_button next-button" disabled={buttonState}>
           <Link
             to={"./selectalgorithm"}
             style={buttonState ? { pointerEvents: "none" } : {}}
             state={{ objectState: objectState }}
           >
-            <button className="button btn btn-primary" disabled={buttonState}>
-              <h3>NEXT</h3>
-            </button>
-          </Link>
-        </div>
+            <h3>Next</h3>
+        </Link>
+        </button>
       </div>
     </Container>
   );

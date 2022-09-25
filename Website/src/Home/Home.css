@@ -72,7 +72,8 @@ body {
     width: 100vw;
     background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url("https://w.wallhaven.cc/full/od/wallhaven-odg719.jpg");
     background-position: left;
-    background-repeat: repeat;
+    background-repeat: repeat-y; /* Repeat only veriticallay stretch horizontally */
+    background-size: 100% auto;
     filter: blur(0.1em);
 }
 
@@ -140,26 +141,28 @@ body {
     background-repeat: no-repeat;
     background-image: url('./BXER.png');
     background-size:100% 100%;
-    width: 22vw;
-    height: 22vw;
+    width: 21vw;
+    height: 20vw;
     left: 70vw;
 }
 
 #nest_graphics_2 {
     position: absolute;
-    margin-top: 1.1vw;
-    width: 19.2vw;
-    height: 41vw;
-    border-radius: 1vw;
+    margin-right: 0.2vw;
+    margin-top: 2.9vw;
+    width: 19.5vw;
+    height: 41.3vw;
+    border-radius: 1.5vw;
 }
 
 
 #nest_graphics_3 {
     position: absolute;
-    margin-top: 1.1vw;
-    width: 19.2vw;
-    height: 41vw;
-    border-radius: 1vw;
+    margin-right: 0.2vw;
+    margin-top: 2.9vw;
+    width: 19.5vw;
+    height: 41.3vw;
+    border-radius: 1.5vw;
 }
 
 #scroll_down_logo {

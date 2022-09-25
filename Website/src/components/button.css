@@ -1,36 +1,38 @@
-.custbutton {
+:root {
+    --margin: 20vw;
+    --darkmode-color: #AA6DA3;
+    --button-width: 100px;
+    --button-height: 60px;
+}
+
+.cust_button {
   color: black !important;
-  background: #EEE;
+  background: #;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  width: 100px;
-  height: 60px;
+  width: var(--button-width);
+  height: var(--button-height);
   border-radius: 20px;
   margin-top: 25px;
+  background: var(--darkmode-color);
   -webkit-border-radius: 20px;
   -moz-border-radius: 20px;
   -ms-border-radius: 20px;
-  cursor: pointer;
-  box-shadow: 1px 1px 2px #121212;
-  -webkit-box-shadow: 1px 1px 2px #121212;
-  -moz-box-shadow: 1px 1px 2px #121212;
-  -ms-box-shadow: 1px 1px 2px #121212;
+  cursor: pointer !important;
   transition: all 0.3s ease;
   -webkit-transition: all 0.3s ease;
   -moz-transition: all 0.3s ease;
   user-select: none;
   -webkit-user-select: none;
+  border: 0px;
   /*Safari*/
   -moz-user-select: none;
   /*Firefox*/
 }
 
 .cust_button:hover {
-  box-shadow: 2px 2px 15px #121212;
-  -webkit-box-shadow: 2px 2px 15px #121212;
-  -moz-box-shadow: 2px 2px 15px #121212;
   opacity: 0.8;
   -webkit-opacity: 0.8;
   -moz-opacity: 0.8;
@@ -48,4 +50,23 @@
 
 .cust_button:disabled {
     opacity: 30%;
+}
+
+.button-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.additional-upload-button-container {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.button-margin-left {
+    margin-left: var(--margin)
+}
+
+.button-margin-right {
+    margin-right: var(--margin)
 }

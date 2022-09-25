@@ -114,29 +114,28 @@ const AdditionalUploads = () => {
           </div>
         )}
 
-        <div className="back-button">
+        <div className="additional-upload-button-container">
           <Link
             to={"/upload/selectalgorithm"}
             state={{ objectState: objectState }}
           >
-            <button className="button btn btn-primary">
-              <h3>BACK</h3>
+            <button className="cust_button back-button button-margin-right">
+              <h3>Back</h3>
             </button>
           </Link>
-        </div>
 
-        <div className="next-button">
           <Link
             to={"/upload/summary"}
             style={buttonState ? { pointerEvents: "none" } : {}}
             state={{ objectState: objectState }}
           >
-            <button disabled={buttonState} className="button btn btn-primary">
-              <h3>NEXT</h3>
+            <button disabled={buttonState} className="cust_button next-button button-margin-left">
+              <h3>Next</h3>
             </button>
           </Link>
         </div>
       </div>
+
     </Container>
   );
 };

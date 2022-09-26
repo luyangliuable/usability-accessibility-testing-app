@@ -41,7 +41,7 @@ class ApkAnalysis:
             
     def _init_apk_resource(self) -> ResourceGroup:
         rw = ResourceWrapper(self.apk_file, None)
-        rg = ResourceGroup.publish(rw, True)
+        rg = ResourceGroup(ResourceType.APK_FILE).publish(rw, True)
         return rg
     
     def _init_resource_groups(self) -> None:

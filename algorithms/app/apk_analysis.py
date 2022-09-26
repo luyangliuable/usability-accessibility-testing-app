@@ -20,7 +20,7 @@ class ApkAnalysis:
         self. req_results = req_results
         self._init_dirs()
         self.apk_resources = {}
-        self.name = []
+        self.name = names
         self.apk_file = apk_file
 
     def start_processing(self) -> None:

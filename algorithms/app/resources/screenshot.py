@@ -22,6 +22,9 @@ class Screenshot():
         self.output_dir = output_dir
         self.tappability_dir = None
         
+    def get_name():
+        return Screenshot.__name__
+        
     def get_view_name(self) -> str:
         return self.view_name
         

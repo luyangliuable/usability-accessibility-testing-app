@@ -21,8 +21,9 @@ class TaskFactory:
     @staticmethod
     def create_tasks(names : List[str], base_dir : str, resource_groups : Dict[ResourceType, ResourceGroup]) -> None: #TODO add output_dir para
         all_names = names
-
-        for name in names:
+        
+        for i in range(len(names)):
+            name = names[i]
             cls = TaskFactory._tasks[name]
             assert cls is not None
 
@@ -30,7 +31,7 @@ class TaskFactory:
             depends = TaskFactory.get_tasks_with_outputs(req_inputs)
 
             all_names += depends
-            
+        
 
         unique_names = list(set(all_names))
 
@@ -43,19 +44,20 @@ class TaskFactory:
 
     @staticmethod
     def get_tasks_with_outputs(resource_types : List[ResourceType]) -> List[str]:
-        names = []
+        output = []
 
-        for type in resource_types:
-            for task in TaskFactory._tasks:
-                cls = TaskFactory._tasks[task]
-                
-                if cls.get_output_types() is None:
-                    continue
+        if resource_types is not None:
+            for type in resource_types:
+                for task in TaskFactory._tasks:
+                    cls = TaskFactory._tasks[task]
+                    
+                    if cls.get_output_types() is None:
+                        continue
 
-                if type in cls.get_output_types():
-                    names.append(cls.get_name())
+                    if type in cls.get_output_types():
+                        output.append(cls.get_name())
 
-        return list(set(names))
+        return list(set(output))
 
 
 class Task(ABC, metaclass=TaskMetaclass):

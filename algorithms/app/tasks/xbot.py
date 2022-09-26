@@ -1,3 +1,4 @@
+from resources.screenshot import Screenshot
 from tasks.task import *
 from resources.resource import *
 from typing import List, Dict
@@ -7,7 +8,7 @@ class Xbot(Task):
     """Class for managing Xbot algorithm"""
     
     _input_types = [ResourceType.APK_FILE, ResourceType.EMULATOR]
-    _output_types = [ResourceType.SCREENSHOT_PNG, ResourceType.XML_LAYOUT, ResourceType.ACCESSABILITY_ISSUE]
+    _output_types = [Screenshot, ResourceType.ACCESSABILITY_ISSUE]
     _url = 'http://host.docker.internal:3003/execute'
 
     
@@ -18,8 +19,8 @@ class Xbot(Task):
 
         self._sub_to_apks()
         self._sub_to_emulators()
-
-
+        
+        print("xbot")
 
     @classmethod
     def get_name(cls) -> str:

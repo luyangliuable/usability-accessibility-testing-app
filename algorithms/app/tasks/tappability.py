@@ -12,11 +12,27 @@ import subprocess
 class Tappability(Task):
     """Class for managing Tappability algorithm"""
     
-    def __init__(self, output_dir, resource_dict, threshold) -> None:
+    def __init__(self, output_dir, resource_dict) -> None:
         super().__init__(output_dir, resource_dict)
         self.img_lst = {}
         self.running = False
-        self.threshold = threshold
+        self.threshold = 50
+        print("tappability")
+        
+    @classmethod
+    def get_name(cls) -> str:
+        """Name of the task"""
+        return Tappability.__name__
+    
+    @classmethod
+    def get_input_types(cls) -> List[ResourceType]:
+        return [Screenshot]
+
+
+    @classmethod
+    def get_output_types(cls) -> List[ResourceType]:
+        return [Screenshot]
+
         
     def _sub_to_new_image(self) -> None:
         """Get notified when new activity is added"""
@@ -76,7 +92,7 @@ class Tappability(Task):
         for item in item_lst:
             #set item as complete 
             self.img_lst[item.get_view_name()]["is_completed"] = True
-            item.set_tappability_path(os.path.join(path, item.get_view_name())
+            item.set_tappability_path(os.path.join(path, item.get_view_name()))
         #clear temp folder
         shutil.rmtree(os.path.join(path, 'images'))
         shutil.rmtree(os.path.join(path, 'annotations'))

@@ -51,7 +51,7 @@ class ApkAnalysis:
         self.apk_resources[ResourceType.APK_FILE] = self._init_apk_resource()
         
 if __name__ == '__main__':
-    lst = [ResourceType.APK_FILE]
+    lst = [Screenshot]
     names = ['Xbot', 'Tappability']
-    AA = ApkAnalysis("/Users/em.ily/Desktop/temp/OUT",names, lst,None)
+    AA = ApkAnalysis("/Users/em.ily/Desktop/temp/OUT",names, lst,'yay.py')
     AA.start_processing()

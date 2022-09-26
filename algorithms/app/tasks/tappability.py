@@ -18,6 +18,7 @@ class Tappability(Task):
         self.running = False
         self.threshold = 50
         print("tappability")
+        self._sub_to_new_image()
         
     @classmethod
     def get_name(cls) -> str:

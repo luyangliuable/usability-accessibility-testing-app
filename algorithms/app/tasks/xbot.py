@@ -14,13 +14,13 @@ class Xbot(Task):
     
     def __init__(self, output_dir, resource_dict : Dict[ResourceType, ResourceGroup]) -> None:
         super().__init__(output_dir, resource_dict)
+        print("xbot")
 
         self.apk_queue = []
 
         self._sub_to_apks()
         self._sub_to_emulators()
         
-        print("xbot")
 
     @classmethod
     def get_name(cls) -> str:

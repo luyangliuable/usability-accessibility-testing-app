@@ -1,18 +1,8 @@
-.nav-container {
-	position: relative;
-	width: 100%;
-	height: max(60px, 6vh);
-	padding: 3px 3px;
-	background-color: #0d0d0d;
-	z-index: 10;
-  display:flex;
-  flex-direction: column;
-	text-align: center;
-	justify-content: center;
-	box-shadow: 0 0 0.75rem rgb(0, 0, 0);
-}
 
-.centre-toolbar {
+
+
+
+/* .centre-toolbar {
 	display: inline-flex;
 	justify-content: center;
 	align-items: center;
@@ -25,21 +15,66 @@
 	justify-content: center;
 	align-items: center;
 	font-size: max(15px, 1.5vh);
-  border-radius: max(12px, 1.5vh);
-	height: max(50px, 1vh);
+	height: 100%;
 	width: max(80px, 5vh);
 	transition: opacity 1.5s ease, background 0.05s ease-in-out, height 0.1s ease-in,color 0.1s ease-in, border-radius 0.1s ease-in;
 }
 
 .toolbar-h1:hover {
-	opacity: 0.80;
 	cursor: pointer;
+	color: #fff;
+	background-color: grey;
 }
 
 .toolbar-h1:active {
   font-weight: 400 !important;
-  background: #AA6DA3;
-	height: max(60px, 6vh);
-  border-radius: max(18px, 2vh);
-  color: white;
+  color: yellow !important;
 }
+
+
+.a {
+	background-color: gray;
+} */
+
+.topnav {
+	background-color: #333;
+	z-index: 10;
+	overflow: hidden;
+  }
+  
+
+  .sticky {
+  position: fixed;
+  top: 0;
+  width: 100%;
+}
+
+  /* Style the links inside the navigation bar */
+  .topnav a {
+	float: left;
+	color: #f2f2f2;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+	font-size: 17px;
+  }
+  
+  /* Change the color of links on hover */
+  .topnav a:hover {
+	background-color: #ddd;
+	color: black;
+  }
+  
+  /* Add a color to the active/current link */
+  .topnav a.active {
+	background-color: #1c7497;
+	color: white;
+  }
+
+  .signout {
+	float:right;
+  }
+  
+  .login {
+	float:right;
+  }

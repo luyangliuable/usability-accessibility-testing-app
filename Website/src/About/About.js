@@ -7,7 +7,7 @@ import "../index.css";
 export default class About extends Component {
   render() {
     return (
-      <Container className="container-nav">
+      <Container className="container-nav content">
         <div className="root">
           <p className="text-header text-centre">ABOUT US</p>
           <br></br>

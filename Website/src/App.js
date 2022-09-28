@@ -33,7 +33,7 @@ function App() {
                 <Route path="/upload/summary" element={<UploadSummary />}></Route>
             </Routes>
         </BrowserRouter>
-);
+    );
 }
 
 

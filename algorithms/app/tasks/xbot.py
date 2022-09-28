@@ -3,6 +3,8 @@ from tasks.task import *
 from resources.resource import *
 from typing import List, Dict
 import os
+from PIL import Image
+import shutil
 
 class Xbot(Task):
     """Class for managing Xbot algorithm"""
@@ -113,3 +115,76 @@ class Xbot(Task):
     def is_complete(self) -> bool:
         pass
         # return if subscriptions are complete and apk list is empty
+        
+    def _move_files_xb(self, img_dest, json_dest=None, jpg= False, activity= False):
+        """Moves xbot image and xml files from xbot temp file to dest. Reformats xml files to json."""
+        img_src = os.path.join(TEMP_PATH,"xbot", "screenshot")
+        xml_src = os.path.join(TEMP_PATH,"xbot", "screenshot","layouts")
+        activites_path = os.path.join(self.output_dir, "activities")
+        for subdir, dir, files in os.walk(img_src):
+            for file in files:
+                if file.endswith('.png'):
+                    activity_name = subdir.split('/')[-1]
+                    if activity_name not in ['screenshot', 'layouts']:
+                        if activity:
+                            if not os.path.exists(os.path.join(activites_path, activity_name)):
+                                os.makedirs(os.path.join(activites_path, activity_name))
+                                os.makedirs(os.path.join(activites_path, activity_name, "screenshots"))
+                                os.makedirs(os.path.join(activites_path, activity_name, "annotations"))
+                            img_dest = os.path.join(self.output_dir, "activities", activity_name, "screenshots")
+                            json_dest = os.path.join(self.output_dir, "activities", activity_name, "annotations")
+                        #convert xml to json & move to json directory
+                        if json_dest:
+                            xml_path = os.path.join(xml_src, activity_name + '.xml')
+                            json_path = os.path.join(json_dest, activity_name + ".json")
+                            xml_conv = xmlConverter(xml_path, json_path)
+                            xml_conv.convert_xml_to_json()                            
+                        #append count if mulitple
+                        if activity_name in self.activity_list:
+                            acitivity_name = activity_name + "_" + str(self.activity_list.count(acitivity_name))
+                        #convert to jpg & save/copy file to dest
+                        if jpg:
+                            im1 = Image.open(os.path.join(subdir, file))
+                            im1.save(os.path.join(img_dest, activity_name + '.jpg'))
+                        else:
+                            shutil.copy(os.path.join(subdir, file), os.path.join(img_dest, activity_name + '.png'))
+
+    def get_screenshots(self) -> str:
+            """run xbot and droidbot and copy screenshots into activity folders"""
+            activites_path = os.path.join(self.output_dir, "activities")
+            if not os.path.exists(activites_path):
+                os.makedirs(activites_path)
+            exists = False
+            if os.path.isdir(os.path.join(TEMP_PATH, "xbot")):
+                self._move_files_xb("",True,False,True)
+                exists = True
+            if os.path.isdir(os.path.join(TEMP_PATH, "droidbot")): #xbot temp dir path
+                self._move_files_db("",True, True)
+                exists = True
+            if not exists:
+                xbot_task = Xbot()
+                self.execute_task(xbot_task)
+                droidbot_task = Droidbot()
+                self.execute_task(droidbot_task)
+                self.get_screenshot()
+            return None
+        
+    def get_accessibility_issues(self) -> str:
+            # run xbot and droidbot if not already run
+            self._run_image_algorithms(droidbot = False)
+            # copy results into activity folders
+            xbot_path = os.path.join(TEMP_PATH, "xbot", "issues")
+            activites_path = os.path.join(self.output_dir, "activities")
+            for folder in os.listdir(xbot_path):
+                dir_path = os.path.join(activites_path, folder)
+                if not os.path.exists(dir_path):
+                    os.makedirs(dir_path)
+                activity_folder_path = os.path.join(dir_path, "accessibility_issues")
+                print(activity_folder_path)
+                if not os.path.exists(activity_folder_path):
+                    os.makedirs(activity_folder_path)
+                for file in os.listdir(os.path.join(xbot_path, folder)):
+                    if file.endswith('.txt') or file.endswith('.png'):
+                        src_path = os.path.join(xbot_path, folder, file)
+                        shutil.copy(src_path, activity_folder_path)
+            return None

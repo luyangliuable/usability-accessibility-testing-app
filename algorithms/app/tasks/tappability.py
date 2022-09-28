@@ -108,3 +108,35 @@ class Tappability(Task):
             return True
         else:
             return False  
+        
+    def get_tappability_predictions(self) -> str:
+        # run xbot and droidbot if not already run
+        self._run_image_algorithms()
+        # copy screenshots into temp folder convert PNGs to JPEG & get annotations
+        img_path = os.path.join(TEMP_PATH,"tappability", "screenshots")
+        json_path = os.path.join(TEMP_PATH,"tappability", "annotations")
+        self._move_files_xb(img_path, json_path, jpg=True)
+        self._move_files_db(img_path, json_path)
+        # run tappability
+        tappability = Tappability(img_path, json_path, os.path.join(self.output_dir,"tappability"), threshold=50)
+        self.execute_task(tappability)
+        # copy results into activity folders
+        self._get_ui_display_issues(tappability=True)
+        return None
+
+    def _get_ui_display_issues(self, tappability = False, owleye = False, xbot=False):
+        """Separates display issues by activity per algorithm"""
+        activites_path = os.path.join(self.output_dir, "activities")
+        for activity_name in list(set(self.activity_list)):
+            tap_temp_path = os.path.join(TEMP_PATH, "tappability", activity_name)
+            if tappability and os.path.exists(tap_temp_path):
+                tap_path = os.path.join(activites_path, activity_name, "tappability_prediction")
+                if not os.path.exists(tap_path):
+                    os.makedirs(tap_path)
+                for file in os.listdir(tap_temp_path):
+                    shutil.copy(os.path.join(tap_temp_path, file), os.path.join(activites_path, activity_name, "tappability_prediction"))
+            if owleye and os.path.exists(os.path.join(TEMP_PATH, "owleye", activity_name + '.jpg')):
+                if not os.path.exists(os.path.join(activites_path, activity_name, "display_issues")):
+                    os.makedirs(os.path.join(activites_path, activity_name, "display_issues"))
+                shutil.copy(os.path.join(TEMP_PATH, "owleye", activity_name + '.jpg'), os.path.join(activites_path, activity_name,"display_issues"))
+            return None

@@ -39,7 +39,7 @@ class TaskFactory:
             cls = TaskFactory._tasks[name]
             assert cls is not None
 
-            output_dir = os.path.join(base_dir, "%s".format(name))
+            output_dir = os.path.join(base_dir, cls.__name__.lower())
             cls(output_dir, resource_groups) #TODO pass in output_dir
 
     @staticmethod
@@ -70,6 +70,8 @@ class Task(ABC, metaclass=TaskMetaclass):
         if not os.path.exists(self.output_dir):
            os.makedirs(self.output_dir)
         self.resource_dict = resource_dict
+        
+        print(self.get_name())
         
 
     @classmethod

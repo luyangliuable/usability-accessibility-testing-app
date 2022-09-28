@@ -14,3 +14,15 @@ class Gifdroid(Task):
     def execute(self) -> None:
         # TODO: implement method
         pass
+    
+      
+    def get_execution_trace(self) -> str:
+        # run droidbot
+        self._run_image_algorithms(xbot=False)
+        # copy utg into gifdroid input folder
+        img_path = os.path.join(TEMP_PATH,"gifdroid")
+        # run gifdroid
+        gifdroid = Gifdroid() #check path
+        self.execute_task(gifdroid)
+        return None
+   

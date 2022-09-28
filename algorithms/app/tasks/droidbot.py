@@ -65,3 +65,12 @@ class Droidbot(Task):
             self.execute_task(droidbot_task)
             self.get_screenshot()
         return None
+    
+    def _run_image_algorithms(self, xbot=True, droidbot=True):
+        """Run xbot and droidbot (screenshot algorithms)"""
+        if xbot and 'xbot' not in self.tasks:
+            xbot_task = Xbot() #check inputs
+            self.execute_task(xbot_task)
+        if droidbot and 'droidbot' not in self.tasks:
+            droidbot_task = droidbot() #check inputs
+            self.execute_task(droidbot_task)

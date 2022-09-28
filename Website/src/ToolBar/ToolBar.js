@@ -49,26 +49,24 @@ export default function ToolBar() {
   return (
     <Row>
       <div className="topnav" id="myNavbar">
-        <NavLink to={"./"}>
-          <img
-            alt="logo"
-            src={require("./content/BXER.png")}
-            style={{ height: "max(10px, 2.5vh)" }}
-          />
-        </NavLink>
-        <NavLink to={"./about"} >About</NavLink>
-        <NavLink to={"./upload"} >Upload</NavLink>
-        <NavLink to={"./results"}>Results</NavLink>
-        {user ?
-          <div onClick={signout} className="signout">
-            <NavLink to={"./"} >Sign out</NavLink>
-          </div> :
-          <div className="login">
-            <NavLink to={"./login"}>
-              Login
-            </NavLink>
-          </div>
-        }
+        <div className="imageDiv">
+          <BxerImage></BxerImage>
+        </div>
+        <div className="title-div">
+          <NavLink to={"./about"} >About</NavLink>
+          <NavLink to={"./upload"} >Upload</NavLink>
+          <NavLink to={"./results"}>Results</NavLink>
+          {user ?
+            <div onClick={signout} className="signout">
+              <NavLink to={"./"} >Sign out</NavLink>
+            </div> :
+            <div className="login">
+              <NavLink to={"./login"}>
+                Login
+              </NavLink>
+            </div>
+          }
+        </div>
       </div>
       {/* <Row>
       
@@ -115,4 +113,22 @@ export default function ToolBar() {
       </Row> */}
     </Row>
   );
+}
+
+export function BxerImage() {
+
+
+  return (
+    <NavLink to={"./"} >
+      <div className="another-img-div">
+        <img
+          alt="logo"
+          className="bug-img"
+          src={require("./content/bxer-img-bg.png")}
+          style={{ height: "max(20px, 2.5vh)" }}
+        />
+        <div class="imgTitle">BXER</div>
+      </div>
+    </NavLink>
+  )
 }

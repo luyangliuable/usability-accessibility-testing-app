@@ -1,6 +1,6 @@
 
 
-
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
 
 /* .centre-toolbar {
 	display: inline-flex;
@@ -40,6 +40,8 @@
 	background-color: #333;
 	z-index: 10;
 	overflow: hidden;
+	max-height: 70px;
+	text-align: center;
   }
   
 
@@ -54,21 +56,28 @@
 	float: left;
 	color: #f2f2f2;
 	text-align: center;
-	padding: 14px 16px;
+	padding-top: 16px;
+	padding-bottom: 8px;
+	padding-left: 16px;
+	padding-right: 16px;
 	text-decoration: none;
 	font-size: 17px;
+	height: 60px;
+	justify-content: center;
   }
   
   /* Change the color of links on hover */
   .topnav a:hover {
 	background-color: #ddd;
 	color: black;
+	justify-content: center;
   }
   
   /* Add a color to the active/current link */
   .topnav a.active {
 	background-color: #1c7497;
 	color: white;
+	justify-content: center;
   }
 
   .signout {
@@ -77,4 +86,23 @@
   
   .login {
 	float:right;
+  }
+
+
+
+  .bug-img {
+	margin-top: -4px;
+  }
+
+  .imgTitle {
+	margin-left: 8px;
+	font-weight:400;
+	display: inline-block;
+	padding-top: -10px;
+	font-family: 'Bebas Neue', cursive;
+	font-size: 20px;
+  }
+
+  .another-img-div {
+    margin-top: -1px;
   }

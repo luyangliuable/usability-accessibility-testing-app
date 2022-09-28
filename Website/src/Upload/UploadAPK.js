@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container } from "react-bootstrap";
 import { Link, useLocation } from "react-router-dom";
 
@@ -16,6 +16,16 @@ const Upload = () => {
   const tempState = locations.state?.objectState;
 
   const [objectState, setObjectState] = useState(tempState);
+
+  useEffect(() => {
+
+    var myNavbar = document.getElementById("myNavbar");
+    myNavbar.classList.remove("sticky");
+
+    window.scrollTo(0, 0)
+
+  }, []);
+
 
   if (typeof objectState === "undefined") {
     setObjectState({
@@ -119,7 +129,7 @@ const Upload = () => {
             state={{ objectState: objectState }}
           >
             <h3>Next</h3>
-        </Link>
+          </Link>
         </button>
       </div>
     </Container>

@@ -14,6 +14,16 @@ const Results = () => {
   const [reportKeys, updateReportKeys] = useState([]);
   const [reportData, updateReportData] = useState([]);
 
+  useEffect(() => {
+
+    var myNavbar = document.getElementById("myNavbar");
+    myNavbar.classList.remove("sticky");
+
+    window.scrollTo(0, 0)
+
+  }, []);
+
+
   const getReportKeys = async () => {
     const res = await fetch(resultKeyPath, {
       method: "POST",

@@ -3,8 +3,6 @@ import { useSpring, animated } from 'react-spring';
 
 import "./Progressbar.css";
 
-import { getStatus } from "../../Upload/function/getStatus";
-
 const ProgressBar = (props) => {
 
     // const [progress, updateProgress] = useState(10);
@@ -29,18 +27,16 @@ const ProgressBar = (props) => {
     };
 
     useEffect(() => {
-        const task_url = "http://localhost:5005/task";
-        getStatus(task_url, props.uuid);
     }, []);
 
     return (
         <>
-            <div style={{ width: 900, height: 50, background: "#FFF", borderRadius: 14, mariginLeft: 150, padding: 4, ...props.style, marginTop: 100 }}>
-                <animated.div className="stage" style={{ borderRadius: 17, height: "99%", ...progress }}>
+            <div className="progressBarBackground">
+                <animated.div className="stage" style={{ ...progress }}>
                 </animated.div>
+                <animated.p style={{ ...textOp, color: "#FFF", fontWeight: "bold" }}>{progressMessage}</animated.p>
             </div>
 
-            <animated.p style={{ ...textOp, color: "#FFF", fontWeight: "bold" }}>{progressMessage}</animated.p>
         </>
     );
 };

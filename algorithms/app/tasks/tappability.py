@@ -12,81 +12,55 @@ import subprocess
 class Tappability(Task):
     """Class for managing Tappability algorithm"""
     
-    def __init__(self, output_dir, resource_dict, threshold) -> None:
+    def __init__(self, output_dir, resource_dict) -> None:
         super().__init__(output_dir, resource_dict)
         self.img_lst = {}
         self.running = False
-        input_type_img = self.get_input_types(cls)[0]
-        self.threshold = threshold
-        self._sub_to_unique_pairs()
-
-        self.pairs = {}
+        self.threshold = 50
+        print("tappability")
+        self._sub_to_new_image()
         
-
     @classmethod
     def get_name(cls) -> str:
-        return Tappability._name__
-
+        """Name of the task"""
+        return Tappability.__name__
+    
     @classmethod
     def get_input_types(cls) -> List[ResourceType]:
-        return [ResourceType.SCREENSHOT_UNIQUEPAIR]
+        return [Screenshot]
+
 
     @classmethod
     def get_output_types(cls) -> List[ResourceType]:
-       return [ResourceType.TAPPABILITY_PREDICT]
+        return [Screenshot]
 
-
-   
-    def _sub_to_unique_pair(self) -> None:
-        """Get notified when new img/json is added"""
-        self.resource_dict[ResourceType.SCREENSHOT_UNIQUEPAIR].subscribe(tappable_callback) 
-
-
-    
-    def tappable_callback(self, resource : ResourceWrapper[Tuple[ResourceWrapper[Screenshot], ResourceWrapper]]) -> None:
-        (jpeg, json) = resource.get_metadata(); 
         
-        # TODO execute tappability with the provided JPEG and JSON
-        return
+    def _sub_to_new_image(self) -> None:
+        """Get notified when new activity is added"""
+        self.resource_dict['UI_Info'].subscribe(tappable_callback)
+    
+    def tappable_callback(self, new_img: Screenshot) -> None:
+         """Callback method to add img and run converter method"""
+         if new_img.get_view_name() not in self.img_lst:
+             self._add_img(new_img)
+             self._process_img()
 
-                
-    # def tappable_callback(self, new_img: ResourceWrapper) -> None:
-    #      """Callback method to add img and run converter method"""
-    #      if new_img.get_path() not in self.img_lst:
-    #          self._add_img(new_img)
-    #          self._process_img()
-
-    def _add_img(self, img: ResourceWrapper) -> None:
+    def _add_img(self, img: Screenshot) -> None:
         """Add img to img list"""
-        img_path = img.get_path()
-        if img_path not in self.img_lst:
-            self.img_lst[img_path] = {"item": img, "is_completed": False, "ready": False}
+        view_name = img.get_view_name()
+        if view_name not in self.img_lst:
+            self.img_lst[view_name] = {"item": img, "is_completed": False, "ready": False}
             
-    def _get_next(self) -> ResourceWrapper:
+    def _get_next(self) -> Screenshot:
         """Get next img from list which is uncompleted"""
-        img_lst = [val["item"] for val in self.img_lst.values() if not val["is_completed"] and not val["item"].get_metadata().get_tappability_prediction()]
+        img_lst = [val["item"] for val in self.img_lst.values() if not val["is_completed"] and not val["item"].gget_tappability_path()]
         return img_lst[0] if len(img_lst) > 0 else None
 
     def _process_img(self) -> None:
         """Check to see if json is available. Process image or subscribe to json"""
         next_img = self._get_next()
-        img_metadata = next_img.get_metadata()
-        if img_metadata.get_json_path() == "":
-            self._sub_to_json()
-            return
-        self.img_lst[next_img.get_path()]["ready"] = True # set ready
+        self.img_lst[next_img.get_view_name()]["ready"] = True # set ready
         self._run()
-    
-    
-    def _sub_to_json(self) -> None:
-        """Subscribe to screenshot json"""
-        if ResourceType.JSON_LAYOUT in self.resource_dict:
-            for resource in self.resource_dict[ResourceType.JSON_LAYOUT].get_all_resources():
-                resource.get_metadata().subscribe(self.json_callback, "json")
-                
-    def json_callback(self, json: ResourceWrapper) -> None:
-        """Callback to process image"""
-        return self._process_img(json = json)
     
     def _move_items(self, path:str) -> list:
         """Move ready items into temp directory"""
@@ -97,9 +71,9 @@ class Tappability(Task):
         item_ready = []
         for val in self.img_lst.values():
             if not val["is_completed"] and val["ready"]:
-                item_metadata = val["item"].get_metadata()
-                shutil.copy(item_metadata.get_jpeg_path(), os.path.join(path, 'images', item_metadata.get_img_name() + ".jpeg"))
-                shutil.copy(item_metadata.get_json_path(), os.path.join(path, 'annotations', item_metadata.get_img_name() + ".json"))
+                item = val["item"]
+                shutil.copy(item.get_image_files['jpeg'], os.path.join(path, 'images', item.get_view_name() + ".jpeg"))
+                shutil.copy(item.get_layout_files['json'], os.path.join(path, 'annotations', item.get_view_name() + ".json"))
                 item_ready.append(val["item"])
         return item_ready
             
@@ -118,18 +92,8 @@ class Tappability(Task):
         """publishes and updates item"""
         for item in item_lst:
             #set item as complete 
-            self.img_lst[item.get_path()]["is_completed"] = True
-            item_metadata = item.get_metadata()
-            item_metadata.set_tappability_prediction(True)
-            #add new tappability prediction resources
-            resource = ResourceWrapper(os.path.join(path, item_metadata.get_img_name()), item.get_origin(), item_metadata)
-            for item in self.get_output_types(cls):
-                if item in self.resource_dict:
-                    rg = self.resource_dict[item]
-                    rg.publish(resource, False)
-                else:
-                    rg = ResourceGroup(item)
-                    rg.publish(resource, False)
+            self.img_lst[item.get_view_name()]["is_completed"] = True
+            item.set_tappability_path(os.path.join(path, item.get_view_name()))
         #clear temp folder
         shutil.rmtree(os.path.join(path, 'images'))
         shutil.rmtree(os.path.join(path, 'annotations'))
@@ -144,23 +108,35 @@ class Tappability(Task):
             return True
         else:
             return False  
-    
         
-if __name__ == '__main__':
-    # make resource groups
-    tappability_resource = ResourceGroup(ResourceType.TAPPABILITY_PREDICT)
-    jpeg_resources = ResourceGroup[Screenshot](ResourceType.SCREENSHOT_JPEG)
-    json_resources = ResourceGroup[Screenshot](ResourceType.JSON_LAYOUT)
-    resource_dict = {} # make resource dict
-    resource_dict[ResourceType.TAPPABILITY_PREDICT] = tappability_resource
-    resource_dict[ResourceType.SCREENSHOT_JPEG] = jpeg_resources
-    resource_dict[ResourceType.JSON_LAYOUT] = json_resources
-    tappability = Tappability('/Users/em.ily/Desktop/xbot/', resource_dict, 50)
-    
-    screenshot_item = Screenshot('a2dp.Vol_.main','a2dp.Vol_.main',jpeg_path='/Users/em.ily/Desktop/xbot/a2dp.Vol.main.jpeg', json_path='/Users/em.ily/Desktop/xbot/a2dp.Vol.main.json')
-    
-    jpeg = ResourceWrapper('/Users/em.ily/Desktop/xbot/a2dp.Vol.main.jpeg', '', screenshot_item)
-    json_item = ResourceWrapper('/Users/em.ily/Desktop/xbot/a2dp.Vol.main.json', '', screenshot_item)
-    
-    json_resources.publish(json_item, False)
-    jpeg_resources.publish(jpeg, False)
+    def get_tappability_predictions(self) -> str:
+        # run xbot and droidbot if not already run
+        self._run_image_algorithms()
+        # copy screenshots into temp folder convert PNGs to JPEG & get annotations
+        img_path = os.path.join(TEMP_PATH,"tappability", "screenshots")
+        json_path = os.path.join(TEMP_PATH,"tappability", "annotations")
+        self._move_files_xb(img_path, json_path, jpg=True)
+        self._move_files_db(img_path, json_path)
+        # run tappability
+        tappability = Tappability(img_path, json_path, os.path.join(self.output_dir,"tappability"), threshold=50)
+        self.execute_task(tappability)
+        # copy results into activity folders
+        self._get_ui_display_issues(tappability=True)
+        return None
+
+    def _get_ui_display_issues(self, tappability = False, owleye = False, xbot=False):
+        """Separates display issues by activity per algorithm"""
+        activites_path = os.path.join(self.output_dir, "activities")
+        for activity_name in list(set(self.activity_list)):
+            tap_temp_path = os.path.join(TEMP_PATH, "tappability", activity_name)
+            if tappability and os.path.exists(tap_temp_path):
+                tap_path = os.path.join(activites_path, activity_name, "tappability_prediction")
+                if not os.path.exists(tap_path):
+                    os.makedirs(tap_path)
+                for file in os.listdir(tap_temp_path):
+                    shutil.copy(os.path.join(tap_temp_path, file), os.path.join(activites_path, activity_name, "tappability_prediction"))
+            if owleye and os.path.exists(os.path.join(TEMP_PATH, "owleye", activity_name + '.jpg')):
+                if not os.path.exists(os.path.join(activites_path, activity_name, "display_issues")):
+                    os.makedirs(os.path.join(activites_path, activity_name, "display_issues"))
+                shutil.copy(os.path.join(TEMP_PATH, "owleye", activity_name + '.jpg'), os.path.join(activites_path, activity_name,"display_issues"))
+            return None

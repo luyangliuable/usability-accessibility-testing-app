@@ -6,7 +6,6 @@ import { startJob } from "./function/startJob";
 // Remove eslint when var is used
 // eslint-disable-next-line
 import { getAdditionalFiles } from "./function/getAdditionalFiles";
-import ProgressBar from "./components/ProgressBar";
 
 import "./Upload.css";
 import "../index.css";
@@ -148,11 +147,6 @@ const UploadSummary = () => {
             paddingTop: "50px",
           }}
         >
-          <ProgressBar
-            message={algorithmState.progressBarMessage}
-            algorithmsInfo={algorithmState.algorithmsInfo}
-            algorithmsComplete={algorithmState.algorithmsComplete}
-          />
         </div>
       </div>
     </Container>

@@ -73,38 +73,22 @@ const Results = () => {
           </thead>
           <tbody>
             <tr key={"test1"}>
-<<<<<<< HEAD
-              <td>Asfsfds</td>
-              <td>Mark</td>
-              <td>Otto</td>   {/* get from status api */}
-              <td>    {/* status */}
-                <ProgressBar />
-              </td>
-              <td>@mdo</td>
-=======
               <td></td>
               <td></td>
               <td></td>   {/* get from status api */}
               <td>    {/* status */}
               </td>
               <td></td>
->>>>>>> feature/front_end
             </tr>
             {reportKeys.map((report, index) => {
               return (
                 <tr key={report._id.$oid}>
                   <td>{index + 1}</td>
                   <td>ID {report.result_id}</td>
-<<<<<<< HEAD
-                  <td>Start Time</td>   {/* get from status api */}
-                  <td>    {/* status */}
-                    <ProgressBar />
-=======
                   <td>Start Time</td>
                   <td>
                     {/* status */}
                     <ProgressBar uuid={report.result_id} />
->>>>>>> feature/front_end
                   </td>
                   <td>
                     <div>

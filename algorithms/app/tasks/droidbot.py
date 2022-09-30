@@ -1,21 +1,55 @@
 from tasks.task import Task
 from resources.resource import *
 from typing import List
+import typing as t
 import os
 import json
+import requests
 
 class Droidbot(Task):
     """Class for managing droidbot algorithm"""
-    
-    def __init__(self, apk_path, output_dir, emulator) -> None:
-        self.apk_path = apk_path
-        self.emulator = emulator
-        super().__init__(output_dir, "droidbot", None)
 
-    def execute(self) -> None:
-        # TODO: implement method
-        pass
-    
+    _input_types = [ResourceType.APK_FILE, ResourceType.EMULATOR]
+    _output_types = [ResourceType.JSON_LAYOUT, ResourceType.UTG]
+    _execute_url = "http://localhost:3008/new_job"
+    name = "Droidbot"
+
+    def __init__(self, uuid: str, output_dir: str, resource_dict: Dict[ResourceType, ResourceGroup], execution_data: Dict[str, str]) -> None:
+        self.apk_path = execution_data['apk_path']
+        self.emulator = resource_dict[ResourceType.EMULATOR]
+        super().__init__(uuid, output_dir, resource_dict, execution_data)
+
+
+    def run(self) -> t.Tuple[t.Dict, int]:
+        data = {
+            "apk_path": self.apk_path,
+            "output_dir": self.output_dir,
+            "uuid": self.uuid
+        }
+
+        result = requests.post(str( self._execute_url ), data=json.dumps(data), headers={"Content-Type": "application/json"})
+
+        return { "msg": "Execute started." }, 200
+
+
+    @classmethod
+    def get_name(cls) -> str:
+        """Name of the task"""
+        return cls.name
+
+
+    @classmethod
+    def get_input_types(cls) -> List[ResourceType]:
+        """Input resource types of the task"""
+        return cls._input_types
+
+
+    @classmethod
+    def get_output_types(cls) -> List[ResourceType]:
+        """Output resource types of the task"""
+        return cls._output_types
+
+
     def _move_files_db(self,img_dest, json_dest=None, activity=False):
         """Moves droidbot image and json files from task folder to temp directory. Renames files by activity name."""
         src = os.path.join(TEMP_PATH,"droidbot" ,"states")
@@ -44,8 +78,8 @@ class Droidbot(Task):
                 if os.path.exists(os.path.join(src, "screen" + file_name + "jpg")):
                     img_path = os.path.join(src, "screen" + file_name + "jpg")
                     shutil.copy(img_path, os.path.join(img_dest, activity_name + ".jpg"))
-                    
-                    
+
+
     def get_screenshots(self) -> str:
         """run xbot and droidbot and copy screenshots into activity folders"""
         activites_path = os.path.join(self.output_dir, "activities")
@@ -65,7 +99,7 @@ class Droidbot(Task):
             self.execute_task(droidbot_task)
             self.get_screenshot()
         return None
-    
+
     def _run_image_algorithms(self, xbot=True, droidbot=True):
         """Run xbot and droidbot (screenshot algorithms)"""
         if xbot and 'xbot' not in self.tasks:

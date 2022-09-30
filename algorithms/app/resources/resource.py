@@ -20,17 +20,17 @@ class ResourceWrapper(Generic[T]):
 
     def get_path(self) -> str:
         return self._path
-    
+
     def get_origin(self) -> str:
         return self._origin
-    
+
     def get_metadata(self) -> T:
         return self._metadata
 
     def set_metadata(self, metadata : T):
         self._metadata = metadata
-    
-    
+
+
 
     def lock(self, released):
         """
@@ -74,8 +74,8 @@ class ResourceGroup(Generic[T]):
             done = done and completed
 
         return not done
-    
-    
+
+
     def subscribe(self, callback : Callable[[ResourceWrapper[T]], None]) -> None:
         """
         Subscribe to the resource group
@@ -87,22 +87,20 @@ class ResourceGroup(Generic[T]):
         """
         Add a resource to the group and notify all subscribers
         """
-        
         self._providers[resource.get_origin()] = completed
         self._resources.append(resource)
 
-
         ## TODO store dispatched resources in JSON or something and not just memory
-
-
         if self._usage is ResourceUsage.CONCURRENT:
             for sub in self._subscribers:
+                print(sub)
                 sub(resource)
 
 
         elif self._usage is ResourceUsage.SEQUENTIAL:
             self.lock_resource(resource, 0)
-            
+
+
 
     def lock_resource(self, resource : ResourceWrapper[T], index : Number) -> None:
         """

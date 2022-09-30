@@ -35,6 +35,9 @@ services:
       - S3_URL=http://host.docker.internal:4566
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    volumes:
+      - "./server:/usr/src/app/server"
+      - './algorithms/app/.data:/home/data'
     depends_on:
       - redis
       - mongodb
@@ -100,7 +103,6 @@ services:
       - '8055:8080'
     environment:
       # - AWS_DEFAULT_REGION=ap-southeast-2
-      # - EDGE_PORT=4566
       - SERVICES=s3
       - DEBUG=1
       - AWS_DEFAULT_REGION=us-east-1
@@ -120,7 +122,7 @@ services:
       - './algorithms/app/.data:/home/data'
 
   xbot:
-    build: 
+    build:
       context: ./algorithms/xbot/
     command: python3 app.py
     container_name: bxer.xbot
@@ -138,7 +140,7 @@ services:
       - '3004:3004'
     volumes:
       - './algorithms/app/.data:/home/data'
-  
+
   tappability:
     build:
       context: ./algorithms/tappability/
@@ -149,13 +151,32 @@ services:
     volumes:
       - './algorithms/app/.data:/home/data'
 
+  # gifdroid_old:
+  #   build:
+  #     context: ./algorithms/docker_apps/gifdroid_app
+  #   command: python3 app.py
+  #   image: bwoa0001/gifdroid
+  #   container_name: bxer.gifdroid_old
+  #   # network_mode: "host"
+  #   ports:
+  #     - '3005:3005'
+  #   environment:
+  #   - FILE_API=http://host.docker.internal:5005/file/get
+  #   - STATUS_API=http://host.docker.internal:5005/status
+  #   - FLASK_BACKEND=http://host.docker.internal:5005
+  #   - MONGO_URL=mongodb://host.docker.internal:27017/
+  #   - S3_URL=http://host.docker.internal:4566
+  #   - EMULATOR=host.docker.internal:5555
+  #   volumes:
+  #   - './algorithms/app/.data:/home/data'
+
+
   gifdroid:
     build:
-      context: ./algorithms/docker_apps/gifdroid_app
+      context: ./algorithms/gifdroid
     command: python3 app.py
     image: bwoa0001/gifdroid
     container_name: bxer.gifdroid
-    # network_mode: "host"
     ports:
       - '3005:3005'
     environment:
@@ -165,7 +186,24 @@ services:
     - MONGO_URL=mongodb://host.docker.internal:27017/
     - S3_URL=http://host.docker.internal:4566
     - EMULATOR=host.docker.internal:5555
-    # - DEBUG_MODE=1
+    volumes:
+    - './algorithms/app/.data:/home/data'
+
+  droidbot:
+    build:
+      context: ./algorithms/droidbot
+    command: python3 app.py
+    image: bwoa0001/gifdroid
+    container_name: bxer.droidbot
+    ports:
+      - '3008:3008'
+    environment:
+    - FILE_API=http://host.docker.internal:5005/file/get
+    - STATUS_API=http://host.docker.internal:5005/status
+    - FLASK_BACKEND=http://host.docker.internal:5005
+    - MONGO_URL=mongodb://host.docker.internal:27017/
+    - S3_URL=http://host.docker.internal:4566
+    - EMULATOR=host.docker.internal:5555
     volumes:
     - './algorithms/app/.data:/home/data'
 

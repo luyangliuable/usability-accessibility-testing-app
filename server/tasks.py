@@ -1,14 +1,11 @@
-from flask import jsonify, send_file
 from celery import Celery, current_task
 from celery.result import AsyncResult
 # from scan_app.app import *
-import time
 import os
 import requests
 
 from enums.status_enum import StatusEnum as Status
 from controllers.algorithm_status_controller import AlgorithmStatusController as ASC
-from download_parsers.gifdroid_json_parser import gifdroidJsonParser
 
 celery = Celery(__name__)
 celery.conf.broker_url = os.environ['REDIS_URL']

@@ -26,7 +26,13 @@ class ApkAnalysis:
     def start_processing(self) -> None:
         """Creates required tasks and starts them"""
         self._init_resource_groups()
-        TaskFactory.create_tasks(self.name, self.output_dir, self.apk_resources)
+
+        execution_data = {
+            "apk_path": "/home/data/test_apks/a2dp.Vol_133/a2dp.Vol_133.apk",
+        }
+
+        start = TaskFactory.create_tasks(self.uuid, self.name, self.output_dir, self.apk_resources, execution_data)
+        # start = [task.execute() for task in start]
     
     def get_results(self) -> None:
         """Generates results in output dir"""
@@ -51,7 +57,10 @@ class ApkAnalysis:
         self.apk_resources[ResourceType.APK_FILE] = self._init_apk_resource()
         
 if __name__ == '__main__':
-    lst = [Screenshot]
-    names = ['Xbot', 'Tappability']
-    AA = ApkAnalysis("/Users/em.ily/Desktop/temp/OUT",names, lst,'yay.py')
+    # lst = [Screenshot]
+    resource_dict = {} # make resource dict
+    resources = [ResourceType.APK_FILE, ResourceType.EMULATOR]
+    # names = ['Xbot', 'Tappability']
+    names = ['Droidbot']
+    AA = ApkAnalysis("random_uuid", "/Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/algorithms/app/.data/", names, resources)
     AA.start_processing()

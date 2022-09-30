@@ -19,28 +19,36 @@ class TaskFactory:
     _tasks = {}
 
     @staticmethod
-    def create_tasks(names : List[str], base_dir : str, resource_groups : Dict[ResourceType, ResourceGroup]) -> None: #TODO add output_dir para
-        all_names = names
-        
-        for i in range(len(names)):
-            name = names[i]
-            cls = TaskFactory._tasks[name]
-            assert cls is not None
-
-            req_inputs = cls.get_input_types()
-            depends = TaskFactory.get_tasks_with_outputs(req_inputs)
-
-            all_names += depends
-        
-
-        unique_names = list(set(all_names))
+    def create_tasks(names : List[str], base_dir : str, resource_groups : Dict[ResourceType, ResourceGroup], execution_data: Dict[str, str]={}) -> List['Task']:
+        unique_names = TaskFactory.get_task_dependencies(names)
+        res = []
 
         for name in unique_names:
             cls = TaskFactory._tasks[name]
             assert cls is not None
 
-            output_dir = os.path.join(base_dir, "%s".format(name))
-            cls(output_dir, resource_groups) #TODO pass in output_dir
+            output_dir = os.path.join(base_dir, str(name))
+            res.append(cls(output_dir, resource_groups, execution_data));
+
+        return res
+
+
+    @staticmethod
+    def get_task_dependencies(names: List[str]) -> List[str]:
+        all_names = names
+
+        for i in range(len(names)):
+            name = names[i]
+            cls = TaskFactory._tasks[name]
+            assert cls is not None
+            req_inputs = cls.get_input_types()
+            depends = TaskFactory.get_tasks_with_outputs(req_inputs)
+
+            all_names += depends
+
+        unique_names = list(set(all_names))
+
+        return unique_names
 
     @staticmethod
     def get_tasks_with_outputs(resource_types : List[ResourceType]) -> List[str]:
@@ -50,7 +58,7 @@ class TaskFactory:
             for type in resource_types:
                 for task in TaskFactory._tasks:
                     cls = TaskFactory._tasks[task]
-                    
+
                     if cls.get_output_types() is None:
                         continue
 
@@ -63,21 +71,29 @@ class TaskFactory:
 class Task(ABC, metaclass=TaskMetaclass):
     """Class to manage an algorithm."""
     ###__metaclass__= TaskMetaclass
-    
-    def __init__(self, output_dir : str, resource_dict : Dict[ResourceType, ResourceGroup]) -> None:
+
+    def __init__(self, output_dir : str, resource_dict : Dict[ResourceType, ResourceGroup], execution_data: Dict[str, str]={}) -> None:
         super().__init__()
         self.output_dir = output_dir
-        if not os.path.exists(self.output_dir):
-           os.makedirs(self.output_dir)
+        self.execution_data = execution_data
         self.resource_dict = resource_dict
-        
+
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
+
+
+    @abstractmethod
+    def run(self) -> Dict[str, str]:
+        """Execute Task"""
+        pass
+
 
     @classmethod
     @abstractmethod
     def get_name(cls) -> str:
         """Name of the task"""
         return
-    
+
     @classmethod
     @abstractmethod
     def get_input_types(cls) -> List[ResourceType]:
@@ -97,19 +113,19 @@ class Task(ABC, metaclass=TaskMetaclass):
     @classmethod
     def http_request(cls, url, body):
         """Makes a http request with url and body
-        
+
         returns response body
         """
         response = None
         error = None
-        
-        try: 
+
+        try:
             request = requests.Session()
             response = request.post(url, json=body)
             return response
-        
+
         except Exception as e:
             error = str(e)
             print("ERROR ON REQUEST: " + error)
-        
+
         return response

@@ -1,17 +1,14 @@
-from botocore import endpoint
-from botocore.compat import accepts_kwargs
-import boto3
-import json
-import requests
-import os
-
+from converter.functions.artifact_img_converter import file_order_sorter
+from converter.run import convert_droidbot_to_gifdroid_utg
+from flask import Flask, request, jsonify
 from os import path
 import subprocess
+import requests
 import tempfile
-from flask import Flask, request, jsonify
+import boto3
+import json
+import os
 
-from converter.run import convert_droidbot_to_gifdroid_utg
-from converter.functions.artifact_img_converter import file_order_sorter
 
 app = Flask(__name__)
 ###############################################################################
@@ -35,9 +32,6 @@ if file_api == None:
 
 
 EMULATOR = os.environ.get( "EMULATOR" )
-
-if EMULATOR == None:
-    EMULATOR = config['EMULATOR']
 
 flask_backend = os.environ.get( "FLASK_BACKEND" )
 
@@ -134,16 +128,6 @@ def _service_execute_droidbot(uuid):
     ###############################################################################
     print("[4] Saving utg.js file to bucket.")
     enforce_bucket_existance([config[ "BUCKET_NAME" ], "storydistiller-bucket", "xbot-bucket"])
-
-    # Upload utg
-    # s3_client.upload_file(config[ "DEFAULT_UTG_FILENAME" ], config[ 'BUCKET_NAME' ], os.path.join(uuid, config[ "DEFAULT_UTG_FILENAME" ]))
-
-    ###############################################################################
-    #                                Update mongodb                               #
-    ###############################################################################
-
-    print("[5] Updating database for traceability of utg file")
-    print("Saving into entry", uuid)
 
 
 def _service_execute_gifdroid(uuid):

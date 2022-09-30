@@ -10,6 +10,7 @@ class UIInfo():
         self.sequence_files = []
         self.subsribers = []
         
+
     def add_screenshot(self, screenshot: Screenshot):
         activity_name = screenshot.get_view_name()
         add = False
@@ -26,6 +27,7 @@ class UIInfo():
             #NOTIFY SUBSCRIBERS
             pass
                          
+
     def subscribe(self, subscriber : Callable[[str],None]) -> None:
         """Subscriber for new screenshot"""
         self.subscribers.append(subscriber) # add subscriber to queue

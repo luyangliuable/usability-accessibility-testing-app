@@ -14,9 +14,8 @@ class Xbot(Task):
     _url = 'http://host.docker.internal:3003/execute'
 
     
-    def __init__(self, output_dir, resource_dict : Dict[ResourceType, ResourceGroup]) -> None:
-        super().__init__(output_dir, resource_dict)
-        print("xbot")
+    def __init__(self, output_dir: str, resource_dict : Dict[ResourceType, ResourceGroup], execution_data: Dict[str, str]={}) -> None:
+        super().__init__(output_dir, resource_dict, execution_data)
 
         self.apk_queue = []
 

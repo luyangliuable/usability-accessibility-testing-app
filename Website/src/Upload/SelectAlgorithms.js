@@ -8,123 +8,131 @@ import "./components/accordion.css";
 import "../components/button.css";
 
 import {
-  Accordion,
-  AccordionItem,
-  AccordionItemHeading,
-  AccordionItemButton,
-  AccordionItemPanel,
+    Accordion,
+    AccordionItem,
+    AccordionItemHeading,
+    AccordionItemButton,
+    AccordionItemPanel,
 } from "react-accessible-accordion";
 
 const SelectAlgorithms = () => {
-  const locations = useLocation();
-  const navigate = useNavigate();
+    const locations = useLocation();
+    const navigate = useNavigate();
 
-  const tempState = locations.state?.objectState;
-  const [objectState, setObjectState] = useState(tempState);
-  const [algorithmsSelectedCount, setAlgorithmsSelectedCount] = useState(0);
+    const tempState = locations.state?.objectState;
+    const [objectState, setObjectState] = useState(tempState);
+    const [algorithmsSelectedCount, setAlgorithmsSelectedCount] = useState(0);
 
-  const algorithms =
-    typeof objectState === "undefined" ? [] : objectState.algorithms;
+    const algorithms =
+          typeof objectState === "undefined" ? [] : objectState.algorithms;
 
-  useEffect(() => {
-    if (typeof objectState === "undefined") {
-      console.log("[1.1] redirect");
-      navigate("/upload");
+    useEffect(() => {
+        if (typeof objectState === "undefined") {
+            console.log("[1.1] redirect");
+            navigate("/upload");
+        }
+    }, [objectState, navigate]);
+
+    const noOfAlgorithmsSelected = () => {
+        var algoSelectedCount = 0;
+        algorithms.map((_algorithm, index) => {
+            if (objectState.algorithms[index].selected) {
+                algoSelectedCount++;
+            }
+        })
+        setAlgorithmsSelectedCount(algoSelectedCount);
     }
-  }, [objectState, navigate]);
 
-  const noOfAlgorithmsSelected = () => {
-    var algoSelectedCount = 0;
-    algorithms.map((_algorithm, index) => {
-      if (objectState.algorithms[index].selected) {
-        algoSelectedCount++;
-      }
-    })
-    setAlgorithmsSelectedCount(algoSelectedCount);
-  }
+    useEffect(() => {
+        noOfAlgorithmsSelected();
+    }, []);
 
-  useEffect(() => {
-    noOfAlgorithmsSelected();
-  }, []);
+    const handleOnChange = (position) => {
+        objectState.algorithms[position].selected =
+            !objectState.algorithms[position].selected;
 
-  const handleOnChange = (position) => {
-    objectState.algorithms[position].selected =
-      !objectState.algorithms[position].selected;
-
-    setObjectState(objectState);
-    noOfAlgorithmsSelected();
-  };
+        setObjectState(objectState);
+        noOfAlgorithmsSelected();
+    };
 
 
-  return (
-    <Container className="container-nav">
-      <div className="root">
-        <p className="text-header text-centre">SELECT ALGORITHMS</p>
-        <p className="text text-centre">
-          Click on the name of an algorithm to get more detailed information.
-          Then select the desired algorithms using the checkboxes to the right
-          of the algorithm. At least one algorithm must be selected to proceed.
-        </p>
+    return (
+        <Container className="container-nav">
+          <div className="root">
+            <p className="text-header text-centre">SELECT ALGORITHMS</p>
+            <p className="text text-centre">
+              Click on the name of an algorithm to get more detailed information.
+              Then select the desired algorithms using the checkboxes to the right
+              of the algorithm. At least one algorithm must be selected to proceed.
+            </p>
 
-        <div className="vspacing-40"> </div>
+            <div className="vspacing-40"> </div>
 
-        {/* ============================= */}
-        {/* ACCORDIANS FOR EACH ALGORITHM */}
-        {/* Store each algorithm as an    */}
-        {/* item in an item map           */}
-        {/* ============================= */}
-        <Accordion allowZeroExpanded allowMultipleExpanded>
-          {algorithms.map(
-            (
-              algorithm,
-              index //It's basically a for loop
-            ) => (
-              <AccordionItem key={algorithm.uuid}>
-                <AccordionItemHeading>
-                  <AccordionItemButton>
-                    {algorithm.algorithmName}
-                  </AccordionItemButton>
-                </AccordionItemHeading>
-                <input
-                  type="checkbox"
-                  className="bigCheckbox"
-                  id={`checkbox-${algorithm.uuid}`}
-                  defaultChecked={objectState.algorithms[index].selected}
-                  onChange={() => handleOnChange(index)}
-                />
-                <AccordionItemPanel>
-                  <p>{algorithm.description}</p>
-                  <h6>Additional Inputs:</h6>
-                  <p> {algorithm.additionalInputDescription}</p>
-                </AccordionItemPanel>
-              </AccordionItem>
-            )
-          )}
-        </Accordion>
+            {/* ============================= */}
+            {/* ACCORDIANS FOR EACH ALGORITHM */}
+            {/* Store each algorithm as an    */}
+            {/* item in an item map           */}
+            {/* ============================= */}
+            <Accordion allowZeroExpanded allowMultipleExpanded>
+              <div className="accordion-grid">
+                {algorithms.map((algorithm, index) => (
+                    <>
+                      <AccordionItem className="accordion-grid-item" key={algorithm.uuid}>
+                        <AccordionItemHeading>
+                          <AccordionItemButton>
+                            {algorithm.algorithmName}
+                          </AccordionItemButton>
+                        </AccordionItemHeading>
+                        <AccordionItemPanel>
+                          <p>{algorithm.description}</p>
+                          <h6>Additional Inputs:</h6>
+                          <p> {algorithm.additionalInputDescription}</p>
+                        </AccordionItemPanel>
+                      </AccordionItem>
 
-        <div className="back-button">
-          <Link to={"/upload"} state={{ objectState: objectState }}>
-            <button className="button btn btn-primary">
-              <h3>BACK</h3>
-            </button>
-          </Link>
-        </div>
+                      <div className="checkbox-grid-item">
+                        <input
+                          type="checkbox"
+                          className="bigCheckbox"
+                          id={`checkbox-${algorithm.uuid}`}
+                          defaultChecked={objectState.algorithms[index].selected}
+                          onChange={() => handleOnChange(index)}
+                        />
+                      </div>
+                    </>
+                )
+                               )}
 
-        <div className="next-button">
-          <Link
-            to={"/upload/additionaluploads"}
 
-            style={algorithmsSelectedCount === 0 ? { pointerEvents: "none" } : {}}
-            state={{ objectState: objectState }}
-          >
-            <button disabled={algorithmsSelectedCount === 0} className="button btn btn-primary">
-              <h3>NEXT</h3>
-            </button>
-          </Link>
-        </div>
-      </div>
-    </Container>
-  );
+                <div className="first-grid-item">
+                  <div className="button-container">
+                    <Link to={"/upload"} state={{ objectState: objectState }}>
+                      <button className="cust_button back-button">
+                        <h3>Back</h3>
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="last-grid-item">
+                  <Link
+                    to={"/upload/additionaluploads"}
+
+                    style={algorithmsSelectedCount === 0 ? { pointerEvents: "none", cursor: "pointer" } : {cursor: "pointer"}}
+                    state={{ objectState: objectState }}
+                  >
+                    <button className="cust_button next-button" >
+                      <h3>Next</h3>
+                    </button>
+                  </Link>
+                </div>
+              </div>
+            </Accordion>
+
+
+          </div>
+        </Container>
+    );
 };
 
 export default SelectAlgorithms;

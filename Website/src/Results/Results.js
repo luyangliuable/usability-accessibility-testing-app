@@ -13,6 +13,23 @@ const Results = () => {
 
   const [reportKeys, updateReportKeys] = useState([]);
   const [reportData, updateReportData] = useState([]);
+  const [apkName, setApkName] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [allReportData, setAllReportData] = useState([]);
+  const [currReportKey, setCurrReportKey] = useState({});
+  const [uniqueApkName, setUniqueApkName] = useState("");
+
+  var allReportDataArray = []
+
+  useEffect(() => {
+
+    var myNavbar = document.getElementById("myNavbar");
+    myNavbar.classList.remove("sticky");
+
+    window.scrollTo(0, 0)
+
+  }, []);
+
 
   const getReportKeys = async () => {
     const res = await fetch(resultKeyPath, {
@@ -22,22 +39,42 @@ const Results = () => {
       },
       body: JSON.stringify({
         user_id: user_UUID,
-      })
+      }),
     });
     const data = await res.json();
     const stringData = JSON.stringify(data);
     const parsedData = JSON.parse(stringData);
+
+    console.log("parsed data");
+    console.log(parsedData);
     updateReportKeys(parsedData.results);
   };
 
-  const getReportData = async (uuid) => {
+  const getApkName = async (uuid, reportKey) => {
+    const path = "http://localhost:5005/status/get/" + uuid + "/xbot";
+    const res = await fetch(path, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((response) => {
+      response.json().then((json) => {
+        setUniqueApkName(json["apk"] + uuid)
+        setApkName(json["apk"]);
+        // console.log(json);
+        setCurrReportKey(reportKey)
+      });
+    });
+  };
+
+  const getGifdroidReportData = async (uuid) => {
     const path = resultDataPath + uuid + "/gifdroid";
     console.log(path);
     const res = await fetch(path, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-      }
+      },
     });
     const data = await res.json();
     if (typeof reportData === "undefined") {
@@ -46,15 +83,48 @@ const Results = () => {
     updateReportData(reportData.push(data));
   };
 
+  // const getAlgorithmStatus = async (uuid) => {
+  //   const path = "http://localhost:5005/status/get/" + uuid;
+  //   await fetch(path, {
+  //     method: "GET",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //   }).then((response) => {
+  //     response.json().then((json) => {
+  //       setStartTime(json["start_time"])
+  //     });
+  //   });
+  // };
+
+  
+
   useEffect(() => {
     getReportKeys();
-
-    for (var i = 0; i < reportKeys.length; i++) {
-      const key = reportKeys[i].result_id;
-      getReportData(key);
-    }
-
+    // for (var i = 0; i < reportKeys.length; i++) {
+    //   const key = reportKeys[i].result_id;
+    //   // getApkName(key)
+    //   // getGifdroidReportData(key);
+    // }
   }, []);
+
+  useEffect(() => {
+    console.log('report keys')
+    console.log(reportKeys)
+    for (var i = 0; i < reportKeys.length; i++) {
+      getApkName(reportKeys[i].result_id, reportKeys[i])
+    }
+  }, [reportKeys])
+
+  useEffect(() => {
+    var finalObject = currReportKey + apkName
+    console.log('current report key')
+    console.log(currReportKey)
+    console.log('current apk name')
+    console.log(apkName)
+    // allReportDataArray.append()
+    // setAllReportData()
+  }, [uniqueApkName])
 
   return (
     <Container className="container-nav">
@@ -75,16 +145,15 @@ const Results = () => {
             <tr key={"test1"}>
               <td></td>
               <td></td>
-              <td></td>   {/* get from status api */}
-              <td>    {/* status */}
-              </td>
+              <td></td> {/* get from status api */}
+              <td> {/* status */}</td>
               <td></td>
             </tr>
             {reportKeys.map((report, index) => {
               return (
                 <tr key={report._id.$oid}>
                   <td>{index + 1}</td>
-                  <td>ID {report.result_id}</td>
+                  <td>ID {report["report_name"]}</td>
                   <td>Start Time</td>
                   <td>
                     {/* status */}
@@ -92,10 +161,7 @@ const Results = () => {
                   </td>
                   <td>
                     <div>
-                      <Link
-                        to={"/report"}
-                        state={{ uuid: report.result_id }}
-                      >
+                      <Link to={"/report"} state={{ uuid: report.result_id }}>
                         <button className="button btn btn-primary">
                           <h3>Report</h3>
                         </button>
@@ -107,8 +173,7 @@ const Results = () => {
             })}
           </tbody>
         </Table>
-        <div>
-        </div>
+        <div></div>
       </div>
     </Container>
   );

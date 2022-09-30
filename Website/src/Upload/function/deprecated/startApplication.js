@@ -107,11 +107,11 @@ export const startApplication = async (objectState, setObjectState, algorithmsTo
 
         // Remove eslint when var is used
         // eslint-disable-next-line
-        var _ = fetch(resultCreateUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: jsonData,
-        });
+        // var _ = fetch(resultCreateUrl, {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json" },
+        //     body: jsonData,
+        // });
 
 
         // Stop the algorithm when i reaches the length of algorithms to run //

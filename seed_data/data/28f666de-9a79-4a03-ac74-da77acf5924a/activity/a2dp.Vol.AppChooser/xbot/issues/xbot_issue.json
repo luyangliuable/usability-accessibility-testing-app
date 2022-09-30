@@ -1,0 +1,12 @@
+{
+    "xbot": {
+        "image": "<link to xbot screenshot>", // link to annotated image
+        "issues": [ // list of descriptions for items shown in image
+            {
+                "component_type": "<string>", // ui component (text, button, etc...)
+                "issue_type": "<string>", // type of issues (contrast, small button, etc...)
+                "issue_desc": "<string>" // description of the issue
+            }
+        ]
+    }
+}

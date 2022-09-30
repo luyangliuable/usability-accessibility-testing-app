@@ -1,0 +1,34 @@
+/* style={{ width: 900, height: 50, background: "#FFF", borderRadius: 14, mariginLeft: 150, padding: 4, ...props.style, marginTop: 100 }} */
+
+.progressBarBackground {
+    width: 100%;
+    height: 30px;
+    background: #FFF;
+    border-radius: 14px;
+    padding: 2.5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.stage {
+    animation: animateBg 10s linear infinite;
+    background-image: linear-gradient(
+        90deg,
+        #00bfff 0%,
+        #897ed3 50%,
+        #00bfff 100%
+    );
+    background-size: 1100% 100%;
+    cursor: progress;
+}
+
+@keyframes animateBg {
+    0% {
+        background-position: 100% 0%;
+    }
+    100% {
+        background-position: 0% 0%;
+    }
+}
+

@@ -1,5 +1,5 @@
 from os.path import isfile
-from flask import Blueprint, request, jsonify, send_file
+from flask import Blueprint, send_file
 from flask_cors import cross_origin
 import boto3
 import typing as t
@@ -25,7 +25,6 @@ if t.TYPE_CHECKING:  # pragma: no cover
 AWS_PROFILE = 'localstack'
 AWS_REGION = 'us-west-2'
 ENDPOINT_URL = os.environ.get('S3_URL')
-print(ENDPOINT_URL)
 BUCKETNAME = "apk-bucket"
 
 boto3.setup_default_session(profile_name=AWS_PROFILE)
@@ -38,10 +37,10 @@ s3_client = boto3.client(
 
 download_controller = DownloadController('apk', gifdroidJsonParser)
 
-@download_blueprint.route('/download_result/<uuid>/<algorithm>/<type>/<name>', methods=["GET", "POST"])
+@download_blueprint.route('/download_result/<uuid>/<algorithm>/<type>/<name>', methods=["GET"])
 @cross_origin()
-def download(uuid, algorithm, name, type) -> "Response":
-    result_file_from_algorithm = download_controller.download(uuid, algorithm, type, name)
+def download(uuid, algorithm, name, type) -> t.Tuple["Response", int]:
+    result_file_from_algorithm = download_controller.get(uuid, algorithm, type, name)
 
     return send_file(result_file_from_algorithm, as_attachment=True), 200
 
@@ -69,8 +68,4 @@ def download_zipped(uuid: str) -> t.Tuple["Response", int]:
     result = os.path.join(cwd, zipped_file)
 
     return send_file(result, as_attachment=True), 200
-
-    ###############################################################################
-    #               TODO create download link to zipped output files              #
-    ###############################################################################
 

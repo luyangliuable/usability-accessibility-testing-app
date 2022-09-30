@@ -1,7 +1,8 @@
-import os
+from flask_cors import CORS
+# from tasks import celery
 from flask import Flask
-from tasks import celery
-from flask_cors import CORS, cross_origin
+from routes import *
+import os
 
 print("test")
 
@@ -15,11 +16,6 @@ def create_app(script_info=None):
     app.config.from_object(app_settings)
 
     # register blueprints
-    from routes.main import main_blueprint
-    from routes.algorithm_status_api import algorithm_status_blueprint
-    from routes.upload_api import upload_blueprint
-    from routes.update_document_api import update_document_blueprint
-    from routes.login_api import login_blueprint
     from reports.app import reports_blueprint
 
     # from controllers.file_controller import file_blueprint
@@ -30,9 +26,10 @@ def create_app(script_info=None):
 
     # Used as upload api for flask ################################################
     app.register_blueprint(upload_blueprint)
+    app.register_blueprint(algorithm_task_blueprint)
 
     # Used as mongo document management api for flask #############################
-    app.register_blueprint(update_document_blueprint)
+    app.register_blueprint(algorithm_data_blueprint)
 
     # Used as download file from algorithm to frontend api  #######################
     app.register_blueprint(download_blueprint)
@@ -40,8 +37,10 @@ def create_app(script_info=None):
     # Used for getting algorithm status, notes, estimated remaining time and results
     app.register_blueprint(algorithm_status_blueprint)
 
-    app.register_blueprint(login_blueprint)
+    # Used for getting job status, notes, estimated remaining time and results
+    app.register_blueprint(job_status_blueprint)
 
+    app.register_blueprint(login_blueprint)
     app.register_blueprint(reports_blueprint)
     ###############################################################################
     #                              Enable debug mode                              #

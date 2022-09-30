@@ -35,9 +35,6 @@ services:
       - S3_URL=http://host.docker.internal:4566
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    volumes:
-      - "./server:/usr/src/app/server"
-      - './algorithms/app/.data:/home/data'
     depends_on:
       - redis
       - mongodb
@@ -51,6 +48,7 @@ services:
       - API_URL=flask_backend:5005
       - TASK_URL=http://localhost:5005/task
       - APK_UPLOAD_URL=http://localhost:5005/upload
+      - STATUS_URL=http://localhost:5005/status/get
     container_name: bxer.react-ui
     stdin_open: true
     volumes:
@@ -103,6 +101,7 @@ services:
       - '8055:8080'
     environment:
       # - AWS_DEFAULT_REGION=ap-southeast-2
+      # - EDGE_PORT=4566
       - SERVICES=s3
       - DEBUG=1
       - AWS_DEFAULT_REGION=us-east-1
@@ -111,94 +110,56 @@ services:
       - './.localstack:/tmp/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
 
-  storydistiller:
-    build:
-      context: ./algorithms/storydistiller/
-    command: python3 app.py
-    container_name: bxer.storydistiller
-    ports:
-      - '3002:3002'
-    volumes:
-      - './algorithms/app/.data:/home/data'
-
-  xbot:
-    build:
-      context: ./algorithms/xbot/
-    command: python3 app.py
-    container_name: bxer.xbot
-    ports:
-      - '3003:3003'
-    volumes:
-      - './algorithms/app/.data:/home/data'
-
-  owleye:
-    build:
-      context: ./algorithms/owleye/
-    command: python3 app.py
-    container_name: bxer.owleye
-    ports:
-      - '3004:3004'
-    volumes:
-      - './algorithms/app/.data:/home/data'
-
-  tappability:
-    build:
-      context: ./algorithms/tappability/
-    command: python3 app.py
-    container_name: bxer.tappable
-    ports:
-      - '3007:3007'
-    volumes:
-      - './algorithms/app/.data:/home/data'
-
-  # gifdroid_old:
+  # storydistiller:
   #   build:
-  #     context: ./algorithms/docker_apps/gifdroid_app
+  #     context: ./algorithms/storydistiller/
   #   command: python3 app.py
-  #   image: bwoa0001/gifdroid
-  #   container_name: bxer.gifdroid_old
-  #   # network_mode: "host"
+  #   container_name: bxer.storydistiller
   #   ports:
-  #     - '3005:3005'
-  #   environment:
-  #   - FILE_API=http://host.docker.internal:5005/file/get
-  #   - STATUS_API=http://host.docker.internal:5005/status
-  #   - FLASK_BACKEND=http://host.docker.internal:5005
-  #   - MONGO_URL=mongodb://host.docker.internal:27017/
-  #   - S3_URL=http://host.docker.internal:4566
-  #   - EMULATOR=host.docker.internal:5555
+  #     - '3002:3002'
   #   volumes:
-  #   - './algorithms/app/.data:/home/data'
+  #     - './algorithms/app/.data:/home/data'
 
+  # xbot:
+  #   build:
+  #     context: ./algorithms/xbot/
+  #   command: python3 app.py
+  #   container_name: bxer.xbot
+  #   ports:
+  #     - '3003:3003'
+  #   volumes:
+  #     - './algorithms/app/.data:/home/data'
+
+  # owleye:
+  #   build:
+  #     context: ./algorithms/owleye/
+  #   command: python3 app.py
+  #   container_name: bxer.owleye
+  #   ports:
+  #     - '3004:3004'
+  #   volumes:
+  #     - './algorithms/app/.data:/home/data'
+
+  # tappability:
+  #   build:
+  #     context: ./algorithms/tappability/
+  #   command: python3 app.py
+  #   container_name: bxer.tappable
+  #   ports:
+  #     - '3007:3007'
+  #   volumes:
+  #     - './algorithms/app/.data:/home/data'
 
   gifdroid:
     build:
-      context: ./algorithms/gifdroid
+      context: ./algorithms/docker_apps/gifdroid_app
     command: python3 app.py
     image: bwoa0001/gifdroid
     container_name: bxer.gifdroid
     ports:
       - '3005:3005'
     environment:
-    - FILE_API=http://host.docker.internal:5005/file/get
-    - STATUS_API=http://host.docker.internal:5005/status
-    - FLASK_BACKEND=http://host.docker.internal:5005
-    - MONGO_URL=mongodb://host.docker.internal:27017/
-    - S3_URL=http://host.docker.internal:4566
-    - EMULATOR=host.docker.internal:5555
-    volumes:
-    - './algorithms/app/.data:/home/data'
-
-  droidbot:
-    build:
-      context: ./algorithms/droidbot
-    command: python3 app.py
-    image: bwoa0001/gifdroid
-    container_name: bxer.droidbot
-    ports:
-      - '3008:3008'
-    environment:
-    - FILE_API=http://host.docker.internal:5005/file/get
+    - FILE_API=http://host.docker.internal:5005/result/get
     - STATUS_API=http://host.docker.internal:5005/status
     - FLASK_BACKEND=http://host.docker.internal:5005
     - MONGO_URL=mongodb://host.docker.internal:27017/

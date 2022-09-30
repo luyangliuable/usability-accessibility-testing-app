@@ -1,0 +1,49 @@
+{
+  "tag": "2022-09-11_014102",
+  "event": {
+    "event_type": "touch",
+    "log_lines": null,
+    "x": null,
+    "y": null,
+    "view": {
+      "package": "a2dp.Vol",
+      "visible": true,
+      "checkable": false,
+      "child_count": 0,
+      "editable": false,
+      "clickable": true,
+      "is_password": false,
+      "focusable": true,
+      "enabled": true,
+      "content_description": null,
+      "children": [],
+      "focused": false,
+      "bounds": [
+        [
+          720,
+          236
+        ],
+        [
+          1054,
+          362
+        ]
+      ],
+      "resource_id": "a2dp.Vol:id/ServButton",
+      "checked": false,
+      "text": "START SERVICE",
+      "class": "android.widget.Button",
+      "scrollable": false,
+      "selected": false,
+      "long_clickable": false,
+      "parent": 10,
+      "temp_id": 13,
+      "size": "334*126",
+      "signature": "[class]android.widget.Button[resource_id]a2dp.Vol:id/ServButton[text]START SERVICE[enabled,,]",
+      "view_str": "5378fed1acce7c2cc6a6fa0365c229db",
+      "content_free_signature": "[class]android.widget.Button[resource_id]a2dp.Vol:id/ServButton"
+    }
+  },
+  "start_state": "15a3cd2072780077efcd12024e4ad3dc",
+  "stop_state": "2ca3716769a1cc9880685f56e0f495b9",
+  "event_str": "TouchEvent(state=15a3cd2072780077efcd12024e4ad3dc, view=5378fed1acce7c2cc6a6fa0365c229db(main/Button-START SERV))"
+}

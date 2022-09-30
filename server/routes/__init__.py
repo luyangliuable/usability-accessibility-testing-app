@@ -1,0 +1,8 @@
+# register blueprints
+from routes.main import main_blueprint
+from routes.algorithm_status_api import algorithm_status_blueprint
+from routes.job_status_api import job_status_blueprint
+from routes.upload_api import upload_blueprint
+from routes.algorithm_data_api import algorithm_data_blueprint
+from routes.login_api import login_blueprint
+from routes.algorithm_task_api import algorithm_task_blueprint

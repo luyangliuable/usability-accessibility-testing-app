@@ -24,20 +24,6 @@ if t.TYPE_CHECKING:  # pragma: no cover
     import typing_extensions as te
 
 
-@algorithm_status_blueprint.route("/status/get/<uuid>", methods=['GET'])
-@cross_origin()
-def get_job_status(uuid: str) -> t.Tuple[str, int]:
-    """
-    Method for getting a status of each and every algorithm
-    """
-    if request.method == "GET":
-        res = asc.get_job_status(uuid)
-
-        return res, 200
-
-    return "Invalid request", 400
-
-
 @algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>", methods=['GET', 'POST'])
 @cross_origin()
 def update_algorthm_status(uuid: str, algorithm: str) -> t.Tuple[str, int]:
@@ -47,24 +33,7 @@ def update_algorthm_status(uuid: str, algorithm: str) -> t.Tuple[str, int]:
     if request.method == "POST":
         status = str( request.data.decode() )
 
-        res = asc.update_algorithm_status(uuid, algorithm, status)
-
-        res = ""
-        return res, 200
-
-    return "Invalid request", 400
-
-
-@algorithm_status_blueprint.route("/status/update/<uuid>", methods=['GET', 'POST'])
-@cross_origin()
-def update_job_status(uuid: str) -> t.Tuple[str, int]:
-    """
-    Method for updating status of each and every algorithm
-    """
-    if request.method == "POST":
-        status = str( request.data.decode() )
-
-        res = asc.update_job_status(uuid, status)
+        res = asc.post(uuid, algorithm, status=status)
 
         res = ""
         return res, 200
@@ -74,13 +43,13 @@ def update_job_status(uuid: str) -> t.Tuple[str, int]:
 
 @algorithm_status_blueprint.route("/status/get/<uuid>/<algorithm>", methods=['GET'])
 @cross_origin()
-def get_one_algorithm_status(uuid: str, algorithm: str) -> t.Tuple[str, int]:
+def get(uuid: str, algorithm: str) -> t.Tuple[str, int]:
     """
     Method for updating status of each and every algorithm
     """
     if request.method == "GET":
 
-        res = asc.get_specific_algorithm_status(uuid, algorithm)
+        res = asc.get(uuid, algorithm)
 
         return json.dumps(res), 200
     else:
@@ -89,14 +58,14 @@ def get_one_algorithm_status(uuid: str, algorithm: str) -> t.Tuple[str, int]:
 
 @algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>", methods=['GET', 'POST'])
 @cross_origin()
-def update_one_algorithm_status(uuid: str, algorithm: str) -> t.Tuple[str, int]:
+def update(uuid: str, algorithm: str) -> t.Tuple[str, int]:
     """
     Method for updating status of each and every algorithm
     """
     if request.method == "POST":
-        status = str( request.data.decode() )
 
-        res = asc.update_algorithm_status(uuid, algorithm, status)
+        status = str( request.data.decode() )
+        res = asc.post(uuid, algorithm, status)
 
         return json.dumps(res), 200
     else:
@@ -105,7 +74,7 @@ def update_one_algorithm_status(uuid: str, algorithm: str) -> t.Tuple[str, int]:
 
 @algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>/<attribute>", methods=['GET', 'POST'])
 @cross_origin()
-def update_one_attribute_in_status(uuid: str, algorithm: str, attribute: str) -> t.Tuple[str, int]:
+def update_one_attr(uuid: str, algorithm: str, attribute: str) -> t.Tuple[str, int]:
     """
     Method for updating one attribute inside status of each and every algorithm
     """
@@ -113,18 +82,11 @@ def update_one_attribute_in_status(uuid: str, algorithm: str, attribute: str) ->
         # Assume new attribute value is a string
         update = str( request.data.decode() )
 
-        res = asc.update_algorithm_status_attribute(uuid, algorithm, attribute, update)
+        res = asc.update_status_attribute(uuid, algorithm, attribute, update)
 
         return safe_serialize( res ), 200
     else:
         return request.method + " not valid", 400
-
-
-@algorithm_status_blueprint.route("/status", methods=['GET'])
-@cross_origin()
-def status():
-    "Status getter is online", 200
-
 
 # @algorithm_status_blueprint.route("/status/test", methods=['GET'])
 # @cross_origin()

@@ -143,7 +143,3 @@ dmypy.json
 node_modules
 .localstack\data\startup_info.json
 .localstack\data\recorded_api_calls.json
-
-
-# FIT3170
-seed_data

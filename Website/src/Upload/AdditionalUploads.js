@@ -23,17 +23,14 @@ const AdditionalUploads = () => {
   const locations = useLocation();
   const navigate = useNavigate();
 
-  console.log("[0] load state");
   const tempState = locations.state?.objectState;
   const [objectState, setObjectState] = useState(tempState);
-  console.log(objectState);
 
   const algorithms =
     typeof objectState === "undefined" ? [] : objectState.algorithms;
 
   useEffect(() => {
     if (typeof objectState === "undefined") {
-      console.log("[1.2] redirect");
       navigate("/upload");
     }
   }, [objectState, navigate]);

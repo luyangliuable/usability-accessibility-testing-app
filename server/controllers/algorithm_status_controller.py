@@ -1,24 +1,19 @@
 # from __future__ import annotations
-from typing import TypeVar, Generic, List, Callable, Dict
-from enums.algorithm_enum import AlgorithmEnum as Algorithm
-from flask import Blueprint, request, jsonify
-from flask_cors import cross_origin
-from models.DBManager import DBManager
-from enums.result_types import ResultTypeEnum
-from typing import List
-from download_parsers.gifdroid_json_parser import gifdroidJsonParser
-from download_parsers.strategy import Strategy
-from pymongo import database
-from pymongo.database import Collection
-
-
+from controllers.controller import Controller
+import typing as t
+from typing import TypeVar, Generic, Dict
 from enums.status_enum import StatusEnum
+from models.DBManager import DBManager
+
 
 T = TypeVar('T')
 
-class AlgorithmStatusController(Generic[T]):
+
+class AlgorithmStatusController(Generic[T], Controller):
     """
-        Updates algorithm_status. Gets algorithm_status
+        This controller is responsible for controlling **ONE** algorithm status metadata only.
+
+        Updates algorithm_status. Gets algorithm_status.
     """
 
     activity_result_file_json_format = {
@@ -40,114 +35,112 @@ class AlgorithmStatusController(Generic[T]):
 
 
     def __init__(self, collection_name: str) -> None:
-        ###############################################################################
-        #                          Initiate database instance                         #
-        ###############################################################################
+        """
+        This controller is responsible for controlling **ONE** algorithm status metadata only.
+
+        Parameters:
+            collection_name - The collection name to refer to for database.
+        """
         self._db = DBManager.instance()
         self.c = self._db.get_collection(collection_name)
 
-
-    def get_all_algorithm_status(self, uuid: str) -> Dict[str, str]:
-
-        # Get document ################################################################
-        d = self._db.get_document(uuid, self.c)
-
-        # Get status ##################################################################
-        s = d['algorithm_status']
-        return s
+        self.status_key = 'algorithm_status'
 
 
-    def decalare_apk_name_in_status(self, uuid: str, apk_name: str) -> Dict[str, str]:
-        d = self._db.get_document(uuid, self.c)
-
-        algorithm_status_key = 'algorithm_status'
-
-        for _, item in d[algorithm_status_key].items():
-            item['apk']= apk_name
-
-        self._db.update_document(uuid, self.c, algorithm_status_key, d[algorithm_status_key])
-
-        return d[ algorithm_status_key ]
-
-
-    def get_job_status(self, uuid: str) -> str:
-        # Get document ################################################################
-        d = self._db.get_document(uuid, self.c)
-
-        # Get status ##################################################################
-        status = d['status']
-
-        return status
-
-
-    def update_job_status(self, uuid: str, status: str) -> None:
-        # Get document ################################################################
-        d = self._db.get_document(uuid, self.c)
-
-        # Get status ##################################################################
-
-        self._db.update_document(uuid, self.c, 'status', status)
-
-        return self._db.get_document(uuid, self.c)['status']
-
-
-    def get_collection(self) -> Collection:
-        return self.c
-
-
-    def update_algorthm_status_apk_file_name(self, uuid: str, algorithm: str, status: str):
-
-        key = "apk"
-
-        return self.update_algorithm_status_attribute(uuid, algorithm, key, status)
-
-
-    def get_specific_algorithm_status(self, uuid: str, algorithm: str) -> str:
-        all_algorithm_status = self.get_all_algorithm_status(uuid)
-
-        specific_algorithm_status = all_algorithm_status[algorithm]
+    def get(self, uuid: str, algorithm: str) -> str:
+        """
+        Get the status of a specific algorithm
+        """
+        all_algorithm_status = self._db.get_document(uuid, self.c)
+        specific_algorithm_status = all_algorithm_status[self.status_key][algorithm]
 
         return specific_algorithm_status
 
 
-    def update_algorithm_status_attribute(self, uuid: str, algorithm: str, key: str, val: T):
-        # Get document ################################################################
-        try:
-            d = self._db.get_document(uuid, self.c)
+    def post(self, uuid: str, algorithm: str, **kwargs) -> t.Dict[str, T]:
+        """
+        Update the status of a specific algorithm.
+        """
 
-            status_key = 'algorithm_status'
+        document = self._db.get_document(uuid, self.c)
 
-            d[status_key][algorithm][key] = val
+        status = document[self.status_key]
 
-            # Get status ##################################################################
-            self._db.update_document(uuid, self.c, status_key, d[status_key])
+        viable_parameters = [key for key in self._db.get_format("")['overall-status']]
+        for each_parameter in viable_parameters:
+            if each_parameter in kwargs:
+                if each_parameter == 'logs':
+                    """
+                    If the parameter is a log, append to all existing logs.
+                    """
 
-        except Exception as e:
-            print(e)
-        else:
-            return d
+                    status[algorithm]['logs'].append(kwargs[each_parameter])
+
+                elif each_parameter == 'progress':
+                    """
+                    If the parameter is a progress integer, add to exiting progress integer.
+                    """
+
+                    status[algorithm]['progress'] += kwargs[each_parameter]
+
+                else:
+                    status[algorithm][each_parameter] = kwargs[each_parameter]
+
+        self._db.update_document(uuid, self.c, self.status_key, status)
+
+        return document
 
 
-    def update_algorithm_status(self, uuid: str, algorithm: str, new_status: str):
-        # Get document ################################################################
+    def update_status_attribute(self, uuid: str, algorithm: str, attribute_key: str, attribute_val: str) -> t.Dict[str, T]:
+        """
+        Update a specific algorithm status attribute on **mongodb**.
 
-        try:
-            d = self._db.get_document(uuid, self.c)
+        This is useful because you don't have to repeat a lot of lines of code.
 
-            status_key = 'algorithm_status'
+        Parameters:
+            uuid - (str) job uuid
+            algorithm - (str) algorithm name
+            key - (str) attribute key
+            val - (str) new attribute value
+        """
 
-            status = d[status_key]
+        document = self._db.get_document(uuid, self.c)
+        document[self.status_key][algorithm][attribute_key] = attribute_val
 
-            status[algorithm]['status'] = new_status # TODO find a way here to use StatusEnum
+        self._db.update_document(uuid, self.c, self.status_key, document[self.status_key])
 
-            # Get status ##################################################################
+        return document
 
-            self._db.update_document(uuid, self.c, status_key, status)
 
-        except Exception as e:
-            print(e)
-        else:
-            return status
+    def update_apk_filename(self, uuid: str, algorithm: str, apk_filename: str):
+        """
+        Update the apk name for the algorithm's process on **mongodb**
+
+        Parameters:
+            uuid - (str) job uuid
+            algorithm - (str) the algorithm to update for on mongodb
+            apk_filename - (str) the apk_filename to update to
+        """
+
+        key = "apk"
+        return self.update_status_attribute(uuid, algorithm, key, apk_filename)
+
+
+
+    def declare_apk_name_in_status(self, uuid: str, apk_name: str) -> Dict[str, str]:
+        d = self._db.get_document(uuid, self.c)
+
+        for _, item in d[self.status_key].items():
+            item['apk']= apk_name
+
+        self._db.update_document(uuid, self.c, self.status_key, d[self.status_key])
+
+        return d[ self.status_key ]
+
+
+
+    def insert(self, uuid: str, **kwargs):
+        pass
 
 
 if __name__ == "__main__":

@@ -8,14 +8,11 @@ import {Buffer} from 'buffer';
 import "./Login.css";
 import "../index.css";
 
-export default function Login() {
+export default function SignUp() {
   const navigate = useNavigate();
 
   const [user, updateUser] = useState(sessionStorage.getItem("User_UUID"));
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-  };
 
   useEffect(() => {
     if (user !== null) {
@@ -32,7 +29,7 @@ export default function Login() {
           <Col className="login-col">
             <div className="form-div-0">
               <Col lg={12} className="login-title">
-                <h2 className="login">LOGIN</h2>
+                <h2 className="login">SIGN UP</h2>
               </Col>
               <GoogleLogin
                 onSuccess={credentialResponse => {
@@ -62,9 +59,10 @@ export default function Login() {
                   // console.log('Login Failed');
                 }}
               />
+
               <Col lg={12}>
-                <Link to={"/login/signup"}>
-                  <p className="new-user">Don't have an account? Sign Up.</p>
+                <Link to={"/login"}>
+                  <p className="new-user">Have an account? Log In.</p>
                 </Link>
               </Col>
             </div>

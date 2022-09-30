@@ -17,6 +17,7 @@ const Results = () => {
   const [startTime, setStartTime] = useState("");
   const [allReportData, setAllReportData] = useState([]);
   const [currReportKey, setCurrReportKey] = useState({});
+  const [uniqueApkName, setUniqueApkName] = useState("");
 
   var allReportDataArray = []
 
@@ -58,6 +59,7 @@ const Results = () => {
       },
     }).then((response) => {
       response.json().then((json) => {
+        setUniqueApkName(json["apk"] + uuid)
         setApkName(json["apk"]);
         // console.log(json);
         setCurrReportKey(reportKey)
@@ -99,11 +101,11 @@ const Results = () => {
 
   useEffect(() => {
     getReportKeys();
-    for (var i = 0; i < reportKeys.length; i++) {
-      const key = reportKeys[i].result_id;
-      // getApkName(key)
-      // getGifdroidReportData(key);
-    }
+    // for (var i = 0; i < reportKeys.length; i++) {
+    //   const key = reportKeys[i].result_id;
+    //   // getApkName(key)
+    //   // getGifdroidReportData(key);
+    // }
   }, []);
 
   useEffect(() => {
@@ -122,7 +124,7 @@ const Results = () => {
     console.log(apkName)
     // allReportDataArray.append()
     // setAllReportData()
-  }, [apkName])
+  }, [uniqueApkName])
 
   return (
     <Container className="container-nav">

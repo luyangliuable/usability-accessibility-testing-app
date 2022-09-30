@@ -109,6 +109,20 @@ services:
       - './.localstack:/tmp/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
 
+
+  analysis_app:
+    build: 
+      context: ./algorithms/app/
+    container_name: bxer.analysis_app
+    ports: 
+      - 3050:3050
+    volumes:
+      - './algorithms/app/.data:/home/data'
+    stdin_open: true # docker run -i
+    tty: true        # docker run -t
+    
+
+
   storydistiller:
     build:
       context: ./algorithms/storydistiller/

@@ -14,12 +14,12 @@
   align-items: center;
   width: var(--button-width);
   height: var(--button-height);
-  border-radius: 20px;
+  border-radius: 5px;
   margin-top: 25px;
   background: var(--darkmode-color);
-  -webkit-border-radius: 20px;
-  -moz-border-radius: 20px;
-  -ms-border-radius: 20px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
   cursor: pointer !important;
   transition: all 0.3s ease;
   -webkit-transition: all 0.3s ease;

@@ -79,7 +79,6 @@ class ResourceGroup(Generic[T]):
         """
         Subscribe to the resource group
         """
-        print(callback)
         self._subscribers.append(callback)
 
 

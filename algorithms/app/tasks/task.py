@@ -19,18 +19,16 @@ class TaskFactory:
     _tasks = {}
 
     @staticmethod
-    def create_tasks(names : List[str], base_dir : str, resource_groups : Dict[ResourceType, ResourceGroup], execution_data: Dict[str, str]={}) -> List['Task']:
+    def create_tasks(names : List[str], base_dir : str, resource_groups : Dict[ResourceType, ResourceGroup]) -> None:
         unique_names = TaskFactory.get_task_dependencies(names)
-        res = []
+        unique_names = list(set(names))
 
         for name in unique_names:
             cls = TaskFactory._tasks[name]
             assert cls is not None
 
-            output_dir = os.path.join(base_dir, str(name))
-            res.append(cls(output_dir, resource_groups, execution_data));
-
-        return res
+            output_dir = os.path.join(base_dir, cls.__name__.lower())
+            cls(output_dir, resource_groups) #TODO pass in output_dir
 
 
     @staticmethod
@@ -46,9 +44,6 @@ class TaskFactory:
 
             all_names += depends
 
-        unique_names = list(set(all_names))
-
-        return unique_names
 
     @staticmethod
     def get_tasks_with_outputs(resource_types : List[ResourceType]) -> List[str]:

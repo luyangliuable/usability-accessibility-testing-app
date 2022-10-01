@@ -12,7 +12,7 @@ class Gifdroid(Task):
     _output_types = [ResourceType.JSON_LAYOUT, ResourceType.UTG]
     _execute_url = "http://localhost:3005/new_job"
 
-    def __init__(self, output_dir: str, resource_dict: Dict[ResourceType, ResourceGroup], execution_data: Dict[str, str]) -> None:
+    def __init__(self, output_dir: str, resource_dict: Dict[ResourceType, ResourceGroup]) -> None:
         """
         Gifdroid manages a single gifdroid task. It subscribes to utg and gif resources. Whenever both a new utg and gif are added it starts running.
 
@@ -24,7 +24,7 @@ class Gifdroid(Task):
 
         Returns: Nothing
         """
-        super().__init__(output_dir, resource_dict, execution_data)
+        super().__init__(output_dir, resource_dict)
         self._sub_to_utg()
         self._sub_to_gif()
         self.utg_path = None

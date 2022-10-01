@@ -16,7 +16,7 @@ class Droidbot(Task):
     _shared_volume = "/home/tasks"
 
 
-    def __init__(self, output_dir: str, resource_dict: Dict[ResourceType, ResourceGroup], execution_data: Dict[str, str]) -> None:
+    def __init__(self, output_dir: str, resource_dict: Dict[ResourceType, ResourceGroup]) -> None:
         """
         Droidbot class manages a single droidbot task. It subscribes to utg and gif resources. Whenever both a new utg and gif are added it starts running.
 
@@ -27,7 +27,7 @@ class Droidbot(Task):
 
         Returns: Nothing
         """
-        super().__init__(output_dir, resource_dict, execution_data)
+        super().__init__(output_dir, resource_dict)
         self.emulator = resource_dict[ResourceType.EMULATOR]
         self._sub_to_apks()
         self._sub_to_emulators()

@@ -15,7 +15,6 @@ class ResourceWrapper(Generic[T]):
         self._path = path
         self._origin = origin
         self._metadata = metadata
-
         self._released = None
 
     def get_path(self) -> str:
@@ -80,6 +79,7 @@ class ResourceGroup(Generic[T]):
         """
         Subscribe to the resource group
         """
+        print(callback)
         self._subscribers.append(callback)
 
 
@@ -93,9 +93,8 @@ class ResourceGroup(Generic[T]):
         ## TODO store dispatched resources in JSON or something and not just memory
         if self._usage is ResourceUsage.CONCURRENT:
             for sub in self._subscribers:
-                print(sub)
+                print(self._subscribers)
                 sub(resource)
-
 
         elif self._usage is ResourceUsage.SEQUENTIAL:
             self.lock_resource(resource, 0)

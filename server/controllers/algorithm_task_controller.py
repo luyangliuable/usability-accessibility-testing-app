@@ -6,14 +6,17 @@ from enums.status_enum import StatusEnum
 from utility.uuid_generator import *
 from datetime import datetime as dt
 from models.DBManager import *
-from tasks import *
+from tasks import worker
+from celery import Task
 import typing as t
+import requests
+import json
 
 
 T = t.TypeVar('T')
 
 
-class AlgorithmTaskController(t.Generic[T], Controller):
+class AlgorithmTaskController(t.Generic[T], Controller, Task):
 
     bucket_name = 'apk-bucket'
 
@@ -45,14 +48,56 @@ class AlgorithmTaskController(t.Generic[T], Controller):
 
         tasks = [{} for _ in range(len(algorithms_to_complete))]
 
-        self.jsc.update(uuid, start_time=str( dt.now() ), status=StatusEnum.running.value, progress=10, logs="Job started")
+        self.jsc.post(uuid, start_time=str( dt.now() ), status=StatusEnum.running.value, progress=10, logs="Job started")
 
         for i, alg in enumerate( algorithms_to_complete ):
             task_info = {"uuid": uuid, "algorithm": alg['uuid']}
-            tasks[i] = run_algorithm.delay(task_info)
+            # tasks[i] = run_algorithm.delay(task_info)
+            # tasks[i] = worker.register_task(self._execute_algorithm.delay(task_info))
+            tasks[i] = self._execute_algorithm(task_info)
             self.acknowledge(uuid, alg['uuid'])
 
         return tasks
+
+    # @worker.task(name="run_algorithm")
+    def _execute_algorithm(self, info: t.Dict) -> t.Dict:
+        errors = []
+
+        start_links = {
+            "storydistiller": os.environ.get("STORYDISTILLER"),
+            "xbot": os.environ.get("XBOT"),
+            "owleye": os.environ.get("OWLEYE"),
+            "gifdroid": os.environ['GIFDROID'],
+            "droidbot": os.environ['DROIDBOT'],
+            "tappable": "SKIP"
+        }
+
+
+        uuid = info["uuid"]
+        algorithm = info['algorithm']
+        URL = start_links[algorithm]
+
+        print(f'TASK: Running { algorithm } url: { URL }')
+        print(f'TASK: Algorithm cluster uuid is { uuid }')
+
+        self._mark_algorithm_started(uuid, algorithm)
+
+        ###############################################################################
+        #                          Signal Algorithm to start                          #
+        ###############################################################################
+        result = self._signal_start(uuid, URL)
+
+        ###############################################################################
+        #           Update status according to the success of the algorithm           #
+        ###############################################################################
+        if result.status_code < 400:
+            self._mark_algorithm_successful(uuid, algorithm)
+            print("TASK: Successfully completed task", algorithm)
+        else:
+            self._mark_algorithm_failed(uuid, algorithm)
+            print("TASK: FAILED complete task", algorithm)
+
+        return {"files": ["file_url_placeholder"], "images": ["image_url_placeholder"], "errors": str( errors ) }
 
 
     def acknowledge(self, uuid: str, algorithm: str) -> bool:
@@ -67,6 +112,51 @@ class AlgorithmTaskController(t.Generic[T], Controller):
         """
         self.asc.post(uuid, algorithm, status=StatusEnum.running.value, start_time=str( dt.now() ), progress=10)
         return True
+
+    def _mark_algorithm_started(self, uuid: str, algorithm: str):
+        flask_backend = os.environ['FLASK_BACKEND']
+        update_status_url = os.path.join(flask_backend, 'status', 'update', uuid, algorithm)
+
+        requests.post(update_status_url, headers={"Content-Type": "text/plain"}, data=StatusEnum.running.value )
+
+
+    def _mark_algorithm_failed(self, uuid: str, algorithm: str):
+        flask_backend = os.environ['FLASK_BACKEND']
+        update_status_url = os.path.join(flask_backend, 'status', 'update', uuid, algorithm)
+
+        requests.post(update_status_url, headers={"Content-Type": "text/plain"}, data=StatusEnum.failed.value )
+
+
+    def _mark_algorithm_successful(self, uuid: str, algorithm: str):
+        flask_backend = os.environ['FLASK_BACKEND']
+        update_status_url = os.path.join(flask_backend, 'status', 'update', uuid, algorithm)
+
+        requests.post(update_status_url, headers={"Content-Type": "text/plain"}, data=StatusEnum.successful.value )
+
+
+    def _signal_start(self, uuid: str,  algorithm_api_endpoint: str):
+        apk_file = "a2dp.Vol_133.apk"
+        execution_data = {
+            "uuid": uuid,
+            "apk_path": os.path.join("/home/data", uuid, apk_file),
+            "output_dir": "/home/data/droidbot/"
+        }
+
+        print(execution_data['apk_path'])
+        print(execution_data['apk_path'])
+        print(execution_data['apk_path'])
+        print(execution_data['apk_path'])
+        print(execution_data['apk_path'])
+        print(execution_data['apk_path'])
+        print(execution_data['apk_path'])
+        print(execution_data['apk_path'])
+        print(execution_data['apk_path'])
+        print(execution_data['apk_path'])
+        print(execution_data['apk_path'])
+        print(execution_data['apk_path'])
+
+        result = requests.post("http://host.docker.internal:3008/new_job", data=json.dumps(execution_data), headers={"Content-Type": "application/json"})
+        return result
 
 
     def get(self, uuid: str):

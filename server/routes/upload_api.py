@@ -1,6 +1,6 @@
 from controllers.upload_controller import UploadController
 from utility.enforce_bucket_existance import *
-from tasks import run_algorithm, worker
+from tasks import worker
 from models.DBManager import DBManager
 from flask import Blueprint, request
 from flask_cors import cross_origin

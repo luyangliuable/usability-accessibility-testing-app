@@ -17,14 +17,14 @@ const ProgressBar = (props) => {
     const [progressMessage, updateMessage] = useState("");
 
     const update = (newMessage, percentage) => {
-        // fade({ opacity: 1, delay: 500 });
-        // fade({ opacity: 0, delay: 1000 });
         updateMessage(newMessage);
         animate({ width: (percentage <= 100 ? percentage : 100) + "%", delay: 500 });
     };
 
     useEffect(() => {
-        animate({ width: (props.progress <= 100 ? props.progress : 100) + "%", delay: 0 });
+        if (props.progress != undefined) {
+            animate({ width: (props.progress <= 100 ? props.progress : 100) + "%", delay: 0 });
+        }
     }, [props.progress]);
 
     useEffect(() => {

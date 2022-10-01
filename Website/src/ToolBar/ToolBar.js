@@ -127,7 +127,7 @@ export function BxerImage() {
           src={require("./content/bxer-img-bg.png")}
           style={{ height: "max(20px, 2.5vh)" }}
         />
-        <div class="imgTitle">BXER</div>
+        <div className="imgTitle">BXER</div>
       </div>
     </NavLink>
   )

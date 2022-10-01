@@ -50,26 +50,47 @@ class JobStatusController(t.Generic[T], Controller):
         return status
 
 
-    def update(self, uuid: str, **kwargs) -> t.Dict[str, str]:
+    def post(self, uuid: str, **kwargs) -> t.Dict[str, str]:
         # Get document ################################################################
         job_status_key = 'overall-status'
 
-        d = self._db.get_document(uuid, self.c)[job_status_key]
+        document = self._db.get_document(uuid, self.c)[job_status_key]
 
-        parameters = [key for key in self._db.get_format("")['overall-status']]
+        parameters = [key for key in self._db.get_format('_')['overall-status']]
 
-        for p in parameters:
-            if p in kwargs:
-                if p == 'logs':
-                    d['logs'].append(kwargs[p])
-                elif p == 'progress':
-                    d['progress'] += kwargs[p]
+        for each_parameter in parameters:
+            if each_parameter in kwargs:
+                updated_attribute = kwargs[each_parameter]
+
+                if each_parameter == 'logs' and updated_attribute != None:
+                    self._store_logs(document, updated_attribute)
+
+                elif each_parameter == 'progress' and updated_attribute != None:
+                    document['progress'] += updated_attribute
+
                 else:
-                    d[p] = kwargs[p]
 
-        self._db.update_document(uuid, self.c, job_status_key, d)
+                    document[each_parameter] = updated_attribute
 
-        return d
+        self._db.update_document(uuid, self.c, job_status_key, document)
+
+        return document
+
+
+    def _store_logs(self, document: t.Dict[str, t.List], new_log: str) -> bool:
+        """
+        Stores only the past 10 logs into the **mongodb** document for the job uuid
+
+        Parameters:
+            document - (str) The mongodb document for the job uuid
+            new_log - (str) New log message
+        """
+        document['logs'].append(new_log)
+        logs_length = len(document['logs'])
+        if logs_length > 10:
+            document['logs'] = document['logs'][logs_length-10: logs_length]
+
+        return True
 
 
     def get_collection(self) -> Collection:
@@ -77,10 +98,6 @@ class JobStatusController(t.Generic[T], Controller):
 
 
     def insert(self, uuid: str):
-        pass
-
-
-    def post(self, uuid: str):
         pass
 
 if __name__ == "__main__":

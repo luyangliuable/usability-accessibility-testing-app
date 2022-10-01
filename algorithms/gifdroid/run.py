@@ -14,18 +14,19 @@ from functions.timeconverter import main as time_converter
 import json
 
 def convert_droidbot_to_gifdroid_utg(utg_file=None, events_folder=None, states_folder=None, **kwargs):
-    print("converting utg")
     if utg_file == None:
         utg_file = sys.argv[1]
 
     if events_folder == None:
+
         events_folder = sys.argv[2]
 
     if states_folder == None:
         states_folder = sys.argv[3]
 
-    output_folder = "./output"
-    subprocess.run([ "mkdir", "output"])
+    output_folder = kwargs['output_dir']
+
+    enforce_output_directory(output_folder)
 
     ###############################################################################
     #                                 Rename file                                 #
@@ -36,31 +37,28 @@ def convert_droidbot_to_gifdroid_utg(utg_file=None, events_folder=None, states_f
 
     # Gifdroid file format: web-build-[\d.*-\d.\d.]T00/w.*[Android emulator]_\d.*.png
     # Replace first part of filename with web-build which is accepted by gifdroid
-    print("get target files\n")
     target_files = [re.sub("^\w*-.*-.*\d", "artifacts_", each_img_file) for each_img_file in img_files]
-
 
     # rm .jpg
     target_files = [re.sub("." + droidbot_img_file_type + "\Z", "", each_img_file) for each_img_file in target_files]
 
-    with tempfile.TemporaryDirectory() as tmp:
-        tempdirname = tmp
+    with tempfile.TemporaryDirectory() as temporary_directory_name:
 
         target_files = [
             shutil.copyfile(
                 os.path.join(states_folder, img_files[i]),
-                os.path.join(tempdirname, each_target_file + str(i) + "." + droidbot_img_file_type)
+                os.path.join(temporary_directory_name, each_target_file + str(i) + "." + droidbot_img_file_type)
             ) for i, each_target_file in enumerate(target_files)
         ]
 
         ###############################################################################
         #                      convert all files from jpg to png                      #
         ###############################################################################
-        og_img_files = file_order_sorter(tempdirname, droidbot_img_file_type )
+        original_img_file_name = file_order_sorter(temporary_directory_name, droidbot_img_file_type )
 
-        im1 = [ Image.open(os.path.join(tempdirname, file)) for file in file_order_sorter(tempdirname, droidbot_img_file_type )];
+        im1 = [ Image.open(os.path.join(temporary_directory_name, file)) for file in file_order_sorter(temporary_directory_name, droidbot_img_file_type )];
 
-        im1 = [ file.save(os.path.join(output_folder, re.sub(".jpg\Z", ".png", og_img_files[i]))) for i, file in enumerate( im1 )];
+        im1 = [ file.save(os.path.join(output_folder, 'screenshots', re.sub(".jpg\Z", ".png", original_img_file_name[i]))) for i, file in enumerate( im1 )];
 
     #############################################################################
     #                             Generate json file                            #
@@ -108,6 +106,14 @@ def convert_droidbot_to_gifdroid_utg(utg_file=None, events_folder=None, states_f
 
     return output_file_path
 
+
+def enforce_output_directory(output_dir: str) -> None:
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
+        screenshots = os.path.join(output_dir, 'screenshots')
+        os.makedirs(screenshots)
+        if not os.path.exists(screenshots):
+            os.makedirs(screenshots)
 
 if __name__=="__main__":
     convert_droidbot_to_gifdroid_utg()

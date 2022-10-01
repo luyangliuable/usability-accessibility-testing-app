@@ -1,9 +1,10 @@
 # from __future__ import annotations
 from controllers.controller import Controller
-import typing as t
 from typing import TypeVar, Generic, Dict
 from enums.status_enum import StatusEnum
 from models.DBManager import DBManager
+import typing as t
+import sys
 
 
 T = TypeVar('T')
@@ -62,21 +63,25 @@ class AlgorithmStatusController(Generic[T], Controller):
         Update the status of a specific algorithm.
         """
 
-        document = self._db.get_document(uuid, self.c)
+        status = self._get_all_algorithm_status(uuid, algorithm)
+        self._inject_updated_status_info_into_document(kwargs, status, algorithm)
+        self._db.update_document(uuid, self.c, self.status_key, status)
 
-        status = document[self.status_key]
+        return status[algorithm]
 
-        viable_parameters = [key for key in self._db.get_format("")['overall-status']]
+
+    def _inject_updated_status_info_into_document(self, kwargs, status: t.Dict, algorithm) -> t.Dict[str, T]:
+        viable_parameters = [key for key in self._db.get_format("")[self.status_key][algorithm]]
+
         for each_parameter in viable_parameters:
             if each_parameter in kwargs:
-                if each_parameter == 'logs':
+                if each_parameter == 'logs' and kwargs[each_parameter] != None:
                     """
                     If the parameter is a log, append to all existing logs.
                     """
+                    self._store_logs(status, algorithm, kwargs[each_parameter])
 
-                    status[algorithm]['logs'].append(kwargs[each_parameter])
-
-                elif each_parameter == 'progress':
+                elif each_parameter == 'progress' and kwargs[each_parameter] != None:
                     """
                     If the parameter is a progress integer, add to exiting progress integer.
                     """
@@ -86,9 +91,39 @@ class AlgorithmStatusController(Generic[T], Controller):
                 else:
                     status[algorithm][each_parameter] = kwargs[each_parameter]
 
-        self._db.update_document(uuid, self.c, self.status_key, status)
+        return status
 
-        return document
+
+    def _get_all_algorithm_status(self, uuid: str, algorithm: str) -> t.Dict[str, t.Dict[str, T]]:
+        """
+        Get a specific algorithm status information such as start time, state and logs etc.
+
+        Parameters:
+            uuid - (str) The unique id of the job (including all algorithms).
+            algorithms - (str) The algorithm (e.g. gifdroid, storydistiller, owleye, xbot, tappable etc)
+
+        Returns: The status dictionary/json containing all data on the status of the algorithm.
+        """
+        return self._db.get_document(uuid, self.c)[self.status_key]
+
+
+
+    def _store_logs(self, document: t.Dict[str, t.Dict[str, t.List ]], algorithm: str, new_log: str) -> bool:
+        """
+        Stores only the past 10 logs into the **mongodb** document for the job uuid
+
+        Parameters:
+            document - (str) The mongodb document for the job uuid
+            new_log - (str) New log message
+        """
+        log_key = 'logs'
+        max_logs = 10
+        document[algorithm][log_key].append(new_log)
+        logs_length = len(document[algorithm][log_key])
+        if logs_length > max_logs:
+            document[algorithm][log_key] = document[algorithm][log_key][logs_length-10: logs_length]
+
+        return True
 
 
     def update_status_attribute(self, uuid: str, algorithm: str, attribute_key: str, attribute_val: str) -> t.Dict[str, T]:
@@ -128,6 +163,9 @@ class AlgorithmStatusController(Generic[T], Controller):
 
 
     def declare_apk_name_in_status(self, uuid: str, apk_name: str) -> Dict[str, str]:
+        """
+        Ignore please but don't delete yet
+        """
         d = self._db.get_document(uuid, self.c)
 
         for _, item in d[self.status_key].items():

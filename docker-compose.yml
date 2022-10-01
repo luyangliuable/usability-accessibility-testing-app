@@ -33,6 +33,12 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - MONGO_URL=mongodb://host.docker.internal:27017/
       - S3_URL=http://host.docker.internal:4566
+      - STORYDISTILLER=http://host.docker.internal:3002/new_job
+      - XBOT=http://host.docker.internal:3003/new_job
+      - OWLEYE=http://host.docker.internal:3004/new_job
+      - FLASK_BACKEND=http://host.docker.internal:5005
+      - GIFDROID=http://host.docker.internal:3005/new_job
+      - DROIDBOT=http://host.docker.internal:3008/new_job
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
@@ -69,11 +75,6 @@ services:
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - REDIS_URL=redis://redis:6379/0
-      - STORYDISTILLER=http://host.docker.internal:3002/new_job
-      - XBOT=http://host.docker.internal:3003/new_job
-      - OWLEYE=http://host.docker.internal:3004/new_job
-      - FLASK_BACKEND=http://host.docker.internal:5005
-      - GIFDROID=http://host.docker.internal:3005/new_job
     volumes:
       - "./server:/usr/src/app/server"
     depends_on:

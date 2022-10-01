@@ -29,13 +29,14 @@ def send_uid_and_signal_run() -> t.Tuple[t.Dict, int]:
     """
 
     if request.method == "POST":
-        print(request.get_json())
-        apk_path = request.get_json()["apk_path"]
+        droidbot_result_folder = request.get_json()["utg_path"]
         output_dir = request.get_json()["output_dir"]
-        uuid = request.get_json()["uuid"]
+        gif_path = request.get_json()["gif_path"]
 
-        # Execute droidbot ############################################################
-        _service_execute_gifdroid(uuid, apk_path, output_dir)
+        print(droidbot_result_folder)
+
+        # Execute gifdroid ############################################################
+        _service_execute_gifdroid(droidbot_result_folder, gif_path, output_dir)
 
         return {"result": "SUCCESS"}, 200
 
@@ -43,4 +44,4 @@ def send_uid_and_signal_run() -> t.Tuple[t.Dict, int]:
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=3008)
+    app.run(host="0.0.0.0", port=3005)

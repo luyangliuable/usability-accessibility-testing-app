@@ -265,9 +265,6 @@ class DBManager:
 
     def insert_document(self, document, collection: Collection):
         post_id = collection.insert_one(document)
-
-        print(post_id)
-
         return post_id
 
 

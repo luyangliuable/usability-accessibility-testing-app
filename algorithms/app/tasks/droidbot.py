@@ -13,23 +13,86 @@ class Droidbot(Task):
     _output_types = [ResourceType.JSON_LAYOUT, ResourceType.UTG]
     _execute_url = "http://localhost:3008/new_job"
     name = "Droidbot"
+    _shared_volume = "/home/tasks"
 
-    def __init__(self, uuid: str, output_dir: str, resource_dict: Dict[ResourceType, ResourceGroup], execution_data: Dict[str, str]) -> None:
-        self.apk_path = execution_data['apk_path']
+
+    def __init__(self, output_dir: str, resource_dict: Dict[ResourceType, ResourceGroup], execution_data: Dict[str, str]) -> None:
+        """
+        Droidbot class manages a single droidbot task. It subscribes to utg and gif resources. Whenever both a new utg and gif are added it starts running.
+
+
+        Parameters:
+            output_dir - (str) The output directory for the gifdroid result
+            resource_dict - (str) Dictionary of resource groups required by this algorithm # TODO try combine utg and gif into single resource group
+
+        Returns: Nothing
+        """
+        super().__init__(output_dir, resource_dict, execution_data)
         self.emulator = resource_dict[ResourceType.EMULATOR]
-        super().__init__(uuid, output_dir, resource_dict, execution_data)
+        self._sub_to_apks()
+        self._sub_to_emulators()
+        self.apk_queue = []
 
 
-    def run(self) -> t.Tuple[t.Dict, int]:
+    def run(self, apk_path: str) -> t.Dict[str, str]:
+        """
+        Execute gifdroid algorithm by http request and passing in necessary data for gifdroid to figure out stuff.
+
+        Parameters:
+            apk_path - (str) The string path for the apk for to run droibot.
+        """
+        print(json.dumps(self._get_execution_data(apk_path)))
+        requests.post(str( self._execute_url ), data=json.dumps(self._get_execution_data(apk_path)), headers={"Content-Type": "application/json"})
+
+        return { "message": "Execute started." }
+
+
+    def _get_execution_data(self, apk_path: str):
+
+        """
+        Get the execution data necessary to execute droidbot
+
+        Parameters:
+            apk_path - (str) The string path for the apk for to run droibot.
+        """
         data = {
-            "apk_path": self.apk_path,
+            "apk_path": apk_path,
             "output_dir": self.output_dir,
-            "uuid": self.uuid
         }
 
-        result = requests.post(str( self._execute_url ), data=json.dumps(data), headers={"Content-Type": "application/json"})
+        return data
 
-        return { "msg": "Execute started." }, 200
+
+    def _sub_to_apks(self) -> None:
+        """Get notified when a new APK is available"""
+        if ResourceType.APK_FILE in self.resource_dict:
+            self.resource_dict[ResourceType.APK_FILE].subscribe(self.apk_callback) # calls add_apk() when new apk is available
+
+
+    def apk_callback(self, new_apk : ResourceWrapper) -> None:
+        """callback method to add apk and run algorithm"""
+        if new_apk not in self.apk_queue:
+            self.apk_queue.append(new_apk)
+
+
+    def emulator_callback(self, emulator : ResourceWrapper) -> None:
+        """callback method for using emulator"""
+        self._process_apks()
+        emulator.release()
+
+
+    def _process_apks(self) -> None:
+        while len(self.apk_queue) > 0:                                      # get next apk
+            apk = self.apk_queue.pop(0)
+            apk_path = apk.get_path()
+            self.run(apk_path)
+            apk.release()
+
+
+    def _sub_to_emulators(self) -> None:
+        """Get notified when an emulator is available"""
+        if ResourceType.EMULATOR in self.resource_dict:
+            self.resource_dict[ResourceType.EMULATOR].subscribe(self.emulator_callback)
 
 
     @classmethod
@@ -48,63 +111,3 @@ class Droidbot(Task):
     def get_output_types(cls) -> List[ResourceType]:
         """Output resource types of the task"""
         return cls._output_types
-
-
-    def _move_files_db(self,img_dest, json_dest=None, activity=False):
-        """Moves droidbot image and json files from task folder to temp directory. Renames files by activity name."""
-        src = os.path.join(TEMP_PATH,"droidbot" ,"states")
-        activites_path = os.path.join(self.output_dir, "activities")
-        for file in os.listdir(src):
-            if file.endswith(".json"):
-                file_name = file.strip("state").strip("json")
-                with open(os.path.join(src, file), 'r') as json_file:
-                    json_out = json.loads(json_file.read())
-                    activity_name = json_out["activity_stack"][0].replace("/", "_") #replace / with _ to not create folders instead of path names
-                    if activity:
-                        if not os.path.exists(os.path.join(activites_path, activity_name)):
-                            os.makedirs(os.path.join(activites_path, activity_name))
-                            os.makedirs(os.path.join(activites_path, activity_name, "screenshots"))
-                            os.makedirs(os.path.join(activites_path, activity_name, "annotations"))
-                        json_dest = os.path.join(self.output_dir, "activities", activity_name, "annotations")
-                        img_dest = os.path.join(self.output_dir, "activities", activity_name, "screenshots")
-                    #append number if existing activity
-                    if activity_name in self.activity_list:
-                        activity_name = activity_name + "_" + str(self.activity_list.count(activity_name))
-                    self.activity_list.append(activity_name)
-                #move json
-                if json_dest:
-                    shutil.copy(os.path.join(src, file), os.path.join(json_dest, activity_name + ".json"))
-                #move image
-                if os.path.exists(os.path.join(src, "screen" + file_name + "jpg")):
-                    img_path = os.path.join(src, "screen" + file_name + "jpg")
-                    shutil.copy(img_path, os.path.join(img_dest, activity_name + ".jpg"))
-
-
-    def get_screenshots(self) -> str:
-        """run xbot and droidbot and copy screenshots into activity folders"""
-        activites_path = os.path.join(self.output_dir, "activities")
-        if not os.path.exists(activites_path):
-            os.makedirs(activites_path)
-        exists = False
-        if os.path.isdir(os.path.join(TEMP_PATH, "xbot")):
-            self._move_files_xb("",True,False,True)
-            exists = True
-        if os.path.isdir(os.path.join(TEMP_PATH, "droidbot")): #xbot temp dir path
-            self._move_files_db("",True, True)
-            exists = True
-        if not exists:
-            xbot_task = Xbot()
-            self.execute_task(xbot_task)
-            droidbot_task = Droidbot()
-            self.execute_task(droidbot_task)
-            self.get_screenshot()
-        return None
-
-    def _run_image_algorithms(self, xbot=True, droidbot=True):
-        """Run xbot and droidbot (screenshot algorithms)"""
-        if xbot and 'xbot' not in self.tasks:
-            xbot_task = Xbot() #check inputs
-            self.execute_task(xbot_task)
-        if droidbot and 'droidbot' not in self.tasks:
-            droidbot_task = droidbot() #check inputs
-            self.execute_task(droidbot_task)

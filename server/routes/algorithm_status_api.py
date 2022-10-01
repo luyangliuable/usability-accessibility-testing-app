@@ -24,21 +24,21 @@ if t.TYPE_CHECKING:  # pragma: no cover
     import typing_extensions as te
 
 
-@algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>", methods=['GET', 'POST'])
-@cross_origin()
-def update_algorthm_status(uuid: str, algorithm: str) -> t.Tuple[str, int]:
-    """
-    Method for updating status of each and every algorithm
-    """
-    if request.method == "POST":
-        status = str( request.data.decode() )
+# @algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>", methods=['GET', 'POST'])
+# @cross_origin()
+# def update_algorthm_status(uuid: str, algorithm: str) -> t.Tuple[str, int]:
+#     """
+#     Method for updating status of each and every algorithm
+#     """
+#     if request.method == "POST":
+#         status = str( request.data.decode() )
 
-        res = asc.post(uuid, algorithm, status=status)
+#         res = asc.post(uuid, algorithm, status=status)
 
-        res = ""
-        return res, 200
+#         res = ""
+#         return res, 200
 
-    return "Invalid request", 400
+#     return "Invalid request", 400
 
 
 @algorithm_status_blueprint.route("/status/get/<uuid>/<algorithm>", methods=['GET'])
@@ -58,18 +58,18 @@ def get(uuid: str, algorithm: str) -> t.Tuple[str, int]:
 
 @algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>", methods=['GET', 'POST'])
 @cross_origin()
-def update(uuid: str, algorithm: str) -> t.Tuple[str, int]:
+def post(uuid: str, algorithm: str) -> t.Tuple[t.Dict, int]:
     """
     Method for updating status of each and every algorithm
     """
     if request.method == "POST":
 
-        status = str( request.data.decode() )
-        res = asc.post(uuid, algorithm, status)
+        new_status = request.json
+        res = asc.post(uuid, algorithm, **new_status)
 
-        return json.dumps(res), 200
+        return res, 200
     else:
-        return request.method + " not valid", 400
+        return {"Error": f'{ request.method } not valid' }, 400
 
 
 @algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>/<attribute>", methods=['GET', 'POST'])

@@ -29,17 +29,16 @@ def send_uid_and_signal_run() -> t.Tuple[t.Dict, int]:
     """
 
     if request.method == "POST":
-        print(request.get_json())
         apk_path = request.get_json()["apk_path"]
         output_dir = request.get_json()["output_dir"]
-        uuid = request.get_json()["uuid"]
+        # uuid = request.get_json()["uuid"]
 
         # Execute droidbot ############################################################
         print(output_dir)
-        _service_execute_droidbot(uuid, apk_path, output_dir)
+        _service_execute_droidbot(apk_path=apk_path, output_dir=output_dir)
 
         return {"result": "SUCCESS"}, 200
-    
+
     return {"result": "FAILED", "message": "No HTTP POST method received"}, 400
 
 

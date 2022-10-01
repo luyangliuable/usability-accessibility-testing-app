@@ -42,7 +42,7 @@ class UploadController(t.Generic[T]):
 
         self.cn = collection_name
         self._db = DBManager.instance()
-        self.temp_dir = tempfile.gettempdir()
+        self.temp_dir = "/home/data"
 
     def _get_format(self, uuid: str) -> t.Dict[str, T]:
         # Document template to be inserted into mongodb
@@ -51,21 +51,41 @@ class UploadController(t.Generic[T]):
         return data
 
 
+    def upload(self, files: 'werkzeug.datastructures.ImmutableMultiDict') -> t.Dict[str, T]:
+        ###############################################################################
+        #                              Generate unique id                             #
+        ###############################################################################
+        uuid = unique_id_generator()
+        data = self._get_format(uuid)
+
+        output_path = os.path.join(self.temp_dir, uuid)
+        os.mkdir(output_path)
+
+        self.save_additional_files(uuid, files, data)
+        self.save_apk_file(uuid, files, data)
+
+        self.acknowlege(uuid, data)
+
+        return data
+
+
     def save_additional_files(self, uuid: str, files: 'werkzeug.datastructures.ImmutableMultiDict', data: t.Dict[str, T]) -> t.Dict[str, T]:
         ###############################################################################
         #                         S3: Save every additional file                      #
         ###############################################################################
+        additional_files_bucket_folder = "additional files"
+
         for key, item in files.items():
             if key != "apk_file":
-                print("additional files", item.name, "detected")
+                print(f'{additional_files_bucket_folder} { item.name } detected,')
 
-                temp_file_name = os.path.join(self.temp_dir, str( item.name ))
+                temp_file_name = os.path.join(self.temp_dir, uuid, str( item.name ))
 
                 with open(temp_file_name, "wb") as savefile:
                     savefile.write(item.read())
                     savefile.close()
 
-                s3_client.upload_file(temp_file_name, BUCKETNAME, os.path.join( uuid, "additional_upload", str(item.filename) ))
+                s3_client.upload_file(temp_file_name, BUCKETNAME, os.path.join( uuid, additional_files_bucket_folder, item.filename ))
 
                 data["additional_files"].append({"algorithm": item.name, "type": item.content_type, "name": item.filename, "notes": ""})
 
@@ -78,12 +98,12 @@ class UploadController(t.Generic[T]):
         ###############################################################################
         print("[2] Generating apk file")
 
-        temp_file_name = os.path.join(self.temp_dir, uuid)
-
         apk_file = files['apk_file']
+        apk_filename = apk_file.filename
+        temp_file_name = os.path.join(self.temp_dir, uuid, apk_filename)
+
 
         # File name is the original uploaded file name ################################
-        apk_filename = apk_file.filename
 
         apk_file_note = "user uploaded apk file"
 
@@ -97,15 +117,15 @@ class UploadController(t.Generic[T]):
         return apk_filename
 
 
-    def acknowlege(self, uuid: str, data: t.Dict["str", T]) -> bool:
-        temp_file_name = os.path.join(self.temp_dir, uuid)
+    def acknowlege(self, uuid: str, data: t.Dict[str, str]) -> bool:
+        temp_file_name = os.path.join(self.temp_dir, uuid, data['apk']['name'])
 
         apk_bucket_folder = "apk"
 
         s3_client.upload_file(
             temp_file_name,
             BUCKETNAME,
-            os.path.join( str( uuid ), apk_bucket_folder, str(data['apk']['name']) )
+            os.path.join( uuid, apk_bucket_folder, data['apk']['name'] )
         )
 
         self._db.insert_document(data, self._db.get_collection('apk'))
@@ -113,16 +133,3 @@ class UploadController(t.Generic[T]):
         return True
 
 
-    def upload(self, files: 'werkzeug.datastructures.ImmutableMultiDict') -> t.Dict[str, T]:
-        ###############################################################################
-        #                              Generate unique id                             #
-        ###############################################################################
-        uuid = unique_id_generator()
-        data = self._get_format(uuid)
-
-        self.save_additional_files(uuid, files, data)
-        self.save_apk_file(uuid, files, data)
-
-        self.acknowlege(uuid, data)
-
-        return data

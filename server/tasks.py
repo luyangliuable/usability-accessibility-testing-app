@@ -8,9 +8,9 @@ from enums.status_enum import StatusEnum as Status
 from controllers.algorithm_status_controller import AlgorithmStatusController as ASC
 from download_parsers.gifdroid_json_parser import gifdroidJsonParser
 
-celery = Celery(__name__)
-celery.conf.broker_url = os.environ['REDIS_URL']
-celery.conf.result_backend = os.environ['REDIS_URL']
+worker = Celery(__name__)
+worker.conf.broker_url = os.environ['REDIS_URL']
+worker.conf.result_backend = os.environ['REDIS_URL']
 
 flask_backend = os.environ.get('FLASK_BACKEND')
 
@@ -21,7 +21,7 @@ flask_backend = os.environ.get('FLASK_BACKEND')
 asc = ASC(collection_name='apk')
 
 
-@celery.task(name="run_algorithm")
+@worker.task(name="run_algorithm")
 def run_algorithm(info={}):
     ###############################################################################
     #                                Storydistiller                               #

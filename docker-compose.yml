@@ -61,12 +61,10 @@ services:
   worker:
     build:
       context: ./server/
-    command: celery worker --app=tasks.celery --loglevel=info
+    command: celery worker --app=tasks.worker --loglevel=info
     container_name: bxer.task_queue
-    volumes:
-      - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
     environment:
-      - FLASK_DEBUG=1
+      # - FLASK_DEBUG=1
       - APP_SETTINGS=server.config.DevelopmentConfig
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
@@ -76,7 +74,8 @@ services:
       - OWLEYE=http://host.docker.internal:3004/new_job
       - FLASK_BACKEND=http://host.docker.internal:5005
       - GIFDROID=http://host.docker.internal:3005/new_job
-      # - MONGO_URL=mongodb://username:password@mongodb
+    volumes:
+      - "./server:/usr/src/app/server"
     depends_on:
       - flask_backend
       - redis

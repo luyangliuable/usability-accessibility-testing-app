@@ -1,4 +1,5 @@
-import os
 from flask import Flask
-from server.tasks import celery
-from app import create_app
+import tasks
+from server.tasks import worker
+import create_app from app
+

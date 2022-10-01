@@ -59,14 +59,13 @@ const Home = (props) => {
         $('.layer-1 > h1').css('opacity',1-(scrolled*.00175));
         $('.fadeout').css('opacity', opacity);
 
-        // $('.hero').css('filter', 'blur('+ (scrolled)/1000 +'em)');
         var detached = false;
 
         if (scrolled > window_height/5.4 && !detached) {
-            $('.nav-container').css({ 'position': 'fixed', 'top': 0, 'opacity': 0.8  });
+            $('#myNavbar').css({ 'position': 'fixed', 'top': 0, 'opacity': 0.8 });
             detached = !detached;
         } else {
-            $('.nav-container').css({ 'position': 'relative',  'opacity': 1 });
+            $('#myNavbar').css({ 'position': 'relative',  'opacity': 1 });
             detached = !detached;
         }
 

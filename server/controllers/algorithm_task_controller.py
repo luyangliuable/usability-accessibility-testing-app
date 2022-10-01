@@ -1,12 +1,12 @@
 from controllers.algorithm_status_controller import *
 from controllers.job_status_controller import *
 from utility.enforce_bucket_existance import *
-from enums.status_enum import StatusEnum
-from tasks import run_algorithm, celery
 from controllers.controller import Controller
+from enums.status_enum import StatusEnum
 from utility.uuid_generator import *
-from models.DBManager import *
 from datetime import datetime as dt
+from models.DBManager import *
+from tasks import *
 import typing as t
 
 

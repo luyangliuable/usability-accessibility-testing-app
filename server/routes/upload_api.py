@@ -1,6 +1,6 @@
 from controllers.upload_controller import UploadController
 from utility.enforce_bucket_existance import *
-from tasks import run_algorithm, celery
+from tasks import run_algorithm, worker
 from models.DBManager import DBManager
 from flask import Blueprint, request
 from flask_cors import cross_origin
@@ -48,7 +48,7 @@ def check_health() -> str:
 def get_status(task_id):
 
     stopPrint()
-    task_result = celery.AsyncResult(task_id)
+    task_result = worker.AsyncResult(task_id)
 
     result = {
         "task_id": task_id,

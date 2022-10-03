@@ -17,7 +17,7 @@ export default function SignUp() {
   useEffect(() => {
     if (user !== null) {
       console.log("[1.1] redirect");
-      window.location.reload()
+      window.location.reload();
       navigate("/upload");
     }
   }, [user]);
@@ -31,6 +31,7 @@ export default function SignUp() {
               <Col lg={12} className="login-title">
                 <h2 className="login">SIGN UP</h2>
               </Col>
+              <div style={{display: 'flex', justifyContent: 'center'}}>
               <GoogleLogin
                 onSuccess={credentialResponse => {
                   console.log(credentialResponse);
@@ -59,6 +60,7 @@ export default function SignUp() {
                   // console.log('Login Failed');
                 }}
               />
+              </div>
 
               <Col lg={12}>
                 <Link to={"/login"}>

@@ -5,6 +5,7 @@ boto3==1.24.59
 pymongo==4.2.0
 celery==4.4.7
 redis==3.5.3
+bson
 # python-dotenv
 # fastapi==0.78.0
 # flower==0.9.7

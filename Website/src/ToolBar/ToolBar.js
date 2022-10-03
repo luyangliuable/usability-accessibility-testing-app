@@ -1,17 +1,21 @@
 import React, { useState } from "react";
 import { Row, Container, Col } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { NavLink } from "react-router-dom";
+import { googleLogout } from "@react-oauth/google";
 
 import "./ToolBar.css";
 
 export default function ToolBar() {
   const [user, updateUser] = useState(sessionStorage.getItem("User_UUID"));
+  const navigate = useNavigate();
 
   console.log('user right now: ', user);
 
   function signout() {
+    googleLogout();
     sessionStorage.removeItem("User_UUID");
+    navigate("./");
     window.location.reload();
   }
 

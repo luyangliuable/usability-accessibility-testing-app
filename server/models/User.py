@@ -4,7 +4,10 @@ import uuid
 import json
 
 from models.DBManager import DBManager
+from bson.json_util import dumps
 
+def getUserCollectionJSON():
+    return dumps(getUserCollection())
 
 def getUserCollection():
     mongo = DBManager.instance()

@@ -22,7 +22,7 @@ def loginUser():
     if request.method == "POST":
         return UserModel().loginUser()
     if request.method == "GET":
-        return getUserCollection()
+        return getUserCollectionJSON()
 
 
 if __name__ == "__main__":

@@ -27,10 +27,10 @@ def filter_status_messages(record):
     print(record.getMessage())
     return True
 
+
 logger = logging.getLogger("werkzeug")
 logger.addFilter(filter_status_messages)
-# logger.disabled = True
-
+logger.disabled = True
 
 
 if t.TYPE_CHECKING:  # pragma: no cover
@@ -61,7 +61,6 @@ def update(uuid: str) -> t.Tuple[t.Dict, int]:
     """
     if request.method == "POST":
         data = request.json
-        # res = jsc.update(uuid, status=data.get('status'), progress=data.get('progress'), logs=data.get('logs'))
         res = jsc.post(uuid, **data)
         return res, 200
     else:

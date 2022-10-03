@@ -1,9 +1,10 @@
+from utility.uuid_generator import unique_id_generator
+from controllers.algorithm_status_controller import *
+from utility.safe_serialise import safe_serialize
 from flask import Blueprint, request
 from flask_cors import cross_origin
-import json
-import uuid
-from controllers.algorithm_status_controller import *
 import typing as t
+import json
 
 
 ###############################################################################
@@ -15,7 +16,7 @@ algorithm_status_blueprint = Blueprint("algorithm_status", __name__)
 #                Initiate algorithm status controller for route               #
 ###############################################################################
 default_collection = 'apk'
-asc = AlgorithmStatusController(default_collection)
+algorithm_status_controller = AlgorithmStatusController(default_collection)
 
 
 if t.TYPE_CHECKING:  # pragma: no cover
@@ -24,48 +25,31 @@ if t.TYPE_CHECKING:  # pragma: no cover
     import typing_extensions as te
 
 
-# @algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>", methods=['GET', 'POST'])
-# @cross_origin()
-# def update_algorthm_status(uuid: str, algorithm: str) -> t.Tuple[str, int]:
-#     """
-#     Method for updating status of each and every algorithm
-#     """
-#     if request.method == "POST":
-#         status = str( request.data.decode() )
-
-#         res = asc.post(uuid, algorithm, status=status)
-
-#         res = ""
-#         return res, 200
-
-#     return "Invalid request", 400
-
-
 @algorithm_status_blueprint.route("/status/get/<uuid>/<algorithm>", methods=['GET'])
 @cross_origin()
 def get(uuid: str, algorithm: str) -> t.Tuple[str, int]:
     """
-    Method for updating status of each and every algorithm
+    Method for getting status of one algorithm
     """
     if request.method == "GET":
 
-        res = asc.get(uuid, algorithm)
+        res = algorithm_status_controller.get(uuid, algorithm)
 
         return json.dumps(res), 200
     else:
-        return request.method + " not valid", 400
+        return f'{ request.method } not valid', 400
 
 
 @algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>", methods=['GET', 'POST'])
 @cross_origin()
 def post(uuid: str, algorithm: str) -> t.Tuple[t.Dict, int]:
     """
-    Method for updating status of each and every algorithm
+    Method for posting/updating status of one algorithm
     """
     if request.method == "POST":
 
         new_status = request.json
-        res = asc.post(uuid, algorithm, **new_status)
+        res = algorithm_status_controller.post(uuid, algorithm, **new_status)
 
         return res, 200
     else:
@@ -82,44 +66,10 @@ def update_one_attr(uuid: str, algorithm: str, attribute: str) -> t.Tuple[str, i
         # Assume new attribute value is a string
         update = str( request.data.decode() )
 
-        res = asc.update_status_attribute(uuid, algorithm, attribute, update)
+        res = algorithm_status_controller.update_status_attribute(uuid, algorithm, attribute, update)
 
         return safe_serialize( res ), 200
     else:
-        return request.method + " not valid", 400
-
-# @algorithm_status_blueprint.route("/status/test", methods=['GET'])
-# @cross_origin()
-# def p_status():
-#     threading.Thread(target=test, args=(1,))
-
-#     return "Started thread", 200
-
-
-# @algorithm_status_blueprint.route("/status/test2", methods=['GET'])
-# @cross_origin()
-# def c_status():
-#     print("started")
-#     time.sleep(2000)
-#     return "finished thread", 200
-
-def test(name):
-    logging.info("Thread %s: starting", name)
-    time.sleep(200)
-    logging.info("Thread %s: finishing", name)
-
-
-###############################################################################
-#                              Utility Functions                              #
-###############################################################################
-def safe_serialize(obj):
-    default = lambda o: f"<<non-serializable: {type(o).__qualname__}>>"
-    return json.dumps(obj, default=default)
-
-
-def unique_id_generator():
-    res = str( uuid.uuid4() )
-    return res
 
 
 if __name__ == "__main__":

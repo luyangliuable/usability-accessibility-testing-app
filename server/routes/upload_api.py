@@ -1,9 +1,9 @@
 from controllers.upload_controller import UploadController
 from utility.enforce_bucket_existance import *
-from tasks import worker
 from models.DBManager import DBManager
 from flask import Blueprint, request
 from flask_cors import cross_origin
+from tasks import worker
 import sys, os
 import json
 
@@ -11,7 +11,7 @@ import json
 #                            Set Up Flask Blueprint                           #
 ###############################################################################
 upload_blueprint = Blueprint("upload", __name__)
-uc = UploadController('apk')
+upload_controller = UploadController('apk')
 
 ###############################################################################
 #                            Start mongodb instance                           #
@@ -22,7 +22,7 @@ mongo = DBManager.instance()
 
 @upload_blueprint.route('/upload', methods=["GET", "POST"])
 @cross_origin()
-def upload():
+def post():
     """
     This blueprint method acts as an api file uploader. It must be uploaded using form-data.
     The key in json for the apk file must be apk_file.
@@ -30,7 +30,7 @@ def upload():
     if request.method == "POST":
         enforce_bucket_existance([ BUCKETNAME ])
 
-        data = uc.upload(request.files)
+        data = upload_controller.post(request.files)
 
         ret = {'uuid': data['uuid'], 'apk': data['apk']['name']}
 
@@ -39,13 +39,8 @@ def upload():
     return json.dumps({"message": "failed to upload"}), 400
 
 
-@upload_blueprint.route('/upload/health')
-def check_health() -> str:
-    return "Upload Is Online"
-
-
 @upload_blueprint.route("/task/<task_id>", methods=["GET"])
-def get_status(task_id):
+def get(task_id):
 
     stopPrint()
     task_result = worker.AsyncResult(task_id)
@@ -58,6 +53,11 @@ def get_status(task_id):
     allowPrint()
 
     return json.dumps(result), 200
+
+
+@upload_blueprint.route('/upload/health')
+def _check_health() -> str:
+    return "Upload Is Online"
 
 
 @upload_blueprint.after_request

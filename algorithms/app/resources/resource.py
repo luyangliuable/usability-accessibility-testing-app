@@ -99,7 +99,6 @@ class ResourceGroup(Generic[T]):
             self.lock_resource(resource, 0)
 
 
-
     def lock_resource(self, resource : ResourceWrapper[T], index : Number) -> None:
         """
         INTERNAL USE ONLY
@@ -111,3 +110,4 @@ class ResourceGroup(Generic[T]):
 
         resource.lock(lambda x : self.lock_resource(x, index + 1))
         self._subscribers[index](resource)
+ 

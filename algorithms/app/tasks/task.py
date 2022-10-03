@@ -73,8 +73,8 @@ class Task(ABC, metaclass=TaskMetaclass):
         self.execution_data = execution_data
         self.resource_dict = resource_dict
 
-        if not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir)
+        # if not os.path.exists(self.output_dir):
+            # os.makedirs(self.output_dir)
 
 
     @abstractmethod

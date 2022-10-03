@@ -1,6 +1,6 @@
 from resources.resource import *
-from tasks.task import *
 
+from tasks.task import *
 from tasks.droidbot import *
 from tasks.gifdroid import *
 from tasks.image_converter import *
@@ -29,7 +29,7 @@ class droidbot(threading.Thread):
 
         tasks = ["Droidbot"]
 
-        base_dir = "/home/data/droidbot_result"
+        base_dir = "/home/data/"
 
         execution_data={}
         TaskFactory.create_tasks(tasks, base_dir, resource_dict)
@@ -61,7 +61,7 @@ class gifdroid(threading.Thread):
         execution_data={}
         TaskFactory.create_tasks(tasks, base_dir, resource_dict)
 
-        utg = ResourceWrapper('/home/data/droidbot_result/', 'droidbot result')
+        utg = ResourceWrapper('/home/data/', 'droidbot result')
         gif = ResourceWrapper('/home/data/test_apks/a2dp.Vol_133/sample.gif', '')
 
         resource_dict[ResourceType.UTG].publish(utg, True)
@@ -70,14 +70,21 @@ class gifdroid(threading.Thread):
         print(f'Finished running {self.thread_name}.')
 
 if __name__ == '__main__':
-    # first_droidbot = droidbot("test1", 1)
+    first_droidbot = droidbot("test1", 1)
     # second_droidbot = thread("test2", 2)
     # third_droidbot = thread("test3", 3)
-    # first_droidbot.start()
+    first_droidbot.start()
     # second_droidbot.start()
     # third_droidbot.start()
 
-    first_gifdroid = gifdroid("test1", 1)
-    second_gifdroid = gifdroid("test2", 2)
-    first_gifdroid.start()
+    # first_gifdroid = gifdroid("test1", 1) # second_gifdroid = gifdroid("test2", 2)
+    # first_gifdroid.start()
     # second_gifdroid.start()
+
+    resource_dict = {} # make resource dict
+    resource_dict[ResourceType.APK_FILE] = ResourceGroup(ResourceType.APK_FILE)
+    resource_dict[ResourceType.EMULATOR] = ResourceGroup(ResourceType.EMULATOR, usage=ResourceUsage.SEQUENTIAL)
+
+    # a = Droidbot("/Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/algorithms/app/.data/droidbot_result", resource_dict)
+    # a.get_new_files()
+    # a.watch_for_new_files()

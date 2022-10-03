@@ -15,7 +15,7 @@ def _service_execute_droidbot(apk_path: str, output_dir: str):
     #                      Run program with downloaded apk                     #
     ############################################################################
     subprocess.run([ "adb", "connect", EMULATOR])
-    subprocess.run([ "droidbot", "-count", config[ "NUM_OF_EVENT" ], "-a", apk_path, "-o", os.path.join("/home/data/", "droidbot_result") ])
+    subprocess.run([ "droidbot", "-count", config[ "NUM_OF_EVENT" ], "-a", apk_path, "-o", os.path.join("/home/data/", "droidbot") ])
 
     ###############################################################################
     #                                Save utg file                                #

@@ -85,7 +85,7 @@ class AlgorithmTaskController(t.Generic[T], Controller, Task):
         ###############################################################################
         #                          Signal Algorithm to start                          #
         ###############################################################################
-        result = self._signal_start(uuid, URL)
+        result = self._signal_start(URL, uuid)
 
         ###############################################################################
         #           Update status according to the success of the algorithm           #
@@ -141,19 +141,6 @@ class AlgorithmTaskController(t.Generic[T], Controller, Task):
             "apk_path": os.path.join("/home/data", uuid, apk_file),
             "output_dir": "/home/data/droidbot/"
         }
-
-        print(execution_data['apk_path'])
-        print(execution_data['apk_path'])
-        print(execution_data['apk_path'])
-        print(execution_data['apk_path'])
-        print(execution_data['apk_path'])
-        print(execution_data['apk_path'])
-        print(execution_data['apk_path'])
-        print(execution_data['apk_path'])
-        print(execution_data['apk_path'])
-        print(execution_data['apk_path'])
-        print(execution_data['apk_path'])
-        print(execution_data['apk_path'])
 
         result = requests.post("http://host.docker.internal:3008/new_job", data=json.dumps(execution_data), headers={"Content-Type": "application/json"})
         return result

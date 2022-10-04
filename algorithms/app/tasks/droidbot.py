@@ -51,7 +51,7 @@ class Droidbot(Task):
         return images
 
 
-    def _create_new_resource_group(self, resource_wrapper: ResourceWrapper, resource_type: ResourceType, resource_path: str, origin: str, metadata=None) -> bool:
+    def _create_new_resource_group(self, resource_wrapper: ResourceWrapper, resource_type: ResourceType) -> bool:
 
         print(resource_wrapper)
         self.resource_dict[resource_type] = ResourceGroup(resource_type)
@@ -63,9 +63,8 @@ class Droidbot(Task):
     def _publish_all_new_images(self, images: t.List[str], check_path: str) -> bool:
         for each_image in images:
             resource_path = os.path.join(check_path, each_image)
-            img = ResourceWrapper(resource_path, 'droidbot')
-            self._create_new_resource_group(img, ResourceType.SCREENSHOT_JPEG, resource_path, self.name)
-
+            img = ResourceWrapper(resource_path, self.name)
+            self._create_new_resource_group(img, ResourceType.SCREENSHOT_JPEG)
 
         return True
 
@@ -83,24 +82,21 @@ class Droidbot(Task):
         check_path = "/Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/algorithms/app/.data/droidbot/states/"
 
         while(True):
-            try:
-                if self.status != "RUNNING":
-                    break
+            if self.status != "RUNNING":
+                break
 
+            if os.path.exists(check_path):
                 new_images = []
                 old = self.images
                 self.images += self._list_image_files_in_dir(check_path)
-                new_images = list( set( self.images ).difference(set( old )) )
+                new_images = list( set( self.images ).difference( set( old ) ) )
                 self._log_new_images(new_images)
                 self._publish_all_new_images(new_images, check_path)
-                sleep(3)
-            except Exception as e:
-                # Ignore errors because file might not be created when watcher started
-                # print(e)
-                pass
+
+            sleep(3)
+
 
     def watch_for_new_files(self):
-        self.status = "RUNNING"
         # self._watcher = Thread(target = self.watch_for_new_files_aux, args =(lambda : exit_flag, ))
         self._watcher.start()
 
@@ -119,14 +115,11 @@ class Droidbot(Task):
         Execute gifdroid algorithm by http request and passing in necessary data for gifdroid to figure out stuff.
 
         Parameters:
-            apk_path - (str) The string path for the apk for to run droibot.
+            apk_path - (str) The string path for the apk for to run droidbot.
         """
-        print(json.dumps(self._get_execution_data(apk_path)))
-
+        self.status = "RUNNING"
         self.watch_for_new_files()
-
         requests.post(str( self._execute_url ), data=json.dumps(self._get_execution_data(apk_path)), headers={"Content-Type": "application/json"})
-
         self.mark_algorithm_completed()
 
         return { "message": "Execute started." }

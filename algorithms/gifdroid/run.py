@@ -26,7 +26,7 @@ def convert_droidbot_to_gifdroid_utg(utg_file=None, events_folder=None, states_f
 
     output_folder = kwargs['output_dir']
 
-    enforce_output_directory(output_folder)
+    _init_dirs(output_folder)
 
     ###############################################################################
     #                                 Rename file                                 #
@@ -58,7 +58,10 @@ def convert_droidbot_to_gifdroid_utg(utg_file=None, events_folder=None, states_f
 
         im1 = [ Image.open(os.path.join(temporary_directory_name, file)) for file in file_order_sorter(temporary_directory_name, droidbot_img_file_type )];
 
-        im1 = [ file.save(os.path.join(output_folder, 'screenshots', re.sub(".jpg\Z", ".png", original_img_file_name[i]))) for i, file in enumerate( im1 )];
+
+        screenshot_output_dir = os.path.join(output_folder, 'screenshots')
+        _init_dirs(screenshot_output_dir)
+        im1 = [ file.save(os.path.join(screenshot_output_dir, re.sub(".jpg\Z", ".png", original_img_file_name[i]))) for i, file in enumerate( im1 )];
 
     #############################################################################
     #                             Generate json file                            #
@@ -107,13 +110,18 @@ def convert_droidbot_to_gifdroid_utg(utg_file=None, events_folder=None, states_f
     return output_file_path
 
 
-def enforce_output_directory(output_dir: str) -> None:
+# def enforce_output_directory(output_dir: str) -> None:
+#     if not os.path.exists(output_dir):
+#         os.makedirs(output_dir)
+#         screenshots = os.path.join(output_dir, 'screenshots')
+#         os.makedirs(screenshots)
+#         if not os.path.exists(screenshots):
+#             os.makedirs(screenshots)
+
+
+def _init_dirs(output_dir: str) -> None:
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-        screenshots = os.path.join(output_dir, 'screenshots')
-        os.makedirs(screenshots)
-        if not os.path.exists(screenshots):
-            os.makedirs(screenshots)
 
 if __name__=="__main__":
     convert_droidbot_to_gifdroid_utg()

@@ -54,7 +54,7 @@ class UploadController(t.Generic[T], Controller):
         os.mkdir(output_path)
 
         self._save_additional_files(uuid, files, data)
-        self.save_apk_file(uuid, files, data)
+        self._save_apk_file(uuid, files, data)
 
         self.acknowlege(uuid, data)
 
@@ -91,7 +91,9 @@ class UploadController(t.Generic[T], Controller):
             if key != "apk_file":
                 print(f'{additional_files_bucket_folder} { item.name } detected,')
 
-                temp_file_name = os.path.join(self.save_dir, uuid, str( item.name ))
+                temp_directory_name = os.path.join(self.save_dir, uuid, item.name)
+                self._create_directory(temp_directory_name)
+                temp_file_name = os.path.join(temp_directory_name, item.filename)
 
                 with open(temp_file_name, "wb") as savefile:
                     savefile.write(item.read())
@@ -104,7 +106,12 @@ class UploadController(t.Generic[T], Controller):
         return data
 
 
-    def save_apk_file(self, uuid: str, files: 'werkzeug.datastructures.ImmutableMultiDict', data: t.Dict[str, T]) -> str:
+    def _create_directory(self, directory: str) -> None:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+
+    def _save_apk_file(self, uuid: str, files: 'werkzeug.datastructures.ImmutableMultiDict', data: t.Dict[str, T]) -> str:
         """
         Save one apk file uploaded by the user.
 

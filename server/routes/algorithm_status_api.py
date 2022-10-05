@@ -70,7 +70,7 @@ def update_one_attr(uuid: str, algorithm: str, attribute: str) -> t.Tuple[str, i
 
         return safe_serialize( res ), 200
     else:
-
+        return request.method + " not valid", 400
 
 if __name__ == "__main__":
     pass

@@ -6,7 +6,12 @@ RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
 RUN python3 -m ensurepip
 RUN pip3 install --no-cache --upgrade pip setuptools
 
-# set environment variables
+RUN pip install pip==22.2.2
+
+RUN pip install --upgrade pip \
+  && rm -rf /var/cache/apk/*
+
+# SET environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 

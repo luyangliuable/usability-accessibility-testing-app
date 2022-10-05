@@ -17,6 +17,9 @@ class ResourceWrapper(Generic[T]):
         self._metadata = metadata
         self._released = None
 
+    def update_path(self, path: str) -> None:
+        self._path = path
+
     def get_path(self) -> str:
         return self._path
 
@@ -28,6 +31,10 @@ class ResourceWrapper(Generic[T]):
 
     def set_metadata(self, metadata : T):
         self._metadata = metadata
+
+
+    def __repr__(self):
+        return f'<<Resource Wrapper path={self._path} released={self._released}>>'
 
 
 
@@ -79,6 +86,7 @@ class ResourceGroup(Generic[T]):
         """
         Subscribe to the resource group
         """
+        print('Droidbot subscribed')
         self._subscribers.append(callback)
 
 
@@ -87,12 +95,12 @@ class ResourceGroup(Generic[T]):
         Add a resource to the group and notify all subscribers
         """
         self._providers[resource.get_origin()] = completed
+        print(f'{resource} added to {self._resources}.')
         self._resources.append(resource)
 
         ## TODO store dispatched resources in JSON or something and not just memory
         if self._usage is ResourceUsage.CONCURRENT:
             for sub in self._subscribers:
-                print(self._subscribers)
                 sub(resource)
 
         elif self._usage is ResourceUsage.SEQUENTIAL:

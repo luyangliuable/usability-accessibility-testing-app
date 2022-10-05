@@ -5,20 +5,21 @@ from typing import List
 from time import sleep
 import typing as t
 import requests
+import logging
 import os
 import json
 
 from resources.resource import *
 
+
 class Droidbot(Task):
     """Class for managing droidbot algorithm"""
 
     _input_types = [ResourceType.APK_FILE, ResourceType.EMULATOR]
-    _output_types = [ResourceType.JSON_LAYOUT, ResourceType.UTG]
-    _execute_url = "http://localhost:3008/new_job"
-    name = "Droidbot"
+    _output_types = [ResourceType.UTG]
     _shared_volume = "/home/tasks"
-
+    _execute_url = os.environ['DROIDBOT']
+    name = "Droidbot"
 
     def __init__(self, output_dir: str, resource_dict: Dict[ResourceType, ResourceGroup], dependant_algorithms: t.List=[]) -> None:
         """
@@ -32,13 +33,22 @@ class Droidbot(Task):
         Returns: Nothing
         """
         super().__init__(output_dir, resource_dict)
-        self.emulator = resource_dict[ResourceType.EMULATOR]
         self._sub_to_apks()
         self._sub_to_emulators()
         self.apk_queue = []
         self.images = ()
         self._watcher = Thread(target = self.watch_for_new_files_aux)
         self.dependent_algorithms = []
+
+
+    def _check_resources_available(self) -> bool:
+        """
+        Check if both apk and emulator resource are both avalaible. TODO maybe combine both into one resource group?
+        """
+        if self.resource_dict[ResourceType.EMULATOR].is_active and self.resource_dict[ResourceType.APK_FILE].is_active:
+            return True
+
+        return False
 
 
     def _list_image_files_in_dir(self, check_path: str) -> t.Tuple:
@@ -60,6 +70,15 @@ class Droidbot(Task):
         return True
 
 
+    def _publish_utg(self) -> bool:
+        utg = ResourceWrapper(self.output_dir, self.name)
+        # self.resource_dict[ResourceType.UTG] = ResourceGroup(ResourceType.UTG)
+        print(f'Publishing { utg } at {self.output_dir}')
+        self.resource_dict[ResourceType.UTG].publish(utg, True)
+
+        return True
+
+
     def _publish_all_new_images(self, images: t.List[str], check_path: str) -> bool:
         for each_image in images:
             resource_path = os.path.join(check_path, each_image)
@@ -71,6 +90,7 @@ class Droidbot(Task):
 
     def _log_new_images(self, new_images) -> None:
         if len(new_images) > 0:
+            # logging.info(f'{len(new_images)} new images detected {new_images}.')
             print(f'{len(new_images)} new images detected {new_images}.')
 
 
@@ -79,10 +99,12 @@ class Droidbot(Task):
         check_path = os.path.join(self.output_dir, droidbot_screenshots_folder)
 
         # TODO remove this line for testing
-        check_path = "/Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/algorithms/app/.data/droidbot/states/"
+        # check_path = "/Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/algorithms/app/.data/droidbot/states/"
 
+        print("Starting file watcher.")
         while(True):
             if self.status != "RUNNING":
+                print("Exiting file watcher.")
                 break
 
             if os.path.exists(check_path):
@@ -92,6 +114,8 @@ class Droidbot(Task):
                 new_images = list( set( self.images ).difference( set( old ) ) )
                 self._log_new_images(new_images)
                 self._publish_all_new_images(new_images, check_path)
+            else:
+                print(f'{check_path} does not exist')
 
             sleep(3)
 
@@ -106,10 +130,6 @@ class Droidbot(Task):
         self._watcher.join()
 
 
-    def terminate_watch_for_new_files(self):
-        self.watch_for_new_files.terminate()
-
-
     def run(self, apk_path: str) -> t.Dict[str, str]:
         """
         Execute gifdroid algorithm by http request and passing in necessary data for gifdroid to figure out stuff.
@@ -119,8 +139,10 @@ class Droidbot(Task):
         """
         self.status = "RUNNING"
         self.watch_for_new_files()
+        print(f'Running droidbot with apk {apk_path}.\n')
         requests.post(str( self._execute_url ), data=json.dumps(self._get_execution_data(apk_path)), headers={"Content-Type": "application/json"})
         self.mark_algorithm_completed()
+        self._publish_utg()
 
         return { "message": "Execute started." }
 
@@ -137,6 +159,7 @@ class Droidbot(Task):
             "apk_path": apk_path,
             "output_dir": self.output_dir,
         }
+        print(data)
 
         return data
 
@@ -160,7 +183,7 @@ class Droidbot(Task):
 
 
     def _process_apks(self) -> None:
-        while len(self.apk_queue) > 0:                                      # get next apk
+        while len(self.apk_queue) > 0:
             apk = self.apk_queue.pop(0)
             apk_path = apk.get_path()
             self.run(apk_path)

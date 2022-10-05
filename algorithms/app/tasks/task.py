@@ -24,10 +24,19 @@ class TaskFactory:
         unique_names = list(set(names))
 
         for name in unique_names:
+            # Capitalize first character of string
+            name = name[0].upper() + name[1:]
             cls = TaskFactory._tasks[name]
             assert cls is not None
-
             output_dir = os.path.join(base_dir, cls.__name__.lower())
+
+            # Create resource groups for algorithm
+            required_resources = cls.get_input_types()
+            for each_resource in required_resources:
+                resource_groups[each_resource] = ResourceGroup(each_resource)
+
+            print(f'Inside task factory creating { cls.__name__ } {output_dir} and {resource_groups}')
+
             cls(output_dir, resource_groups) #TODO pass in output_dir
 
 
@@ -37,16 +46,19 @@ class TaskFactory:
 
         for i in range(len(names)):
             name = names[i]
+            # Capitalize first character of string
+            name = name[0].upper() + name[1:]
             cls = TaskFactory._tasks[name]
             assert cls is not None
             req_inputs = cls.get_input_types()
+            print(f'{cls.__name__} has inputs {req_inputs}')
             depends = TaskFactory.get_tasks_with_outputs(req_inputs)
 
             all_names += depends
 
 
     @staticmethod
-    def get_tasks_with_outputs(resource_types : List[ResourceType]) -> List[str]:
+    def get_tasks_with_outputs(resource_types : List[ResourceType]) -> List[ResourceType]:
         output = []
 
         if resource_types is not None:
@@ -58,6 +70,7 @@ class TaskFactory:
                         continue
 
                     if type in cls.get_output_types():
+                        print(f'{cls.__name__} has outputs {type}')
                         output.append(cls.get_name())
 
         return list(set(output))
@@ -73,8 +86,8 @@ class Task(ABC, metaclass=TaskMetaclass):
         self.execution_data = execution_data
         self.resource_dict = resource_dict
 
-        # if not os.path.exists(self.output_dir):
-            # os.makedirs(self.output_dir)
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
 
 
     @abstractmethod

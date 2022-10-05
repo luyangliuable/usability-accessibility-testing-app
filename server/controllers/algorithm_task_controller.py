@@ -3,6 +3,7 @@ from controllers.job_status_controller import *
 from utility.enforce_bucket_existance import *
 from controllers.controller import Controller
 from enums.status_enum import StatusEnum
+from enums.algorithm_enum import AlgorithmEnum
 from utility.uuid_generator import *
 from datetime import datetime as dt
 from models.DBManager import *
@@ -30,12 +31,13 @@ class AlgorithmTaskController(t.Generic[T], Controller, Task):
 
         """
 
-        self.cn = collection_name
-        self.asc = AlgorithmStatusController(collection_name)
-        self.jsc = JobStatusController(collection_name)
+        self.collection_name = collection_name
+        self.algorithm_status_controller = AlgorithmStatusController(collection_name)
+        self.job_status_controller = JobStatusController(collection_name)
+        self.shared_volume = '/home/data'
 
 
-    def post(self, uuid: str, algorithms_to_complete: t.List[t.Dict[str, str]]) -> t.List[ t.Dict ]:
+    def post(self, uuid: str, algorithms_to_complete: t.List[t.Dict[str, str]]) -> t.List[ AlgorithmEnum ]:
         """
         Post to signal start all the algorithms corresponding to a particular job by uuid.
 
@@ -46,58 +48,63 @@ class AlgorithmTaskController(t.Generic[T], Controller, Task):
         Returns: A list of task result information {"files": ["file_url_placeholder"], "images": ["image_url_placeholder"], "errors": str( errors ) }
         """
 
-        tasks = [{} for _ in range(len(algorithms_to_complete))]
+        # print(AlgorithmEnum['gifdroid'].value)
 
-        self.jsc.post(uuid, start_time=str( dt.now() ), status=StatusEnum.running.value, progress=10, logs="Job started")
+        algorithms = [AlgorithmEnum[algorithm['uuid']].value for algorithm in algorithms_to_complete]
 
-        for i, alg in enumerate( algorithms_to_complete ):
-            task_info = {"uuid": uuid, "algorithm": alg['uuid']}
-            # tasks[i] = run_algorithm.delay(task_info)
-            # tasks[i] = worker.register_task(self._execute_algorithm.delay(task_info))
-            tasks[i] = self._execute_algorithm(task_info)
-            self.acknowledge(uuid, alg['uuid'])
+        start_time = dt.now()
+        self.job_status_controller.post(uuid, start_time=start_time, status=StatusEnum.running.value, progress=10, logs="Job started")
 
-        return tasks
+        self._send_for_analysis(uuid, algorithms)
 
-    # @worker.task(name="run_algorithm")
-    def _execute_algorithm(self, info: t.Dict) -> t.Dict:
-        errors = []
+        return algorithms
 
-        start_links = {
-            "storydistiller": os.environ.get("STORYDISTILLER"),
-            "xbot": os.environ.get("XBOT"),
-            "owleye": os.environ.get("OWLEYE"),
-            "gifdroid": os.environ['GIFDROID'],
-            "droidbot": os.environ['DROIDBOT'],
-            "tappable": "SKIP"
+
+    def _send_for_analysis(self, uuid: str, algorithms: t.List[AlgorithmEnum]) -> int:
+        analysis_api = os.environ['ANALYSIS']
+
+        data = {
+            'algorithms': algorithms,
+            'apk_file': self._get_apk_file(self.shared_volume, uuid),
+            'additional_files': self._get_additional_files(self.shared_volume, uuid, algorithms),
+            'uid': uuid
         }
 
+        print(f'Sending job for analysis with {data}.')
 
-        uuid = info["uuid"]
-        algorithm = info['algorithm']
-        URL = start_links[algorithm]
+        requests.post(analysis_api, headers={"Content-Type": "application/json"}, json=data)
 
-        print(f'TASK: Running { algorithm } url: { URL }')
-        print(f'TASK: Algorithm cluster uuid is { uuid }')
 
-        self._mark_algorithm_started(uuid, algorithm)
+    def _get_additional_files(self, shared_volume: str, uuid: str, algorithms: t.List[AlgorithmEnum]) -> dict:
+        additional_files = {}
 
-        ###############################################################################
-        #                          Signal Algorithm to start                          #
-        ###############################################################################
-        result = self._signal_start(URL, uuid)
+        for alg in algorithms:
 
-        ###############################################################################
-        #           Update status according to the success of the algorithm           #
-        ###############################################################################
-        if result.status_code < 400:
-            self._mark_algorithm_successful(uuid, algorithm)
-            print("TASK: Successfully completed task", algorithm)
-        else:
-            self._mark_algorithm_failed(uuid, algorithm)
-            print("TASK: FAILED complete task", algorithm)
+            additional_files[alg] = {}
 
-        return {"files": ["file_url_placeholder"], "images": ["image_url_placeholder"], "errors": str( errors ) }
+        for algorithm in algorithms:
+            additional_files_directory = os.path.join(shared_volume, uuid, algorithm)
+
+            for file in os.listdir(additional_files_directory):
+                print(file)
+                file_type = file.split('.')[-1]
+
+                if file_type in additional_files:
+                    additional_files[algorithm][file_type].append(os.path.join(additional_files_directory, file))
+                else:
+                    additional_files[algorithm][file_type] = [os.path.join(additional_files_directory, file)]
+
+            return additional_files
+
+    def _get_apk_file(self, shared_volume: str, uuid: str) -> str:
+        apk_directory = os.path.join(shared_volume, uuid)
+        apk_file_suffix = "apk"
+
+        for file in os.listdir(apk_directory):
+            if file[len(file)-3: len(file)] == apk_file_suffix:
+                return os.path.join( apk_directory, file )
+
+        raise FileNotFoundError("No apk file")
 
 
     def acknowledge(self, uuid: str, algorithm: str) -> bool:
@@ -110,7 +117,7 @@ class AlgorithmTaskController(t.Generic[T], Controller, Task):
 
         Returns: (bool) if the algorithm transaction is successful.
         """
-        self.asc.post(uuid, algorithm, status=StatusEnum.running.value, start_time=str( dt.now() ), progress=10)
+        self.job_status_controller.post(uuid, status=StatusEnum.running.value, start_time=str( dt.now() ), progress=10)
         return True
 
     def _mark_algorithm_started(self, uuid: str, algorithm: str):
@@ -132,18 +139,6 @@ class AlgorithmTaskController(t.Generic[T], Controller, Task):
         update_status_url = os.path.join(flask_backend, 'status', 'update', uuid, algorithm)
 
         requests.post(update_status_url, headers={"Content-Type": "text/plain"}, data=StatusEnum.successful.value )
-
-
-    def _signal_start(self, uuid: str,  algorithm_api_endpoint: str):
-        apk_file = "a2dp.Vol_133.apk"
-        execution_data = {
-            "uuid": uuid,
-            "apk_path": os.path.join("/home/data", uuid, apk_file),
-            "output_dir": "/home/data/droidbot/"
-        }
-
-        result = requests.post("http://host.docker.internal:3008/new_job", data=json.dumps(execution_data), headers={"Content-Type": "application/json"})
-        return result
 
 
     def get(self, uuid: str):

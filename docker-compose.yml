@@ -33,12 +33,13 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - MONGO_URL=mongodb://host.docker.internal:27017/
       - S3_URL=http://host.docker.internal:4566
-      - STORYDISTILLER=http://host.docker.internal:3002/new_job
-      - XBOT=http://host.docker.internal:3003/new_job
-      - OWLEYE=http://host.docker.internal:3004/new_job
-      - FLASK_BACKEND=http://host.docker.internal:5005
-      - GIFDROID=http://host.docker.internal:3005/new_job
-      - DROIDBOT=http://host.docker.internal:3008/new_job
+      - ANALYSIS=http://host.docker.internal:3050/begin_apk_analysis
+      # - STORYDISTILLER=http://host.docker.internal:3002/new_job
+      # - XBOT=http://host.docker.internal:3003/new_job
+      # - OWLEYE=http://host.docker.internal:3004/new_job
+      # - FLASK_BACKEND=http://host.docker.internal:5005
+      # - GIFDROID=http://host.docker.internal:3005/new_job
+      # - DROIDBOT=http://host.docker.internal:3008/new_job
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
@@ -115,16 +116,20 @@ services:
 
 
   analysis_app:
-    build: 
+    build:
       context: ./algorithms/app/
+    command: python3 apk_analysis_api.py
     container_name: bxer.analysis_app
-    ports: 
+    ports:
       - 3050:3050
     volumes:
       - './algorithms/app/.data:/home/data'
-    stdin_open: true # docker run -i
-    tty: true        # docker run -t
-    
+    environment:
+      - GIFDROID=http://host.docker.internal:3005/new_job
+      - DROIDBOT=http://host.docker.internal:3008/new_job
+    # stdin_open: true # docker run -i
+    # tty: true        # docker run -t
+
 
 
   storydistiller:

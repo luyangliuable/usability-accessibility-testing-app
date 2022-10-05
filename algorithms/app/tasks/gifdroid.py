@@ -8,9 +8,9 @@ class Gifdroid(Task):
     """Class for managing gifdroid algorithm"""
 
     name = "Gifdroid"
-    _input_types = [ResourceType.APK_FILE, ResourceType.EMULATOR]
-    _output_types = [ResourceType.JSON_LAYOUT, ResourceType.UTG]
-    _execute_url = "http://localhost:3005/new_job"
+    _output_types = [ResourceType.JSON_LAYOUT]
+    _input_types = [ResourceType.UTG, ResourceType.GIF]
+    _execute_url = os.environ['GIFDROID']
 
     def __init__(self, output_dir: str, resource_dict: Dict[ResourceType, ResourceGroup]) -> None:
         """
@@ -29,17 +29,23 @@ class Gifdroid(Task):
         self._sub_to_gif()
         self.utg_path = None
         self.gif_path = None
+        self.resource_dict = resource_dict
+
 
     def run(self) -> bool:
         """
         Execute gifdroid algorithm by http request and passing in necessary data for gifdroid to figure out stuff.
         """
         if self._check_resources_available():
+            print(f'Running {self.name}.')
+
             data = {
                 "gif_path": self.gif_path,
                 "utg_path": self.utg_path,
                 "output_dir": self.output_dir
             }
+
+            print(self._execute_url, data)
 
             requests.post(self._execute_url, data=json.dumps( data ), headers={'Content-Type': 'application/json'})
 
@@ -66,7 +72,7 @@ class Gifdroid(Task):
                 Once both utf and gif are available, it will signal Gifdroid to run.
         """
         self.utg_path = utg.get_path()
-        print(self.utg_path)
+        print('utg file ready for gifdroid')
         self.run()
         utg.release()
 
@@ -80,9 +86,7 @@ class Gifdroid(Task):
                 Once both utf and gif are available, it will signal Gifdroid to run.
         """
         self.gif_path = gif.get_path()
-        print(self.gif_path)
-        print(self.gif_path)
-        print(self.gif_path)
+        print('gif file ready for gifdroid')
         self.run()
         gif.release()
 

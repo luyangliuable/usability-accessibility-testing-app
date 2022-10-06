@@ -17,15 +17,13 @@ class ApkAnalysis:
 
     def __init__(self, output_dir, names, apk_file: str, additional_files: Dict[str, Dict[str, str]]={}) -> None:
         self.required_resources = [ResourceType.EMULATOR, ResourceType.APK_FILE]
-        self.pending_published = {} # Temporary but needed variable until a better way
         self.apk = ResourceWrapper(apk_file, 'upload')
         emulator_link = 'host.docker.internal:5555'
-        self.additional_files = additional_files
+        self.upload_additional_files = additional_files
         self.emulator = ResourceWrapper('', emulator_link)
         self.output_dir = output_dir
         self.apk_file = apk_file
         self.resources = {}
-        self._init_dirs()
         self.name = names
         self._init_dirs()
 
@@ -41,13 +39,13 @@ class ApkAnalysis:
         return self.apk
 
 
-    def start_processing(self) -> None:
+    def start_processing(self, uuid=None) -> None:
         """Creates required tasks and starts them"""
         self._init_resource_groups()
         self._init_additional_resource_groups()
 
         print(f'Creating tasks {self.name} with output dir {self.output_dir} and res {self.resources}')
-        TaskFactory.create_tasks(self.name, self.output_dir, self.resources)
+        TaskFactory.create_tasks(self.name, self.output_dir, self.resources, uuid)
 
         self._publish_apk()
         self._publish_emulator()
@@ -58,8 +56,8 @@ class ApkAnalysis:
         """
         Re-publish all files because algorithm won't run unless trigger publish again.
         """
-        for algorithm, additional_files in self.additional_files.items():
-            for resource_type_name, files in additional_files.items():
+        for algorithm, algorithm_additional_files in self.upload_additional_files.items():
+            for resource_type_name, files in algorithm_additional_files.items():
                 file = files[0] # Assume each algorithm has 1 additional file
                 resource_type = ResourceType[resource_type_name.upper()]
                 resource_wrapper = ResourceWrapper(file, 'initialization')
@@ -99,8 +97,8 @@ class ApkAnalysis:
 
 
     def _init_additional_resource_groups(self) -> None:
-        for algorithm, additional_files in self.additional_files.items():
-            for resource_type_name, _ in additional_files.items():
+        for algorithm, algorithm_additional_files in self.upload_additional_files.items():
+            for resource_type_name, _ in algorithm_additional_files.items():
                 resource_type = ResourceType[resource_type_name.upper()]
                 self.resources[resource_type] = ResourceGroup(resource_type)
                 print(f'Initialised resource type {resource_type} for {algorithm}.')

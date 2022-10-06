@@ -30,7 +30,7 @@ def filter_status_messages(record):
 
 logger = logging.getLogger("werkzeug")
 logger.addFilter(filter_status_messages)
-logger.disabled = True
+# logger.disabled = True
 
 
 if t.TYPE_CHECKING:  # pragma: no cover

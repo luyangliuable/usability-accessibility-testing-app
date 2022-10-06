@@ -1,10 +1,11 @@
-import stat
-from venv import create
+from typing import TypeVar, Generic, List, Callable, Dict
+from tasks.enums.status_enum import StatusEnum
 from abc import ABC, ABCMeta, abstractmethod
 from atexit import register
-import os
+from venv import create
 import requests
-from typing import TypeVar, Generic, List, Callable, Dict
+import stat
+import os
 
 
 from resources.resource import *
@@ -19,7 +20,7 @@ class TaskFactory:
     _tasks = {}
 
     @staticmethod
-    def create_tasks(names : List[str], base_dir : str, resource_groups : Dict[ResourceType, ResourceGroup]) -> None:
+    def create_tasks(names : List[str], base_dir : str, resource_groups : Dict[ResourceType, ResourceGroup], uuid: str) -> None:
         unique_names = TaskFactory.get_task_dependencies(names)
         unique_names = list(set(names))
 
@@ -37,7 +38,7 @@ class TaskFactory:
 
             print(f'Inside task factory creating { cls.__name__ } {output_dir} and {resource_groups}')
 
-            cls(output_dir, resource_groups) #TODO pass in output_dir
+            cls(output_dir, resource_groups, uuid) #TODO pass in output_dir
 
 
     @staticmethod
@@ -80,10 +81,13 @@ class Task(ABC, metaclass=TaskMetaclass):
     """Class to manage an algorithm."""
     ###__metaclass__= TaskMetaclass
 
-    def __init__(self, output_dir : str, resource_dict : Dict[ResourceType, ResourceGroup], execution_data: Dict[str, str]={}) -> None:
+    _status_controller = os.environ['STATUS_CONTROLLER']
+
+    def __init__(self, output_dir : str, resource_dict : Dict[ResourceType, ResourceGroup], uuid: str) -> None:
         super().__init__()
+        self.uuid = uuid
         self.output_dir = output_dir
-        self.execution_data = execution_data
+        self.status = StatusEnum.none
         self.resource_dict = resource_dict
 
         if not os.path.exists(self.output_dir):
@@ -114,6 +118,7 @@ class Task(ABC, metaclass=TaskMetaclass):
         """Output resource types of the task"""
         return
 
+
     def get_output_dir(self) -> str:
         """Output directory of the task"""
         return self.output_dir
@@ -122,6 +127,12 @@ class Task(ABC, metaclass=TaskMetaclass):
         """Zips output directory and returns zip path"""
         #TODO: Implement Method
         pass
+
+
+    def get_status(self) -> str:
+        """Get task status"""
+        return self.status
+
 
     @classmethod
     def http_request(cls, url, body):

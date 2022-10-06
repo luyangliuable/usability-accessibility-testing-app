@@ -32,29 +32,24 @@ class JobStatusController(t.Generic[T], Controller):
     }
 
 
+    _job_status_key = 'overall-status'
+
     def __init__(self, collection_name: str) -> None:
         ###############################################################################
         #                          Initiate database instance                         #
         ###############################################################################
         self._db = DBManager.instance()
-        self.c = self._db.get_collection(collection_name)
+        self.collection = self._db.get_collection(collection_name)
 
 
     def get(self, uuid: str) -> str:
-        # Get document ################################################################
-        d = self._db.get_document(uuid, self.c)
 
-        # Get status ##################################################################
-        status = d['overall-status']
-
-        return status
+        job_status = self._get_job_status(uuid)
+        return job_status
 
 
     def post(self, uuid: str, **kwargs) -> t.Dict[str, str]:
-        # Get document ################################################################
-        job_status_key = 'overall-status'
-
-        document = self._db.get_document(uuid, self.c)[job_status_key]
+        job_status = self._get_job_status(uuid)
 
         parameters = [key for key in self._db.get_format('_')['overall-status']]
 
@@ -63,18 +58,40 @@ class JobStatusController(t.Generic[T], Controller):
                 updated_attribute = kwargs[each_parameter]
 
                 if each_parameter == 'logs' and updated_attribute != None:
-                    self._store_logs(document, updated_attribute)
+                    self._store_logs(job_status, updated_attribute)
 
                 elif each_parameter == 'progress' and updated_attribute != None:
-                    document['progress'] += updated_attribute
+                    job_status['progress'] += updated_attribute
 
                 else:
+                    job_status[each_parameter] = updated_attribute
 
-                    document[each_parameter] = updated_attribute
+        self._db.update_document(uuid, self.collection, self._job_status_key, job_status)
 
-        self._db.update_document(uuid, self.c, job_status_key, document)
+        return job_status
 
-        return document
+    def _get_job_status(self, uuid: str):
+        job_status = self._db.get_document(uuid, self.collection)[self._job_status_key]
+
+        return job_status
+
+
+    def check_algorithm_is_dependency(self, uuid: str, algorithm: str) -> bool:
+        algorithm_to_run_key = 'algorithms_to_run'
+        return not algorithm in self._db.get_document(uuid, self.collection)[self._job_status_key][algorithm_to_run_key]
+
+
+    def get_total_number_of_algorithms_in_job(self, uuid: str) -> int:
+        job_status = self._get_job_status(uuid);
+        return len(job_status['algorithms_to_run'])
+
+
+    def add_to_algorithm_to_run(self, uuid: str, algorithm: str):
+        job_status = self._get_job_status(uuid)
+
+        if self.check_algorithm_is_dependency(uuid, algorithm):
+            job_status['algorithms_to_run'].append(algorithm)
+            self._db.update_document(uuid, self.collection, self._job_status_key, job_status)
 
 
     def _store_logs(self, document: t.Dict[str, t.List], new_log: str) -> bool:
@@ -94,7 +111,7 @@ class JobStatusController(t.Generic[T], Controller):
 
 
     def get_collection(self) -> Collection:
-        return self.c
+        return self.collection
 
 
     def insert(self, uuid: str):

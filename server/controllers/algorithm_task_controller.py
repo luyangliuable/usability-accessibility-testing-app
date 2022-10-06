@@ -52,8 +52,8 @@ class AlgorithmTaskController(t.Generic[T], Controller, Task):
 
         algorithms = [AlgorithmEnum[algorithm['uuid']].value for algorithm in algorithms_to_complete]
 
-        start_time = dt.now()
-        self.job_status_controller.post(uuid, start_time=start_time, status=StatusEnum.running.value, progress=10, logs="Job started")
+        # self.job_status_controller.post(uuid, start_time=start_time, status=StatusEnum.running.value, progress=10, logs="")
+        self.acknowledge(uuid, algorithms)
 
         self._send_for_analysis(uuid, algorithms)
 
@@ -67,7 +67,7 @@ class AlgorithmTaskController(t.Generic[T], Controller, Task):
             'algorithms': algorithms,
             'apk_file': self._get_apk_file(self.shared_volume, uuid),
             'additional_files': self._get_additional_files(self.shared_volume, uuid, algorithms),
-            'uid': uuid
+            'uuid': uuid
         }
 
         print(f'Sending job for analysis with {data}.')
@@ -107,39 +107,26 @@ class AlgorithmTaskController(t.Generic[T], Controller, Task):
         raise FileNotFoundError("No apk file")
 
 
-    def acknowledge(self, uuid: str, algorithm: str) -> bool:
+    def acknowledge(self, uuid: str, algorithms_to_run: t.List[str]) -> bool:
         """
-        Acknowledge the tasks for each algorithm by updating the metadata on mongo database such as its status, start_time and progress.
+        Acknowledge the job start by updating the metadata on mongodb such as its status, start_time and progress.
 
         Parameters:
             uuid - job uuid
-            algorithm - the algorithm to acknowldge
+            algorithms - the list of algorithms to run
 
         Returns: (bool) if the algorithm transaction is successful.
         """
-        self.job_status_controller.post(uuid, status=StatusEnum.running.value, start_time=str( dt.now() ), progress=10)
+        job_start_log = "Job started"
+        current_time = dt.now()
+        self.job_status_controller.post(
+            uuid,
+            status=StatusEnum.running.value,
+            start_time=current_time,
+            log=job_start_log,
+            algorithms_to_run=algorithms_to_run
+        )
         return True
-
-    def _mark_algorithm_started(self, uuid: str, algorithm: str):
-        flask_backend = os.environ['FLASK_BACKEND']
-        update_status_url = os.path.join(flask_backend, 'status', 'update', uuid, algorithm)
-
-        requests.post(update_status_url, headers={"Content-Type": "text/plain"}, data=StatusEnum.running.value )
-
-
-    def _mark_algorithm_failed(self, uuid: str, algorithm: str):
-        flask_backend = os.environ['FLASK_BACKEND']
-        update_status_url = os.path.join(flask_backend, 'status', 'update', uuid, algorithm)
-
-        requests.post(update_status_url, headers={"Content-Type": "text/plain"}, data=StatusEnum.failed.value )
-
-
-    def _mark_algorithm_successful(self, uuid: str, algorithm: str):
-        flask_backend = os.environ['FLASK_BACKEND']
-        update_status_url = os.path.join(flask_backend, 'status', 'update', uuid, algorithm)
-
-        requests.post(update_status_url, headers={"Content-Type": "text/plain"}, data=StatusEnum.successful.value )
-
 
     def get(self, uuid: str):
         pass

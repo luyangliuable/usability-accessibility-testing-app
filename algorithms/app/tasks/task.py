@@ -117,6 +117,11 @@ class Task(ABC, metaclass=TaskMetaclass):
     def get_output_dir(self) -> str:
         """Output directory of the task"""
         return self.output_dir
+    
+    def get_output_zip(self) -> str:
+        """Zips output directory and returns zip path"""
+        #TODO: Implement Method
+        pass
 
     @classmethod
     def http_request(cls, url, body):

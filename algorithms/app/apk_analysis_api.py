@@ -12,6 +12,7 @@ class ApkAnalysisApi:
         'Tappability': [Screenshot]
     }
 
+    _shared_volume = '/home/data'
 
     def __init__(self, json):
         self.json_app = json
@@ -20,12 +21,13 @@ class ApkAnalysisApi:
 
 
     def _run(self):
-        output_dir = os.path.join('/home/data', self.json_app['uid'])
+        uuid = self.json_app['uuid']
+        output_dir = os.path.join(self._shared_volume, uuid)
         names = self.json_app['algorithms']
         apk_file = self.json_app['apk_file']
         additional_files = self.json_app['additional_files']
         analysis = ApkAnalysis(output_dir, names, apk_file, additional_files)
-        analysis.start_processing()
+        analysis.start_processing(uuid)
 
 
     def _init_req_results(self) -> None:

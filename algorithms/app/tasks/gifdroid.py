@@ -1,3 +1,4 @@
+from tasks.enums.status_enum import StatusEnum
 from tasks.task import Task
 from resources.resource import *
 from typing import List
@@ -12,7 +13,7 @@ class Gifdroid(Task):
     _input_types = [ResourceType.UTG, ResourceType.GIF]
     _execute_url = os.environ['GIFDROID']
 
-    def __init__(self, output_dir: str, resource_dict: Dict[ResourceType, ResourceGroup]) -> None:
+    def __init__(self, output_dir: str, resource_dict: Dict[ResourceType, ResourceGroup], uuid: str) -> None:
         """
         Gifdroid manages a single gifdroid task. It subscribes to utg and gif resources. Whenever both a new utg and gif are added it starts running.
 
@@ -24,7 +25,7 @@ class Gifdroid(Task):
 
         Returns: Nothing
         """
-        super().__init__(output_dir, resource_dict)
+        super().__init__(output_dir, resource_dict, uuid)
         self._sub_to_utg()
         self._sub_to_gif()
         self.utg_path = None
@@ -45,13 +46,32 @@ class Gifdroid(Task):
                 "output_dir": self.output_dir
             }
 
-            print(self._execute_url, data)
+            self.update_algorithm_status(StatusEnum.running)
+            response = requests.post(self._execute_url, data=json.dumps( data ), headers={'Content-Type': 'application/json'})
 
-            requests.post(self._execute_url, data=json.dumps( data ), headers={'Content-Type': 'application/json'})
+            if response.status_code == 200:
+                self.update_algorithm_status(StatusEnum.successful)
+            else:
+                self.update_algorithm_status(StatusEnum.failed)
 
             return True
 
         return False
+
+
+    def update_algorithm_status(self, status: StatusEnum):
+        self.status = status.value
+
+        data = {
+            "status": self.status,
+            "logs": f'{ self.name } is {self.status.lower()}.'
+        }
+
+        assert self.uuid != None, "No job UUID detected."
+        algorithm_name = self.name[0].lower() + self.name[1:]
+        url = os.path.join(self._status_controller, self.uuid, algorithm_name)
+        res = requests.post(url, headers={"Content-Type": "application/json"}, json=data)
+        print(f'Updated {algorithm_name} status on url {url} to {self.status}. {res}.')
 
 
     def _check_resources_available(self):

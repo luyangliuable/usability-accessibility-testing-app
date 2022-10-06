@@ -67,7 +67,9 @@ class DBManager:
                 "end_time": "",
                 "progress": 0,
                 "logs": [],
-                "ert": 0
+                "ert": 0,
+                "algorithms_to_run": [], # Required to calculate progress
+                "algorithms_complete": 0 # Required to calculate progress
             },
             "algorithm_status" : {
                 "storydistiller" : {
@@ -101,6 +103,16 @@ class DBManager:
                     "ert": 0
                 },
                 "gifdroid" : {
+                    "status" : "",
+                    "notes": "",
+                    "start_time" : "",
+                    "end_time" : "",
+                    "apk": "",
+                    "progress": 0,
+                    "logs": [],
+                    "ert": 0
+                },
+                "droidbot" : {
                     "status" : "",
                     "notes": "",
                     "start_time" : "",

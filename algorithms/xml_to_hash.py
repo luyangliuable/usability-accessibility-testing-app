@@ -115,9 +115,11 @@ if __name__ == '__main__':
     
     xml = xmlToHash('/Users/em.ily/Desktop/temp/xbot/screenshot/layouts/a2dp.Vol.PackagesChooser.xml')
     
-    j = jsonToHash('/Users/em.ily/Desktop/temp/droidbot/states/state_2022-08-17_063729.json')
+    j = jsonToHash()
+    h2 = j.convert_json("C:/Users/trevi/OneDrive/Desktop/droidbot_test/out/states/state_2022-10-06_000150.json")
     
-    print(xml.compare_hash(j.get_json_hash()))
-    print(j.compare_hash(xml.get_xml_hash()))
+    print(h2)
+    print(xml.compare_hash(h2))
+    # print(xml.similarilty_percent(h2))
     
     

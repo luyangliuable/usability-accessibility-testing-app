@@ -110,7 +110,6 @@ class jsonToHash():
         """
         view_signatures = set()
         json_file = self.read_json(json_path)
-        # foreground_activity = ''.join(str(json_file['foreground_activity']).split('/'))
         views = json_file['views']
         for view in views:
             view_signature = self.get_content_free_view_signature_json(view)

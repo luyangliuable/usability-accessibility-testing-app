@@ -3,16 +3,12 @@ import hashlib
 import xmltodict
 import re
 
-#views in droidbot only 
-ADD_LST = ['[class]android.view.View[resource_id]android:id/statusBarBackground', '[class]android.view.View[resource_id]android:id/navigationBarBackground']
-
 class xmlToHash():
     """Converts XML to Layout Hash"""
     
     def __init__(self, xml_path: str):
         self.xml_path = xml_path
         self.xml_hash = None
-        self.view_lst = None
         self.convert_xml()
         
     def _read_xml(self):
@@ -30,6 +26,9 @@ class xmlToHash():
         fg_activity_name = activity_name + '/.' + file_split[-1]
         return fg_activity_name
     
+    def get_xml_hash(self):
+        return self.xml_hash
+    
     def convert_xml(self):
         """Converts xml to hash """
         view_signatures = set()
@@ -41,11 +40,8 @@ class xmlToHash():
             view_signature = self._get_content_free_view_signature(view)
             if view_signature:
                 view_signatures.add(view_signature)
-        for item in ADD_LST:
-            view_signatures.add(item)
         state_str = "%s{%s}" % (foreground_activity, ",".join(sorted(view_signatures)))
         self.xml_hash =  hashlib.md5(state_str.encode('utf-8')).hexdigest()
-        # self.view_lst = view_signatures --uncomment for percent similarity
     
     def _get_content_free_view_signature(self, view):
         """Formats signature for class and resource id"""
@@ -64,75 +60,64 @@ class xmlToHash():
     def compare_hash(self, hash):
         """Compares two hashes"""
         return self.xml_hash == hash
-    
-    def similarilty_percent(self, view_lst):
-        """Similarity percent of two lists"""
-        count = 0 
-        if len(self.view_lst) < len(view_lst):
-            lst1 = self.view_lst
-            lst2 = view_lst
-        else:
-            lst1 = view_lst
-            lst2 = self.view_lst
-        for i in lst1:
-            if i in lst2:
-                count +=1
-        return count / len(lst1) * 100
-    
    
    
 class jsonToHash():
     
-    def __init__(self):
-        pass
+    def __init__(self, json_path):
+        self.json_path = json_path
+        self.xml_hash = None
+        self.convert_json()
      
-    def get_content_free_view_signature_json(self, view_dict):
+    def _get_content_free_view_signature_json(self, view_dict):
+        """Returns class and resource id signature"""
         if 'content_free_signature' in view_dict:
                 return view_dict['content_free_signature']
         content_free_signature = "[class]%s[resource_id]%s" % \
-                                    (self.safe_dict_get(view_dict, 'class', "None"),
-                                    self.safe_dict_get(view_dict, 'resource_id', "None"))
+                                    (self._safe_dict_get(view_dict, 'class', "None"),
+                                    self._safe_dict_get(view_dict, 'resource_id', "None"))
         view_dict['content_free_signature'] = content_free_signature
         return content_free_signature
 
-    def safe_dict_get(view_dict, key, default=None):
+    def _safe_dict_get(view_dict, key, default=None):
+        """Helper function"""
         return view_dict[key] if (key in view_dict) else default
-
-    def process_signature(view, key):
-        if len(view[key]) == 0:
-            return "None"
-        else:
-            return view[key]
         
-    def convert_json(self, json_path):
+    def convert_json(self):
         """
-        Converts 
+        Converts json to hash
         """
         view_signatures = set()
-        json_file = self.read_json(json_path)
+        json_file = self._read_json()
         views = json_file['views']
         for view in views:
-            view_signature = self.get_content_free_view_signature_json(view)
-            if view_signature:
+            view_signature = self._get_content_free_view_signature_json(view)
+            if view_signature and view['visible']:
                 view_signatures.add(view_signature)
-        # return view_signatures --uncomment for percent similarity
         state_str = "%s{%s}" % (json_file['foreground_activity'], ",".join(sorted(view_signatures)))
-        return hashlib.md5(state_str.encode('utf-8')).hexdigest()
+        self.json_hash = hashlib.md5(state_str.encode('utf-8')).hexdigest()
 
-    def read_json(self, json_path):
-        f = open(json_path).read()
+    def get_json_hash(self):
+        return self.json_hash
+    
+    def _read_json(self):
+        """Reads json from path"""
+        f = open(self.json_path).read()
         j = json.loads(f)
         return j
+    
+    def compare_hash(self, hash):
+        """Compares two hashes"""
+        return self.json_hash == hash
 
 
 if __name__ == '__main__':
     
     xml = xmlToHash('/Users/em.ily/Desktop/temp/xbot/screenshot/layouts/a2dp.Vol.PackagesChooser.xml')
     
-    j = jsonToHash()
-    h2 = j.convert_json('/Users/em.ily/Desktop/temp/droidbot/states/state_2022-08-17_063729.json')
+    j = jsonToHash('/Users/em.ily/Desktop/temp/droidbot/states/state_2022-08-17_063729.json')
     
-    print(xml.compare_hash(h2))
-    # print(xml.similarilty_percent(h2))
+    print(xml.compare_hash(j.get_json_hash()))
+    print(j.compare_hash(xml.get_xml_hash()))
     
     

@@ -71,11 +71,11 @@ export default function Login() {
               />
               </div>
               
-              <Col lg={12}>
-                <Link to={"/login/signup"}>
-                  <p className="new-user">Don't have an account? Sign Up.</p>
-                </Link>
-              </Col>
+              {/*<Col lg={12}>*/}
+              {/*  <Link to={"/login/signup"}>*/}
+              {/*    <p className="new-user">Don't have an account? Sign Up.</p>*/}
+              {/*  </Link>*/}
+              {/*</Col>*/}
             </div>
           </Col>
 

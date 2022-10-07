@@ -6,7 +6,7 @@ import ToolBar from './ToolBar/ToolBar';
 import Login from './Login/Login';
 import Home from './Home/Home';
 import Results from './Results/Results';
-import SignUp from './Login/Signup';
+//import SignUp from './Login/Signup';
 import Report from './Report/Report';
 import About from './About/About';
 import UploadAPK from './Upload/UploadAPK';
@@ -26,7 +26,7 @@ function App() {
             <Routes>
                 <Route path="" element={<Home />}></Route>
                 <Route path="/login" element={<Login />}></Route>
-                <Route path="/login/signup" element={<SignUp />}></Route>
+                {/*<Route path="/login/signup" element={<SignUp />}></Route>*/}
                 <Route path="/about" element={<About />}></Route>
                 <Route path="/results" element={<Results />}></Route>
                 <Route path="/report" element={<Report />}></Route>

@@ -20,6 +20,7 @@ def signUpUser():
 @cross_origin()
 def loginUser():
     if request.method == "POST":
+        UserModel().signUpUser()
         return UserModel().loginUser()
     if request.method == "GET":
         return getUserCollectionJSON()

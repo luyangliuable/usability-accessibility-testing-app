@@ -112,12 +112,11 @@ const Report = () => {
           )}
           {showIssues && (
             <Tabs
-              defaultActiveKey="profile"
               id="uncontrolled-tab-example"
               className="tabs-class"
             >
               {owleyeImage != "" && (
-                <Tab tabClassName="tab-class" eventKey="home" title="Display">
+                <Tab tabClassName="tab-class" eventKey="owleye" title="Display">
                   <div className="tab-div">
                     <img className="issue_img" src={owleyeImage} />
                   </div>
@@ -126,7 +125,7 @@ const Report = () => {
               {xbotImage != "" && (
                 <Tab
                   tabClassName="tab-class"
-                  eventKey="profile"
+                  eventKey="xbot"
                   title="Accessibility"
                 >
                   <div className="xbot-tab-div">
@@ -175,7 +174,7 @@ const Report = () => {
               {tapshoeImage != "" && (
                 <Tab
                   tabClassName="tab-class"
-                  eventKey="contact"
+                  eventKey="tapshoe"
                   title="Tappability"
                 >
                   <div className="tab-div">

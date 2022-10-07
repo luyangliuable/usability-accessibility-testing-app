@@ -16,7 +16,6 @@ def _service_execute_gifdroid(droidbot_result_folder: str, gif_file_path: str, o
     gifdroid_output_path = os.path.join(output_dir, 'gifdroid.json')
     new_converted_utg = convert_droidbot_to_gifdroid_utg(utg, events, states, output_dir=output_dir)
 
-
     os.chdir(gifdroid_working_directory)
 
     subprocess.run([ "python3", "main.py", f'--video={gif_file_path}', f'--utg={new_converted_utg}', f'--artifact={screenshots}', f'--out={gifdroid_output_path}'])
@@ -25,3 +24,8 @@ def _service_execute_gifdroid(droidbot_result_folder: str, gif_file_path: str, o
 
 def gifdroid_execute_cmd(gif_file_path: str, output_dir):
     pass
+
+
+def _init_dirs(output_dir: str) -> None:
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)

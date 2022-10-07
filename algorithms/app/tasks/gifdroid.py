@@ -1,3 +1,4 @@
+from tasks.enums.status_enum import StatusEnum
 from tasks.task import Task
 from resources.resource import *
 from typing import List
@@ -8,11 +9,11 @@ class Gifdroid(Task):
     """Class for managing gifdroid algorithm"""
 
     name = "Gifdroid"
-    _input_types = [ResourceType.APK_FILE, ResourceType.EMULATOR]
-    _output_types = [ResourceType.JSON_LAYOUT, ResourceType.UTG]
-    _execute_url = "http://localhost:3005/new_job"
+    _output_types = [ResourceType.JSON_LAYOUT]
+    _input_types = [ResourceType.UTG, ResourceType.GIF]
+    _execute_url = os.environ['GIFDROID']
 
-    def __init__(self, output_dir: str, resource_dict: Dict[ResourceType, ResourceGroup]) -> None:
+    def __init__(self, output_dir: str, resource_dict: Dict[ResourceType, ResourceGroup], uuid: str) -> None:
         """
         Gifdroid manages a single gifdroid task. It subscribes to utg and gif resources. Whenever both a new utg and gif are added it starts running.
 
@@ -24,28 +25,53 @@ class Gifdroid(Task):
 
         Returns: Nothing
         """
-        super().__init__(output_dir, resource_dict)
+        super().__init__(output_dir, resource_dict, uuid)
         self._sub_to_utg()
         self._sub_to_gif()
         self.utg_path = None
         self.gif_path = None
+        self.resource_dict = resource_dict
+
 
     def run(self) -> bool:
         """
         Execute gifdroid algorithm by http request and passing in necessary data for gifdroid to figure out stuff.
         """
         if self._check_resources_available():
+            print(f'Running {self.name}.')
+
             data = {
                 "gif_path": self.gif_path,
                 "utg_path": self.utg_path,
                 "output_dir": self.output_dir
             }
 
-            requests.post(self._execute_url, data=json.dumps( data ), headers={'Content-Type': 'application/json'})
+            self.update_algorithm_status(StatusEnum.running)
+            response = requests.post(self._execute_url, data=json.dumps( data ), headers={'Content-Type': 'application/json'})
+
+            if response.status_code == 200:
+                self.update_algorithm_status(StatusEnum.successful)
+            else:
+                self.update_algorithm_status(StatusEnum.failed)
 
             return True
 
         return False
+
+
+    def update_algorithm_status(self, status: StatusEnum):
+        self.status = status.value
+
+        data = {
+            "status": self.status,
+            "logs": f'{ self.name } is {self.status.lower()}.'
+        }
+
+        assert self.uuid != None, "No job UUID detected."
+        algorithm_name = self.name[0].lower() + self.name[1:]
+        url = os.path.join(self._status_controller, self.uuid, algorithm_name)
+        res = requests.post(url, headers={"Content-Type": "application/json"}, json=data)
+        print(f'Updated {algorithm_name} status on url {url} to {self.status}. {res}.')
 
 
     def _check_resources_available(self):
@@ -66,7 +92,7 @@ class Gifdroid(Task):
                 Once both utf and gif are available, it will signal Gifdroid to run.
         """
         self.utg_path = utg.get_path()
-        print(self.utg_path)
+        print('utg file ready for gifdroid')
         self.run()
         utg.release()
 
@@ -80,9 +106,7 @@ class Gifdroid(Task):
                 Once both utf and gif are available, it will signal Gifdroid to run.
         """
         self.gif_path = gif.get_path()
-        print(self.gif_path)
-        print(self.gif_path)
-        print(self.gif_path)
+        print('gif file ready for gifdroid')
         self.run()
         gif.release()
 

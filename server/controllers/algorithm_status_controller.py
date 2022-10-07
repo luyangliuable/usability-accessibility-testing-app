@@ -1,10 +1,11 @@
 # from __future__ import annotations
 from controllers.controller import Controller
+from controllers.job_status_controller import JobStatusController
 from typing import TypeVar, Generic, Dict
 from enums.status_enum import StatusEnum
 from models.DBManager import DBManager
+from datetime import datetime as dt
 import typing as t
-import sys
 
 
 T = TypeVar('T')
@@ -34,6 +35,7 @@ class AlgorithmStatusController(Generic[T], Controller):
         },
     }
 
+    status_key = 'algorithm_status'
 
     def __init__(self, collection_name: str) -> None:
         """
@@ -42,17 +44,16 @@ class AlgorithmStatusController(Generic[T], Controller):
         Parameters:
             collection_name - The collection name to refer to for database.
         """
+        self.job_status_controller = JobStatusController(collection_name)
         self._db = DBManager.instance()
-        self.c = self._db.get_collection(collection_name)
-
-        self.status_key = 'algorithm_status'
+        self.collection = self._db.get_collection(collection_name)
 
 
     def get(self, uuid: str, algorithm: str) -> str:
         """
         Get the status of a specific algorithm
         """
-        all_algorithm_status = self._db.get_document(uuid, self.c)
+        all_algorithm_status = self._db.get_document(uuid, self.collection)
         specific_algorithm_status = all_algorithm_status[self.status_key][algorithm]
         print(specific_algorithm_status)
 
@@ -64,14 +65,29 @@ class AlgorithmStatusController(Generic[T], Controller):
         Update the status of a specific algorithm.
         """
 
-        status = self._get_all_algorithm_status(uuid, algorithm)
-        self._inject_updated_status_info_into_document(kwargs, status, algorithm)
-        self._db.update_document(uuid, self.c, self.status_key, status)
+        all_algorithm_status = self._get_all_algorithm_status(uuid)
+        self._inject_updated_status_info_into_document(all_algorithm_status, algorithm, **kwargs)
+        self._db.update_document(uuid, self.collection, self.status_key, all_algorithm_status)
+        self._reflect_algorithm_update_to_job(uuid, algorithm, **kwargs)
 
-        return status[algorithm]
+        return all_algorithm_status[algorithm]
 
 
-    def _inject_updated_status_info_into_document(self, kwargs, status: t.Dict, algorithm) -> t.Dict[str, T]:
+    def _reflect_algorithm_update_to_job(self, uuid: str, algorithm: str, **kwargs) -> None:
+        """
+        This is necessary Because when an algorithm updates, the job progress and logs changes as well for the frontend to see.
+        """
+
+        self.job_status_controller.add_to_algorithm_to_run(uuid, algorithm)
+        self.job_status_controller.post(uuid, logs=kwargs['logs'])
+
+        if 'status' in kwargs:
+            total_number_of_algorithms_to_execute = self.job_status_controller.get_total_number_of_algorithms_in_job(uuid)
+            if kwargs['status'] == StatusEnum.running.value or kwargs['status'] == StatusEnum.successful.value:
+                self.job_status_controller.post(uuid, progress=(0.5/total_number_of_algorithms_to_execute)*100)
+
+
+    def _inject_updated_status_info_into_document(self, all_algorithm_status: t.Dict, algorithm, **kwargs) -> t.Dict[str, T]:
         viable_parameters = [key for key in self._db.get_format("")[self.status_key][algorithm]]
 
         for each_parameter in viable_parameters:
@@ -80,24 +96,32 @@ class AlgorithmStatusController(Generic[T], Controller):
                     """
                     If the parameter is a log, append to all existing logs.
                     """
-                    self._store_logs(status, algorithm, kwargs[each_parameter])
+                    self._store_logs(all_algorithm_status, algorithm, kwargs[each_parameter])
 
                 elif each_parameter == 'progress' and kwargs[each_parameter] != None:
                     """
                     If the parameter is a progress integer, add to exiting progress integer.
                     """
 
-                    status[algorithm]['progress'] += kwargs[each_parameter]
+                    all_algorithm_status[algorithm]['progress'] += kwargs[each_parameter]
 
+                elif each_parameter == 'status' and kwargs[each_parameter] != None:
+                    status = kwargs[each_parameter]
+                    if status == StatusEnum.running.value:
+                        print(f'Updating start time into {all_algorithm_status[algorithm]}.')
+                        all_algorithm_status[algorithm]['start_time'] = str( dt.now() )
+                    elif status == StatusEnum.successful.value:
+                        all_algorithm_status[algorithm]['end_time'] = str( dt.now() )
+                    all_algorithm_status[algorithm][each_parameter] = kwargs[each_parameter]
                 else:
-                    status[algorithm][each_parameter] = kwargs[each_parameter]
+                    all_algorithm_status[algorithm][each_parameter] = kwargs[each_parameter]
 
-        return status
+        return all_algorithm_status
 
 
-    def _get_all_algorithm_status(self, uuid: str, algorithm: str) -> t.Dict[str, t.Dict[str, T]]:
+    def _get_all_algorithm_status(self, uuid: str) -> t.Dict[str, t.Dict[str, T]]:
         """
-        Get a specific algorithm status information such as start time, state and logs etc.
+        Get all specific algorithm status information such as start time, state and logs etc.
 
         Parameters:
             uuid - (str) The unique id of the job (including all algorithms).
@@ -105,13 +129,15 @@ class AlgorithmStatusController(Generic[T], Controller):
 
         Returns: The status dictionary/json containing all data on the status of the algorithm.
         """
-        return self._db.get_document(uuid, self.c)[self.status_key]
+        return self._db.get_document(uuid, self.collection)[self.status_key]
 
 
 
     def _store_logs(self, document: t.Dict[str, t.Dict[str, t.List ]], algorithm: str, new_log: str) -> bool:
         """
-        Stores only the past 10 logs into the **mongodb** document for the job uuid
+        Stores only the past 10 logs into the **mongodb** document for the algorithm
+
+        Updating algorithm log also updates job log.
 
         Parameters:
             document - (str) The mongodb document for the job uuid
@@ -140,10 +166,10 @@ class AlgorithmStatusController(Generic[T], Controller):
             val - (str) new attribute value
         """
 
-        document = self._db.get_document(uuid, self.c)
+        document = self._db.get_document(uuid, self.collection)
         document[self.status_key][algorithm][attribute_key] = attribute_val
 
-        self._db.update_document(uuid, self.c, self.status_key, document[self.status_key])
+        self._db.update_document(uuid, self.collection, self.status_key, document[self.status_key])
 
         return document
 
@@ -167,12 +193,12 @@ class AlgorithmStatusController(Generic[T], Controller):
         """
         Ignore please but don't delete yet
         """
-        d = self._db.get_document(uuid, self.c)
+        d = self._db.get_document(uuid, self.collection)
 
         for _, item in d[self.status_key].items():
             item['apk']= apk_name
 
-        self._db.update_document(uuid, self.c, self.status_key, d[self.status_key])
+        self._db.update_document(uuid, self.collection, self.status_key, d[self.status_key])
 
         return d[ self.status_key ]
 

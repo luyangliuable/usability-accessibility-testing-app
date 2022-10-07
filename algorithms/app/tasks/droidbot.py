@@ -1,3 +1,5 @@
+from tasks.concurrency.file_watcher import FileWatcher
+from tasks.enums.status_enum import StatusEnum
 from resources.resource import *
 from threading import Thread
 from tasks.task import Task
@@ -5,22 +7,21 @@ from typing import List
 from time import sleep
 import typing as t
 import requests
+import logging
 import os
 import json
 
-from resources.resource import *
 
 class Droidbot(Task):
     """Class for managing droidbot algorithm"""
 
     _input_types = [ResourceType.APK_FILE, ResourceType.EMULATOR]
-    _output_types = [ResourceType.JSON_LAYOUT, ResourceType.UTG]
-    _execute_url = "http://localhost:3008/new_job"
-    name = "Droidbot"
+    _output_types = [ResourceType.UTG]
     _shared_volume = "/home/tasks"
+    _execute_url = os.environ['DROIDBOT']
+    name = "Droidbot"
 
-
-    def __init__(self, output_dir: str, resource_dict: Dict[ResourceType, ResourceGroup], dependant_algorithms: t.List=[]) -> None:
+    def __init__(self, output_dir: str, resource_dict: Dict[ResourceType, ResourceGroup], uuid: str) -> None:
         """
         Droidbot class manages a single droidbot task. It subscribes to utg and gif resources. Whenever both a new utg and gif are added it starts running.
 
@@ -31,87 +32,47 @@ class Droidbot(Task):
 
         Returns: Nothing
         """
-        super().__init__(output_dir, resource_dict)
-        self.emulator = resource_dict[ResourceType.EMULATOR]
+        super().__init__(output_dir, resource_dict, uuid)
         self._sub_to_apks()
         self._sub_to_emulators()
         self.apk_queue = []
         self.images = ()
-        self._watcher = Thread(target = self.watch_for_new_files_aux)
+        self.check_new_image_directory = os.path.join(output_dir, 'states')
+        self._watcher = FileWatcher(uuid, 'jpg', self.check_new_image_directory, ResourceType.SCREENSHOT_JPEG, self)
         self.dependent_algorithms = []
 
 
-    def _list_image_files_in_dir(self, check_path: str) -> t.Tuple:
-        images = ()
-        for file in os.listdir(check_path):
-            fullpath=os.path.join(check_path, file)
-            if os.path.isfile(fullpath) and self._check_file_is_image(file):
-                images += (file,)
+    def _check_resources_available(self) -> bool:
+        """
+        Check if both apk and emulator resource are both avalaible. TODO maybe combine both into one resource group?
+        """
+        if self.resource_dict[ResourceType.EMULATOR].is_active and self.resource_dict[ResourceType.APK_FILE].is_active:
+            return True
 
-        return images
+        return False
 
 
-    def _create_new_resource_group(self, resource_wrapper: ResourceWrapper, resource_type: ResourceType, resource_path: str, origin: str, metadata=None) -> bool:
+    def update_algorithm_status(self, status: StatusEnum):
+        self.status = status
 
-        print(resource_wrapper)
-        self.resource_dict[resource_type] = ResourceGroup(resource_type)
-        self.resource_dict[ResourceType.SCREENSHOT_JPEG].publish(resource_wrapper, True)
+        data = {
+            "status": self.status,
+            "logs": f'{ self.name } is {self.status.value.lower()}.'
+        }
 
+        assert self.uuid != None, "No job UUID detected."
+        algorithm_name = self.name[0].lower() + self.name[1:]
+        url = os.path.join(self._status_controller, self.uuid, algorithm_name)
+        res = requests.post(url, headers={"Content-Type": "application/json"}, json=data)
+        print(f'Updated {algorithm_name} status on url {url} to {self.status}. {res}.')
+
+
+    def _publish_utg(self) -> bool:
+        utg = ResourceWrapper(self.output_dir, self.name)
+        self.resource_dict[ResourceType.UTG].publish(utg, True)
+
+        print(f'Published { utg } at {self.output_dir}.')
         return True
-
-
-    def _publish_all_new_images(self, images: t.List[str], check_path: str) -> bool:
-        for each_image in images:
-            resource_path = os.path.join(check_path, each_image)
-            img = ResourceWrapper(resource_path, 'droidbot')
-            self._create_new_resource_group(img, ResourceType.SCREENSHOT_JPEG, resource_path, self.name)
-
-
-        return True
-
-
-    def _log_new_images(self, new_images) -> None:
-        if len(new_images) > 0:
-            print(f'{len(new_images)} new images detected {new_images}.')
-
-
-    def watch_for_new_files_aux(self):
-        droidbot_screenshots_folder = 'states'
-        check_path = os.path.join(self.output_dir, droidbot_screenshots_folder)
-
-        # TODO remove this line for testing
-        check_path = "/Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/algorithms/app/.data/droidbot/states/"
-
-        while(True):
-            try:
-                if self.status != "RUNNING":
-                    break
-
-                new_images = []
-                old = self.images
-                self.images += self._list_image_files_in_dir(check_path)
-                new_images = list( set( self.images ).difference(set( old )) )
-                self._log_new_images(new_images)
-                self._publish_all_new_images(new_images, check_path)
-                sleep(3)
-            except Exception as e:
-                # Ignore errors because file might not be created when watcher started
-                # print(e)
-                pass
-
-    def watch_for_new_files(self):
-        self.status = "RUNNING"
-        # self._watcher = Thread(target = self.watch_for_new_files_aux, args =(lambda : exit_flag, ))
-        self._watcher.start()
-
-
-    def mark_algorithm_completed(self):
-        self.status = "DONE"
-        self._watcher.join()
-
-
-    def terminate_watch_for_new_files(self):
-        self.watch_for_new_files.terminate()
 
 
     def run(self, apk_path: str) -> t.Dict[str, str]:
@@ -119,15 +80,24 @@ class Droidbot(Task):
         Execute gifdroid algorithm by http request and passing in necessary data for gifdroid to figure out stuff.
 
         Parameters:
-            apk_path - (str) The string path for the apk for to run droibot.
+            apk_path - (str) The string path for the apk for to run droidbot.
         """
-        print(json.dumps(self._get_execution_data(apk_path)))
-
+        self.update_algorithm_status(StatusEnum.running)
         self.watch_for_new_files()
+        print(f'Running droidbot with apk {apk_path}.\n')
 
-        requests.post(str( self._execute_url ), data=json.dumps(self._get_execution_data(apk_path)), headers={"Content-Type": "application/json"})
+        response = requests.post(str( self._execute_url ), data=json.dumps(self._get_execution_data(apk_path)), headers={"Content-Type": "application/json"})
 
-        self.mark_algorithm_completed()
+
+        if response.status_code == 200:
+            self.update_algorithm_status(StatusEnum.successful)
+        else:
+            self.update_algorithm_status(StatusEnum.failed)
+
+
+        self._watcher.join()
+
+        self._publish_utg()
 
         return { "message": "Execute started." }
 
@@ -144,6 +114,7 @@ class Droidbot(Task):
             "apk_path": apk_path,
             "output_dir": self.output_dir,
         }
+        print(data)
 
         return data
 
@@ -167,7 +138,7 @@ class Droidbot(Task):
 
 
     def _process_apks(self) -> None:
-        while len(self.apk_queue) > 0:                                      # get next apk
+        while len(self.apk_queue) > 0:
             apk = self.apk_queue.pop(0)
             apk_path = apk.get_path()
             self.run(apk_path)
@@ -178,14 +149,6 @@ class Droidbot(Task):
         """Get notified when an emulator is available"""
         if ResourceType.EMULATOR in self.resource_dict:
             self.resource_dict[ResourceType.EMULATOR].subscribe(self.emulator_callback)
-
-
-    def _check_file_is_image(self, file: str) -> bool:
-        file_type = file[len(file)-3:len(file)]
-        if file_type == "png" or file_type == "jpg":
-            return True
-
-        return False
 
 
     @classmethod

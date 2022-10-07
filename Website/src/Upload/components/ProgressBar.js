@@ -38,7 +38,7 @@ const ProgressBar = (props) => {
             </animated.div>
           </div>
 
-          <animated.p style={{ ...textOp, color: "#FFF", fontWeight: "bold" }}>{progressMessage}</animated.p>
+        <animated.p style={{ ...textOp, color: "#FFF", fontWeight: 350, textAlign: 'center' }}>{progressMessage}</animated.p>
         </>
     );
 };

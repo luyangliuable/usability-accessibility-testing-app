@@ -115,16 +115,16 @@ services:
 
 
   analysis_app:
-    build: 
+    build:
       context: ./algorithms/app/
     container_name: bxer.analysis_app
-    ports: 
+    ports:
       - 3050:3050
     volumes:
       - './algorithms/app/.data:/home/data'
     stdin_open: true # docker run -i
     tty: true        # docker run -t
-    
+
 
 
   storydistiller:
@@ -177,7 +177,7 @@ services:
     ports:
       - '3005:3005'
     environment:
-    - FILE_API=http://host.docker.internal:5005/file/get
+    - FILE_API=http://host.docker.internal:5005/results/get
     - STATUS_API=http://host.docker.internal:5005/status
     - FLASK_BACKEND=http://host.docker.internal:5005
     - MONGO_URL=mongodb://host.docker.internal:27017/
@@ -195,7 +195,7 @@ services:
     ports:
       - '3008:3008'
     environment:
-    - FILE_API=http://host.docker.internal:5005/file/get
+    - FILE_API=http://host.docker.internal:5005/results/get
     - STATUS_API=http://host.docker.internal:5005/status
     - FLASK_BACKEND=http://host.docker.internal:5005
     - MONGO_URL=mongodb://host.docker.internal:27017/
@@ -237,4 +237,4 @@ services:
   #   - mongo_url=mongodb://host.docker.internal:27017/
   #   - s3_url=http://host.docker.internal:4566
   #   - emulator=host.docker.internal:5555
-  #   - FILE_API=http://host.docker.internal:5005/file/get
+  #   - FILE_API=http://host.docker.internal:5005/results/get

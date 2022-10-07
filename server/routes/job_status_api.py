@@ -53,7 +53,7 @@ def get(uuid: str) -> t.Tuple[str, int]:
     return "Invalid request", 400
 
 
-@job_status_blueprint.route("/status/update/<uuid>", methods=['GET', 'POST'])
+@job_status_blueprint.route("/status/update/<uuid>", methods=['POST'])
 @cross_origin()
 def update(uuid: str) -> t.Tuple[t.Dict, int]:
     """

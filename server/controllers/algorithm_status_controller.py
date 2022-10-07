@@ -54,6 +54,7 @@ class AlgorithmStatusController(Generic[T], Controller):
         """
         all_algorithm_status = self._db.get_document(uuid, self.c)
         specific_algorithm_status = all_algorithm_status[self.status_key][algorithm]
+        print(specific_algorithm_status)
 
         return specific_algorithm_status
 

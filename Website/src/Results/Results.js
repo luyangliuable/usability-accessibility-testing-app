@@ -9,7 +9,7 @@ import "../index.css";
 const Results = () => {
   const user_UUID = sessionStorage.getItem("User_UUID");
   const resultKeyPath = "http://localhost:5005/get_results";
-  const resultDataPath = "http://localhost:5005/file/get/";
+  const resultDataPath = "http://localhost:5005/result/get/";
 
   const [reportKeys, updateReportKeys] = useState([]);
   const [reportData, updateReportData] = useState([]);
@@ -97,7 +97,7 @@ const Results = () => {
   //   });
   // };
 
-  
+
 
   useEffect(() => {
     getReportKeys();

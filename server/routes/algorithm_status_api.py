@@ -40,7 +40,7 @@ def get(uuid: str, algorithm: str) -> t.Tuple[str, int]:
         return f'{ request.method } not valid', 400
 
 
-@algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>", methods=['GET', 'POST'])
+@algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>", methods=['POST'])
 @cross_origin()
 def post(uuid: str, algorithm: str) -> t.Tuple[t.Dict, int]:
     """
@@ -56,7 +56,7 @@ def post(uuid: str, algorithm: str) -> t.Tuple[t.Dict, int]:
         return {"Error": f'{ request.method } not valid' }, 400
 
 
-@algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>/<attribute>", methods=['GET', 'POST'])
+@algorithm_status_blueprint.route("/status/update/<uuid>/<algorithm>/<attribute>", methods=['POST'])
 @cross_origin()
 def update_one_attr(uuid: str, algorithm: str, attribute: str) -> t.Tuple[str, int]:
     """
@@ -70,7 +70,8 @@ def update_one_attr(uuid: str, algorithm: str, attribute: str) -> t.Tuple[str, i
 
         return safe_serialize( res ), 200
     else:
-        return request.method + " not valid", 400
+        return {"Error": f'{ request.method } not valid' }, 400
+
 
 if __name__ == "__main__":
     pass

@@ -30,9 +30,9 @@ class AlgorithmDataController(Generic[T], Controller):
         self.collection = self._db.get_collection('apk')
 
         self.lookup = {
-            "owleye": "activity",
-            "storydisitiller": "activity",
-            "xbot": "activity",
+            "owleye": "activities",
+            "storydisitiller": "activities",
+            "xbot": "activities",
             "gifdroid": "gifdroid",
             "droidbot": "gifdroid",
         }
@@ -107,11 +107,14 @@ class AlgorithmDataController(Generic[T], Controller):
             algorithm - the algorithm
 
         Returns: The result slice in the schema for the algorithm
+
+        TODO: fix this method to return the correct result
+              Currently it returns the entire document and not just the results for the algorithm
         """
 
         schema_result_key = 'results'
         document = self.get(uuid)
-        result = document[schema_result_key][algorithm]
+        result = document[schema_result_key][self.lookup[algorithm]]
 
         return result
 

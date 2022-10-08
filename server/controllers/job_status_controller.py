@@ -9,25 +9,26 @@ from enums.status_enum import StatusEnum
 
 T = t.TypeVar('T')
 
+
 class JobStatusController(t.Generic[T], Controller):
     """
         Updates algorithm_status. Gets algorithm_status
     """
 
     activity_result_file_json_format = {
-        "name" : "{name of activity / screenshot}",
-        "image" : "{link to screenshot image}",
-        "xbot" : {
-            "image" : "{link to xbot screenshot}",
-            "description" : "{description of issues in screenshot (string)}"
+        "name": "{name of activity / screenshot}",
+        "image": "{link to screenshot image}",
+        "xbot": {
+            "image": "{link to xbot screenshot}",
+            "description": "{description of issues in screenshot (string)}"
         },
-        "owleye" : {
-            "image" : "{link to owleye heatmap screenshot}"
+        "owleye": {
+            "image": "{link to owleye heatmap screenshot}"
         },
-        "tapshoe" : {
-            "image" : "{link to screenshot of tapshoe image}",
-            "description" : "{string description of image}",
-            "heatmap" : "{link to heatmap image}"
+        "tapshoe": {
+            "image": "{link to screenshot of tapshoe image}",
+            "description": "{string description of image}",
+            "heatmap": "{link to heatmap image}"
         },
     }
 
@@ -41,17 +42,19 @@ class JobStatusController(t.Generic[T], Controller):
         self._db = DBManager.instance()
         self.collection = self._db.get_collection(collection_name)
 
-
     def get(self, uuid: str) -> str:
 
-        job_status = self._get_job_status(uuid)
-        return job_status
+        # Get status ##################################################################
+        status = d['overall-status']
+        status['apk'] = d['apk']
 
+        return status
 
     def post(self, uuid: str, **kwargs) -> t.Dict[str, str]:
         job_status = self._get_job_status(uuid)
 
-        parameters = [key for key in self._db.get_format('_')['overall-status']]
+        parameters = [key for key in self._db.get_format('_')[
+            'overall-status']]
 
         for each_parameter in parameters:
             if each_parameter in kwargs:
@@ -93,7 +96,6 @@ class JobStatusController(t.Generic[T], Controller):
             job_status['algorithms_to_run'].append(algorithm)
             self._db.update_document(uuid, self.collection, self._job_status_key, job_status)
 
-
     def _store_logs(self, document: t.Dict[str, t.List], new_log: str) -> bool:
         """
         Stores only the past 10 logs into the **mongodb** document for the job uuid
@@ -109,13 +111,12 @@ class JobStatusController(t.Generic[T], Controller):
 
         return True
 
-
     def get_collection(self) -> Collection:
         return self.collection
 
-
     def insert(self, uuid: str):
         pass
+
 
 if __name__ == "__main__":
     pass

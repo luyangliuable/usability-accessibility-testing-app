@@ -4,7 +4,10 @@ import uuid
 import json
 
 from models.DBManager import DBManager
+from bson.json_util import dumps
 
+def getUserCollectionJSON():
+    return dumps(getUserCollection())
 
 def getUserCollection():
     mongo = DBManager.instance()
@@ -24,8 +27,8 @@ class UserModel:
 
         new_user = {
             "id": str(uuid.uuid4()),
-            "email": json_response["email"],
-            "password": base64.b64encode(json_response["password"].encode("utf-8"))
+            "email": json_response["email"]
+            #"password": base64.b64encode(json_response["password"].encode("utf-8"))
         }
 
         if users is None:
@@ -51,8 +54,10 @@ class UserModel:
             return json.dumps({"ERROR": "Could not load users DB collection"}), 500
 
         inst = users.find_one({"email": json_response["email"]})
-
-        if inst and inst["password"] == base64.b64encode(json_response["password"].encode("utf-8")):
+        #If email exists in database user can login
+        if bool(inst):
             return json.dumps({"Success": "User successfully logged in", "user_id": inst["id"]}), 200
+        # if inst and inst["password"] == base64.b64encode(json_response["password"].encode("utf-8")):
+        #     return json.dumps({"Success": "User successfully logged in", "user_id": inst["id"]}), 200
 
         return json.dumps({"ERROR": "Couldn't find user in database or invalid login details"}), 400

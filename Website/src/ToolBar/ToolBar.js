@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Row, Container, Col } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { NavLink, useLocation } from "react-router-dom";
+import { Link, useNavigate,useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
+import { googleLogout } from "@react-oauth/google";
 
 import "./ToolBar.css";
 
 export default function ToolBar() {
   const [user, updateUser] = useState(sessionStorage.getItem("User_UUID"));
+  const navigate = useNavigate();
 
 
   console.log('user right now: ', user);
@@ -14,7 +16,9 @@ export default function ToolBar() {
   const location = useLocation();
 
   function signout() {
+    googleLogout();
     sessionStorage.removeItem("User_UUID");
+    navigate("./");
     window.location.reload();
   }
 
@@ -127,7 +131,7 @@ export function BxerImage() {
           src={require("./content/bxer-img-bg.png")}
           style={{ height: "max(20px, 2.5vh)" }}
         />
-        <div class="imgTitle">BXER</div>
+        <div className="imgTitle">BXER</div>
       </div>
     </NavLink>
   )

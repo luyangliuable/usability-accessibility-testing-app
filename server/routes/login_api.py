@@ -15,11 +15,14 @@ def signUpUser():
         return UserModel().signUpUser()
 
 
-@login_blueprint.route('/login', methods=['POST'])
+@login_blueprint.route('/login', methods=['POST', 'GET'])
 @cross_origin()
 def loginUser():
     if request.method == "POST":
+        UserModel().signUpUser()
         return UserModel().loginUser()
+    if request.method == "GET":
+        return getUserCollectionJSON()
 
 
 if __name__ == "__main__":

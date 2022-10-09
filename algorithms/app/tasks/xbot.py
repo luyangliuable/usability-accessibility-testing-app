@@ -1,4 +1,5 @@
 from models.screenshot import Screenshot
+from models.emulator import Emulator
 from tasks.task import *
 from resources.resource import *
 from typing import List, Dict, Tuple
@@ -12,10 +13,11 @@ class Xbot(Task):
     _output_types = [ResourceType.SCREENSHOT, ResourceType.ACCESSIBILITY_ISSUE]
     _url = 'http://host.docker.internal:3003/execute'
     
-    def __init__(self, output_dir, resource_dict : Dict[ResourceType, ResourceGroup]) -> None:
-        super().__init__(output_dir, resource_dict)
+    def __init__(self, output_dir, resource_dict : Dict[ResourceType, ResourceGroup], uuid: str) -> None:
+        super().__init__(output_dir, resource_dict, uuid)
         self.apk_queue = {}
         self._sub_to_apks()
+        self._sub_to_emulators()
 
     @classmethod
     def get_name(cls) -> str:
@@ -43,6 +45,7 @@ class Xbot(Task):
         
         Xbot.http_request(Xbot._url, data)
     
+    
     def _sub_to_apks(self) -> None:
         """Get notified when a new APK is available"""
         if ResourceType.APK_FILE in self.resource_dict:
@@ -55,7 +58,7 @@ class Xbot(Task):
             self.resource_dict[ResourceType.EMULATOR].subscribe(self.emulator_callback)
     
     
-    def _process_apks(self, emulator) -> None:
+    def _process_apks(self, emulator: Emulator) -> None:
         """Process apks"""
         
         print("XBOT RUNNING")
@@ -64,34 +67,15 @@ class Xbot(Task):
             apk = self.apk_queue.keys()[0]
 
             apk_path = apk.get_path()
-            emulator_path = emulator.get_path()
-            Xbot.run(apk_path, self.output_dir, emulator_path)      # run algorithm
-            self._dispatch_outputs()                                # dispatch results
+            Xbot.run(apk_path, self.output_dir, emulator.connection_str)      # run algorithm
+            self._publish_outputs()                                # dispatch results
 
             self.apk_queue[apk] = True
 
         print("XBOT COMPLETED")
         
     
-    def _dispatch_outputs(self) -> None:
-        """Dispatch all outputs for processed apk"""
-        screenshots = self._get_screenshots()
-        issues = self._get_accessibility_issues()
-        
-        for screenshot in screenshots:
-            complete = False
-            if screenshot == screenshots[:-1]:
-                complete = self.is_complete()
-            self.resource_dict[ResourceType.SCREENSHOT].publish(screenshot, complete)
-        
-        for issue in issues:
-            complete = False
-            if screenshot == issues[:-1]:
-                complete = self.is_complete()
-            self.resource_dict[ResourceType.ACCESSIBILITY_ISSUE].publish(issue, complete)
-            
-            
-
+    
     def apk_callback(self, new_apk : ResourceWrapper) -> None:
         """callback method to add apk and run algorithm"""
         if new_apk not in self.apk_queue:
@@ -101,7 +85,7 @@ class Xbot(Task):
     def emulator_callback(self, emulator : ResourceWrapper) -> None:
         """callback method for using emulator"""
         
-        self._process_apks(emulator=emulator)
+        self._process_apks(emulator=emulator.get_metadata())
         emulator.release()
     
     
@@ -113,7 +97,27 @@ class Xbot(Task):
         return self.resource_dict[ResourceType.APK_FILE].is_active()
     
     
-    def _get_screenshots(self) -> List[Tuple[str, str, str]]:
+    def _publish_outputs(self) -> None:
+        """Dispatch all outputs for processed apk"""
+        screenshots = self._get_screenshots()
+        issues = self._get_accessibility_issues()
+        
+        complete = False
+        for screenshot in screenshots:
+            if screenshot == screenshots[:-1]:
+                complete = self.is_complete()
+            rw = ResourceWrapper(None, self.get_name(), screenshot)
+            self.resource_dict[ResourceType.SCREENSHOT].publish(rw, complete)
+        
+        complete = False
+        for issue in issues:
+            if screenshot == issues[:-1]:
+                complete = self.is_complete()
+            rw = ResourceWrapper(None, self.get_name(), issue)
+            self.resource_dict[ResourceType.ACCESSIBILITY_ISSUE].publish(rw, complete)
+    
+    
+    def _get_screenshots(self) -> List[Screenshot]:
         """ Gets list of screenshot images and layouts from xbot output directory.
             Returns list of tuples containing (activity name, image path, layout path)
         """
@@ -124,12 +128,14 @@ class Xbot(Task):
         for activity in os.listdir(images_dir):
             layout_path = os.path.join(layouts_dir, activity + ".xml")
             # select image file which is not the thumbnail 
-            for filename in os.path.join(images_dir, activity):
+            for filename in os.listdir(os.path.join(images_dir, activity)):
                 if len(filename) > 14 and filename[-14:-5] != "_thumbnail":
-                    image_path = os.path.join(images_dir, activity, filename)
-                    screenshots.append(Screenshot(activity, ))
+                    image_path = os.path.join(images_dir, activity, activity+'.png')
+                    os.rename(os.path.join(images_dir, activity, filename), image_path) # rename screenshot to same name as layout file
+                    screenshots.append(Screenshot(activity, image_path, layout_path))
                     break      
         return screenshots
+     
         
     def _get_accessibility_issues(self) -> List[Tuple[str, str, str]]:
         """ Gets list of accessibility issues from xbot output directory. 

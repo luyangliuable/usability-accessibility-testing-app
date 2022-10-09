@@ -18,6 +18,9 @@ class LayoutConverter():
         """Converts xml to json and publishes new resource wrapper"""
         #convert xml to json
         out_path = os.path.join(self.output_dir, self.activity_name + ".json")
+        if os.path.exists(out_path):
+            return out_path
+        
         self._convert_xml_to_json(self.xml_path, out_path)
         return out_path
                 

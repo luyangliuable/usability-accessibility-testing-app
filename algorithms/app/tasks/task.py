@@ -93,13 +93,6 @@ class Task(ABC, metaclass=TaskMetaclass):
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
 
-
-    @abstractmethod
-    def run(self) -> Dict[str, str]:
-        """Execute Task"""
-        pass
-
-
     @classmethod
     @abstractmethod
     def get_name(cls) -> str:

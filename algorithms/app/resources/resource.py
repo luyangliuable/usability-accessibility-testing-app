@@ -37,7 +37,6 @@ class ResourceWrapper(Generic[T]):
         return f'<<Resource Wrapper path={self._path} released={self._released}>>'
 
 
-
     def lock(self, released):
         """
         Enforce a lock on the resource, providing an ON RELEASED callback
@@ -88,6 +87,7 @@ class ResourceGroup(Generic[T]):
         """
         print('Droidbot subscribed')
         self._subscribers.append(callback)
+    
 
 
     def publish(self, resource : ResourceWrapper[T], completed : bool) -> None:

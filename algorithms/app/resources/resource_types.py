@@ -14,6 +14,7 @@ class ResourceType(Enum):
     ACCESSIBILITY_ISSUE = 5
     DISPLAY_ISSUE = 6
     TAPPABILITY_PREDICTION = 7
+    UI_RULES = 8
     
     
 

@@ -83,7 +83,7 @@ class Owleye(Task):
         for issue in issues:
             if issue == issues[:-1]:
                 complete = not self.resource_dict[ResourceType.SCREENSHOT.is_active()]
-            rw = ResourceWrapper(None, self.get_name(), issue)
+            rw = ResourceWrapper(self.output_dir, self.get_name(), issue)
             self.resource_dict[ResourceType.DISPLAY_ISSUE].publish(rw, complete)
         
     def _get_display_issues(self) -> List[Tuple[Screenshot, str]]:

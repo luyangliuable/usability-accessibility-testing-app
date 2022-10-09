@@ -117,6 +117,24 @@ class Xbot(Task):
             self.resource_dict[ResourceType.ACCESSIBILITY_ISSUE].publish(rw, complete)
     
     
+        
+    def _get_accessibility_issues(self) -> List[Tuple[Screenshot, str, str]]:
+        """ Gets list of accessibility issues from xbot output directory. 
+            Returns list of tuples containing (original screenshot, image path, description path)        
+        """
+        screenshots = self._get_screenshots()
+        issues = []
+        issues_dir = os.path.join(self.output_dir, "issues")
+
+        # folder name = activity name 
+        for screenshot in screenshots:
+            activity = screenshot.ui_screen                    
+            image_path = os.path.join(issues_dir, activity, activity + ".png")
+            desc_path = os.path.join(issues_dir, activity, activity + ".txt")
+            if os.path.exists(image_path) and os.path.exists(desc_path):
+                issues.append((screenshot, image_path, desc_path))             
+        return issues
+
     def _get_screenshots(self) -> List[Screenshot]:
         """ Gets list of screenshot images and layouts from xbot output directory.
             Returns list of tuples containing (activity name, image path, layout path)
@@ -135,19 +153,3 @@ class Xbot(Task):
                     screenshots.append(Screenshot(activity, image_path, layout_path))
                     break      
         return screenshots
-     
-        
-    def _get_accessibility_issues(self) -> List[Tuple[str, str, str]]:
-        """ Gets list of accessibility issues from xbot output directory. 
-            Returns list of tuples containing (activity name, image path, description path)        
-        """
-        issues = []
-        issues_dir = os.path.join(self.output_dir, "issues")
-
-        # folder name = activity name 
-        for activity in os.listdir(issues_dir):                    
-            image_path = os.path.join(issues_dir, activity, activity + ".png")
-            desc_path = os.path.join(issues_dir, activity, activity + ".txt")
-            if os.path.exists(image_path) and os.path.exists(desc_path):
-                issues.append((activity, image_path, desc_path))             
-        return issues

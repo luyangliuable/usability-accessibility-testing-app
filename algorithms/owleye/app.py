@@ -22,7 +22,7 @@ def execute():
         image_dir = request.get_json()["image_dir"]
         output_dir = request.get_json()["output_dir"]
         
-        print('STARTING OWLEYE %s %s %s' % (image_dir, output_dir))
+        print('STARTING OWLEYE %s %s' % (image_dir, output_dir))
         
         subprocess.run(["python3", "/home/OwlEye-main/localization.py", image_dir, output_dir])
         

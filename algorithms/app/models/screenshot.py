@@ -67,9 +67,9 @@ class Screenshot:
         if self.layout_path[-5:] == '.json':
             return self.layout_path
         
-        tempdir = os.path.join(os.path.dirname(self.layout_path)), 'temp'
+        tempdir = os.path.join(os.path.dirname(self.layout_path), 'temp')
         if not os.path.exists(tempdir):
-            os.makedir(tempdir)
+            os.makedirs(tempdir)
         converter = LayoutConverter(tempdir, self.layout_path, os.path.splitext(os.path.basename(self.layout_path))[0])
         return converter.execute()
     

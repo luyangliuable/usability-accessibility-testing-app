@@ -151,5 +151,6 @@ seed_data
 
 
 algorithms/app/.data/
-algorithms/app/models/
 algorithms/owleye/OwlEye-main/model/model.pth
+algorithms/app/test.py
+

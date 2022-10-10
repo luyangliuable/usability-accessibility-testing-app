@@ -1,4 +1,5 @@
 from controllers.upload_controller import UploadController
+from models.Report import ReportModel
 from utility.enforce_bucket_existance import *
 from models.DBManager import DBManager
 from flask import Blueprint, request
@@ -32,7 +33,12 @@ def post():
 
         data = upload_controller.post(request.files)
 
-        ret = {'uuid': data['uuid'], 'apk': data['apk']['name']}
+        uuid = data['uuid']
+        user_uuid = request.form['user_uuid']
+
+        ReportModel().uploadResult(uuid, user_uuid)
+
+        ret = {'uuid': uuid, 'apk': data['apk']['name']}
 
         return json.dumps(ret), 200
 

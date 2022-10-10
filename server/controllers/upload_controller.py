@@ -166,5 +166,3 @@ class UploadController(t.Generic[T], Controller):
         self._db.insert_document(data, self._db.get_collection('apk'))
 
         return True
-
-

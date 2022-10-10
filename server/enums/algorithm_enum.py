@@ -5,3 +5,5 @@ class AlgorithmEnum(str, Enum):
     storydistiller = 'storydistiller'
     owleye = 'owleye'
     xbot = 'xbot'
+    tappable = 'tappable'
+    venus = 'venus'

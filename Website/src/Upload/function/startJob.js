@@ -7,7 +7,7 @@ export const startJob = async (objectState, setObjectState, algorithmsToComplete
 
     // TODO: Do not hard code these urls //////////////////////////////////////
     var additionalFiles = getAdditionalFiles(objectState);
-    const signalStartUrl = "http://localhost:5005/signal_start/";
+    const signalStartUrl = "http://localhost:5005/signal/start/";
     const resultCreateUrl = "http://localhost:5005/create_result";
     const task_url = "http://localhost:5005/task";
     let data;
@@ -39,26 +39,11 @@ export const startJob = async (objectState, setObjectState, algorithmsToComplete
      */
     extract_additional_files(objectState, formData);
 
+    formData.append("user_uuid", sessionStorage.getItem('User_UUID'))
     /**
     * Upload apk file then send to result and official signal start
     */
     uploadApk(formData, setObjectState).then(response => {
-        const user_UUID = sessionStorage.getItem('User_UUID');
-
-        const jsonData = JSON.stringify({
-            "user_id": user_UUID,
-            "result_id": response.uuid
-        });
-
-        /**
-        * Send result information to user backend
-        */
-        var _ = fetch(resultCreateUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: jsonData,
-        });
-
         data = {
             algorithmsToComplete: algorithmsToComplete,
             uuid: response.uuid

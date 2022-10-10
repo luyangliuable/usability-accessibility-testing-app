@@ -1,6 +1,8 @@
+import os
+
+from numpy import result_type
 from utility.uuid_generator import unique_id_generator
 from typing import TypeVar, Generic, List, Dict, Tuple
-from download_parsers.strategy import Strategy
 from controllers.controller import Controller
 from enums.status_enum import StatusEnum
 from models.DBManager import DBManager
@@ -14,7 +16,7 @@ class AlgorithmDataController(Generic[T], Controller):
     This controller class is used to update metadata for files on mongodb for traceability purpose.
     """
 
-    def __init__(self, collection_name: str, json_result_file_parser: Strategy) -> None:
+    def __init__(self, collection_name: str) -> None:
         """
         This controller class is used to update metadata for files on mongodb for traceability purpose.
 
@@ -26,7 +28,6 @@ class AlgorithmDataController(Generic[T], Controller):
         """
         self.collection_name = collection_name
         self._db = DBManager.instance()
-        self._strategy = json_result_file_parser
         self.collection = self._db.get_collection('apk')
 
         self.lookup = {
@@ -37,7 +38,6 @@ class AlgorithmDataController(Generic[T], Controller):
             "droidbot": "gifdroid",
         }
 
-
     def get(self, uuid: str):
         """
         Get file metadata that matches the job uuid
@@ -47,7 +47,6 @@ class AlgorithmDataController(Generic[T], Controller):
         """
 
         return self._db.get_document(uuid=uuid, collection=self.collection)
-
 
     def post(self, request_parameters: List, document: Dict) -> bool:
         """
@@ -67,8 +66,7 @@ class AlgorithmDataController(Generic[T], Controller):
 
         return True
 
-
-    def _insert_algorithm_result(self, uuid: str, algorithm: str, links_to_res: List, result_type: str, file_names: List) -> Tuple[ Dict[str, T], int]:
+    def _insert_algorithm_result(self, uuid: str, algorithm: str, content_type: str, file) -> Tuple[Dict[str, T], int]:
         """
         This function inserts the links to the algorithm results into the document matching uuid
 
@@ -80,23 +78,35 @@ class AlgorithmDataController(Generic[T], Controller):
         Returns: Dictionary for the updated document and a bool if the method is successful.
 
         """
+
         result_key_in_d = "results"
+
+        result_lookup = {
+            "application/json": "json",
+            "image/png": "images"
+        }
+        result_type = result_lookup[content_type]
 
         document = self._db.get_document(uuid, self.collection)
 
         result = document[result_key_in_d]
 
         prev = result[self.lookup[algorithm]][result_type]
-        parsed_json_for_schema = self._strategy.do_algorithm(uuid, links_to_res, file_names)
+        print(prev)
 
-        result[self.lookup[algorithm]][result_type] = prev + parsed_json_for_schema
+        prev.append({
+            "link": os.path.join("http://localhost:5005/download_result", uuid, self.lookup[algorithm], file.name),
+            "name": file.name,
+            "type": content_type
+        })
+        print(prev)
+
+        result[self.lookup[algorithm]][result_type] = prev
+        print(result)
 
         self._db.update_document(uuid, self.collection, result_key_in_d, result)
 
         return result, 200
-
-
-
 
     def _get_result_of_algorithm(self, uuid: str, algorithm: str) -> Dict[str, T]:
         """
@@ -117,7 +127,6 @@ class AlgorithmDataController(Generic[T], Controller):
         result = document[schema_result_key][self.lookup[algorithm]]
 
         return result
-
 
     def _get_lookup(self) -> Dict[str, str]:
         return self.lookup

@@ -28,7 +28,9 @@ def start(uuid):
 
     if request.method == "POST":
         if request.json != None:
-            algorithms_to_complete = request.json["algorithmsToComplete"]
+            algorithms = request.json["algorithmsToComplete"]
+            algorithms_to_complete = [AlgorithmEnum[algorithm['uuid']].value for algorithm in algorithms]
+            print("algorithms_to_complete: ", str(algorithms_to_complete))
 
             algorithm_task_controller.post(uuid, algorithms_to_complete)
 

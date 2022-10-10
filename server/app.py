@@ -25,7 +25,7 @@ def create_app(script_info=None):
     # app.register_blueprint(main_blueprint)
 
     # # Used as upload api for flask ################################################
-    # app.register_blueprint(upload_blueprint)
+    app.register_blueprint(upload_blueprint)
     # app.register_blueprint(algorithm_task_blueprint)
 
     # # Used as mongo document management api for flask #############################
@@ -40,7 +40,7 @@ def create_app(script_info=None):
     # # Used for getting job status, notes, estimated remaining time and results
     # app.register_blueprint(job_status_blueprint)
 
-    # app.register_blueprint(login_blueprint)
+    app.register_blueprint(user_blueprint)
     # app.register_blueprint(reports_blueprint)
 
     # ############################################################################ #

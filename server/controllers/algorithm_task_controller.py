@@ -37,7 +37,7 @@ class AlgorithmTaskController(t.Generic[T], Controller, Task):
         self.shared_volume = '/home/data'
 
 
-    def post(self, uuid: str, algorithms_to_complete: t.List[t.Dict[str, str]]) -> t.List[ AlgorithmEnum ]:
+    def post(self, uuid: str, algorithms: t.List[AlgorithmEnum]) -> t.List[ AlgorithmEnum ]:
         """
         Post to signal start all the algorithms corresponding to a particular job by uuid.
 
@@ -49,8 +49,6 @@ class AlgorithmTaskController(t.Generic[T], Controller, Task):
         """
 
         # print(AlgorithmEnum['gifdroid'].value)
-
-        algorithms = [AlgorithmEnum[algorithm['uuid']].value for algorithm in algorithms_to_complete]
 
         # self.job_status_controller.post(uuid, start_time=start_time, status=StatusEnum.running.value, progress=10, logs="")
         self.acknowledge(uuid, algorithms)
@@ -84,17 +82,17 @@ class AlgorithmTaskController(t.Generic[T], Controller, Task):
 
         for algorithm in algorithms:
             additional_files_directory = os.path.join(shared_volume, uuid, algorithm)
+            if os.path.exists(additional_files_directory):
+                for file in os.listdir(additional_files_directory):
+                    print(file)
+                    file_type = file.split('.')[-1]
 
-            for file in os.listdir(additional_files_directory):
-                print(file)
-                file_type = file.split('.')[-1]
+                    if file_type in additional_files:
+                        additional_files[algorithm][file_type].append(os.path.join(additional_files_directory, file))
+                    else:
+                        additional_files[algorithm][file_type] = [os.path.join(additional_files_directory, file)]
 
-                if file_type in additional_files:
-                    additional_files[algorithm][file_type].append(os.path.join(additional_files_directory, file))
-                else:
-                    additional_files[algorithm][file_type] = [os.path.join(additional_files_directory, file)]
-
-            return additional_files
+        return additional_files
 
     def _get_apk_file(self, shared_volume: str, uuid: str) -> str:
         apk_directory = os.path.join(shared_volume, uuid)

@@ -1,11 +1,11 @@
 from controllers.algorithm_data_controller import AlgorithmDataController as ADC
-from download_parsers.strategy import Strategy
 from typing import TypeVar, Generic
 from utility.enforce_bucket_existance import *
 from controllers.controller import Controller
 import tempfile
 import subprocess
 import os
+import boto3
 
 T = TypeVar('T')
 
@@ -13,7 +13,7 @@ class DownloadController(Generic[T], Controller):
 
     bucket_name = 'apk-bucket'
 
-    def __init__(self, collection_name: str, json_result_file_parser: Strategy) -> None:
+    def __init__(self, collection_name: str) -> None:
         """
         This controller is responsible for download file stored from previous job into the s3 bucket.
 
@@ -24,7 +24,7 @@ class DownloadController(Generic[T], Controller):
         """
 
         self.cn = collection_name
-        self.adc = ADC(collection_name, json_result_file_parser)
+        self.adc = ADC(collection_name)
 
 
     def get(self, uuid: str, algorithm: str, type: str, name: str) -> str:
@@ -42,7 +42,7 @@ class DownloadController(Generic[T], Controller):
 
         xbot images files are stored in:
             - /
-                - activity/{ screen_name }/xbot/images/
+                - activity /{ screen_name }/xbot/images/
 
         xbot issues files are stored in:
             - /
@@ -69,21 +69,21 @@ class DownloadController(Generic[T], Controller):
                 file_type = ".png"
                 output = DownloadController.join_str(name, file_type)
 
-            path = os.path.join(uuid, "activity", name, algorithm, type, output)
+            path = os.path.join(uuid, "activities", name, algorithm, type, output)
 
         elif algorithm == "owleye":
 
             file_type = ".jpg"
             output = DownloadController.join_str(name, file_type)
-            path = os.path.join(uuid, "activity", name, algorithm, output)
+            path = os.path.join(uuid, "activities", name, algorithm, output)
 
-        elif algorithm == "activity":
+        elif algorithm == "activities":
 
             if type == "images":
                 file_type = ".png"
                 output = DownloadController.join_str(name, file_type)
 
-            path = os.path.join(uuid, "activity", name, type, output)
+            path = os.path.join(uuid, "activities", name, type, output)
 
         print(f'DOWNLOAD: Downloading file from { os.path.join( "apk-bucket", path ) }')
 

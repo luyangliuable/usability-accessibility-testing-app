@@ -5,22 +5,31 @@ import pymongo
 import os
 
 from models.User import *
+from models.Report import ReportModel
 
-login_blueprint = Blueprint('login', __name__)
+user_blueprint = Blueprint('user', __name__, url_prefix='/user')
 
-@login_blueprint.route('/signUp', methods=['POST'])
+
+@user_blueprint.route('/login', methods=['POST'])
+@cross_origin()
+def loginUser():
+    if request.method == "POST":
+        return UserModel().loginUser()
+
+
+@user_blueprint.route('/signup', methods=['POST'])
 @cross_origin()
 def signUpUser():
     if request.method == "POST":
         return UserModel().signUpUser()
 
 
-@login_blueprint.route('/login', methods=['POST'])
+@user_blueprint.route('/reports', methods=['POST'])
 @cross_origin()
-def loginUser():
+def getResults():
+    print(request.json)
     if request.method == "POST":
-        return UserModel().loginUser()
-
+        return ReportModel().getResults()
 
 if __name__ == "__main__":
     pass

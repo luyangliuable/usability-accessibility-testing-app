@@ -1,4 +1,3 @@
-from download_parsers.strategy import Strategy
 from pymongo.database import Collection
 from models.DBManager import DBManager
 from abc import ABC, abstractmethod
@@ -14,7 +13,7 @@ ENDPOINT_URL = os.environ.get('S3_URL')
 BUCKETNAME = "apk-bucket"
 
 class Controller(ABC):
-    def __init__(self, collection_name: str, json_result_file_parser: Strategy=None):
+    def __init__(self, collection_name: str):
 
         """
         The controller is responsible for controlling the backend.
@@ -31,7 +30,6 @@ class Controller(ABC):
         """
 
         self.cn = collection_name
-        self._strategy = json_result_file_parser
         self._db = DBManager.instance()
         self.c = self._db.get_collection('apk')
 
@@ -53,5 +51,3 @@ class Controller(ABC):
     @abstractmethod
     def post(self, uuid: str, **kwargs):
         pass
-
-

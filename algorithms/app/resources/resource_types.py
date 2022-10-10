@@ -5,21 +5,20 @@ class ResourceType(Enum):
     """
     Defines different groups for resources to be published to
     """
-    APK_FILE = 0,
-    SCREENSHOT_PNG = 1,
-    SCREENSHOT_JPEG = 2,
-    SCREENSHOT_UNIQUEPAIR = 3,
-    XML_LAYOUT = 4,
-    JSON_LAYOUT = 5,
-    ACCESSABILITY_ISSUE = 6,
-    DISPLAY_ISSUE = 7,
-    TAPPABILITY_PREDICT = 8,
-    UTG = 9,
-    GIF = 10,
-    ZIPS = 11,
-    EMULATOR = 12,
+    
+    EMULATOR = 0
+    APK_FILE = 1
+    SCREENSHOT = 2
+    UTG = 3
+    GIF = 4
+    ACCESSIBILITY_ISSUE = 5
+    DISPLAY_ISSUE = 6
+    TAPPABILITY_PREDICTION = 7
+    UI_RULES = 8
+    
+    
 
-
+    
 class ResourceUsage(Enum):
     """
     Defines how a resource group will dispatch a resource.

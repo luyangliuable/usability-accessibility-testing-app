@@ -1,53 +1,100 @@
 from tasks.task import Task
 from resources.resource import *
-from typing import List
+from models.screenshot import Screenshot
+from typing import List, Dict, Tuple
 import os
+import shutil
 
 class Owleye(Task):
     """Class for managing Owleye algorithm"""
+    
+    name = "Owleye"
+    _input_types = [ResourceType.SCREENSHOT]
+    _output_types = [ResourceType.DISPLAY_ISSUE]
+    _url = 'http://host.docker.internal:3004/execute'
 
-    def __init__(self, image_dir, output_dir) -> None:
-        super().__init__(output_dir, "owleye")
-        self.image_dir = image_dir
+    def __init__(self, output_dir, resource_groups : Dict[ResourceType, ResourceGroup], uuid: str) -> None:
+        super().__init__(output_dir, resource_groups, uuid)
+        self.queue: list[Screenshot] = []         # list of unprocessed screenshots
+        self.completed_states: set[str] = set()   # set of screenshot structure_ids that have been completed
+        self._sub_to_screenshots()
 
-    def execute(self) -> None:
+    @classmethod
+    def get_name(cls) -> str:
+        """Name of the task"""
+        return Owleye.__name__
+    
+    @classmethod
+    def get_input_types(cls) -> List[ResourceType]:
+        """Input resource types of the task"""
+        return Owleye._input_types
+
+    @classmethod
+    def get_output_types(cls) -> List[ResourceType]:
+        """Output resource types of the task"""
+        return Owleye._output_types
+    
+    @classmethod
+    def run(cls, image_dir: str, output_dir: str) -> None:
+        """Runs owleye algorithm for images in image_dir and outputs to output_dir"""
         data = {
-            "image_dir":self.image_dir,
-            "output_dir":self.output_dir
+            "image_dir" : image_dir,
+            "output_dir" : output_dir
         }
-        response = self.http_request(url=self.url, data=data)
+        response = Task.http_request(Owleye._url, data)
         
-        self.status = 'SUCCESSFUL' if response and response.status_code==200 else 'FAILED'
+        status = 'SUCCESSFUL' if response and response.status_code==200 else 'FAILED'
+        print("STATUS " + status)
+    
+    def _process_images(self) -> None:
+        """Runs owleye for images in queue and publishes results"""
+        # copy images in queue to temp input directory
+        temp_dir = os.path.join(self.output_dir, 'temp')
+        if not os.path.exists(temp_dir):
+            os.makedirs(temp_dir)
+        for screenshot in self.queue:
+            shutil.copy(screenshot.get_image_jpeg(), temp_dir)
         
-def get_display_issues(self) -> str:
-        # run xbot and droidbot if not already run
-        self._run_image_algorithms()
-        # copy screenshots into temp folder convert PNGs to JPEG
-        img_path = os.path.join(TEMP_PATH, "owleye", "screenshots")
-        if not os.path.exists(img_path):
-            os.makedirs(img_path)
-        self._move_files_xb(img_path, jpg = True)
-        self._move_files_db(img_path)
-        # run owleye
-        owleye = Owleye(img_path, os.path.join(TEMP_PATH, "owleye")) #check inputs
-        self.execute_task(owleye)
-        # copy results into activity folders
-        self._get_ui_display_issues(owleye=True) #separates results by activity
-        return None
+        # run owleye algorithm and publish outputs
+        Owleye.run(temp_dir, self.output_dir)
+        self._publish_issues()
 
-def _get_ui_display_issues(self, tappability = False, owleye = False, xbot=False):
-        """Separates display issues by activity per algorithm"""
-        activites_path = os.path.join(self.output_dir, "activities")
-        for activity_name in list(set(self.activity_list)):
-            tap_temp_path = os.path.join(TEMP_PATH, "tappability", activity_name)
-            if tappability and os.path.exists(tap_temp_path):
-                tap_path = os.path.join(activites_path, activity_name, "tappability_prediction")
-                if not os.path.exists(tap_path):
-                    os.makedirs(tap_path)
-                for file in os.listdir(tap_temp_path):
-                    shutil.copy(os.path.join(tap_temp_path, file), os.path.join(activites_path, activity_name, "tappability_prediction"))
-            if owleye and os.path.exists(os.path.join(TEMP_PATH, "owleye", activity_name + '.jpg')):
-                if not os.path.exists(os.path.join(activites_path, activity_name, "display_issues")):
-                    os.makedirs(os.path.join(activites_path, activity_name, "display_issues"))
-                shutil.copy(os.path.join(TEMP_PATH, "owleye", activity_name + '.jpg'), os.path.join(activites_path, activity_name,"display_issues"))
-            return None
+        # clear queue and input dir
+        self.queue = []
+        shutil.rmtree(temp_dir)
+    
+    def _sub_to_screenshots(self) -> None:
+        """Subscribe to screenshot resource group"""
+        if ResourceType.SCREENSHOT in self.resource_dict:
+            self.resource_dict[ResourceType.SCREENSHOT].subscribe(self._new_screenshot_callback)
+    
+    def _new_screenshot_callback(self, resource: ResourceWrapper) -> None:
+        """Callback when a new screenshot is published"""
+        screenshot = resource.get_metadata()
+        if screenshot.structure_id not in self.completed_states:
+            self.queue.append(screenshot)
+            self.completed_states.add(screenshot.structure_id)
+            self._process_images()
+    
+    def _publish_issues(self) -> None:
+        """Publish outputs to resource group"""
+        issues = self._get_display_issues()
+        complete = False
+        for issue in issues:
+            if issue == issues[:-1]:
+                complete = not self.resource_dict[ResourceType.SCREENSHOT.is_active()]
+            rw = ResourceWrapper(self.output_dir, self.get_name(), issue)
+            self.resource_dict[ResourceType.DISPLAY_ISSUE].publish(rw, complete)
+        
+    def _get_display_issues(self) -> List[Tuple[Screenshot, str]]:
+        """Returns a list of heatmap images produced by owleye
+        
+        Returns: 
+            list[tuple(Screenshot, str)]: Pair of origial screenshot and heatmap image path
+        """
+        heatmaps = []
+        for screenshot in self.queue:
+            filename = os.path.basename(screenshot.get_image_jpeg())
+            if os.path.exists(os.path.join(self.output_dir, filename)):
+                heatmaps.append((screenshot, os.path.join(self.output_dir, filename)))
+        return heatmaps

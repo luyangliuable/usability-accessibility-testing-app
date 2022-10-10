@@ -24,8 +24,7 @@ def create_app(script_info=None):
     # # Used as main page of flask ##############################################
     # app.register_blueprint(main_blueprint)
 
-    # Used as upload api for flask ################################################
-    from routes.upload_api import upload_blueprint
+    # # Used as upload api for flask ################################################
     app.register_blueprint(upload_blueprint)
     # app.register_blueprint(algorithm_task_blueprint)
 
@@ -41,9 +40,8 @@ def create_app(script_info=None):
     # # Used for getting job status, notes, estimated remaining time and results
     # app.register_blueprint(job_status_blueprint)
 
-    # app.register_blueprint(login_blueprint)
-    from reports.app import reports_blueprint
-    app.register_blueprint(reports_blueprint)
+    app.register_blueprint(user_blueprint)
+    # app.register_blueprint(reports_blueprint)
 
     # ############################################################################ #
     #                                New Blueprints                                #

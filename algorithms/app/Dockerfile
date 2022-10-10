@@ -29,7 +29,9 @@ EXPOSE 3050
 COPY .aws /root/.aws
 
 # copy app
+COPY models ./models
 COPY resources ./resources
 COPY tasks ./tasks
 COPY apk_analysis.py ./apk_analysis.py
 COPY apk_analysis_api.py ./apk_analysis_api.py
+COPY test.py ./test.py

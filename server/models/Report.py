@@ -19,16 +19,15 @@ def getReportCollection():
 
 class ReportModel:
 
-    def uploadResult(self):
-        json_response = request.json
+    def uploadResult(self, uuid, user_uuid):
         reports = getReportCollection()
 
         if reports is None:
             return json.dumps({"ERROR": "Could not load reports DB collection"}), 500
 
         new_report = {
-            "user_id": json_response["user_id"],
-            "result_id": json_response["result_id"]
+            "user_id": user_uuid,
+            "result_id": uuid
         }
 
         try:
@@ -37,14 +36,13 @@ class ReportModel:
         except:
             return json.dumps({"ERROR": "Failed to create report"}), 500
 
-    def getResults(self):
-        json_response = request.json
+    def getResults(self, user_uuid):
         reports = getReportCollection()
 
         if reports is None:
             return json.dumps({"ERROR": "Could not load reports DB collection"}), 500
 
-        results = reports.find({"user_id": json_response["user_id"]})
+        results = reports.find({"user_id": user_uuid})
         print(results)
 
-        return json_util.dumps({"user_id": json_response["user_id"], "results": list(results)}), 200
+        return json_util.dumps({"user_id": user_uuid, "results": list(results)}), 200

@@ -39,26 +39,11 @@ export const startJob = async (objectState, setObjectState, algorithmsToComplete
      */
     extract_additional_files(objectState, formData);
 
+    formData.append("user_uuid", sessionStorage.getItem('User_UUID'))
     /**
     * Upload apk file then send to result and official signal start
     */
     uploadApk(formData, setObjectState).then(response => {
-        const user_UUID = sessionStorage.getItem('User_UUID');
-
-        const jsonData = JSON.stringify({
-            "user_id": user_UUID,
-            "result_id": response.uuid
-        });
-
-        /**
-        * Send result information to user backend
-        */
-        var _ = fetch(resultCreateUrl, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: jsonData,
-        });
-
         data = {
             algorithmsToComplete: algorithmsToComplete,
             uuid: response.uuid

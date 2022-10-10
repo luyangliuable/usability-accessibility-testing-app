@@ -25,10 +25,6 @@ def get_status(uuid, algorithm=None):
 
     TODO: Implement this method
     """
-
-    print("uuid: ", str(uuid))
-    print("algorithm: ", str(algorithm))
-
     if request.method == "GET":
         if algorithm is None:
             return status_controller.get(uuid), 200

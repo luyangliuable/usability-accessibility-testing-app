@@ -18,23 +18,6 @@ class AlgorithmStatusController(Generic[T], Controller):
         Updates algorithm_status. Gets algorithm_status.
     """
 
-    activity_result_file_json_format = {
-        "name" : "{name of activity / screenshot}",
-        "image" : "{link to screenshot image}",
-        "xbot" : {
-            "image" : "{link to xbot screenshot}",
-            "description" : "{description of issues in screenshot (string)}"
-        },
-        "owleye" : {
-            "image" : "{link to owleye heatmap screenshot}"
-        },
-        "tapshoe" : {
-            "image" : "{link to screenshot of tapshoe image}",
-            "description" : "{string description of image}",
-            "heatmap" : "{link to heatmap image}"
-        },
-    }
-
     status_key = 'algorithm_status'
 
     def __init__(self, collection_name: str) -> None:

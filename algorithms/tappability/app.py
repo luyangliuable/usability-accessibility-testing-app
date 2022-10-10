@@ -27,7 +27,7 @@ def execute():
         print('STARTING TAPSHOE %s %s %s %s' % (image_dir, json_dir, output_dir, threshold))
         
         subprocess.run([
-            "python3", 
+            "python3.8", 
             "/home/pipeline/pipeline.py", 
             "-i", image_dir, 
             "-j", json_dir,

@@ -34,7 +34,7 @@ class ResourceWrapper(Generic[T]):
 
 
     def __repr__(self):
-        return f'<<Resource Wrapper path={self._path} released={self._released}>>'
+        return f'<<{type( self ).__name__} path={self._path} released={self._released}>>'
 
 
 
@@ -65,7 +65,6 @@ class ResourceGroup(Generic[T]):
 
     def __init__(self, type: ResourceType, usage: ResourceUsage = ResourceUsage.CONCURRENT):
         self._type = type
-
         self._resources = []
         self._subscribers = []
         self._providers = {}
@@ -97,6 +96,12 @@ class ResourceGroup(Generic[T]):
         self._providers[resource.get_origin()] = completed
         print(f'{resource} added to {self._resources}.')
         self._resources.append(resource)
+
+        # TODO new utg class, callback for utg:
+        # Has data whether the utg finished building.
+        # TODO if the resource being publish is utg and with images from droidbot, ignore ones the same hash.
+
+        # TODO if the resource being published is utg, run trigger run to utg.
 
         ## TODO store dispatched resources in JSON or something and not just memory
         if self._usage is ResourceUsage.CONCURRENT:

@@ -20,15 +20,14 @@ class ApkAnalysis:
         self.apk = ResourceWrapper(apk_file, 'upload')
         emulator_link = 'host.docker.internal:5555'
         self.upload_additional_files = additional_files
-        self.emulator = ResourceWrapper('', emulator_link)
+        self.emulator = ResourceWrapper(emulator_link, '')
         self.output_dir = output_dir
         self.apk_file = apk_file
         self.resources = {}
-        self.name = names
-        self._init_dirs()
+        self.algorithm_names = names
+        self._create_directories()
 
         print(f'APK file is {apk_file}')
-
 
 
     def get_emulator(self) -> ResourceWrapper:
@@ -44,8 +43,9 @@ class ApkAnalysis:
         self._init_resource_groups()
         self._init_additional_resource_groups()
 
-        print(f'Creating tasks {self.name} with output dir {self.output_dir} and res {self.resources}')
-        TaskFactory.create_tasks(self.name, self.output_dir, self.resources, uuid)
+        print(f'Creating tasks {self.algorithm_names} with output dir {self.output_dir} and res {self.resources}')
+        TaskFactory.create_tasks(self.algorithm_names, self.output_dir, self.resources, uuid)
+
 
         self._publish_apk()
         self._publish_emulator()
@@ -78,11 +78,13 @@ class ApkAnalysis:
         # TODO create task class for getting results
         pass
 
-    def _init_dirs(self) -> None:
+
+    def _create_directories(self) -> None:
         """Creates directories for analysis"""
         # create output dir
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
+
 
     def _init_apk_resource(self) -> ResourceGroup:
         rw = ResourceWrapper(self.apk_file, None)

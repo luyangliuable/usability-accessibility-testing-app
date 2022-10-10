@@ -44,6 +44,8 @@ class JobStatusController(t.Generic[T], Controller):
 
     def get(self, uuid: str) -> str:
 
+        d = self._db.get_document(uuid, self.collection)
+
         # Get status ##################################################################
         status = d['overall-status']
         status['apk'] = d['apk']

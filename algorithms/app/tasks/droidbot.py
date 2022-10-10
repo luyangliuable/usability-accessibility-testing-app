@@ -12,12 +12,11 @@ import os
 import json
 
 
-class Droidbot(Task):
+class Droidbot(Task, Thread):
     """Class for managing droidbot algorithm"""
 
     _input_types = [ResourceType.APK_FILE, ResourceType.EMULATOR]
     _output_types = [ResourceType.UTG]
-    _shared_volume = "/home/tasks"
     _execute_url = os.environ['DROIDBOT']
     name = "Droidbot"
 
@@ -38,18 +37,25 @@ class Droidbot(Task):
         self.apk_queue = []
         self.images = ()
         self.check_new_image_directory = os.path.join(output_dir, 'states')
-        self._watcher = FileWatcher(uuid, 'jpg', self.check_new_image_directory, ResourceType.SCREENSHOT_JPEG, self)
+        self._image_file_watcher = FileWatcher(uuid, 'jpg', self.check_new_image_directory, ResourceType.SCREENSHOT_JPEG, self)
         self.dependent_algorithms = []
 
 
-    def _check_resources_available(self) -> bool:
+    def _check_input_resources_available(self) -> bool:
         """
-        Check if both apk and emulator resource are both avalaible. TODO maybe combine both into one resource group?
-        """
-        if self.resource_dict[ResourceType.EMULATOR].is_active and self.resource_dict[ResourceType.APK_FILE].is_active:
-            return True
+        Check if all resources are avalaible ( apk and emulator ).
+        TODO maybe combine both into one resource group?
 
-        return False
+        Returns: (Boolean) Whether or not the resources are avalaible.
+        """
+        flag = True
+
+        for resource in self._input_types:
+            if not self.resource_dict[resource].is_active:
+                flag = False
+                break
+
+        return flag
 
 
     def update_algorithm_status(self, status: StatusEnum):
@@ -63,8 +69,8 @@ class Droidbot(Task):
         assert self.uuid != None, "No job UUID detected."
         algorithm_name = self.name[0].lower() + self.name[1:]
         url = os.path.join(self._status_controller, self.uuid, algorithm_name)
-        res = requests.post(url, headers={"Content-Type": "application/json"}, json=data)
-        print(f'Updated {algorithm_name} status on url {url} to {self.status}. {res}.')
+        response = requests.post(url, headers={"Content-Type": "application/json"}, json=data)
+        print(f'Updated {algorithm_name} status on url {url} to {self.status}. {response}.')
 
 
     def _publish_utg(self) -> bool:
@@ -75,17 +81,19 @@ class Droidbot(Task):
         return True
 
 
-    def run(self, apk_path: str) -> t.Dict[str, str]:
+    @staticmethod
+    def run(apk_path: str, output_dir: str) -> t.Dict[str, str]:
         """
         Execute gifdroid algorithm by http request and passing in necessary data for gifdroid to figure out stuff.
 
         Parameters:
             apk_path - (str) The string path for the apk for to run droidbot.
+
+
+        # TODO make this a static method
         """
         self.update_algorithm_status(StatusEnum.running)
-        self.watch_for_new_files()
-        print(f'Running droidbot with apk {apk_path}.\n')
-
+        self._image_file_watcher.start()
         response = requests.post(str( self._execute_url ), data=json.dumps(self._get_execution_data(apk_path)), headers={"Content-Type": "application/json"})
 
 
@@ -94,9 +102,36 @@ class Droidbot(Task):
         else:
             self.update_algorithm_status(StatusEnum.failed)
 
+        self._image_file_watcher.join()
+        self._publish_utg()
 
-        self._watcher.join()
+        return { "message": "Execute started." }
 
+
+    def run(self, apk_path: str) -> t.Dict[str, str]:
+        """
+        Execute gifdroid algorithm by http request and passing in necessary data for gifdroid to figure out stuff.
+
+        Parameters:
+            apk_path - (str) The string path for the apk for to run droidbot.
+
+        # TODO make this a staticmethod
+        """
+        self.update_algorithm_status(StatusEnum.running)
+        self._image_file_watcher.start()
+        print(self._execute_url)
+        print(self._execute_url)
+        print(self._execute_url)
+        print(self._execute_url)
+        response = requests.post(str( self._execute_url ), data=json.dumps(self._get_execution_data(apk_path)), headers={"Content-Type": "application/json"})
+
+
+        if response.status_code == 200:
+            self.update_algorithm_status(StatusEnum.successful)
+        else:
+            self.update_algorithm_status(StatusEnum.failed)
+
+        self._image_file_watcher.join()
         self._publish_utg()
 
         return { "message": "Execute started." }

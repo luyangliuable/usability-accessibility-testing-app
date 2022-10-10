@@ -82,6 +82,7 @@ class Task(ABC, metaclass=TaskMetaclass):
     ###__metaclass__= TaskMetaclass
 
     _status_controller = os.environ['STATUS_CONTROLLER']
+    _shared_volume = "/home/tasks"
 
     def __init__(self, output_dir : str, resource_dict : Dict[ResourceType, ResourceGroup], uuid: str) -> None:
         super().__init__()
@@ -123,7 +124,7 @@ class Task(ABC, metaclass=TaskMetaclass):
         pass
 
 
-    def get_status(self) -> str:
+    def get_status(self) -> StatusEnum:
         """Get task status"""
         return self.status
 

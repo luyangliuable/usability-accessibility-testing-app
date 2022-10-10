@@ -24,11 +24,11 @@ def start(uuid):
 
     TODO: Implement this method
     """
-    print("uuid: ", str(uuid))
 
     if request.method == "POST":
         if request.json != None:
-            algorithms_to_complete = request.json["algorithmsToComplete"]
+            algorithms_to_complete_key = "algorithmsToComplete"
+            algorithms_to_complete = request.json[algorithms_to_complete_key]
 
             algorithm_task_controller.post(uuid, algorithms_to_complete)
 
@@ -36,7 +36,7 @@ def start(uuid):
         else:
             return "Fail: No request body", 400
 
-    return "Fail", 500
+    return json.dumps({"message": "No POST request received."}), 400
 
 
 @signals_blueprint.route('/stop/<uuid>', methods=['POST'])

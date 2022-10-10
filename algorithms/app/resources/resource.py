@@ -34,7 +34,7 @@ class ResourceWrapper(Generic[T]):
 
 
     def __repr__(self):
-        return f'<<Resource Wrapper path={self._path} released={self._released}>>'
+        return f'<<Resource Wrapper path={self._path}, released={self._released}, metadata={self._metadata}>>'
 
 
     def lock(self, released):
@@ -73,12 +73,11 @@ class ResourceGroup(Generic[T]):
 
     def is_active(self) -> bool:
         ## TODO rework active status of resource group
-        done = True
+        for completed in self._providers.values():
+            if not completed:
+                return True
 
-        for (_, completed) in self._providers:
-            done = done and completed
-
-        return not done
+        return True if len(self.providers) == 0 else False
 
 
     def subscribe(self, callback : Callable[[ResourceWrapper[T]], None]) -> None:

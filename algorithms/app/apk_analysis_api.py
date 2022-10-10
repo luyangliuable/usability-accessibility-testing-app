@@ -8,9 +8,12 @@ import json
 class ApkAnalysisApi:
 
     _algorithm_outputs = {
-        'Xbot': [ResourceType.ACCESSABILITY_ISSUE, Screenshot],
-        'Tappability': [Screenshot]
     }
+
+    # _algorithm_outputs = {
+    #     'Xbot': [ResourceType.ACCESSABILITY_ISSUE, Screenshot],
+    #     'Tappability': [Screenshot]
+    # }
 
     _shared_volume = '/home/data'
 
@@ -39,6 +42,7 @@ class ApkAnalysisApi:
 
 
 app = Flask(__name__)
+
 @app.route("/begin_apk_analysis", methods=["POST"])
 def begin_apk_analysis():
     """

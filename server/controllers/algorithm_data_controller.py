@@ -1,6 +1,5 @@
 import os
-
-from numpy import result_type
+# from numpy import result_type
 from utility.uuid_generator import unique_id_generator
 from typing import TypeVar, Generic, List, Dict, Tuple
 from controllers.controller import Controller
@@ -48,6 +47,7 @@ class AlgorithmDataController(Generic[T], Controller):
 
         return self._db.get_document(uuid=uuid, collection=self.collection)
 
+
     def post(self, request_parameters: List, document: Dict) -> bool:
         """
         Add file metadata that matches the job uuid
@@ -66,7 +66,8 @@ class AlgorithmDataController(Generic[T], Controller):
 
         return True
 
-    def _insert_algorithm_result(self, uuid: str, algorithm: str, content_type: str, file) -> Tuple[Dict[str, T], int]:
+
+    def _insert_algorithm_result(self, uuid: str, data: Dict[str, List]) -> Dict[str, T]:
         """
         This function inserts the links to the algorithm results into the document matching uuid
 
@@ -79,36 +80,48 @@ class AlgorithmDataController(Generic[T], Controller):
 
         """
 
-        result_key_in_d = "results"
-
-        result_lookup = {
-            "application/json": "json",
-            "image/png": "images"
-        }
-        result_type = result_lookup[content_type]
-
         document = self._db.get_document(uuid, self.collection)
+        results_key = "results"
+        alg_results = document[results_key]
 
-        result = document[result_key_in_d]
+        new_activity = self._db.get_format(uuid)[results_key]['activities'][0]
+        new_gifdroid = alg_results['gifdroid']
 
-        prev = result[self.lookup[algorithm]][result_type]
-        print(prev)
+        for key, item in data.items():
+            if key == "ui-states":
+                for each_activity in item:
+                    print(each_activity)
+                    for name, data in each_activity.items():
+                        if name == 'activity-name':
+                            new_activity[name] = each_activity[name]
+                        elif name == 'structure-id':
+                            new_activity[name] = each_activity[name]
+                        elif name == 'base-image':
+                            new_activity[name] = each_activity[name]
+                        elif name == "xbot":
+                            new_activity[name]['image'] = each_activity[name]['image']
+                            new_activity[name]['description'] = each_activity[name]['description']
+                        elif name == "owleye":
+                            new_activity[name]['image'] = each_activity[name]['image']
+                        elif name == "tappable":
+                            # assert 'tappable' in new, "New must have tappable"
+                            # assert 'tappable' in each_activity, "Each activity must have tappable"
+                            new_activity[name]['image'] = each_activity[name]['image']
+                            new_activity[name]['description'] = each_activity[name]['description']
+                            new_activity[name]['heatmap'] = each_activity[name]['heatmap']
 
-        prev.append({
-            "link": os.path.join("http://localhost:5005/download_result", uuid, self.lookup[algorithm], file.name),
-            "name": file.name,
-            "type": content_type
-        })
-        print(prev)
+                alg_results['activities'].append(new_activity)
 
-        result[self.lookup[algorithm]][result_type] = prev
-        print(result)
+            elif key == 'gifdroid':
+                for name, data in item.items():
+                    new_gifdroid[name] = data
 
-        self._db.update_document(uuid, self.collection, result_key_in_d, result)
 
-        return result, 200
+        self._db.update_document(uuid, self.collection, results_key, alg_results)
 
-    def _get_result_of_algorithm(self, uuid: str, algorithm: str) -> Dict[str, T]:
+        return alg_results
+
+    def _get_result_of_algorithm(self, uuid: str, type: str) -> Dict[str, T]:
         """
         Method for getting a document from api
 
@@ -124,7 +137,7 @@ class AlgorithmDataController(Generic[T], Controller):
 
         schema_result_key = 'results'
         document = self.get(uuid)
-        result = document[schema_result_key][self.lookup[algorithm]]
+        result = document[schema_result_key][type]
 
         return result
 

@@ -37,7 +37,7 @@ class Droidbot(Task, Thread):
         self.apk_queue = []
         self.images = ()
         self.check_new_image_directory = os.path.join(output_dir, 'states')
-        self._image_file_watcher = FileWatcher(uuid, 'jpg', self.check_new_image_directory, ResourceType.SCREENSHOT_JPEG, self)
+        self._image_file_watcher = FileWatcher(uuid, 'jpg', self.check_new_image_directory, ResourceType.SCREENSHOT, self)
         self.dependent_algorithms = []
 
 
@@ -81,31 +81,31 @@ class Droidbot(Task, Thread):
         return True
 
 
-    @staticmethod
-    def run(apk_path: str, output_dir: str) -> t.Dict[str, str]:
-        """
-        Execute gifdroid algorithm by http request and passing in necessary data for gifdroid to figure out stuff.
+    # @staticmethod
+    # def run(apk_path: str, output_dir: str) -> t.Dict[str, str]:
+    #     """
+    #     Execute gifdroid algorithm by http request and passing in necessary data for gifdroid to figure out stuff.
 
-        Parameters:
-            apk_path - (str) The string path for the apk for to run droidbot.
-
-
-        # TODO make this a static method
-        """
-        self.update_algorithm_status(StatusEnum.running)
-        self._image_file_watcher.start()
-        response = requests.post(str( self._execute_url ), data=json.dumps(self._get_execution_data(apk_path)), headers={"Content-Type": "application/json"})
+    #     Parameters:
+    #         apk_path - (str) The string path for the apk for to run droidbot.
 
 
-        if response.status_code == 200:
-            self.update_algorithm_status(StatusEnum.successful)
-        else:
-            self.update_algorithm_status(StatusEnum.failed)
+    #     # TODO make this a static method
+    #     """
+    #     self.update_algorithm_status(StatusEnum.running)
+    #     self._image_file_watcher.start()
+    #     response = requests.post(str( self._execute_url ), data=json.dumps(self._get_execution_data(apk_path)), headers={"Content-Type": "application/json"})
 
-        self._image_file_watcher.join()
-        self._publish_utg()
 
-        return { "message": "Execute started." }
+    #     if response.status_code == 200:
+    #         self.update_algorithm_status(StatusEnum.successful)
+    #     else:
+    #         self.update_algorithm_status(StatusEnum.failed)
+
+    #     self._image_file_watcher.join()
+    #     self._publish_utg()
+
+    #     return { "message": "Execute started." }
 
 
     def run(self, apk_path: str) -> t.Dict[str, str]:

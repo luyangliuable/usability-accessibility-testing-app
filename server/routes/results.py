@@ -16,9 +16,9 @@ upload_controller = UploadController('apk')
 
 # Defines two routes for the blueprint, one where the algorithm is specified and one where it is not
 @results_blueprint.route('/get/<uuid>', defaults={'algorithm': None},  methods=['GET'])
-@results_blueprint.route('/get/<uuid>/<algorithm>',  methods=['GET'])
+@results_blueprint.route('/get/<uuid>/<type>',  methods=['GET'])
 @cross_origin()
-def get_result(uuid, algorithm=None):
+def get_result(uuid, type=None):
     """
 
     Get the result of a given uuid and algorithm
@@ -36,13 +36,13 @@ def get_result(uuid, algorithm=None):
     """
 
     print("uuid: ", str(uuid))
-    print("algorithm: ", str(algorithm))
+    print("algorithm: ", str(type))
 
     if request.method == "GET":
-        if algorithm is None:
-            return safe_serialize(algorithm_database_controller.get(uuid)), 200
+        if type is None:
+            return algorithm_database_controller.get(uuid), 200
         else:
-            return algorithm_database_controller._get_result_of_algorithm(uuid, algorithm), 200
+            return algorithm_database_controller._get_result_of_algorithm(uuid, type), 200
 
     return "Failed", 500
 
@@ -88,14 +88,12 @@ def add_result(uuid, algorithm=None):
     print("algorithm: " + str(algorithm))
 
     if request.method == 'POST':
-        files = request.json["files"]
+        results = request.json
 
-        print("files: ", files)
+        print(results)
 
-        algorithm_database_controller._insert_algorithm_result(uuid, algorithm, request.headers['content_type'], files)
+        updated_result = algorithm_database_controller._insert_algorithm_result(uuid, results)
 
-        # upload_controller._save_additional_files(uuid, links, type, file_name)
-
-        return "Success", 200
+        return updated_result, 200
 
     return "Fail", 500

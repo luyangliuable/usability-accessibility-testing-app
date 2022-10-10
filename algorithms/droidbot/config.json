@@ -7,7 +7,7 @@
     "SAVE_BUCKET_NAME": "gifdroid-bucket",
     "MONGO_DB": "",
     "DEFAULT_UTG_FILENAME": "utg.js",
-    "NUM_OF_EVENT": "5",
+    "NUM_OF_EVENT": "100",
     "EMULATOR": "emulator-5554",
     "OUTPUT_FILE": "gifdroid.json"
 }

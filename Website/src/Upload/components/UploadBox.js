@@ -47,11 +47,6 @@ const UploadBox = ({
 
             <div className="upload-box-full-width">
               <AiFillAndroid style={{width: "100px", height: "100px", color: '#1d7598'}}/>
-              {/* <img */}
-              {/*   className="upload-box-icon" */}
-              {/*   src={require("../content/apk-image.png")} */}
-              {/*   alt={""} */}
-              {/* /> */}
             </div>
 
             <div className="upload-vspacing-10"> </div>

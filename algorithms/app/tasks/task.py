@@ -82,6 +82,7 @@ class Task(ABC, metaclass=TaskMetaclass):
     ###__metaclass__= TaskMetaclass
 
     _status_controller = os.environ['STATUS_CONTROLLER']
+    _shared_volume = "/home/tasks"
 
     def __init__(self, output_dir : str, resource_dict : Dict[ResourceType, ResourceGroup], uuid: str) -> None:
         super().__init__()
@@ -92,13 +93,6 @@ class Task(ABC, metaclass=TaskMetaclass):
 
         if not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir)
-
-
-    @abstractmethod
-    def run(self) -> Dict[str, str]:
-        """Execute Task"""
-        pass
-
 
     @classmethod
     @abstractmethod
@@ -122,9 +116,15 @@ class Task(ABC, metaclass=TaskMetaclass):
     def get_output_dir(self) -> str:
         """Output directory of the task"""
         return self.output_dir
+    
+    
+    def get_output_zip(self) -> str:
+        """Zips output directory and returns zip path"""
+        #TODO: Implement Method
+        pass
 
 
-    def get_status(self) -> str:
+    def get_status(self) -> StatusEnum:
         """Get task status"""
         return self.status
 

@@ -37,7 +37,6 @@ class ResourceWrapper(Generic[T]):
         return f'<<Resource Wrapper path={self._path} released={self._released}>>'
 
 
-
     def lock(self, released):
         """
         Enforce a lock on the resource, providing an ON RELEASED callback
@@ -86,7 +85,6 @@ class ResourceGroup(Generic[T]):
         """
         Subscribe to the resource group
         """
-        print('Droidbot subscribed')
         self._subscribers.append(callback)
 
 
@@ -98,16 +96,16 @@ class ResourceGroup(Generic[T]):
         print(f'{resource} added to {self._resources}.')
         self._resources.append(resource)
 
-        ## TODO store dispatched resources in JSON or something and not just memory
+
         if self._usage is ResourceUsage.CONCURRENT:
             for sub in self._subscribers:
                 sub(resource)
 
         elif self._usage is ResourceUsage.SEQUENTIAL:
-            self.lock_resource(resource, 0)
+            self._lock_resource(resource, 0)
 
 
-    def lock_resource(self, resource : ResourceWrapper[T], index : Number) -> None:
+    def _lock_resource(self, resource : ResourceWrapper[T], index : Number) -> None:
         """
         INTERNAL USE ONLY
         Place a sequential lock on a resource, allows a resource to be dispatches sequentially
@@ -116,6 +114,6 @@ class ResourceGroup(Generic[T]):
         if index >= len(self._subscribers):
             return
 
-        resource.lock(lambda x : self.lock_resource(x, index + 1))
+        resource.lock(lambda x : self._lock_resource(x, index + 1))
         self._subscribers[index](resource)
  

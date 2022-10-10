@@ -68,8 +68,7 @@ class DBManager:
                 "progress": 0,
                 "logs": [],
                 "ert": 0,
-                "algorithms_to_run": [], # Required to calculate progress
-                "algorithms_complete": 0 # Required to calculate progress
+                "algorithms_to_run": [] # Required to calculate progress
             },
             "algorithm_status" : {
                 "storydistiller" : {

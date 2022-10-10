@@ -26,6 +26,8 @@ class JobStatusController(t.Generic[T], Controller):
 
     def get(self, uuid: str) -> str:
 
+        d = self._db.get_document(uuid, self.collection)
+
         # Get status ##################################################################
         document = self._db.get_document(uuid, self.collection)
         status = document['overall-status']

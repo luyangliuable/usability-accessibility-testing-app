@@ -24,7 +24,6 @@ def start(uuid):
 
     TODO: Implement this method
     """
-    print("uuid: ", str(uuid))
 
     if request.method == "POST":
         if request.json != None:
@@ -38,7 +37,7 @@ def start(uuid):
         else:
             return "Fail: No request body", 400
 
-    return "Fail", 500
+    return json.dumps({"message": "No POST request received."}), 400
 
 
 @signals_blueprint.route('/stop/<uuid>', methods=['POST'])

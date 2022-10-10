@@ -118,7 +118,7 @@ services:
   analysis_app:
     build:
       context: ./algorithms/app/
-    command: python3 apk_analysis_api.py
+    command: python3 apk_analysis.py
     container_name: bxer.analysis_app
     ports:
       - 3050:3050
@@ -143,42 +143,41 @@ services:
     volumes:
       - './algorithms/app/.data:/home/data'
 
-  # xbot:
-  #   build:
-  #     context: ./algorithms/xbot/
-  #   command: python3 app.py
-  #   container_name: bxer.xbot
-  #   ports:
-  #     - '3003:3003'
-  #   volumes:
-  #     - './algorithms/app/.data:/home/data'
+  xbot:
+    build:
+      context: ./algorithms/xbot/
+    command: python3 app.py
+    container_name: bxer.xbot
+    ports:
+      - '3003:3003'
+    volumes:
+      - './algorithms/app/.data:/home/data'
 
-  # owleye:
-  #   build:
-  #     context: ./algorithms/owleye/
-  #   command: python3 app.py
-  #   container_name: bxer.owleye
-  #   ports:
-  #     - '3004:3004'
-  #   volumes:
-  #     - './algorithms/app/.data:/home/data'
+  owleye:
+    build:
+      context: ./algorithms/owleye/
+    command: python3 app.py
+    container_name: bxer.owleye
+    ports:
+      - '3004:3004'
+    volumes:
+      - './algorithms/app/.data:/home/data'
 
-  # tappability:
-  #   build:
-  #     context: ./algorithms/tappability/
-  #   command: python3 app.py
-  #   container_name: bxer.tappable
-  #   ports:
-  #     - '3007:3007'
-  #   volumes:
-  #     - './algorithms/app/.data:/home/data'
+  tappability:
+    build:
+      context: ./algorithms/tappability/
+    command: python3 app.py
+    container_name: bxer.tappability
+    ports:
+      - '3007:3007'
+    volumes:
+      - './algorithms/app/.data:/home/data'
 
 
   gifdroid:
     build:
       context: ./algorithms/gifdroid
     command: python3 app.py
-    image: bwoa0001/gifdroid
     container_name: bxer.gifdroid
     ports:
       - '3005:3005'

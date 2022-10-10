@@ -54,14 +54,13 @@ def update_status(uuid, algorithm=None):
     TODO: Implement this method
     """
 
-    status = request.json
+    new_status = request.json
     print("uuid: ", str(uuid))
     print("algorithm: ", str(algorithm))
-    print("status: ", str(status))
 
     if request.method == "POST":
         if algorithm is None:
-            return status_controller.post(uuid, status=status), 200
+            return status_controller.post(uuid, **new_status), 200
         else:
-            return algorithm_status_controller.post(uuid, algorithm, status), 200
+            return algorithm_status_controller.post(uuid, algorithm, **new_status), 200
     return "Fail", 500

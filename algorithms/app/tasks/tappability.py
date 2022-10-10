@@ -1,9 +1,6 @@
-from urllib import response
-from PIL import Image
-import json
 import os
 from resources.resource import *
-from resources.screenshot import *
+from models.screenshot import *
 from tasks.task import Task
 from typing import List, Callable, Tuple
 import shutil
@@ -12,13 +9,17 @@ import subprocess
 class Tappability(Task):
     """Class for managing Tappability algorithm"""
     
-    def __init__(self, output_dir, resource_dict) -> None:
-        super().__init__(output_dir, resource_dict)
-        self.img_lst = {}
+    _input_types = [ResourceType.SCREENSHOT]
+    _output_types = [ResourceType.TAPPABILITY_PREDICTION]
+    _url = "http://host.docker.internal:3007/execute"
+    
+    def __init__(self, output_dir: str, resource_dict: dict[ResourceType, ResourceGroup], uuid: str) -> None:
+        super().__init__(output_dir, resource_dict, uuid)
         self.running = False
+        self.queue: list[Screenshot] = []         # list of unprocessed screenshots
+        self.completed_states: set[str] = set()   # set of screenshot structure_ids that have been completed
         self.threshold = 50
-        print("tappability")
-        self._sub_to_new_image()
+        self._sub_to_new_screenshots()
         
     @classmethod
     def get_name(cls) -> str:
@@ -27,116 +28,119 @@ class Tappability(Task):
     
     @classmethod
     def get_input_types(cls) -> List[ResourceType]:
-        return [Screenshot]
-
+        return Tappability._input_types
 
     @classmethod
     def get_output_types(cls) -> List[ResourceType]:
-        return [Screenshot]
+        return Tappability._output_types
 
+    @classmethod
+    def run(cls, image_dir: str, json_dir: str, output_dir: str, threshold: int) -> None:
+        """Runs Tappability algorithm.
         
-    def _sub_to_new_image(self) -> None:
+        Attributes:
+            image_dir: Dir with screenshot JPEG images.
+            json_dir: Dir with JSON layout files with same filename as corresponding screenshot image.
+            output_dir: Output dir.
+            threshold: Min Tappability rating for an UI element to be considered tappable.
+        """
+        data = {
+            "image_dir" : image_dir,
+            "json_dir" : json_dir,
+            "output_dir" : output_dir,
+            "threshold" : str(threshold)
+        }
+        
+        response = Tappability.http_request(Tappability._url, data)
+        
+        status = 'SUCCESSFUL' if response and response.status_code==200 else 'FAILED'
+        print("STATUS " + status)
+        
+        
+    def _sub_to_new_screenshots(self) -> None:
         """Get notified when new activity is added"""
-        self.resource_dict['UI_Info'].subscribe(tappable_callback)
+        if self.resource_dict[ResourceType.SCREENSHOT]:
+            self.resource_dict[ResourceType.SCREENSHOT].subscribe(self.new_screenshot_callback)
     
-    def tappable_callback(self, new_img: Screenshot) -> None:
-         """Callback method to add img and run converter method"""
-         if new_img.get_view_name() not in self.img_lst:
-             self._add_img(new_img)
-             self._process_img()
-
-    def _add_img(self, img: Screenshot) -> None:
-        """Add img to img list"""
-        view_name = img.get_view_name()
-        if view_name not in self.img_lst:
-            self.img_lst[view_name] = {"item": img, "is_completed": False, "ready": False}
-            
-    def _get_next(self) -> Screenshot:
-        """Get next img from list which is uncompleted"""
-        img_lst = [val["item"] for val in self.img_lst.values() if not val["is_completed"] and not val["item"].gget_tappability_path()]
-        return img_lst[0] if len(img_lst) > 0 else None
-
-    def _process_img(self) -> None:
-        """Check to see if json is available. Process image or subscribe to json"""
-        next_img = self._get_next()
-        self.img_lst[next_img.get_view_name()]["ready"] = True # set ready
-        self._run()
+    def new_screenshot_callback(self, resource: ResourceWrapper) -> None:
+         """Callback method when new screenshot is added"""
+         screenshot: Screenshot = resource.get_metadata()
+         if screenshot.image_path is None or screenshot.layout_path is None:  # both image and layout required
+             return
+         if screenshot.structure_id not in self.completed_states:   # only add if similar UI structure not in list
+             self.queue.append(screenshot)
+             self.completed_states.add(screenshot.structure_id)
+             self._run()
+        
+    def _run(self) -> None:
+        """Run tappable on temp batch"""
+        if self.running:
+            return
+        
+        self.running = True
+        path = os.path.join(self.output_dir + "temp")
+        items = self._move_items(path)
+        
+        # run tappable
+        Tappability.run(path, path, self.output_dir, self.threshold)
+        
+        # generate and publish result data
+        result_list = self._get_results(items)
+        self.queue = [img for img in self.queue if img not in items]    # update queue
+        self._publish(result_list)
+        shutil.rmtree(path)
+        self.running = False
     
-    def _move_items(self, path:str) -> list:
+    def _move_items(self, path: str) -> list[Screenshot]:
         """Move ready items into temp directory"""
         if not os.path.exists(path):
             os.makedirs(path)
-            os.makedirs(os.path.join(path, 'images'))
-            os.makedirs(os.path.join(path, 'annotations'))
         item_ready = []
-        for val in self.img_lst.values():
-            if not val["is_completed"] and val["ready"]:
-                item = val["item"]
-                shutil.copy(item.get_image_files['jpeg'], os.path.join(path, 'images', item.get_view_name() + ".jpeg"))
-                shutil.copy(item.get_layout_files['json'], os.path.join(path, 'annotations', item.get_view_name() + ".json"))
-                item_ready.append(val["item"])
+        for screenshot in self.queue:
+            shutil.copy(screenshot.get_image_jpeg(), path)
+            # give json same filename as image
+            img_filename = os.path.splitext(os.path.basename(screenshot.image_path))[0]
+            shutil.copy(screenshot.get_layout_json(), os.path.join(path, img_filename + ".json"))
         return item_ready
-            
-    def _run(self) -> None:
-        """Run tappable on temp batch"""
-        if not self.running:
-            self.running = True
-            path = os.path.join(self.output_dir + "temp_dir")
-            item_lst = self._move_items(path)
-            #run tappable
-            subprocess.call(['python3','PATH TO TAPPABLE', '-i', os.path.join(path, 'images'), '-x', os.path.join(path, 'annotations'), '-o', self.output_dir, '-t', str(self.threshold)])
-            #publish
-            self._publish(item_lst, path)
     
-    def _publish(self, item_lst: list, path: str) -> None:
+    def _get_results(self, screenshots: List[Screenshot]) -> List[Tuple[Screenshot, str, str, List[str]]]:
+        """Get Tapability results for a list of screenshots. 
+        
+        Returns: 
+            List[Tuple[Screenshot, str, str, List[str]]]: \
+            original screenshot, annotated image path, rating description json path, list of heatmap image paths
+        """
+        results = []
+        for screenshot in screenshots:
+            img_name = os.path.splitext(os.path.basename(screenshot.image_path))[0]
+            result_dir = os.path.join(self.output_dir, img_name)
+            if not os.path.exists(result_dir):
+                continue
+            img_path = None
+            desc_path = None
+            heatmap_paths = []
+            for file in os.listdir(result_dir):
+                if file[-5:] == '.json':
+                    desc_path = os.path.join(result_dir, file)
+                    continue
+                if file == 'screenshot.jpg':
+                    img_path = os.path.join(result_dir, file)
+                    continue
+                heatmap_paths.append(os.path.join(result_dir, file))
+                
+            if img_path is not None and desc_path is not None:
+                results.append((screenshot, img_path, desc_path, heatmap_paths))
+        return results       
+        
+    
+    def _publish(self, item_lst: List[Tuple[Screenshot, str, str, List[str]]]) -> None:
         """publishes and updates item"""
         for item in item_lst:
-            #set item as complete 
-            self.img_lst[item.get_view_name()]["is_completed"] = True
-            item.set_tappability_path(os.path.join(path, item.get_view_name()))
-        #clear temp folder
-        shutil.rmtree(os.path.join(path, 'images'))
-        shutil.rmtree(os.path.join(path, 'annotations'))
-        os.makedirs(os.path.join(path, 'images'))
-        os.makedirs(os.path.join(path, 'annotations'))
-        #set tappability as not running
-        self.running = False
-                    
-    def is_complete(self):
-        """Checks if all images in list have been convertered"""
-        if self._get_next() == None:
-            return True
-        else:
-            return False  
+            rw = ResourceWrapper(os.dirname(item[1]), self.get_name(), item)
+            self.resource_dict[ResourceType.TAPPABILITY_PREDICTION].add(rw, self.is_complete())
         
-    def get_tappability_predictions(self) -> str:
-        # run xbot and droidbot if not already run
-        self._run_image_algorithms()
-        # copy screenshots into temp folder convert PNGs to JPEG & get annotations
-        img_path = os.path.join(TEMP_PATH,"tappability", "screenshots")
-        json_path = os.path.join(TEMP_PATH,"tappability", "annotations")
-        self._move_files_xb(img_path, json_path, jpg=True)
-        self._move_files_db(img_path, json_path)
-        # run tappability
-        tappability = Tappability(img_path, json_path, os.path.join(self.output_dir,"tappability"), threshold=50)
-        self.execute_task(tappability)
-        # copy results into activity folders
-        self._get_ui_display_issues(tappability=True)
-        return None
+    
 
-    def _get_ui_display_issues(self, tappability = False, owleye = False, xbot=False):
-        """Separates display issues by activity per algorithm"""
-        activites_path = os.path.join(self.output_dir, "activities")
-        for activity_name in list(set(self.activity_list)):
-            tap_temp_path = os.path.join(TEMP_PATH, "tappability", activity_name)
-            if tappability and os.path.exists(tap_temp_path):
-                tap_path = os.path.join(activites_path, activity_name, "tappability_prediction")
-                if not os.path.exists(tap_path):
-                    os.makedirs(tap_path)
-                for file in os.listdir(tap_temp_path):
-                    shutil.copy(os.path.join(tap_temp_path, file), os.path.join(activites_path, activity_name, "tappability_prediction"))
-            if owleye and os.path.exists(os.path.join(TEMP_PATH, "owleye", activity_name + '.jpg')):
-                if not os.path.exists(os.path.join(activites_path, activity_name, "display_issues")):
-                    os.makedirs(os.path.join(activites_path, activity_name, "display_issues"))
-                shutil.copy(os.path.join(TEMP_PATH, "owleye", activity_name + '.jpg'), os.path.join(activites_path, activity_name,"display_issues"))
-            return None
+    def is_complete(self):
+        """Checks if all images in list have been convertered and resource group is no longer active"""
+        return len(self.queue) == 0 and not self.resource_dict[ResourceType.SCREENSHOT].is_active()

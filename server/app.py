@@ -24,8 +24,9 @@ def create_app(script_info=None):
     # # Used as main page of flask ##############################################
     # app.register_blueprint(main_blueprint)
 
-    # # Used as upload api for flask ################################################
-    # app.register_blueprint(upload_blueprint)
+    # Used as upload api for flask ################################################
+    from routes.upload_api import upload_blueprint
+    app.register_blueprint(upload_blueprint)
     # app.register_blueprint(algorithm_task_blueprint)
 
     # # Used as mongo document management api for flask #############################
@@ -41,7 +42,8 @@ def create_app(script_info=None):
     # app.register_blueprint(job_status_blueprint)
 
     # app.register_blueprint(login_blueprint)
-    # app.register_blueprint(reports_blueprint)
+    from reports.app import reports_blueprint
+    app.register_blueprint(reports_blueprint)
 
     # ############################################################################ #
     #                                New Blueprints                                #

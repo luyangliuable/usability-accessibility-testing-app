@@ -34,7 +34,7 @@ const ProgressBar = (props) => {
     return (
         <>
             <div className="progressBarBackground" style={props.style}>
-            <animated.div className="stage" style={{ borderRadius: 17, height: "99%", ...progress }}>
+            <animated.div className="stage" style={{ height: "99%", ...progress }}>
             </animated.div>
           </div>
 

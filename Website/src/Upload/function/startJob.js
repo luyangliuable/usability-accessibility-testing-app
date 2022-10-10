@@ -7,7 +7,7 @@ export const startJob = async (objectState, setObjectState, algorithmsToComplete
 
     // TODO: Do not hard code these urls //////////////////////////////////////
     var additionalFiles = getAdditionalFiles(objectState);
-    const signalStartUrl = "http://localhost:5005/signal_start/";
+    const signalStartUrl = "http://localhost:5005/signal/start/";
     const resultCreateUrl = "http://localhost:5005/create_result";
     const task_url = "http://localhost:5005/task";
     let data;

@@ -84,17 +84,17 @@ class AlgorithmTaskController(t.Generic[T], Controller, Task):
 
         for algorithm in algorithms:
             additional_files_directory = os.path.join(shared_volume, uuid, algorithm)
+            if os.path.exists(additional_files_directory):
+                for file in os.listdir(additional_files_directory):
+                    print(file)
+                    file_type = file.split('.')[-1]
 
-            for file in os.listdir(additional_files_directory):
-                print(file)
-                file_type = file.split('.')[-1]
+                    if file_type in additional_files:
+                        additional_files[algorithm][file_type].append(os.path.join(additional_files_directory, file))
+                    else:
+                        additional_files[algorithm][file_type] = [os.path.join(additional_files_directory, file)]
 
-                if file_type in additional_files:
-                    additional_files[algorithm][file_type].append(os.path.join(additional_files_directory, file))
-                else:
-                    additional_files[algorithm][file_type] = [os.path.join(additional_files_directory, file)]
-
-            return additional_files
+        return additional_files
 
     def _get_apk_file(self, shared_volume: str, uuid: str) -> str:
         apk_directory = os.path.join(shared_volume, uuid)

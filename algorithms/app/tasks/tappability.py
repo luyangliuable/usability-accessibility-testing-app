@@ -59,7 +59,7 @@ class Tappability(Task):
         
     def _sub_to_new_screenshots(self) -> None:
         """Get notified when new activity is added"""
-        if self.resource_dict[ResourceType.SCREENSHOT]:
+        if ResourceType.SCREENSHOT in self.resource_dict:
             self.resource_dict[ResourceType.SCREENSHOT].subscribe(self.new_screenshot_callback)
     
     def new_screenshot_callback(self, resource: ResourceWrapper) -> None:
@@ -82,10 +82,13 @@ class Tappability(Task):
         items = self._move_items(path)
         
         # run tappable
-        Tappability.run(path, path, self.output_dir, self.threshold)
+        # Tappability.run(path, path, self.output_dir, self.threshold)
         
         # generate and publish result data
         result_list = self._get_results(items)
+        print(self.queue)
+        print(items)
+        print(result_list)
         self.queue = [img for img in self.queue if img not in items]    # update queue
         self._publish(result_list)
         shutil.rmtree(path)
@@ -101,6 +104,7 @@ class Tappability(Task):
             # give json same filename as image
             img_filename = os.path.splitext(os.path.basename(screenshot.image_path))[0]
             shutil.copy(screenshot.get_layout_json(), os.path.join(path, img_filename + ".json"))
+            item_ready.append(screenshot)
         return item_ready
     
     def _get_results(self, screenshots: List[Screenshot]) -> List[Tuple[Screenshot, str, str, List[str]]]:
@@ -136,8 +140,8 @@ class Tappability(Task):
     def _publish(self, item_lst: List[Tuple[Screenshot, str, str, List[str]]]) -> None:
         """publishes and updates item"""
         for item in item_lst:
-            rw = ResourceWrapper(os.dirname(item[1]), self.get_name(), item)
-            self.resource_dict[ResourceType.TAPPABILITY_PREDICTION].add(rw, self.is_complete())
+            rw = ResourceWrapper(os.path.dirname(item[1]), self.get_name(), item)
+            self.resource_dict[ResourceType.TAPPABILITY_PREDICTION].publish(rw, self.is_complete())
         
     
 

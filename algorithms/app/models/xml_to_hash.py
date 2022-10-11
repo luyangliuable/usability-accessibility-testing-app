@@ -4,7 +4,7 @@ import xmltodict
 import re
 
 class xmlToHash():
-    """Converts XML to Layout Hash"""
+    """Helper function for Screenshot to generate a hash from an XML layout file"""
     
     def __init__(self, xml_path: str):
         self.xml_path = xml_path
@@ -63,6 +63,7 @@ class xmlToHash():
    
    
 class jsonToHash():
+    """Helper function for Screenshot to generate a hash value for a screenshot UI layout"""
     
     def __init__(self, json_path):
         self.json_path = json_path

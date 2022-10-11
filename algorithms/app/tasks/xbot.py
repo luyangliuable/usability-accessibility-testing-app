@@ -15,9 +15,8 @@ class Xbot(Task):
     
     def __init__(self, output_dir, resource_dict : Dict[ResourceType, ResourceGroup], uuid: str) -> None:
         super().__init__(output_dir, resource_dict, uuid)
-        self.apk_queue = {}
+        self.apk_queue = []
         self._sub_to_apks()
-        self._sub_to_emulators()
 
     @classmethod
     def get_name(cls) -> str:
@@ -61,10 +60,10 @@ class Xbot(Task):
     def _process_apks(self, emulator: Emulator) -> None:
         """Process apks"""
         
-        print("XBOT RUNNING")
+        print("XBOT RUNNING, EMULATOR= " + str(emulator))
 
-        while len(self.apk_queue) > 0:                              # get next apk
-            apk = self.apk_queue.keys()[0]
+        if len(self.apk_queue) > 0:                              # get next apk
+            apk = self.apk_queue.pop(0)
 
             apk_path = apk.get_path()
             Xbot.run(apk_path, self.output_dir, emulator.connection_str)      # run algorithm
@@ -79,13 +78,14 @@ class Xbot(Task):
     def apk_callback(self, new_apk : ResourceWrapper) -> None:
         """callback method to add apk and run algorithm"""
         if new_apk not in self.apk_queue:
-            self.apk_queue[new_apk] = False
+            self.apk_queue.append(new_apk)
+            self._sub_to_emulators()
 
     
     def emulator_callback(self, emulator : ResourceWrapper) -> None:
         """callback method for using emulator"""
         
-        self._process_apks(emulator=emulator.get_metadata())
+        self._process_apks(emulator.get_metadata())
         emulator.release()
     
     
@@ -118,9 +118,9 @@ class Xbot(Task):
     
     
         
-    def _get_accessibility_issues(self) -> List[Tuple[Screenshot, str, str]]:
+    def _get_accessibility_issues(self) -> List[dict]:
         """ Gets list of accessibility issues from xbot output directory. 
-            Returns list of tuples containing (original screenshot, image path, description path)        
+            Returns list containing {original screenshot, image path, description path}        
         """
         screenshots = self._get_screenshots()
         issues = []
@@ -132,7 +132,13 @@ class Xbot(Task):
             image_path = os.path.join(issues_dir, activity, activity + ".png")
             desc_path = os.path.join(issues_dir, activity, activity + ".txt")
             if os.path.exists(image_path) and os.path.exists(desc_path):
-                issues.append((screenshot, image_path, desc_path))             
+                with open(desc_path) as f:
+                    desc = f.readlines()
+                issues.append({"screenshot": screenshot, 
+                               "image_path": image_path, 
+                               "description": desc,
+                               "description_path" : desc_path
+                               })             
         return issues
 
     def _get_screenshots(self) -> List[Screenshot]:

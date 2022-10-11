@@ -107,7 +107,7 @@ class Tappability(Task):
             item_ready.append(screenshot)
         return item_ready
     
-    def _get_results(self, screenshots: List[Screenshot]) -> List[Tuple[Screenshot, str, str, List[str]]]:
+    def _get_results(self, screenshots: List[Screenshot]) -> List[dict]:
         """Get Tapability results for a list of screenshots. 
         
         Returns: 
@@ -133,11 +133,18 @@ class Tappability(Task):
                 heatmap_paths.append(os.path.join(result_dir, file))
                 
             if img_path is not None and desc_path is not None:
-                results.append((screenshot, img_path, desc_path, heatmap_paths))
+                with open(desc_path) as f:
+                    desc = f.readlines()
+                results.append({"screenshot": screenshot, 
+                                "image_path": img_path, 
+                                "description": desc, 
+                                "description_path": desc_path, 
+                                "heatmaps": heatmap_paths
+                                })
         return results       
         
     
-    def _publish(self, item_lst: List[Tuple[Screenshot, str, str, List[str]]]) -> None:
+    def _publish(self, item_lst: List) -> None:
         """publishes and updates item"""
         for item in item_lst:
             rw = ResourceWrapper(os.path.dirname(item[1]), self.get_name(), item)

@@ -86,7 +86,7 @@ class Owleye(Task):
             rw = ResourceWrapper(self.output_dir, self.get_name(), issue)
             self.resource_dict[ResourceType.DISPLAY_ISSUE].publish(rw, complete)
         
-    def _get_display_issues(self) -> List[Tuple[Screenshot, str]]:
+    def _get_display_issues(self) -> List[dict]:
         """Returns a list of heatmap images produced by owleye
         
         Returns: 
@@ -96,5 +96,7 @@ class Owleye(Task):
         for screenshot in self.queue:
             filename = os.path.basename(screenshot.get_image_jpeg())
             if os.path.exists(os.path.join(self.output_dir, filename)):
-                heatmaps.append((screenshot, os.path.join(self.output_dir, filename)))
+                heatmaps.append({"screenshot": screenshot, 
+                                 "image_path": os.path.join(self.output_dir, filename)
+                                 })
         return heatmaps

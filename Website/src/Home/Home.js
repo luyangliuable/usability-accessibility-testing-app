@@ -122,11 +122,11 @@ const Home = (props) => {
 
           <div className="main layer-1" style={style.center} >
             <div className="fadeout">
-              <div className="main-txt" style={{ width: '20vw' }}>
+              <div className="main-txt1-c0">
                 HELPING DEVELOPERS. <br /> HELPING USERS.
               </div>
               <br />
-              <p style={{color: "#FFF", fontSize: '1vw'}}>Let AI analyse your android application for issues.</p>
+              <p style={{color: "#FFF", fontSize: '1.2vw'}}>Let AI analyse your android application for issues.</p>
               <br />
               <div className="landing_button" style={style.button}>Get Started</div>
             </div>
@@ -176,15 +176,15 @@ const Home = (props) => {
             </div>
             <div className="main-txt">
               Hundreds of screenshots can be can be generated from your android app for accessibility analysis.
-              <p className="main-txt2-c">You simply have to upload the apk file.</p>
+              <p className="main-txt">You simply have to upload the apk file.</p>
             </div>
           </div>
 
           <div id="about" className="main layer-4" style={style.center}>
             <div style={{ "width": '60vw' }}>
-              <h2 className="main-txt2" style={{color: 'white', fontWeight: "200px"}}> About Us </h2> <br />
+              <h1 className="main-txt1-c0"> About Us </h1> <br />
 
-              <p className="main-txt main-txt2" style={{display: "None", width: '50vw'}}>
+              <p className="main-txt2-c">
                 This application is currently developed by a talented team of 17 software students from Monash University.
                 <br />
                 We collaborated with scholars from Monash University and decided to create an application that can use AI to test accesbility issues from android apps.

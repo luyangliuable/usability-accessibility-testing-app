@@ -179,12 +179,25 @@ body {
     100%   {opacity: 1;}
 }
 
+.main-txt1-c0 {
+    color: white;
+    font-weight: 520;
+    font-size: 45px;
+    font-size: 2.4vw;
+}
 
-.main-txt1-c1, .main-txt2-c {
+.main-txt1-c1 {
     color: #DDD;
     font-weight: 430;
     font-size: 20px;
-    font-size: 1.3vw;
+    font-size: 1.2vw;
+}
+
+.main-txt2-c {
+    color: #DDD;
+    font-weight: 430;
+    font-size: 20px;
+    font-size: 2vw;
 }
 
 #nest_graphics_3, .main-txt1-c1 {

@@ -118,7 +118,7 @@ services:
   analysis_app:
     build:
       context: ./algorithms/app/
-    command: python3 apk_analysis.py
+    command: python3 apk_analysis_api.py
     container_name: bxer.analysis_app
     ports:
       - 3050:3050
@@ -166,7 +166,7 @@ services:
   tappability:
     build:
       context: ./algorithms/tappability/
-    command: python3 app.py
+    command: python3.8 app.py
     container_name: bxer.tappability
     ports:
       - '3007:3007'

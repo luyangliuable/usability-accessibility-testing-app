@@ -30,7 +30,7 @@ COPY ./pipeline ./pipeline
 
 # API stage
 FROM base
-RUN pip3 install Flask
+RUN python3.8 -m pip install Flask
 
 EXPOSE 3007
 

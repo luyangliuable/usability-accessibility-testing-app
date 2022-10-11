@@ -65,7 +65,7 @@ def pipeline(img_path, json_path, output_path, threshold):
             else:
                 bounding_boxes.append(item['bounds'][i])
 
-        if index[0] == 1 and percentage[index[0]].item()>=threshold:
+        if index[0] == 1 and percentage[index[0]].item()<=threshold:
             colours.append("red")
             heatmap_path = heatmap.createHeatmap(item['bounds'], index[0], counter)
         else:

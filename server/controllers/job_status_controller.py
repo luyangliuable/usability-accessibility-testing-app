@@ -15,24 +15,6 @@ class JobStatusController(t.Generic[T], Controller):
         Updates algorithm_status. Gets algorithm_status
     """
 
-    activity_result_file_json_format = {
-        "name": "{name of activity / screenshot}",
-        "image": "{link to screenshot image}",
-        "xbot": {
-            "image": "{link to xbot screenshot}",
-            "description": "{description of issues in screenshot (string)}"
-        },
-        "owleye": {
-            "image": "{link to owleye heatmap screenshot}"
-        },
-        "tapshoe": {
-            "image": "{link to screenshot of tapshoe image}",
-            "description": "{string description of image}",
-            "heatmap": "{link to heatmap image}"
-        },
-    }
-
-
     _job_status_key = 'overall-status'
 
     def __init__(self, collection_name: str) -> None:
@@ -47,8 +29,9 @@ class JobStatusController(t.Generic[T], Controller):
         d = self._db.get_document(uuid, self.collection)
 
         # Get status ##################################################################
-        status = d['overall-status']
-        status['apk'] = d['apk']
+        document = self._db.get_document(uuid, self.collection)
+        status = document['overall-status']
+        status['apk'] = document['apk']
 
         return status
 
@@ -87,7 +70,7 @@ class JobStatusController(t.Generic[T], Controller):
 
 
     def get_total_number_of_algorithms_in_job(self, uuid: str) -> int:
-        job_status = self._get_job_status(uuid);
+        job_status = self._get_job_status(uuid)
         return len(job_status['algorithms_to_run'])
 
 

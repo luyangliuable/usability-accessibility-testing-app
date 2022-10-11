@@ -31,13 +31,13 @@ class droidbot(threading.Thread):
 
         tasks = ["Droidbot"]
 
-        base_dir = "/home/data/"
+        base_dir = "/Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/algorithms/app/.data/"
 
         execution_data={}
-        TaskFactory.create_tasks(tasks, base_dir, self.resource_dict)
+        TaskFactory.create_tasks(tasks, base_dir, self.resource_dict, "213123123")
 
 
-        apk = ResourceWrapper('/home/data/test_apks/a2dp.Vol_133/a2dp.Vol_133.apk', 'upload')
+        apk = ResourceWrapper('/Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/algorithms/app/.data/f5fe1d2c-865d-4bf7-a8f6-caf5458c83ca/a2dp.Vol_133.apk', 'upload')
         emulator = ResourceWrapper('', 'host.docker.internal:5555')
 
         self.resource_dict[ResourceType.APK_FILE].publish(apk, True)
@@ -63,7 +63,7 @@ class gifdroid(threading.Thread):
         base_dir = "/home/data/"
 
         execution_data={}
-        TaskFactory.create_tasks(tasks, base_dir, resource_dict)
+        TaskFactory.create_tasks(tasks, base_dir, resource_dict, "asdasdasd")
 
         utg = ResourceWrapper('/home/data/droidbot', 'droidbot result')
         gif = ResourceWrapper('/home/data/test_apks/a2dp.Vol_133/sample.gif', '')
@@ -83,7 +83,7 @@ if __name__ == '__main__':
     first_droidbot = droidbot(resource_dict, "test1", 1)
     first_gifdroid = gifdroid(resource_dict, "test1", 1) # second_gifdroid = gifdroid("test2", 2)
     first_droidbot.start()
-    first_gifdroid.start()
+    # first_gifdroid.start()
     # print(first_droidbot.get_resource_dict())
     # second_droidbot = thread("test2", 2)
     # third_droidbot = thread("test3", 3)

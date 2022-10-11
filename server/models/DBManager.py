@@ -139,27 +139,30 @@ class DBManager:
             "results" : {
                 "activities" : [
                     {
-                        "name" : "",
-                        "image" : [],
+                        "activity-name" : "",
+                        "structure-id": "",
+                        "base-image" : "",
                         "xbot" : {
                             "image" : "",
-                            "description" : ""
+                            "description" : {}
                         },
                         "owleye" : {
-                            "image" : []
+                            "image" : ""
                         },
-                        "tapshoe" : {
-                            "image" : [],
-                            "description" : "",
-                            "heatmap" : "{link to heatmap image}"
+                        "tappable" : {
+                            "image" : "",
+                            "description" : {},
+                            "heatmap" : ""
                         }
                     }
                 ],
                 "gifdroid": {
-                    "images": [],
+                    "image": [],
                     "json": []
                 },
-                "uichecker": {}
+                "uichecker": {
+                    "summary": "",
+                }
             }
         }
 

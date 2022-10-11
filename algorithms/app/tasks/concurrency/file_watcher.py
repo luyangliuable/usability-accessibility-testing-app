@@ -31,7 +31,7 @@ class FileWatcher():
         """
 
         self.algorithm_name = self._lower_first_char_of_str(task.get_name())
-        self._watcher = Thread(target = self.watch_for_new_files)
+        self._thread = Thread(target = self.watch_for_new_files)
         self.task_output_directory = output_directory
         self.resource_type = resource_type
         self.uuid = uuid
@@ -46,7 +46,7 @@ class FileWatcher():
 
         Checking an **output directory** every 3 seconds for new file of **file_type**.
         """
-        self._watcher.start()
+        self._thread.start()
 
     def _log_new_files(self, new_files) -> None:
         """
@@ -70,6 +70,7 @@ class FileWatcher():
         Utility reasons lower the first character of string for the task name.
         """
         return string[0].lower() + string[1:]
+
 
     def watch_for_new_files(self):
         """
@@ -107,12 +108,13 @@ class FileWatcher():
         for each_image in files:
             resource_path = os.path.join(check_path, each_image)
             img = ResourceWrapper(resource_path, origin)
-            self._create_new_resource_group(img)
+            self._create_new_resource_group()
+            self.task.resource_dict[self.resource_type].publish(img, False)
 
         return True
 
 
-    def _create_new_resource_group(self, resource_wrapper: ResourceWrapper) -> bool:
+    def _create_new_resource_group(self) -> bool:
         """
         If the resource group is not yet inside, created it.
 
@@ -123,8 +125,6 @@ class FileWatcher():
         """
         if self.resource_type not in self.task.resource_dict:
             self.task.resource_dict[self.resource_type] = ResourceGroup(self.resource_type)
-
-        self.task.resource_dict[self.resource_type].publish(resource_wrapper, True)
 
         return True
 
@@ -148,7 +148,7 @@ class FileWatcher():
 
 
     def join(self):
-        self._watcher.join()
+        self._thread.join()
 
 
     def _check_file_is_correct_type(self, file: str, type: str) -> bool:

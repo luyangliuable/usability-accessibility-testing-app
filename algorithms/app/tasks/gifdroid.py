@@ -10,7 +10,7 @@ class Gifdroid(Task):
     """Class for managing gifdroid algorithm"""
 
     name = "Gifdroid"
-    _output_types = [ResourceType.JSON_LAYOUT]
+    _output_types = [ResourceType.EXECUTION_TRACE]
     _input_types = [ResourceType.UTG, ResourceType.GIF]
     _execute_url = os.environ['GIFDROID']
 

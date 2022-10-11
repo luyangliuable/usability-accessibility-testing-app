@@ -4,7 +4,6 @@ import os
 
 from enums.status_enum import StatusEnum as Status
 from controllers.algorithm_status_controller import AlgorithmStatusController as ASC
-from download_parsers.gifdroid_json_parser import gifdroidJsonParser
 
 worker = Celery(__name__)
 worker.conf.broker_url = os.environ['REDIS_URL']

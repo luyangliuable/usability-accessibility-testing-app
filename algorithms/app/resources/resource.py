@@ -64,7 +64,6 @@ class ResourceGroup(Generic[T]):
 
     def __init__(self, type: ResourceType, usage: ResourceUsage = ResourceUsage.CONCURRENT):
         self._type = type
-
         self._resources = []
         self._subscribers = []
         self._providers = {}
@@ -95,7 +94,13 @@ class ResourceGroup(Generic[T]):
         print(f'{resource} added to {self._resources}.')
         self._resources.append(resource)
 
+        # TODO new utg class, callback for utg:
+        # Has data whether the utg finished building.
+        # TODO if the resource being publish is utg and with images from droidbot, ignore ones the same hash.
 
+        # TODO if the resource being published is utg, run trigger run to utg.
+
+        ## TODO store dispatched resources in JSON or something and not just memory
         if self._usage is ResourceUsage.CONCURRENT:
             for sub in self._subscribers:
                 sub(resource)

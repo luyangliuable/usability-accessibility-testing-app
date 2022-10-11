@@ -37,7 +37,7 @@ class AlgorithmTaskController(t.Generic[T], Controller, Task):
         self.shared_volume = '/home/data'
 
 
-    def post(self, uuid: str, algorithms_to_complete: t.List[t.Dict[str, str]]) -> t.List[ AlgorithmEnum ]:
+    def post(self, uuid: str, algorithms: t.List[AlgorithmEnum]) -> t.List[ AlgorithmEnum ]:
         """
         Post to signal start all the algorithms corresponding to a particular job by uuid.
 
@@ -49,8 +49,6 @@ class AlgorithmTaskController(t.Generic[T], Controller, Task):
         """
 
         # print(AlgorithmEnum['gifdroid'].value)
-
-        algorithms = [AlgorithmEnum[algorithm['uuid']].value for algorithm in algorithms_to_complete]
 
         # self.job_status_controller.post(uuid, start_time=start_time, status=StatusEnum.running.value, progress=10, logs="")
         self.acknowledge(uuid, algorithms)

@@ -16,7 +16,7 @@ class Droidbot(Task, Thread):
     """Class for managing droidbot algorithm"""
 
     _input_types = [ResourceType.APK_FILE, ResourceType.EMULATOR]
-    _output_types = [ResourceType.UTG]
+    _output_types = [ResourceType.UTG, ResourceType.SCREENSHOT]
     _execute_url = os.environ['DROIDBOT']
     name = "Droidbot"
 
@@ -38,7 +38,7 @@ class Droidbot(Task, Thread):
         self.images = ()
         self.check_new_image_directory = os.path.join(output_dir, 'states')
         self._image_file_watcher = FileWatcher(uuid, 'jpg', self.check_new_image_directory, ResourceType.SCREENSHOT, self)
-        self.dependent_algorithms = []
+        
 
 
     def _check_input_resources_available(self) -> bool:

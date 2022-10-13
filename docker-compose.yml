@@ -23,8 +23,8 @@ services:
     ports:
       - 5005:5005
     command: python3 manage.py run -p 5005
-    volumes:
-      - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
+    # volumes:
+    #   - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
     environment:
       - FLASK_DEBUG=1
       - APP_SETTINGS=config.DevelopmentConfig
@@ -195,7 +195,7 @@ services:
     build:
       context: ./algorithms/droidbot
     command: python3 app.py
-    image: bwoa0001/gifdroid
+    # image: bwoa0001/gifdroid
     container_name: bxer.droidbot
     ports:
       - '3008:3008'

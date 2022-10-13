@@ -34,7 +34,7 @@ class ResourceWrapper(Generic[T]):
 
 
     def __repr__(self):
-        return f'<<Resource Wrapper path={self._path}, released={self._released}, metadata={self._metadata}>>'
+        return f'<<Resource Wrapper path={self._path}, released={self._released}, metadata={self._metadata.__class__.__name__}>>'
 
 
     def lock(self, released):

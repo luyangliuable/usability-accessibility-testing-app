@@ -78,6 +78,9 @@ class Owleye(Task):
     
     def _publish_issues(self) -> None:
         """Publish outputs to resource group"""
+        if not ResourceType.DISPLAY_ISSUE in self.resource_dict:
+            return
+        
         issues = self._get_display_issues()
         complete = False
         for issue in issues:

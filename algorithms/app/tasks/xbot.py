@@ -69,8 +69,6 @@ class Xbot(Task):
             Xbot.run(apk_path, self.output_dir, emulator.connection_str)      # run algorithm
             self._publish_outputs()                                # dispatch results
 
-            self.apk_queue[apk] = True
-
         print("XBOT COMPLETED")
         
     
@@ -89,12 +87,8 @@ class Xbot(Task):
         emulator.release()
     
     
-    def is_complete(self) -> bool:
-        for status in self.apk_queue.values():
-            if not status:
-                return False 
-            
-        return self.resource_dict[ResourceType.APK_FILE].is_active()
+    def is_complete(self) -> bool:    
+        return False if len(self.apk_queue) > 0 else not self.resource_dict[ResourceType.APK_FILE].is_active()
     
     
     def _publish_outputs(self) -> None:
@@ -108,6 +102,9 @@ class Xbot(Task):
                 complete = self.is_complete()
             rw = ResourceWrapper(None, self.get_name(), screenshot)
             self.resource_dict[ResourceType.SCREENSHOT].publish(rw, complete)
+        
+        if not ResourceType.ACCESSIBILITY_ISSUE in self.resource_dict:
+            return
         
         complete = False
         for issue in issues:
@@ -131,12 +128,11 @@ class Xbot(Task):
             activity = screenshot.ui_screen                    
             image_path = os.path.join(issues_dir, activity, activity + ".png")
             desc_path = os.path.join(issues_dir, activity, activity + ".txt")
+            if not os.path.exists(image_path) or not os.path.exists(desc_path):
+                continue
             if os.path.exists(image_path) and os.path.exists(desc_path):
-                with open(desc_path) as f:
-                    desc = f.readlines()
                 issues.append({"screenshot": screenshot, 
                                "image_path": image_path, 
-                               "description": desc,
                                "description_path" : desc_path
                                })             
         return issues
@@ -148,6 +144,9 @@ class Xbot(Task):
         screenshots = []
         images_dir = os.path.join(self.output_dir, "screenshot")     
         layouts_dir = os.path.join(self.output_dir, "layouts")
+        
+        if not (os.path.exists(images_dir) or os.path.exists(layouts_dir)):
+            return screenshots
         
         for activity in os.listdir(images_dir):
             layout_path = os.path.join(layouts_dir, activity + ".xml")

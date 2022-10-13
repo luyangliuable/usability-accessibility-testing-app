@@ -34,7 +34,8 @@ class TaskFactory:
             # Create resource groups for algorithm
             required_resources = cls.get_input_types()
             for each_resource in required_resources:
-                resource_groups[each_resource] = ResourceGroup(each_resource)
+                if each_resource not in resource_groups:
+                    resource_groups[each_resource] = ResourceGroup(each_resource)
 
             print(f'Inside task factory creating { cls.__name__ } {output_dir} and {resource_groups}')
 

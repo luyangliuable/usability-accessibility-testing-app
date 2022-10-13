@@ -18,6 +18,7 @@ def get_status(uuid, algorithm=None):
     Get the status of a given uuid
 
     Path: /status/get/<uuid>
+    Path: /status/get/<uuid>/<algorithm>
     Vars:
         uuid: The uuid of the status to get
         algorithm: The algorithm to get the status of

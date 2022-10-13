@@ -5,6 +5,7 @@ from tasks.task import Task
 from typing import List, Callable, Tuple
 import shutil
 import subprocess
+import json
 
 class Tappability(Task):
     """Class for managing Tappability algorithm"""
@@ -20,6 +21,10 @@ class Tappability(Task):
         self.completed_states: set[str] = set()   # set of screenshot structure_ids that have been completed
         self.threshold = 50
         self._sub_to_new_screenshots()
+    
+    @classmethod
+    def __name__(cls) -> str:
+        return "Tappable"
         
     @classmethod
     def get_name(cls) -> str:
@@ -82,13 +87,10 @@ class Tappability(Task):
         items = self._move_items(path)
         
         # run tappable
-        # Tappability.run(path, path, self.output_dir, self.threshold)
+        Tappability.run(path, path, self.output_dir, self.threshold)
         
         # generate and publish result data
         result_list = self._get_results(items)
-        print(self.queue)
-        print(items)
-        print(result_list)
         self.queue = [img for img in self.queue if img not in items]    # update queue
         self._publish(result_list)
         shutil.rmtree(path)
@@ -133,11 +135,8 @@ class Tappability(Task):
                 heatmap_paths.append(os.path.join(result_dir, file))
                 
             if img_path is not None and desc_path is not None:
-                with open(desc_path) as f:
-                    desc = f.readlines()
                 results.append({"screenshot": screenshot, 
                                 "image_path": img_path, 
-                                "description": desc, 
                                 "description_path": desc_path, 
                                 "heatmaps": heatmap_paths
                                 })
@@ -146,6 +145,9 @@ class Tappability(Task):
     
     def _publish(self, item_lst: List) -> None:
         """publishes and updates item"""
+        if not ResourceType.TAPPABILITY_PREDICTION in self.resource_dict:
+            return
+        
         for item in item_lst:
             rw = ResourceWrapper(os.path.dirname(item[1]), self.get_name(), item)
             self.resource_dict[ResourceType.TAPPABILITY_PREDICTION].publish(rw, self.is_complete())

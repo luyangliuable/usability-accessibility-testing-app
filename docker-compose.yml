@@ -44,7 +44,7 @@ services:
       - "host.docker.internal:host-gateway"
     volumes:
       - "./server:/usr/src/app/server"
-      - './algorithms/app/.data:/home/data'
+      - './.data:/home/data'
     depends_on:
       - redis
       - mongodb
@@ -123,15 +123,15 @@ services:
     ports:
       - 3050:3050
     volumes:
-      - './algorithms/app/.data:/home/data'
+      - ./.aws:/root/.aws:ro
+      - ./algorithms/app/:/opt/app/:ro
+      - ./.data:/home/data
     environment:
       - STATUS_CONTROLLER=http://host.docker.internal:5005/status/update/
       - GIFDROID=http://host.docker.internal:3005/new_job
       - DROIDBOT=http://host.docker.internal:3008/new_job
     # stdin_open: true # docker run -i
     # tty: true        # docker run -t
-
-
 
   storydistiller:
     build:
@@ -141,7 +141,7 @@ services:
     ports:
       - '3002:3002'
     volumes:
-      - './algorithms/app/.data:/home/data'
+      - './.data:/home/data'
 
   xbot:
     build:
@@ -151,7 +151,7 @@ services:
     ports:
       - '3003:3003'
     volumes:
-      - './algorithms/app/.data:/home/data'
+      - './.data:/home/data'
 
   owleye:
     build:
@@ -161,7 +161,7 @@ services:
     ports:
       - '3004:3004'
     volumes:
-      - './algorithms/app/.data:/home/data'
+      - './.data:/home/data'
 
   tappability:
     build:
@@ -171,7 +171,7 @@ services:
     ports:
       - '3007:3007'
     volumes:
-      - './algorithms/app/.data:/home/data'
+      - './.data:/home/data'
 
 
   gifdroid:
@@ -189,7 +189,7 @@ services:
     - S3_URL=http://host.docker.internal:4566
     - EMULATOR=host.docker.internal:5555
     volumes:
-    - './algorithms/app/.data:/home/data'
+    - './.data:/home/data'
 
   droidbot:
     build:
@@ -207,7 +207,7 @@ services:
     - S3_URL=http://host.docker.internal:4566
     - EMULATOR=host.docker.internal:5555
     volumes:
-    - './algorithms/app/.data:/home/data'
+    - './.data:/home/data'
 
   # gifdroid:
   #   build:

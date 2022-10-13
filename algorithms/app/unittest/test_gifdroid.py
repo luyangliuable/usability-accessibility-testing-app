@@ -12,26 +12,28 @@ sys.path.insert(0, parentdir)
 from tasks.task import *
 from resources.resource import *
 
-class TestTasks(unittest.TestCase):
+class TestGifdroid(unittest.TestCase):
     def setUp(self):
         self.resource_dict = {} # make resource dict
+        # Input
         self.resource_dict[ResourceType.APK_FILE] = ResourceGroup(ResourceType.APK_FILE)
-        self.resource_dict[ResourceType.EMULATOR] = ResourceGroup(ResourceType.EMULATOR, usage=ResourceUsage.SEQUENTIAL)
+        self.resource_dict[ResourceType.GIF] = ResourceGroup(ResourceType.GIF, usage=ResourceUsage.SEQUENTIAL)
 
-        self.tasks = ["Droidbot"]
+        self.tasks = ["Gifdroid"]
         self.base_dir = "/Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/"
-
+        
     def test_download_summary_works(self):
         TaskFactory.create_tasks(self.tasks, self.base_dir, self.resource_dict)
 
-        test = TaskFactory._tasks["Droidbot"]
+        test = TaskFactory._tasks["Gifdroid"]
 
         exit(0)
-
-
+        
 ###############################################################################
-#                              Untility functions                             #
+#                              Utility functions                             #
 ###############################################################################
+
+# Placeholder for now
 
 def write_to_view(filename: str, content):
     """
@@ -48,7 +50,7 @@ def unique_id_generator() -> str:
 
 def main():
     # Create a test suit
-    suit = unittest.TestLoader().loadTestsFromTestCase(TestTasks)
+    suit = unittest.TestLoader().loadTestsFromTestCase(TestGifdroid)
     # Run the test suit
     unittest.TextTestRunner(verbosity=2).run(suit)
 

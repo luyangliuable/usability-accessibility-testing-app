@@ -8,7 +8,6 @@ import shutil
 class Owleye(Task):
     """Class for managing Owleye algorithm"""
     
-    name = "Owleye"
     _input_types = [ResourceType.SCREENSHOT]
     _output_types = [ResourceType.DISPLAY_ISSUE]
     _url = 'http://host.docker.internal:3004/execute'
@@ -84,9 +83,9 @@ class Owleye(Task):
         issues = self._get_display_issues()
         complete = False
         for issue in issues:
-            if issue == issues[:-1]:
-                complete = not self.resource_dict[ResourceType.SCREENSHOT.is_active()]
-            rw = ResourceWrapper(self.output_dir, self.get_name(), issue)
+            if issue == issues[-1]:
+                complete = not self.resource_dict[ResourceType.SCREENSHOT].is_active()
+            rw = ResourceWrapper(self.output_dir, 'Owleye', issue)
             self.resource_dict[ResourceType.DISPLAY_ISSUE].publish(rw, complete)
         
     def _get_display_issues(self) -> List[dict]:

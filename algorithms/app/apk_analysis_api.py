@@ -9,6 +9,7 @@ import os
 import json
 import boto3
 from tasks.xbot import Xbot
+from tasks.owleye import Owleye
 import time
 
 RESULT_URL = 'http://host.docker.internal:5005/results/add/'
@@ -40,40 +41,42 @@ class ApkAnalysisApi(ApkAnalysis):
         self.uuid = job_info['uuid']
         output_dir = os.path.join(ApkAnalysisApi._shared_volume, self.uuid)
         req_tasks = [name[0].upper() + name[1:] for name in list(job_info['algorithms'])]
+        print(req_tasks)
         apk_path = job_info['apk_file']
         additional_files = job_info['additional_files']
         super().__init__(output_dir, apk_path, req_tasks, additional_files)
         self.results = {}
+        self.running = set()
         self._init_results()
-        self.running = set(self.req_tasks)
+        
         
             
     def start_processing(self) -> None:
-        self._init_results()
         for task in self.req_tasks:
             self._update_status("RUNNING", task.lower())
         super().start_processing(uuid=self.uuid)
     
     ####################### TEMP
     def test(self) -> None:
-        self._init_results()
-        self.running.add('tappable')
         for task in self.req_tasks:
             self._update_status("RUNNING", task.lower())
         
+        rg = ResourceGroup(ResourceType.APK_FILE)
+        self.resources[ResourceType.APK_FILE] = rg
+        rg.publish(self.apk_resource, True)
+        time.sleep(5.0)
         xb = Xbot(os.path.join(self.output_dir, 'xbot'), self.resources, self.uuid)
         shutil.copytree('/home/data/test/a2dp.Vol_133/', f'/home/data/{self.uuid}/', dirs_exist_ok=True)
+        ow = Owleye(os.path.join(self.output_dir, 'owleye'), self.resources, self.uuid)
         xb._publish_outputs()
-        time.sleep(5.0)
-        self._update_status("SUCCESSFUL")
     
     def _init_results(self) -> None:
         """Subscribe to results resource events."""
         self.results["ui-states"] = {}
         for task in self.req_tasks:
-            if not task in ApkAnalysisApi._result_types:
-                continue
-        self.resources[ApkAnalysisApi._result_types[task]].subscribe(self._new_result_callback)
+            if task in ApkAnalysisApi._result_types:
+                self.running.add(task)
+                self.resources[ApkAnalysisApi._result_types[task]].subscribe(self._new_result_callback)
 
 
     def _new_result_callback(self, resource: ResourceWrapper) -> None:
@@ -91,7 +94,7 @@ class ApkAnalysisApi(ApkAnalysis):
     def _add_result(self, screenshot: Screenshot, name: str, result: dict) -> None:
         result_key = (screenshot.ui_screen, screenshot.structure_id)
         
-        if result_key not in self.results:
+        if result_key not in self.results["ui-states"]:
             img_url = self._upload_file(screenshot.image_path)
             fields = {"activity-name": screenshot.ui_screen,
                       "structure-id": screenshot.structure_id,
@@ -101,13 +104,16 @@ class ApkAnalysisApi(ApkAnalysis):
         self.results["ui-states"][result_key][name] = result
         self._post_results()
         
-        resource_type = ApkAnalysisApi._result_types[name[0].upper() + name[1:]]
+        name = name[0].upper() + name[1:]
+        resource_type = ApkAnalysisApi._result_types[name]
         if not self.resources[resource_type].is_active():
             self._update_status("SUCCESSFUL", name.lower())
-            self.running.remove(name.lower())
+            if name in self.running:
+                self.running.remove(name)
         
         if len(list(self.running))==0:
             self._update_status("SUCCESSFUL")
+            print(self.results)
     
     
     def _add_xbot_result(self, result):
@@ -183,7 +189,7 @@ class ApkAnalysisApi(ApkAnalysis):
         
         if algorithm is not None:
             url = url+f'/{algorithm}'
-            data["logs"] = 'complete'
+            data["logs"] = f'{algorithm} {status.lower()}'
         
         response = None
         error = None
@@ -191,12 +197,13 @@ class ApkAnalysisApi(ApkAnalysis):
         try:
             request = requests.Session()
             response = request.post(url, headers={"Content-Type": "application/json"}, json=data)
-
+            print(f'UPDATED STATUS: {data.values()} {response}')
+            
         except Exception as e:
             error = str(e)
             print("ERROR ON REQUEST: " + error)
 
-        print(response)
+        
 
 
 app = Flask(__name__)

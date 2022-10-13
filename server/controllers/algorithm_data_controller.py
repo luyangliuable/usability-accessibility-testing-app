@@ -82,15 +82,18 @@ class AlgorithmDataController(Generic[T], Controller):
 
         document = self._db.get_document(uuid, self.collection)
         results_key = "results"
-        alg_results = document[results_key]
+        result_schema = self._db.get_format(uuid)[results_key]
+        alg_results = dict(result_schema)
 
-        new_activity = self._db.get_format(uuid)[results_key]['activities'][0]
+        
         new_gifdroid = alg_results['gifdroid']
 
         for key, item in data.items():
             if key == "ui-states":
+                new_activities = []
                 for each_activity in item:
                     print(each_activity)
+                    new_activity = self._db.get_format(uuid)[results_key]['activities'][0]
                     for name, data in each_activity.items():
                         if name == 'activity-name':
                             new_activity[name] = each_activity[name]
@@ -108,17 +111,18 @@ class AlgorithmDataController(Generic[T], Controller):
                             # assert 'tappable' in each_activity, "Each activity must have tappable"
                             new_activity[name]['image'] = each_activity[name]['image']
                             new_activity[name]['description'] = each_activity[name]['description']
-                            new_activity[name]['heatmap'] = each_activity[name]['heatmap']
-
-                alg_results['activities'].append(new_activity)
+                            new_activity[name]['heatmaps'] = each_activity[name]['heatmaps']      
+                    new_activities.append(new_activity)
+                    
+                if len(new_activities) > 0:
+                    alg_results['activities'] = new_activities
 
             elif key == 'gifdroid':
                 for name, data in item.items():
                     new_gifdroid[name] = data
-
-
+                    
         self._db.update_document(uuid, self.collection, results_key, alg_results)
-
+        
         return alg_results
 
     def _get_result_of_algorithm(self, uuid: str, type: str) -> Dict[str, T]:

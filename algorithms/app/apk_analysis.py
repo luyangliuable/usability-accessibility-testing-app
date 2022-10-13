@@ -54,6 +54,7 @@ class ApkAnalysis:
                 if resource_type not in self.resources:
                     self.resources[resource_type] = ResourceGroup(resource_type)
                 print(f'Initialised resource type {resource_type} for {algorithm}.')
+        print(f"Initialised resource groups: {self.resources.keys()}")
         
     def _create_tasks(self, uuid) -> None:
         # create tasks

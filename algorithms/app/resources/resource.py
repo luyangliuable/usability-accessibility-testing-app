@@ -34,7 +34,7 @@ class ResourceWrapper(Generic[T]):
 
 
     def __repr__(self):
-        return f'<<Resource Wrapper path={self._path}, released={self._released}, metadata={self._metadata.__class__.__name__}>>'
+        return f'<<Resource Wrapper path={self._path}, released={self._released}, origin={self._origin}, metadata={self._metadata.__class__.__name__}>>'
 
 
     def lock(self, released):
@@ -76,7 +76,7 @@ class ResourceGroup(Generic[T]):
             if not completed:
                 return True
 
-        return True if len(self.providers) == 0 else False
+        return False
 
 
     def subscribe(self, callback : Callable[[ResourceWrapper[T]], None]) -> None:
@@ -91,7 +91,7 @@ class ResourceGroup(Generic[T]):
         Add a resource to the group and notify all subscribers
         """
         self._providers[resource.get_origin()] = completed
-        print(f'{resource} added to {self._resources}.')
+        print(f'{resource} added to group {self._type}.\nNum Resources: {len(self._resources)}.\nGroup Status: {self.is_active()}\n')
         self._resources.append(resource)
 
         # TODO new utg class, callback for utg:

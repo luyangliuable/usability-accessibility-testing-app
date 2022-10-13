@@ -152,7 +152,7 @@ class DBManager:
                         "tappable" : {
                             "image" : "",
                             "description" : {},
-                            "heatmap" : ""
+                            "heatmaps" : []
                         }
                     }
                 ],

@@ -88,7 +88,10 @@ class Xbot(Task):
     
     
     def is_complete(self) -> bool:    
-        return False if len(self.apk_queue) > 0 else not self.resource_dict[ResourceType.APK_FILE].is_active()
+        if len(self.apk_queue) > 0:
+            return False
+        
+        return not self.resource_dict[ResourceType.APK_FILE].is_active()
     
     
     def _publish_outputs(self) -> None:
@@ -98,9 +101,9 @@ class Xbot(Task):
         
         complete = False
         for screenshot in screenshots:
-            if screenshot == screenshots[:-1]:
+            if screenshot == screenshots[-1]:
                 complete = self.is_complete()
-            rw = ResourceWrapper(None, self.get_name(), screenshot)
+            rw = ResourceWrapper(None, 'Xbot', screenshot)
             self.resource_dict[ResourceType.SCREENSHOT].publish(rw, complete)
         
         if not ResourceType.ACCESSIBILITY_ISSUE in self.resource_dict:
@@ -108,9 +111,9 @@ class Xbot(Task):
         
         complete = False
         for issue in issues:
-            if screenshot == issues[:-1]:
+            if issue == issues[-1]:
                 complete = self.is_complete()
-            rw = ResourceWrapper(None, self.get_name(), issue)
+            rw = ResourceWrapper(None, 'Xbot', issue)
             self.resource_dict[ResourceType.ACCESSIBILITY_ISSUE].publish(rw, complete)
     
     

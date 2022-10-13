@@ -37,9 +37,9 @@ def pipeline(img_path, json_path, output_path, threshold):
 
     #Create model from saved state
     model = ResNet(18, Block, 4, 2)
+    model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device('cpu')))
     model.to(DEVICE)
     model = nn.DataParallel(model)
-    model.load_state_dict(torch.load(MODEL_PATH))
     model.eval()
 
     json_out = {}

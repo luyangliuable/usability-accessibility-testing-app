@@ -17,12 +17,12 @@ const Report = () => {
 
   const tempUUID = locations.state?.uuid;
   const [uuid, setUuid] = useState(tempUUID);
-  const resultDataPath = "http://localhost:5005/result/get/";
-  const gifdroidResultPath = "http://localhost:5005/result/get/<uuid>/gifdroid";
+  const resultDataPath = "http://localhost:5005/results/get/";
+  const gifdroidResultPath = "http://localhost:5005/results/get/<uuid>/gifdroid";
   const [owleyeImage, setOwleyeImage] = useState("");
   const [xbotImage, setXbotImage] = useState("");
-  const [tapshoeImage, setTapshoeImage] = useState("");
-  const [tapshoeHeatmap, setTapshoeHeatmap] = useState("");
+  const [tappableImage, setTappableImage] = useState("");
+  const [tappableHeatmap, setTappableHeatmap] = useState("");
   const [selectedScreen, setSelectedScreen] = useState({});
   const [showIssues, setShowIssues] = useState(false);
 
@@ -33,7 +33,7 @@ const Report = () => {
      * TO DO: replace seed UUID with actual uuid
      */
     const path =
-      resultDataPath + "28f666de-9a79-4a03-ac74-da77acf5924a" + "/activities";
+      resultDataPath + uuid + "/activities";
     console.log(path);
     await fetch(path, {
       method: "GET",
@@ -59,10 +59,10 @@ const Report = () => {
       setOwleyeImage(screenId["owleye"]["image"]);
     if (screenId["xbot"]["image"] != "")
       setXbotImage(screenId["xbot"]["image"]);
-    if (screenId["tapshoe"]["image"] != "")
-      setTapshoeImage(screenId["tapshoe"]["image"]);
-    if (screenId["tapshoe"]["heatmap"] != "")
-      setTapshoeHeatmap(screenId["tapshoe"]["heatmap"]);
+    if (screenId["tappable"]["image"] != "")
+      setTappableImage(screenId["tappable"]["image"]);
+    if (screenId["tappable"]["heatmap"] != "")
+      setTappableHeatmap(screenId["tappable"]["heatmap"]);
 
     setShowIssues(true);
   }
@@ -90,7 +90,7 @@ const Report = () => {
                   return (
                     <img
                       className="base_img"
-                      src={screenId["image"]}
+                      src={screenId["base-image"]}
                       alt={""}
                       onClick={() => {
                         updateImage(screenId);
@@ -139,8 +139,8 @@ const Report = () => {
                     >
                       <Row>
                         <Col sm={4}>
-                          {selectedScreen["xbot"]["issues"].map(
-                            (issue, index) => {
+                          {selectedScreen["xbot"]["description"].map(
+                            (issue, index) => { 
                               return (
                                 <ListGroup>
                                   <ListGroup.Item action href={`#${index}`}>
@@ -152,7 +152,7 @@ const Report = () => {
                           )}
                         </Col>
                         <Col sm={8}>
-                          {selectedScreen["xbot"]["issues"].map(
+                          {selectedScreen["xbot"]["description"].map(
                             (issue, index) => {
                               return (
                                 <Tab.Content>
@@ -172,15 +172,15 @@ const Report = () => {
                   <div style={{ clear: "left" }}></div>
                 </Tab>
               )}
-              {tapshoeImage != "" && (
+              {tappableImage != "" && (
                 <Tab
                   tabClassName="tab-class"
                   eventKey="contact"
                   title="Tappability"
                 >
                   <div className="tab-div">
-                    <img className="issue_img" src={tapshoeImage} />
-                    <img className="issue_img" src={tapshoeHeatmap} />
+                    <img className="issue_img" src={tappableImage} />
+                    <img className="issue_img" src={tappableHeatmap} />
                   </div>
                 </Tab>
               )}

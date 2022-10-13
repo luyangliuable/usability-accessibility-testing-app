@@ -8,8 +8,8 @@ import "../index.css";
 
 const Results = () => {
   const user_UUID = sessionStorage.getItem("User_UUID");
-  const resultKeyPath = "http://localhost:5005/user/get/reports";
-  const resultDataPath = "http://localhost:5005/result/get/";
+  const resultKeyPath = "http://localhost:5005/user/reports";
+  const resultDataPath = "http://localhost:5005/results/get/";
 
   const [reportKeys, updateReportKeys] = useState([]);
   const [reportData, updateReportData] = useState([]);

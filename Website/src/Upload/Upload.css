@@ -3,9 +3,20 @@
 
   background-color: #f2f2f2;
   padding: 35px;
-  border-radius: 10px;
+  border-radius: 10px !important;
   width: 100%;
 }
+
+.upload-s-div-group-white {
+  flex-wrap: wrap;
+
+  background-color: #f2f2f2;
+  padding: 35px;
+  border-radius: 10px !important;
+  width: 100%;
+}
+
+
 
 .next-button {
   float: right;
@@ -24,10 +35,18 @@
 }
 
 .black-text {
-  color: #0d0d0d;
+  color: #ffffff;
+  padding: 20px !important;
 }
 
 hr {
   width: 50%;
 }
+
+.upload-header  {
+  background-color: #1c7497;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
 

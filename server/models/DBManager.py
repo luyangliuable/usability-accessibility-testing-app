@@ -144,14 +144,14 @@ class DBManager:
                         "base-image" : "",
                         "xbot" : {
                             "image" : "",
-                            "description" : {}
+                            "description" : []
                         },
                         "owleye" : {
                             "image" : ""
                         },
                         "tappable" : {
                             "image" : "",
-                            "description" : {},
+                            "description" : [],
                             "heatmaps" : []
                         }
                     }

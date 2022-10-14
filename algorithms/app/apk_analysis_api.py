@@ -222,8 +222,8 @@ def begin_apk_analysis():
     if request.method == "POST":
 
         job = ApkAnalysisApi(request.get_json())
-        job.start_processing()
-        # job.test()
+        # job.start_processing()
+        job.test()
         
 
         return jsonify( {"result": "SUCCESS"} ), 200

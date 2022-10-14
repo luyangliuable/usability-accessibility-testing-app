@@ -6,6 +6,8 @@ from tasks.task import Task
 import typing as t
 import requests
 import os
+import json
+from models.screenshot import Screenshot
 
 class FileWatcher():
     """
@@ -93,7 +95,7 @@ class FileWatcher():
             else:
                 print(f'{check_path} does not exist yet.')
 
-            sleep(3)
+            sleep(5)
 
 
     def _publish_all_new_files(self, files: t.List[str], check_path: str, origin: str) -> bool:
@@ -107,9 +109,15 @@ class FileWatcher():
         """
         for each_image in files:
             resource_path = os.path.join(check_path, each_image)
-            img = ResourceWrapper(resource_path, origin)
             self._create_new_resource_group()
-            self.task.resource_dict[self.resource_type].publish(img, False)
+            json_path = self.get_json(resource_path)
+            with open(json_path) as f:
+                data = json.loads(f.read())
+                ui_screen = data['foreground_activity']
+            screenshot = Screenshot(ui_screen, resource_path, json_path)
+            img = ResourceWrapper(resource_path, origin, screenshot)
+            complete = self.task.status != StatusEnum.running
+            self.task.resource_dict[self.resource_type].publish(img, complete)
 
         return True
 
@@ -142,9 +150,14 @@ class FileWatcher():
         for file in os.listdir(check_path):
             fullpath=os.path.join(check_path, file)
             if os.path.isfile(fullpath) and self._check_file_is_correct_type(file, self.file_type):
-                files += (file,)
+                if os.path.exists(self.get_json(fullpath)):
+                    files += (file,)
 
         return files
+
+
+    def get_json(self, path: str) -> str:
+        return 'states'+path.removeprefix('screen')[-4:]+'json'
 
 
     def join(self):

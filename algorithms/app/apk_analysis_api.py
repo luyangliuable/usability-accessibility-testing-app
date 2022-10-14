@@ -48,19 +48,19 @@ class ApkAnalysisApi(ApkAnalysis):
         self.results = {}
         self.running = set()
         self._init_results()
-        
-        
-            
+
+
+
     def start_processing(self) -> None:
         for task in self.req_tasks:
             self._update_status("RUNNING", task.lower())
         super().start_processing(uuid=self.uuid)
-    
+
     ####################### TEMP
     def test(self) -> None:
         for task in self.req_tasks:
             self._update_status("RUNNING", task.lower())
-        
+
         rg = ResourceGroup(ResourceType.APK_FILE)
         self.resources[ResourceType.APK_FILE] = rg
         rg.publish(self.apk_resource, True)
@@ -69,7 +69,7 @@ class ApkAnalysisApi(ApkAnalysis):
         shutil.copytree('/home/data/test/a2dp.Vol_133/', f'/home/data/{self.uuid}/', dirs_exist_ok=True)
         ow = Owleye(os.path.join(self.output_dir, 'owleye'), self.resources, self.uuid)
         xb._publish_outputs()
-    
+
     def _init_results(self) -> None:
         """Subscribe to results resource events."""
         self.results["ui-states"] = {}
@@ -82,40 +82,40 @@ class ApkAnalysisApi(ApkAnalysis):
     def _new_result_callback(self, resource: ResourceWrapper) -> None:
         origin = resource.get_origin()
         result = resource.get_metadata()
-        
+
         if origin == 'Xbot':
             self._add_xbot_result(result)
         if origin == 'Owleye':
             self._add_owleye_result(result)
         if origin == 'Tappable':
             self._add_tappable_result(result)
-    
-    
+
+
     def _add_result(self, screenshot: Screenshot, name: str, result: dict) -> None:
         result_key = (screenshot.ui_screen, screenshot.structure_id)
-        
+
         if result_key not in self.results["ui-states"]:
             img_url = self._upload_file(screenshot.image_path)
             fields = {"activity-name": screenshot.ui_screen,
                       "structure-id": screenshot.structure_id,
                       "base-image": img_url}
             self.results["ui-states"][result_key] = fields
-        
+
         self.results["ui-states"][result_key][name] = result
         self._post_results()
-        
+
         name = name[0].upper() + name[1:]
         resource_type = ApkAnalysisApi._result_types[name]
         if not self.resources[resource_type].is_active():
             self._update_status("SUCCESSFUL", name.lower())
             if name in self.running:
                 self.running.remove(name)
-        
+
         if len(list(self.running))==0:
             self._update_status("SUCCESSFUL")
             print(self.results)
-    
-    
+
+
     def _add_xbot_result(self, result):
         screenshot = result["screenshot"]
         img_url = self._upload_file(result["image_path"])
@@ -137,14 +137,14 @@ class ApkAnalysisApi(ApkAnalysis):
                     })
         result = {"image": img_url, "description": issues}
         self._add_result(screenshot, "xbot", result)
-        
+
     def _add_owleye_result(self, result):
         screenshot = result["screenshot"]
         # upload image file
         img_url = self._upload_file(result["image_path"])
         result = {"image": img_url}
-        self._add_result(screenshot, "owleye", result)    
-    
+        self._add_result(screenshot, "owleye", result)
+
     def _add_tappable_result(self, result):
         screenshot = result["screenshot"]
         # upload image file
@@ -155,19 +155,19 @@ class ApkAnalysisApi(ApkAnalysis):
         for path in result["heatmap"]:
             heatmaps.append(self._upload_file(path))
         result = {"image": img_url, "description": desc, "heatmaps": str(heatmaps)}
-        self._add_result(screenshot, "tappable", result)    
+        self._add_result(screenshot, "tappable", result)
 
-        
+
     def _upload_file(self, path: str) -> str:
         """Uploads file and returns S3 url"""
         key = self.uuid + '/' + path.removeprefix(self.output_dir).lstrip('/')
         s3_client.upload_file(path, BUCKETNAME, key)
         return f'http://localhost:4566/{BUCKETNAME}/{key}'
-    
+
     def _post_results(self) -> str:
         url = RESULT_URL+self.uuid
         data = {"ui-states": list(self.results["ui-states"].values())}
-        
+
         response = None
         error = None
 
@@ -178,19 +178,19 @@ class ApkAnalysisApi(ApkAnalysis):
         except Exception as e:
             error = str(e)
             print("ERROR ON REQUEST: " + error)
-        
+
         print(response)
-    
+
     def _update_status(self, status, algorithm=None) -> None:
         url = f'{STATUS_URL}{self.uuid}'
         data = {
             "status": status
             }
-        
+
         if algorithm is not None:
             url = url+f'/{algorithm}'
             data["logs"] = f'{algorithm} {status.lower()}'
-        
+
         response = None
         error = None
 
@@ -198,12 +198,12 @@ class ApkAnalysisApi(ApkAnalysis):
             request = requests.Session()
             response = request.post(url, headers={"Content-Type": "application/json"}, json=data)
             print(f'UPDATED STATUS: {data.values()} {response}')
-            
+
         except Exception as e:
             error = str(e)
             print("ERROR ON REQUEST: " + error)
 
-        
+
 
 
 app = Flask(__name__)
@@ -222,9 +222,9 @@ def begin_apk_analysis():
     if request.method == "POST":
 
         job = ApkAnalysisApi(request.get_json())
-        # job.start_processing()
-        job.test()
-        
+        job.start_processing()
+        # job.test()
+
 
         return jsonify( {"result": "SUCCESS"} ), 200
 

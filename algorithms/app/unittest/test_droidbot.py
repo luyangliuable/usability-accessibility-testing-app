@@ -17,14 +17,13 @@ class Test_Droidbot(unittest.TestCase):
         self.resource_dict = {} # make resource dict
         self.resource_dict[ResourceType.APK_FILE] = ResourceGroup(ResourceType.APK_FILE)
         self.resource_dict[ResourceType.EMULATOR] = ResourceGroup(ResourceType.EMULATOR, usage=ResourceUsage.SEQUENTIAL)
-
         self.tasks = ["Droidbot"]
-        self.base_dir = "/Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/"
+        self.base_dir = ""
 
     def test_download_summary_works(self):
-        TaskFactory.create_tasks(self.tasks, self.base_dir, self.resource_dict)
+        TaskFactory.create_tasks("test", self.tasks, self.base_dir, self.resource_dict);
 
-        test = TaskFactory._tasks["Droidbot"]
+        # test = TaskFactory._tasks["Droidbot"]
 
         exit(0)
 

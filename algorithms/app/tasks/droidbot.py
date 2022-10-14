@@ -38,7 +38,7 @@ class Droidbot(Task, Thread):
         self.images = ()
         self.check_new_image_directory = os.path.join(output_dir, 'states')
         self._image_file_watcher = FileWatcher(uuid, 'jpg', self.check_new_image_directory, ResourceType.SCREENSHOT, self)
-        
+
 
 
     def _check_input_resources_available(self) -> bool:
@@ -108,6 +108,13 @@ class Droidbot(Task, Thread):
     #     return { "message": "Execute started." }
 
 
+    def start(self):
+        """
+        Signal start thread to the droidbot.
+        """
+        self._thread.start()
+
+
     def run(self, apk_path: str) -> t.Dict[str, str]:
         """
         Execute gifdroid algorithm by http request and passing in necessary data for gifdroid to figure out stuff.
@@ -120,11 +127,7 @@ class Droidbot(Task, Thread):
         self.update_algorithm_status(StatusEnum.running)
         self._image_file_watcher.start()
         print(self._execute_url)
-        print(self._execute_url)
-        print(self._execute_url)
-        print(self._execute_url)
         response = requests.post(str( self._execute_url ), data=json.dumps(self._get_execution_data(apk_path)), headers={"Content-Type": "application/json"})
-
 
         if response.status_code == 200:
             self.update_algorithm_status(StatusEnum.successful)
@@ -202,5 +205,3 @@ class Droidbot(Task, Thread):
     def get_output_types(cls) -> List[ResourceType]:
         """Output resource types of the task"""
         return cls._output_types
-
-

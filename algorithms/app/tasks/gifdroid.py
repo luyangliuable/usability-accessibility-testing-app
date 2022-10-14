@@ -34,6 +34,13 @@ class Gifdroid(Task):
         self.resource_dict = resource_dict
 
 
+    def start(self):
+        """
+        Signal start thread to the droidbot.
+        """
+        self._thread.start()
+
+
     def run(self) -> bool:
         """
         Execute gifdroid algorithm by http request and passing in necessary data for gifdroid to figure out stuff.

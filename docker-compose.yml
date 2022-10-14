@@ -130,6 +130,7 @@ services:
       - STATUS_CONTROLLER=http://host.docker.internal:5005/status/update/
       - GIFDROID=http://host.docker.internal:3005/new_job
       - DROIDBOT=http://host.docker.internal:3008/new_job
+      - OWLEYE=http://host.docker.internal:3004/execute
     # stdin_open: true # docker run -i
     # tty: true        # docker run -t
 

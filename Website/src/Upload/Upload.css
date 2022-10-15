@@ -47,6 +47,29 @@ hr {
   background-color: #1c7497;
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
+  border-radius: 10px;
 }
 
+.content-text {
+  margin-top: 15px;
+  margin-left: 20px;
+}
 
+.algorithm-title {
+  padding: 12px !important;
+  background-color: #d8973c;
+  color: white;
+  border-radius: 10px;
+  display: inline-block;
+  margin-left: 40px;
+  margin-top: 10px;
+}
+
+.algorithm-description-text {
+  margin-left: 50px;
+  margin-bottom: 25px;
+}
+
+.additional-upload-subtitle {
+  margin-left: 50px;
+}

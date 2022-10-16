@@ -16,7 +16,7 @@ class FileWatcher():
 
     _status_controller = os.environ['STATUS_CONTROLLER']
 
-    def __init__(self, uuid: str, file_type: str, output_directory: str, resource_type: ResourceType, task: Task, callback: t.Callable) -> None:
+    def __init__(self, uuid: str, file_type: str, output_directory: str, task: Task, callback: t.Callable) -> None:
         """
         This class is responsible for checking an **output directory** every 3 seconds for new file of **file_type**.
 
@@ -32,14 +32,12 @@ class FileWatcher():
             task - (Task) The parent task that uses this.
             callback - (Callable) After file watcher detects a new file, callback will be called.
         """
-
+        self.source_task = task
         self.callback = callback
         self.algorithm_name = self._lower_first_char_of_str(task.get_name())
         self._thread = Thread(target = self.watch_for_new_files)
         self.task_output_directory = output_directory
-        self.resource_type = resource_type
         self.uuid = uuid
-        self.task = task
         self.file_type = file_type
         self.files = ()
 
@@ -83,7 +81,7 @@ class FileWatcher():
         check_path = self.task_output_directory
 
         while(True):
-            if self.task.get_status() != StatusEnum.running:
+            if self.source_task.get_status() != StatusEnum.running:
                 print("Exiting file watcher.")
                 break
 
@@ -152,8 +150,8 @@ class FileWatcher():
 
         Returns: (bool) If the method was successful
         """
-        if self.resource_type not in self.task.resource_dict:
-            self.task.resource_dict[self.resource_type] = ResourceGroup(self.resource_type)
+        if self.resource_type not in self.source_task.resource_dict:
+            self.source_task.resource_dict[self.resource_type] = ResourceGroup(self.resource_type)
 
         return True
 

@@ -37,8 +37,48 @@ class Droidbot(Task, Thread):
         self.apk_queue = []
         self.images = ()
         self.check_new_image_directory = os.path.join(output_dir, 'states')
-        self._image_file_watcher = FileWatcher(uuid, 'jpg', self.check_new_image_directory, ResourceType.SCREENSHOT, self)
+        self.resource_type = ResourceType.SCREENSHOT
+        self._image_file_watcher = FileWatcher(uuid, 'jpg', self.check_new_image_directory, self, self._publish_all_new_files)
 
+
+    def _publish_all_new_files(self, files: t.List[str], check_path: str, origin: str) -> bool:
+        """
+        Publish new detected/created files from the path being checked.
+
+        Parameters:
+            files - (List[str]) List of files newly detected or generated.
+            check - (str) The path these files are detected from
+            origin - (str) The task origin.
+        """
+        for each_image in files:
+            resource_path = os.path.join(check_path, each_image)
+            self._create_new_resource_group()
+            # json_path = self.get_json(resource_path)
+
+            # with open(json_path) as f:
+            #     data = json.loads(f.read())
+            #     ui_screen = data['foreground_activity']
+            # screenshot = Screenshot(ui_screen, resource_path, json_path)
+            img = ResourceWrapper(resource_path, origin)
+            complete = self.status != StatusEnum.running
+            self.resource_dict[self.resource_type].publish(img, complete)
+
+        return True
+
+
+    def _create_new_resource_group(self) -> bool:
+        """
+        If the resource group is not yet inside, created it.
+
+        Parameters:
+            resource_wrapper - (ResourceWrapper) The wrapper for the new file detected by this watcher.
+
+        Returns: (bool) If the method was successful
+        """
+        if self.resource_type not in self.resource_dict:
+            self.resource_dict[self.resource_type] = ResourceGroup(self.resource_type)
+
+        return True
 
 
     def _check_input_resources_available(self) -> bool:
@@ -79,34 +119,6 @@ class Droidbot(Task, Thread):
 
         print(f'Published { utg } at {self.output_dir}.')
         return True
-
-
-    # @staticmethod
-    # def run(apk_path: str, output_dir: str) -> t.Dict[str, str]:
-    #     """
-    #     Execute gifdroid algorithm by http request and passing in necessary data for gifdroid to figure out stuff.
-
-    #     Parameters:
-    #         apk_path - (str) The string path for the apk for to run droidbot.
-
-
-    #     # TODO make this a static method
-    #     """
-    #     self.update_algorithm_status(StatusEnum.running)
-    #     self._image_file_watcher.start()
-    #     response = requests.post(str( self._execute_url ), data=json.dumps(self._get_execution_data(apk_path)), headers={"Content-Type": "application/json"})
-
-
-    #     if response.status_code == 200:
-    #         self.update_algorithm_status(StatusEnum.successful)
-    #     else:
-    #         self.update_algorithm_status(StatusEnum.failed)
-
-    #     self._image_file_watcher.join()
-    #     self._publish_utg()
-
-    #     return { "message": "Execute started." }
-
 
     def start(self):
         """

@@ -16,7 +16,7 @@ class FileWatcher():
 
     _status_controller = os.environ['STATUS_CONTROLLER']
 
-    def __init__(self, uuid: str, file_type: str, output_directory: str, resource_type: ResourceType, task: Task) -> None:
+    def __init__(self, uuid: str, file_type: str, output_directory: str, resource_type: ResourceType, task: Task, callback: t.Callable) -> None:
         """
         This class is responsible for checking an **output directory** every 3 seconds for new file of **file_type**.
 
@@ -30,8 +30,10 @@ class FileWatcher():
             output_directory - (str) The path to check for new files every 3 seconds
             resource_type - (ResourceType) The type of resource the file corresponds to
             task - (Task) The parent task that uses this.
+            callback - (Callable) After file watcher detects a new file, callback will be called.
         """
 
+        self.callback = callback
         self.algorithm_name = self._lower_first_char_of_str(task.get_name())
         self._thread = Thread(target = self.watch_for_new_files)
         self.task_output_directory = output_directory
@@ -50,6 +52,7 @@ class FileWatcher():
         """
         self._thread.start()
 
+
     def _log_new_files(self, new_files) -> None:
         """
         Log the new files onto **mongodb** as status to display to **front-end** and inside the **console** as well.
@@ -64,7 +67,6 @@ class FileWatcher():
                     "logs": logs
                 }
                 requests.post(update_status_url, headers={"Content-Type": "application/json"}, json=data)
-                print(logs)
 
 
     def _lower_first_char_of_str(self, string: str):
@@ -91,36 +93,54 @@ class FileWatcher():
                 self.files += self._list_image_files_in_dir(check_path)
                 new_files = list( set( self.files ).difference( set( old ) ) )
                 self._log_new_files(new_files)
-                print(f'Publishing new files')
-                self._publish_all_new_files(new_files, check_path, self.algorithm_name)
+
+                ###############################################################################
+                #                      Callback if a new file is detected                     #
+                ###############################################################################
+                self.callback(new_files)
             else:
                 print(f'{check_path} does not exist yet.')
 
             sleep(5)
 
 
-    def _publish_all_new_files(self, files: t.List[str], check_path: str, origin: str) -> bool:
+    def _callback_on_new_files(self, new_files: t.List[str]) -> bool:
         """
-        Publish new detected/created files from the path being checked.
+        Calls a callback function determined by the task classes after a new file is detected.
 
-        Parameters:
-            files - (List[str]) List of files newly detected or generated.
-            check - (str) The path these files are detected from
-            origin - (str) The task origin.
+        new_files - (List) List of new files.
         """
-        for each_image in files:
-            resource_path = os.path.join(check_path, each_image)
-            self._create_new_resource_group()
-            # json_path = self.get_json(resource_path)
-            # with open(json_path) as f:
-            #     data = json.loads(f.read())
-            #     ui_screen = data['foreground_activity']
-            # screenshot = Screenshot(ui_screen, resource_path, json_path)
-            img = ResourceWrapper(resource_path, origin)
-            complete = self.task.status != StatusEnum.running
-            self.task.resource_dict[self.resource_type].publish(img, complete)
+        for each_file in new_files:
+            """
+            For each new file call the callback function
+            """
+            self.callback(each_file)
 
         return True
+
+    # def _publish_all_new_files(self, files: t.List[str], check_path: str, origin: str) -> bool:
+    #     """
+    #     Publish new detected/created files from the path being checked.
+
+    #     Parameters:
+    #         files - (List[str]) List of files newly detected or generated.
+    #         check - (str) The path these files are detected from
+    #         origin - (str) The task origin.
+    #     """
+    #     for each_image in files:
+    #         resource_path = os.path.join(check_path, each_image)
+    #         self._create_new_resource_group()
+    #         # json_path = self.get_json(resource_path)
+
+    #         # with open(json_path) as f:
+    #         #     data = json.loads(f.read())
+    #         #     ui_screen = data['foreground_activity']
+    #         # screenshot = Screenshot(ui_screen, resource_path, json_path)
+    #         img = ResourceWrapper(resource_path, origin)
+    #         complete = self.task.status != StatusEnum.running
+    #         self.task.resource_dict[self.resource_type].publish(img, complete)
+
+    #     return True
 
 
     def _create_new_resource_group(self) -> bool:

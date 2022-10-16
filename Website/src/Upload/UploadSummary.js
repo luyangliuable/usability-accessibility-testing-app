@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react"; import { Container } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Container } from "react-bootstrap";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import { startJob } from "./function/startJob";
@@ -16,12 +17,13 @@ const UploadSummary = () => {
   const navigate = useNavigate();
 
   const objectState = locations.state?.objectState;
-  const algorithms = typeof objectState === "undefined" ? [] : objectState.algorithms;
+  const algorithms =
+    typeof objectState === "undefined" ? [] : objectState.algorithms;
 
   const [algorithmState, setAlgorithmState] = useState({
     algorithmFiles: { apkFile: objectState.apk },
     algorithmsInfo: algorithms,
-    uuid: ""
+    uuid: "",
   });
 
   useEffect(() => {
@@ -30,7 +32,6 @@ const UploadSummary = () => {
     }
 
     console.log(algorithmState);
-
   }, [objectState, navigate, algorithmState]);
 
   const selectedAlgorithms = [];
@@ -59,11 +60,18 @@ const UploadSummary = () => {
     additionalInputDiv = additionalInputAlgorithms.map((algorithm, index) => {
       return (
         <div key={algorithm.uuid + "-additional-input"}>
-          <h5 className="black-text">{algorithm.algorithmName}</h5>
-          <p>{algorithm.additionalInputDescription}</p>
+          <h5 className="black-text algorithm-title">
+            {algorithm.algorithmName}
+          </h5>
+          <p className="additional-upload-subtitle">{algorithm.additionalInputDescription}</p>
           {algorithm.additionalFiles.map((file) => {
             return (
-              <p key={"additional-input-file-" + file.name}>{file.name}</p>
+              <p
+                key={"additional-input-file-" + file.name}
+                className="algorithm-description-text"
+              >
+                <b>{"Provided file: "}</b>{file.name}
+              </p>
             );
           })}
           {index === additionalInputAlgorithms.length - 1 ? "" : <hr></hr>}
@@ -71,8 +79,9 @@ const UploadSummary = () => {
       );
     });
   } else {
-    additionalInputDiv =
-      "None of the selected algorithms required additional inputs";
+    additionalInputDiv = (
+      <p className="content-text">None of the selected algorithms required additional inputs</p>
+    );
   }
 
   return (
@@ -93,27 +102,30 @@ const UploadSummary = () => {
             <div className="upload-header">
               <h2 className="black-text">APK</h2>
             </div>
-            <p>{objectState.apk.name}</p>
+            <p className="content-text"><b>{"Provided file: "}</b>{objectState.apk.name}</p>
           </div>
           <br></br>
           <div>
-            <h2 className="black-text">Algorithms</h2>
-            <p>The following algorithms were selected</p>
+            <div className="upload-header">
+              <h2 className="black-text">Algorithms</h2>
+            </div>
+            <p className="content-text">
+              <b>The following algorithms were selected:</b>
+            </p>
             {selectedAlgorithms.map((algorithm, index) => {
               return (
                 <div key={algorithm.uuid + "-description"}>
-                  <h5 className="black-text">{algorithm.algorithmName}</h5>
-                  <p>{algorithm.description}</p>
-                  {index === selectedAlgorithms.length - 1 ? "" : <hr></hr>}
+                  <h5 className="algorithm-title">{algorithm.algorithmName}</h5>
+                  <p className="algorithm-description-text">{algorithm.description}</p>
                 </div>
               );
             })}
           </div>
           <br></br>
-          <div>
-            <h2 className="black-text">Additional Uploads</h2> <br />
-            {additionalInputDiv}
-          </div>
+          <h2 className="black-text upload-header content-text">
+            Additional Uploads
+          </h2>
+          {additionalInputDiv}
         </div>
 
         <div className="back-button">
@@ -144,8 +156,11 @@ const UploadSummary = () => {
             paddingTop: "50px",
           }}
         >
-          {algorithmState.uuid != "" ? (<ProgressBar uuid={algorithmState.uuid} />) : ""}
-
+          {algorithmState.uuid != "" ? (
+            <ProgressBar uuid={algorithmState.uuid} />
+          ) : (
+            ""
+          )}
         </div>
       </div>
     </Container>

@@ -57,16 +57,16 @@ export default function ToolBar() {
           <BxerImage></BxerImage>
         </div>
         <div className="title-div">
-          <NavLink to={"./about"} >About</NavLink>
-          <NavLink to={"./upload"} >Upload</NavLink>
-          <NavLink to={"./results"}>Results</NavLink>
+          <NavLink to={"./about"} >About </NavLink>
+          <NavLink to={"./upload"} >  Upload </NavLink>
+          <NavLink to={"./results"}> Results </NavLink>
           {user ?
             <div onClick={signout} className="signout">
-              <NavLink to={"./"} >Sign out</NavLink>
+              <NavLink to={"./"} >  Sign out </NavLink>
             </div> :
             <div className="login">
               <NavLink to={"./login"}>
-                Login
+                Login 
               </NavLink>
             </div>
           }

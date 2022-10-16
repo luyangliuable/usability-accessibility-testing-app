@@ -131,7 +131,7 @@ const Results = () => {
       <div className="root">
         <p className="text-header text-centre">RESULTS</p>
         <div className="vspacing-40"> </div>
-        <Table>
+        <Table className="text">
           <thead key={"testHeader"}>
             <tr key={"testHeader1"}>
               <th>#</th>

@@ -22,11 +22,11 @@ h3 {
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+  /* font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    sans-serif; */
+  /* -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale; */
 
   /* /\* look into *\/ overflow: hidden; */
   overflow-x: hidden;
@@ -35,10 +35,10 @@ body {
 
 
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
+/* code {
+   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
-}
+}  */
 
 html {
   background-color: #0d0d0d;
@@ -78,20 +78,26 @@ a:active {
 }
 
 .text-header {
-  font-size: max(4vmin, 30px);
+  /* font-size: max(5vmin, 30px);
   color: #ffffff;
-  letter-spacing: 3px;
+  letter-spacing: 0px; */
+  color: white;
+  font-weight: 520;
+  font-size: 45px;
+  font-size: 2.4vw;
+  letter-spacing: 2px;
 }
 
 .text-sub-header {
-  font-size: max(3.3vmin, 24px);
+  font-size: max(3.1vmin, 24px);
   color: #ffffff;
 }
 
 .text {
-  font-size: max(2.2vmin, 18px);
-  color: #ffffff;
-  font-weight: 120;
+  color: #DDD;
+  font-weight: 430;
+  font-size: 20px;
+  font-size: 1.2vw;
 }
 
 .text-caption {

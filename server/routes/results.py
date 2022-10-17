@@ -20,7 +20,6 @@ upload_controller = UploadController('apk')
 @cross_origin()
 def get_result(uuid, type=None):
     """
-
     Get the result of a given uuid and algorithm
 
     Path:
@@ -29,10 +28,6 @@ def get_result(uuid, type=None):
     Vars:
         uuid: The uuid of the result to get
         algorithm: The algorithm to get the result of
-
-
-    TODO: Implement this method
-
     """
 
     print("uuid: ", str(uuid))
@@ -52,7 +47,6 @@ def get_result(uuid, type=None):
 @cross_origin()
 def add_result(uuid, algorithm=None):
     """
-
     Add a result to the database
 
     Path:
@@ -67,21 +61,6 @@ def add_result(uuid, algorithm=None):
             "type": str,
             "names": [str]
         }
-
-    TODO: Implement this method
-        needs to create s3 link
-
-        accepts file(s)
-
-        {
-            "file": file
-        }
-        content-type:
-
-
-        creates download link per file based on download route
-        uploads to s3
-        adds to database
     """
 
     print("uuid: " + uuid)

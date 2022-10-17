@@ -8,11 +8,12 @@ import os
 
 from tasks.xbot import *
 from tasks.owleye import *
-from tasks.tappability import *
 from tasks.droidbot import *
 from tasks.gifdroid import *
+from tasks.tappability import Tappability as Tappable
+from tasks.ui_checker import UiChecker as Venus
 
-EMULATOR = Emulator("emulator-5556", "host.docker.internal:5557", (1920, 1080))
+EMULATOR = Emulator("emulator-5558", "host.docker.internal:5559", (1920, 1080))
 
 class ApkAnalysis:
     """This class runs all algorithms and generates the combined results"""

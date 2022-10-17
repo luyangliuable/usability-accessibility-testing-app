@@ -83,7 +83,6 @@ class Xbot(Task):
         print("XBOT COMPLETED")
 
 
-
     def apk_callback(self, new_apk : ResourceWrapper) -> None:
         """callback method to add apk and run algorithm"""
         if new_apk not in self.apk_queue:
@@ -144,12 +143,36 @@ class Xbot(Task):
             desc_path = os.path.join(issues_dir, activity, activity + ".txt")
             if not os.path.exists(image_path) or not os.path.exists(desc_path):
                 continue
-            if os.path.exists(image_path) and os.path.exists(desc_path):
-                issues.append({"screenshot": screenshot,
-                               "image_path": image_path,
-                               "description_path" : desc_path
-                               })
+            issue_list = self._get_issue_list(desc_path)
+            issues.append({"screenshot": screenshot,            # original screenshot
+                            "image_path": image_path,           # annotated screenshot
+                            "description_path" : desc_path,     # issues text file
+                            "description": issue_list           # list of issues from text file
+                            })
         return issues
+    
+    def _get_issue_list(self, desc_path: str) -> list[str]:
+        """Reads issue text file and produces list of issues"""
+        issue_list = []
+        if not os.path.exists(desc_path):
+            return issue_list
+        with open(desc_path) as f:
+            desc = f.read()
+        # list of each issue description
+        desc = desc.split('\n\n')
+        for i in range(1, len(desc)):
+            issue = desc[i].split('\n')
+            if len(issue) != 3:
+                continue
+            element = issue[1]
+            if element[0] == '[':
+                element = f'Element at bounds {issue[1]}'
+            issue_list.append({
+                "issue_type": issue[0],
+                "component_type": element,
+                "issue_desc": issue[2]
+                    })
+        return issue_list
 
     def _get_screenshots(self) -> List[Screenshot]:
         """ Gets list of screenshot images and layouts from xbot output directory.

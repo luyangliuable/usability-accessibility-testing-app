@@ -124,6 +124,7 @@ class Tappability(Task):
                 continue
             img_path = None
             desc_path = None
+            
             heatmap_paths = []
             for file in os.listdir(result_dir):
                 if file[-5:] == '.json':
@@ -133,11 +134,15 @@ class Tappability(Task):
                     img_path = os.path.join(result_dir, file)
                     continue
                 heatmap_paths.append(os.path.join(result_dir, file))
-                
+            
+            with open(desc_path) as f:
+                desc = json.loads(f.read())
+                                
             if img_path is not None and desc_path is not None:
                 results.append({"screenshot": screenshot, 
                                 "image_path": img_path, 
-                                "description_path": desc_path, 
+                                "description_path": desc_path,
+                                "description": desc, 
                                 "heatmaps": heatmap_paths
                                 })
         return results       

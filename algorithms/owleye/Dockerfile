@@ -34,4 +34,3 @@ RUN pip3 --no-cache install Flask
 EXPOSE 3004
 
 COPY ./app.py ./app.py
-COPY ./model.pth /home/OwlEye-main/model/model.pth

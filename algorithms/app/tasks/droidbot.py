@@ -10,6 +10,7 @@ import requests
 import logging
 import os
 import json
+from models.screenshot import Screenshot
 
 
 class Droidbot(Task, Thread):
@@ -27,7 +28,11 @@ class Droidbot(Task, Thread):
 
         Parameters:
             output_dir - (str) The output directory for the gifdroid result
-            resource_dict - (str) Dictionary of resource groups required by this algorithm # TODO try combine utg and gif into single resource group
+            resource_dict - (dict) Dictionary of resource groups required by this algorithm # TODO try combine utg and gif into single resource group
+            apk_queue - (list) List of apks yet to be processed, which have been published to resource group
+            states - (list) List of states in output_dir which have not been published
+            events - (list) List of events in output_dir which have not been published
+            state_map - (dict) Map of state_str to the published Screenshot object
 
         Returns: Nothing
         """
@@ -35,36 +40,72 @@ class Droidbot(Task, Thread):
         self._sub_to_apks()
         self._sub_to_emulators()
         self.apk_queue = []
-        self.images = ()
-        self.check_new_image_directory = os.path.join(output_dir, 'states')
+        self.states = []    # string of state json filename
+        self.events = []    # string of event json filename
+        self.state_map: dict[str, Screenshot] = {}
+        self.check_new_state_directory = os.path.join(output_dir, 'states')
         self.resource_type = ResourceType.SCREENSHOT
-        self._image_file_watcher = FileWatcher(uuid, 'jpg', self.check_new_image_directory, self, self._publish_all_new_files)
+        self._image_file_watcher = FileWatcher(uuid, 'json', self.check_new_state_directory, self, self._publish_all_new_files)
 
 
-    def _publish_all_new_files(self, files: t.List[str], check_path: str, origin: str) -> bool:
-        """
-        Publish new detected/created files from the path being checked.
+    def _publish_all_new_files(self, files: t.List[str]) -> None:
+        """ Publish new detected/created files from the path being checked.
 
         Parameters:
             files - (List[str]) List of files newly detected or generated.
-            check - (str) The path these files are detected from
-            origin - (str) The task origin.
         """
-        for each_image in files:
-            resource_path = os.path.join(check_path, each_image)
-            self._create_new_resource_group()
-            # json_path = self.get_json(resource_path)
+        for each_state in files:
+            print("New file in Droidbot detected " + str(each_state))
+            self.states.append(each_state)
+            # resource_path = os.path.join(check_path, each_image)
+            # self._create_new_resource_group()
+            # # json_path = self.get_json(resource_path)
 
-            # with open(json_path) as f:
-            #     data = json.loads(f.read())
-            #     ui_screen = data['foreground_activity']
-            # screenshot = Screenshot(ui_screen, resource_path, json_path)
-            img = ResourceWrapper(resource_path, origin)
-            complete = self.status != StatusEnum.running
-            self.resource_dict[self.resource_type].publish(img, complete)
-
-        return True
-
+            # # with open(json_path) as f:
+            # #     data = json.loads(f.read())
+            # #     ui_screen = data['foreground_activity']
+            # # screenshot = Screenshot(ui_screen, resource_path, json_path)
+            # img = ResourceWrapper(resource_path, origin)
+            # complete = self.status != StatusEnum.running
+            # self.resource_dict[self.resource_type].publish(img, complete)
+        
+        
+        self._publish_new_screenshots() # publish screenshots
+        self._publish_new_events()      # publish events
+        
+    
+    def _publish_new_screenshots(self) -> None:
+        published_items = []
+        for state_file in self.states:
+            file_key = state_file.removeprefix('state_').removesuffix('.json')  # common key in jpeg and json
+            img_path = os.path.join(self.check_new_state_directory, f'screen_{file_key}.jpg')
+            json_path = os.path.join(self.check_new_state_directory, state_file)
+            
+            # don't publish if image file not available
+            if not os.path.exists(img_path):
+                continue
+            
+            with open(json_path) as f:
+                data = json.loads(f.read())
+            ui_screen = data['foreground_activity']
+            state_str = data['state_str']
+            screenshot = Screenshot(ui_screen, img_path, json_path)
+            self.state_map[state_str] = screenshot
+            published_items.append(state_file)
+            
+            is_complete = self.status not in [StatusEnum.running, StatusEnum.none]
+            rw = ResourceWrapper('', 'Droidbot', screenshot)
+            if ResourceType.SCREENSHOT in self.resource_dict:
+                self.resource_dict[ResourceType.SCREENSHOT].publish(rw, is_complete)
+        
+        # removed published states from states list
+        for item in published_items:
+            self.states.remove(item)
+    
+    def _publish_new_events(self) -> None:
+        pass
+        
+    
 
     def _create_new_resource_group(self) -> bool:
         """
@@ -140,7 +181,7 @@ class Droidbot(Task, Thread):
         self._image_file_watcher.start()
         print(self._execute_url)
         response = requests.post(str( self._execute_url ), data=json.dumps(self._get_execution_data(apk_path)), headers={"Content-Type": "application/json"})
-
+        
         if response.status_code == 200:
             self.update_algorithm_status(StatusEnum.successful)
         else:

@@ -14,16 +14,12 @@ algorithm_status_controller = AlgorithmStatusController('apk')
 @cross_origin()
 def get_status(uuid, algorithm=None):
     """
-
     Get the status of a given uuid
 
     Path: /status/get/<uuid>
     Vars:
         uuid: The uuid of the status to get
         algorithm: The algorithm to get the status of
-
-
-    TODO: Implement this method
     """
     if request.method == "GET":
         if algorithm is None:
@@ -38,7 +34,6 @@ def get_status(uuid, algorithm=None):
 @cross_origin()
 def update_status(uuid, algorithm=None):
     """
-
     Add a result to the database
 
     Path: /status/update/<uuid>/<algorithm>
@@ -49,9 +44,6 @@ def update_status(uuid, algorithm=None):
         {
             "status": str
         }
-
-
-    TODO: Implement this method
     """
 
     new_status = request.json

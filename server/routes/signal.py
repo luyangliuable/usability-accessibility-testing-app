@@ -14,15 +14,11 @@ algorithm_task_controller = AlgorithmTaskController('apk')
 @cross_origin()
 def start(uuid):
     """
-
     Signal to start the processing of a given uuid
 
     Path: /signal/start/<uuid>
     Vars:
         uuid: The uuid of the process to start
-
-
-    TODO: Implement this method
     """
 
     if request.method == "POST":

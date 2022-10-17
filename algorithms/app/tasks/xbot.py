@@ -141,9 +141,19 @@ class Xbot(Task):
             activity = screenshot.ui_screen
             image_path = os.path.join(issues_dir, activity, activity + ".png")
             desc_path = os.path.join(issues_dir, activity, activity + ".txt")
-            if not os.path.exists(image_path) or not os.path.exists(desc_path):
-                continue
             issue_list = self._get_issue_list(desc_path)
+            # if no issues found, create empty issue
+            if issue_list is None:
+                image_path = screenshot.image_path
+                os.mkdirs(os.path.dirname(desc_path))
+                issue_list = [{
+                    'issue_type': "\n",
+                    'component_type': "Xbot scan successful.",
+                    'issue_desc': "No accessibility issues were suggested."
+                }]
+                with open(desc_path, 'w') as desc_file:
+                    desc_file.writelines(issue_list[0].values())
+                    
             issues.append({"screenshot": screenshot,            # original screenshot
                             "image_path": image_path,           # annotated screenshot
                             "description_path" : desc_path,     # issues text file
@@ -155,7 +165,7 @@ class Xbot(Task):
         """Reads issue text file and produces list of issues"""
         issue_list = []
         if not os.path.exists(desc_path):
-            return issue_list
+            return None  
         with open(desc_path) as f:
             desc = f.read()
         # list of each issue description

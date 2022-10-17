@@ -215,7 +215,7 @@
                         "description": "",
                         "heatmap": "http://localhost:5005/download_result/28f666de-9a79-4a03-ac74-da77acf5924a/tappable/heatmap/a2dp.Vol.PackagesChooser"
                     }
-                },
+                }
             ],
             "gifdroid": {
                 "images": [

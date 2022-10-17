@@ -5,7 +5,7 @@ class ResourceType(Enum):
     """
     Defines different groups for resources to be published to
     """
-    
+
     EMULATOR = 0
     APK_FILE = 1
     SCREENSHOT = 2
@@ -15,10 +15,11 @@ class ResourceType(Enum):
     DISPLAY_ISSUE = 6
     TAPPABILITY_PREDICTION = 7
     UI_RULES = 8
-    
-    
+    EXECUTION_TRACE = 9
 
-    
+
+
+
 class ResourceUsage(Enum):
     """
     Defines how a resource group will dispatch a resource.

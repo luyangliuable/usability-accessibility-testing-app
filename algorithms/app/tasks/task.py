@@ -3,6 +3,7 @@ from tasks.enums.status_enum import StatusEnum
 from abc import ABC, ABCMeta, abstractmethod
 from atexit import register
 from venv import create
+from threading import Thread
 import requests
 import stat
 import os
@@ -34,7 +35,8 @@ class TaskFactory:
             # Create resource groups for algorithm
             required_resources = cls.get_input_types()
             for each_resource in required_resources:
-                resource_groups[each_resource] = ResourceGroup(each_resource)
+                if each_resource not in resource_groups:
+                    resource_groups[each_resource] = ResourceGroup(each_resource)
 
             print(f'Inside task factory creating { cls.__name__ } {output_dir} and {resource_groups}')
 
@@ -57,9 +59,12 @@ class TaskFactory:
 
             all_names += depends
 
+        unique_names = list(set(all_names))
+
+        return unique_names
 
     @staticmethod
-    def get_tasks_with_outputs(resource_types : List[ResourceType]) -> List[ResourceType]:
+    def get_tasks_with_outputs(resource_types : List[ResourceType]) -> List[str]:
         output = []
 
         if resource_types is not None:
@@ -86,13 +91,22 @@ class Task(ABC, metaclass=TaskMetaclass):
 
     def __init__(self, output_dir : str, resource_dict : Dict[ResourceType, ResourceGroup], uuid: str) -> None:
         super().__init__()
+        self._thread = Thread(target = self.run)
         self.uuid = uuid
         self.output_dir = output_dir
         self.status = StatusEnum.none
         self.resource_dict = resource_dict
 
-        if not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir)
+        # if not os.path.exists(self.output_dir):
+        #     os.makedirs(self.output_dir)
+
+    @abstractmethod
+    def start(self):
+        pass
+
+    @abstractmethod
+    def run(self):
+        pass
 
     @classmethod
     @abstractmethod
@@ -116,8 +130,8 @@ class Task(ABC, metaclass=TaskMetaclass):
     def get_output_dir(self) -> str:
         """Output directory of the task"""
         return self.output_dir
-    
-    
+
+
     def get_output_zip(self) -> str:
         """Zips output directory and returns zip path"""
         #TODO: Implement Method

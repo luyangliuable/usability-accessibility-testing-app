@@ -12,8 +12,11 @@ import torchvision
 import json
 import sys
 import getopt
+import torch.nn as nn
 
-MODEL_PATH = "/home/pipeline/trained_models/resnet_v3.pt"
+MODEL_PATH = os.path.join(os.getcwd(), "/home/pipeline/trained_models/resnet_v3.pt")
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+print(DEVICE)
 
 def pipeline(img_path, json_path, output_path, threshold):
     bounds = []
@@ -35,6 +38,8 @@ def pipeline(img_path, json_path, output_path, threshold):
     #Create model from saved state
     model = ResNet(18, Block, 4, 2)
     model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device('cpu')))
+    model.to(DEVICE)
+    model = nn.DataParallel(model)
     model.eval()
 
     json_out = {}
@@ -60,7 +65,7 @@ def pipeline(img_path, json_path, output_path, threshold):
             else:
                 bounding_boxes.append(item['bounds'][i])
 
-        if index[0] == 1 and percentage[index[0]].item()>=threshold:
+        if index[0] == 1 and percentage[index[0]].item()<=threshold:
             colours.append("red")
             heatmap_path = heatmap.createHeatmap(item['bounds'], index[0], counter)
         else:

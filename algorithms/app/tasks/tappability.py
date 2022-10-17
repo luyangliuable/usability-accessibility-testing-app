@@ -5,6 +5,7 @@ from tasks.task import Task
 from typing import List, Callable, Tuple
 import shutil
 import subprocess
+import json
 
 class Tappability(Task):
     """Class for managing Tappability algorithm"""
@@ -20,6 +21,10 @@ class Tappability(Task):
         self.completed_states: set[str] = set()   # set of screenshot structure_ids that have been completed
         self.threshold = 50
         self._sub_to_new_screenshots()
+    
+    @classmethod
+    def __name__(cls) -> str:
+        return "Tappable"
         
     @classmethod
     def get_name(cls) -> str:
@@ -59,7 +64,7 @@ class Tappability(Task):
         
     def _sub_to_new_screenshots(self) -> None:
         """Get notified when new activity is added"""
-        if self.resource_dict[ResourceType.SCREENSHOT]:
+        if ResourceType.SCREENSHOT in self.resource_dict:
             self.resource_dict[ResourceType.SCREENSHOT].subscribe(self.new_screenshot_callback)
     
     def new_screenshot_callback(self, resource: ResourceWrapper) -> None:
@@ -101,9 +106,10 @@ class Tappability(Task):
             # give json same filename as image
             img_filename = os.path.splitext(os.path.basename(screenshot.image_path))[0]
             shutil.copy(screenshot.get_layout_json(), os.path.join(path, img_filename + ".json"))
+            item_ready.append(screenshot)
         return item_ready
     
-    def _get_results(self, screenshots: List[Screenshot]) -> List[Tuple[Screenshot, str, str, List[str]]]:
+    def _get_results(self, screenshots: List[Screenshot]) -> List[dict]:
         """Get Tapability results for a list of screenshots. 
         
         Returns: 
@@ -129,15 +135,22 @@ class Tappability(Task):
                 heatmap_paths.append(os.path.join(result_dir, file))
                 
             if img_path is not None and desc_path is not None:
-                results.append((screenshot, img_path, desc_path, heatmap_paths))
+                results.append({"screenshot": screenshot, 
+                                "image_path": img_path, 
+                                "description_path": desc_path, 
+                                "heatmaps": heatmap_paths
+                                })
         return results       
         
     
-    def _publish(self, item_lst: List[Tuple[Screenshot, str, str, List[str]]]) -> None:
+    def _publish(self, item_lst: List) -> None:
         """publishes and updates item"""
+        if not ResourceType.TAPPABILITY_PREDICTION in self.resource_dict:
+            return
+        
         for item in item_lst:
-            rw = ResourceWrapper(os.dirname(item[1]), self.get_name(), item)
-            self.resource_dict[ResourceType.TAPPABILITY_PREDICTION].add(rw, self.is_complete())
+            rw = ResourceWrapper(os.path.dirname(item[1]), self.get_name(), item)
+            self.resource_dict[ResourceType.TAPPABILITY_PREDICTION].publish(rw, self.is_complete())
         
     
 

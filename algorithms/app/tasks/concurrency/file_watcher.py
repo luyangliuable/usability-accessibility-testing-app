@@ -6,6 +6,8 @@ from tasks.task import Task
 import typing as t
 import requests
 import os
+import json
+from models.screenshot import Screenshot
 
 class FileWatcher():
     """
@@ -14,7 +16,7 @@ class FileWatcher():
 
     _status_controller = os.environ['STATUS_CONTROLLER']
 
-    def __init__(self, uuid: str, file_type: str, output_directory: str, resource_type: ResourceType, task: Task) -> None:
+    def __init__(self, uuid: str, file_type: str, output_directory: str, task: Task, callback: t.Callable) -> None:
         """
         This class is responsible for checking an **output directory** every 3 seconds for new file of **file_type**.
 
@@ -28,14 +30,14 @@ class FileWatcher():
             output_directory - (str) The path to check for new files every 3 seconds
             resource_type - (ResourceType) The type of resource the file corresponds to
             task - (Task) The parent task that uses this.
+            callback - (Callable) After file watcher detects a new file, callback will be called.
         """
-
+        self.source_task = task
+        self.callback = callback
         self.algorithm_name = self._lower_first_char_of_str(task.get_name())
-        self._watcher = Thread(target = self.watch_for_new_files)
+        self._thread = Thread(target = self.watch_for_new_files)
         self.task_output_directory = output_directory
-        self.resource_type = resource_type
         self.uuid = uuid
-        self.task = task
         self.file_type = file_type
         self.files = ()
 
@@ -46,7 +48,8 @@ class FileWatcher():
 
         Checking an **output directory** every 3 seconds for new file of **file_type**.
         """
-        self._watcher.start()
+        self._thread.start()
+
 
     def _log_new_files(self, new_files) -> None:
         """
@@ -62,7 +65,6 @@ class FileWatcher():
                     "logs": logs
                 }
                 requests.post(update_status_url, headers={"Content-Type": "application/json"}, json=data)
-                print(logs)
 
 
     def _lower_first_char_of_str(self, string: str):
@@ -71,6 +73,7 @@ class FileWatcher():
         """
         return string[0].lower() + string[1:]
 
+
     def watch_for_new_files(self):
         """
         Every 3 seconds check for new files then it log and publishes those files
@@ -78,7 +81,7 @@ class FileWatcher():
         check_path = self.task_output_directory
 
         while(True):
-            if self.task.get_status() != StatusEnum.running:
+            if self.source_task.get_status() != StatusEnum.running:
                 print("Exiting file watcher.")
                 break
 
@@ -88,31 +91,57 @@ class FileWatcher():
                 self.files += self._list_image_files_in_dir(check_path)
                 new_files = list( set( self.files ).difference( set( old ) ) )
                 self._log_new_files(new_files)
-                self._publish_all_new_files(new_files, check_path, self.algorithm_name)
+
+                ###############################################################################
+                #                      Callback if a new file is detected                     #
+                ###############################################################################
+                self.callback(new_files)
             else:
                 print(f'{check_path} does not exist yet.')
 
-            sleep(3)
+            sleep(5)
 
 
-    def _publish_all_new_files(self, files: t.List[str], check_path: str, origin: str) -> bool:
+    def _callback_on_new_files(self, new_files: t.List[str]) -> bool:
         """
-        Publish new detected/created files from the path being checked.
+        Calls a callback function determined by the task classes after a new file is detected.
 
-        Parameters:
-            files - (List[str]) List of files newly detected or generated.
-            check - (str) The path these files are detected from
-            origin - (str) The task origin.
+        new_files - (List) List of new files.
         """
-        for each_image in files:
-            resource_path = os.path.join(check_path, each_image)
-            img = ResourceWrapper(resource_path, origin)
-            self._create_new_resource_group(img)
+        for each_file in new_files:
+            """
+            For each new file call the callback function
+            """
+            self.callback(each_file)
 
         return True
 
+    # def _publish_all_new_files(self, files: t.List[str], check_path: str, origin: str) -> bool:
+    #     """
+    #     Publish new detected/created files from the path being checked.
 
-    def _create_new_resource_group(self, resource_wrapper: ResourceWrapper) -> bool:
+    #     Parameters:
+    #         files - (List[str]) List of files newly detected or generated.
+    #         check - (str) The path these files are detected from
+    #         origin - (str) The task origin.
+    #     """
+    #     for each_image in files:
+    #         resource_path = os.path.join(check_path, each_image)
+    #         self._create_new_resource_group()
+    #         # json_path = self.get_json(resource_path)
+
+    #         # with open(json_path) as f:
+    #         #     data = json.loads(f.read())
+    #         #     ui_screen = data['foreground_activity']
+    #         # screenshot = Screenshot(ui_screen, resource_path, json_path)
+    #         img = ResourceWrapper(resource_path, origin)
+    #         complete = self.task.status != StatusEnum.running
+    #         self.task.resource_dict[self.resource_type].publish(img, complete)
+
+    #     return True
+
+
+    def _create_new_resource_group(self) -> bool:
         """
         If the resource group is not yet inside, created it.
 
@@ -121,10 +150,8 @@ class FileWatcher():
 
         Returns: (bool) If the method was successful
         """
-        if self.resource_type not in self.task.resource_dict:
-            self.task.resource_dict[self.resource_type] = ResourceGroup(self.resource_type)
-
-        self.task.resource_dict[self.resource_type].publish(resource_wrapper, True)
+        if self.resource_type not in self.source_task.resource_dict:
+            self.source_task.resource_dict[self.resource_type] = ResourceGroup(self.resource_type)
 
         return True
 
@@ -147,8 +174,12 @@ class FileWatcher():
         return files
 
 
+    # def get_json(self, path: str) -> str:
+    #     return 'states'+path.removeprefix('screen')[-4:]+'json'
+
+
     def join(self):
-        self._watcher.join()
+        self._thread.join()
 
 
     def _check_file_is_correct_type(self, file: str, type: str) -> bool:

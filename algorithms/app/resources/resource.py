@@ -34,7 +34,7 @@ class ResourceWrapper(Generic[T]):
 
 
     def __repr__(self):
-        return f'<<Resource Wrapper path={self._path} released={self._released}>>'
+        return f'<<Resource Wrapper path={self._path}, released={self._released}, origin={self._origin}, metadata={self._metadata.__class__.__name__}>>'
 
 
     def lock(self, released):
@@ -64,7 +64,6 @@ class ResourceGroup(Generic[T]):
 
     def __init__(self, type: ResourceType, usage: ResourceUsage = ResourceUsage.CONCURRENT):
         self._type = type
-
         self._resources = []
         self._subscribers = []
         self._providers = {}
@@ -73,12 +72,11 @@ class ResourceGroup(Generic[T]):
 
     def is_active(self) -> bool:
         ## TODO rework active status of resource group
-        done = True
+        for completed in self._providers.values():
+            if not completed:
+                return True
 
-        for (_, completed) in self._providers:
-            done = done and completed
-
-        return not done
+        return False
 
 
     def subscribe(self, callback : Callable[[ResourceWrapper[T]], None]) -> None:
@@ -93,10 +91,16 @@ class ResourceGroup(Generic[T]):
         Add a resource to the group and notify all subscribers
         """
         self._providers[resource.get_origin()] = completed
-        print(f'{resource} added to {self._resources}.')
+        print(f'{resource} added to group {self._type}.\nNum Resources: {len(self._resources)}.\nGroup Status: {self.is_active()}\n')
         self._resources.append(resource)
 
+        # TODO new utg class, callback for utg:
+        # Has data whether the utg finished building.
+        # TODO if the resource being publish is utg and with images from droidbot, ignore ones the same hash.
 
+        # TODO if the resource being published is utg, run trigger run to utg.
+
+        ## TODO store dispatched resources in JSON or something and not just memory
         if self._usage is ResourceUsage.CONCURRENT:
             for sub in self._subscribers:
                 sub(resource)

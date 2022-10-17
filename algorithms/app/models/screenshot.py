@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from PIL import Image
 import os
 from tasks.layout_converter import LayoutConverter
@@ -13,11 +13,13 @@ class Screenshot:
     image_path: str
     layout_path: str
     structure_id: str
+    metadata: dict = field(default_factory=dict)
     
-    def __init__(self, ui_screen: str, image_path: str, layout_path: str) -> None:
+    def __init__(self, ui_screen: str, image_path: str, layout_path: str, metadata: str={}) -> None:
         self.ui_screen = ui_screen
         self.image_path = image_path
         self.layout_path = layout_path
+        self.metadata = metadata
         self._set_structure_id()
     
     
@@ -75,6 +77,9 @@ class Screenshot:
     
     def _set_structure_id(self) -> None:
         """Generates hash from layout of screenshot"""
+        if self.layout_path is None or not os.path.exists(self.layout_path):
+            self.structure_id = None
+            
         if self.layout_path[-4:] == '.xml':
             self.structure_id = xmlToHash(self.layout_path).get_xml_hash()
             return

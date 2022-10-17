@@ -14,7 +14,7 @@ export function getStatus(uuid, callback) {
                 msg = `${ res.logs[res.logs.length-1] } Time remaining: ${res.ert} seconds`;
             }
 
-            setTimeout(() => getStatus(uuid, callback) , 1000 );
+            setTimeout(() => getStatus(uuid, callback) , 3000 );
             callback(msg, res.progress ? res.progress : 0);
         });
 }

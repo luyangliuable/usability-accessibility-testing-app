@@ -29,7 +29,7 @@ def signUpUser():
 def getResults():
     print(request.json)
     if request.method == "POST":
-        return ReportModel().getResults()
+        return ReportModel().getResults(request.json["user_id"])
 
 if __name__ == "__main__":
     pass

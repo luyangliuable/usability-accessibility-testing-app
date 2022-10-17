@@ -65,7 +65,7 @@ def localization_result(img, mask, image_num, output_dir):
     heatmap = np.float32(heatmap) / 255
     cam = heatmap + np.float32(img)
     cam = cam / np.max(cam)
-    cv2.imwrite(output_dir+"{0}.jpg".format(image_num), np.uint8(255 * cam))
+    cv2.imwrite(os.path.join(output_dir, "{0}.jpg".format(image_num)), np.uint8(255 * cam))
 
 class GradCam:
     def __init__(self, model, target_layer_names):

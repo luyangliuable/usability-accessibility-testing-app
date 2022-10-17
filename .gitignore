@@ -149,8 +149,9 @@ node_modules
 seed_data
 
 
+# docker container folders
+.data
+.aws
 
-algorithms/app/.data/
 algorithms/owleye/OwlEye-main/model/model.pth
 algorithms/app/test.py
-

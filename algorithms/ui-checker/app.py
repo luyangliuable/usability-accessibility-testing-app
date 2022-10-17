@@ -53,7 +53,6 @@ def _service_execute(uuid):
     print('Running ui-checker')
     _process_result()
     print('Successfully ran')
-
     print('Uploading results')
     _upload_result(uuid, apk_name)
     print('Successfully uploaded')
@@ -109,7 +108,7 @@ def _upload_result(uuid, apk_name):
     os.chdir("/home")
 
     # upload issues (image and text description file)
-    issues_root_path = output_root_path + apk_name  
+    issues_root_path = output_root_path + apk_name
     s3_issues_path = 'markii/%s' % uuid
 
     for (root, _, filenames) in os.walk(issues_root_path):

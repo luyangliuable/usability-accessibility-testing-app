@@ -1,56 +1,79 @@
-# from tasks.xbot import Xbot
-# from tasks.tappability import Tappability
-from tasks.droidbot import Droidbot
-# from tasks.owleye import Owleye
-from tasks.gifdroid import Gifdroid
-from resources.screenshot import Screenshot
 from tasks.task import *
 from resources.resource import *
 from resources.resource_types import ResourceType
+from models.emulator import Emulator
+from models.screenshot import Screenshot
 from typing import Dict, List
 import os
-import uuid
 
+from tasks.xbot import *
+from tasks.owleye import *
+from tasks.tappability import *
+from tasks.droidbot import *
+from tasks.gifdroid import *
+
+EMULATOR = Emulator("emulator-5556", "host.docker.internal:5557", (1920, 1080))
 
 class ApkAnalysis:
     """This class runs all algorithms and generates the combined results"""
 
-    def __init__(self, output_dir, names, apk_file: str, additional_files: Dict[str, Dict[str, str]]={}) -> None:
-        self.required_resources = [ResourceType.EMULATOR, ResourceType.APK_FILE]
-        self.apk = ResourceWrapper(apk_file, 'upload')
-        emulator_link = 'host.docker.internal:5555'
-        self.upload_additional_files = additional_files
-        self.emulator = ResourceWrapper('', emulator_link)
+    def __init__(self, output_dir: str, apk_path: str, req_tasks: list[str], additional_files: Dict[str, Dict[str, str]]={}) -> None:
         self.output_dir = output_dir
-        self.apk_file = apk_file
+        if not os.path.exists(self.output_dir):
+            os.makedirs(self.output_dir)
+        self.apk_resource = ResourceWrapper(apk_path, 'upload')
+        self.upload_additional_files = additional_files
+        self.req_tasks = req_tasks
         self.resources = {}
-        self.name = names
-        self._init_dirs()
-
-        print(f'APK file is {apk_file}')
-
-
-
-    def get_emulator(self) -> ResourceWrapper:
-        return self.emulator
-
-
-    def get_apk(self) -> ResourceWrapper:
-        return self.apk
+        self._init_resource_groups()
+        print(f'New APK Analysis.\nAPK file is {apk_path}')
 
 
     def start_processing(self, uuid=None) -> None:
         """Creates required tasks and starts them"""
-        self._init_resource_groups()
-        self._init_additional_resource_groups()
+        self._create_tasks(uuid)
+        # publish provided files to start processing
+        self._publish_provided_files()
 
-        print(f'Creating tasks {self.name} with output dir {self.output_dir} and res {self.resources}')
-        TaskFactory.create_tasks(self.name, self.output_dir, self.resources, uuid)
+    def _init_resource_groups(self) -> None:
+        # create apk, screenshot and emulator resources for every instance
+        self.resources[ResourceType.APK_FILE] = ResourceGroup(ResourceType.APK_FILE)
+        self.resources[ResourceType.SCREENSHOT] = ResourceGroup(ResourceType.SCREENSHOT)
+        self.resources[ResourceType.UTG] = ResourceGroup(ResourceType.UTG)
+        self.resources[ResourceType.EMULATOR] = ResourceGroup(ResourceType.EMULATOR, usage=ResourceUsage.SEQUENTIAL) #TODO: implement singleton for emulator
 
-        self._publish_apk()
-        self._publish_emulator()
-        self._publish_additional_files()
+        for name in self.req_tasks:
+            for resource_type in TaskFactory._tasks[name].get_output_types():
+                if resource_type not in self.resources:
+                    self.resources[resource_type] = ResourceGroup(resource_type)
 
+        # create optional resources
+        for algorithm, algorithm_additional_files in self.upload_additional_files.items():
+            for resource_type_name, _ in algorithm_additional_files.items():
+                resource_type = ResourceType[resource_type_name.upper()]
+                if resource_type not in self.resources:
+                    self.resources[resource_type] = ResourceGroup(resource_type)
+                print(f'Initialised resource type {resource_type} for {algorithm}.')
+        print(f"Initialised resource groups: {self.resources.keys()}")
+
+    def _create_tasks(self, uuid) -> None:
+        # create tasks
+        print(f'Creating tasks {self.req_tasks} with output dir {self.output_dir} and res {self.resources}')
+        TaskFactory.create_tasks(self.req_tasks, self.output_dir, self.resources, uuid)
+
+    def _publish_provided_files(self):
+        # publish apk
+        self.resources[ResourceType.APK_FILE].publish(self.apk_resource, True)
+        # publish emulator
+        self.resources[ResourceType.EMULATOR].publish(ResourceWrapper('', '', EMULATOR), True) #TODO: move this to singleton
+        # publish additional_files
+        print(self.upload_additional_files)
+        for algorithm in self.upload_additional_files.keys():
+            for resource_type_name, files in self.upload_additional_files[algorithm].items():
+                resource_type = ResourceType[resource_type_name.upper()]
+                file = files[0] # Assume is the first file.
+                rw = ResourceWrapper(file, 'upload')
+                self.resources[resource_type].publish(rw, True)
 
     def _publish_additional_files(self):
         """
@@ -64,52 +87,6 @@ class ApkAnalysis:
                 self.resources[resource_type].publish(resource_wrapper, True)
                 print(f'Published resource type {resource_type} for {algorithm} with {file}.')
 
-
-    def _publish_apk(self):
-        self.resources[ResourceType.APK_FILE].publish(self.apk, True)
-
-
-    def _publish_emulator(self):
-        self.resources[ResourceType.EMULATOR].publish(self.emulator, True)
-
-
-    def get_results(self) -> None:
-        """Generates results in output dir"""
-        # TODO create task class for getting results
-        pass
-
-    def _init_dirs(self) -> None:
-        """Creates directories for analysis"""
-        # create output dir
-        if not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir)
-
-    def _init_apk_resource(self) -> ResourceGroup:
-        rw = ResourceWrapper(self.apk_file, None)
-        rg = ResourceGroup(ResourceType.APK_FILE).publish(rw, True)
-        return rg
-
-    def _init_resource_groups(self) -> None:
-        for resource in self.required_resources:
-            self.resources[resource] = ResourceGroup(resource)
-
-        print(self.required_resources)
-
-
-    def _init_additional_resource_groups(self) -> None:
-        for algorithm, algorithm_additional_files in self.upload_additional_files.items():
-            for resource_type_name, _ in algorithm_additional_files.items():
-                resource_type = ResourceType[resource_type_name.upper()]
-                self.resources[resource_type] = ResourceGroup(resource_type)
-                print(f'Initialised resource type {resource_type} for {algorithm}.')
-
-
-
 if __name__ == '__main__':
-    # lst = [Screenshot]
-    resource_dict = {} # make resource dict
-    resources = [ResourceType.APK_FILE, ResourceType.EMULATOR]
-    # names = ['Xbot', 'Tappability']
-    names = ['Droidbot']
-    AA = ApkAnalysis("random_uuid", "/Users/blackfish/Documents/FIT3170_Usability_Accessibility_Testing_App/algorithms/app/.data/", names, resources)
-    AA.start_processing()
+    a = ApkAnalysis('/home/data/test/a2dp.Vol_133/', '/home/data/test/a2dp.Vol_133/a2dp.Vol_133.apk', ["Xbot", "Owleye"])
+    a.start_processing()

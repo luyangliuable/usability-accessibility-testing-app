@@ -3,10 +3,13 @@ FROM alpine:3.14 as base
 ENV PYTHONUNBUFFERED=1
 
 RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
+RUN apk add py3-pip bash curl python3-dev gcc zlib-dev libffi-dev postgresql-dev musl-dev jpeg-dev
+
 RUN python3 -m ensurepip
+
 RUN pip3 install --no-cache --upgrade pip setuptools
 
-RUN pip install pip==22.2.2
+# RUN pip install pip==22.2.2
 
 RUN pip install --upgrade pip \
   && rm -rf /var/cache/apk/*
@@ -25,13 +28,5 @@ RUN pip3 install -r requirements.txt
 # expose 3050
 EXPOSE 3050
 
-# aws 
-COPY .aws /root/.aws
-
-# copy app
-COPY models ./models
-COPY resources ./resources
-COPY tasks ./tasks
-COPY apk_analysis.py ./apk_analysis.py
-COPY apk_analysis_api.py ./apk_analysis_api.py
-COPY test.py ./test.py
+WORKDIR /opt/app
+COPY . .

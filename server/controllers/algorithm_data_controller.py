@@ -1,6 +1,7 @@
+import os
+# from numpy import result_type
 from utility.uuid_generator import unique_id_generator
 from typing import TypeVar, Generic, List, Dict, Tuple
-from download_parsers.strategy import Strategy
 from controllers.controller import Controller
 from enums.status_enum import StatusEnum
 from models.DBManager import DBManager
@@ -14,64 +15,27 @@ class AlgorithmDataController(Generic[T], Controller):
     This controller class is used to update metadata for files on mongodb for traceability purpose.
     """
 
-    def __init__(self, collection_name: str, json_result_file_parser: Strategy) -> None:
-        ###############################################################################
-        #                          Initiate database instance                         #
-        ###############################################################################
-        self.cn = collection_name
+    def __init__(self, collection_name: str) -> None:
+        """
+        This controller class is used to update metadata for files on mongodb for traceability purpose.
+
+        Parameters:
+            collection_name - (str) name of collection on *mongodb* which is apk.
+            json_result_file_parser - (Strategy) will not be used but still not updated because backend not finished
+
+        Returns: None
+        """
+        self.collection_name = collection_name
         self._db = DBManager.instance()
-
-        ###############################################################################
-        #                               Update stratefy                               #
-        ###############################################################################
-        self._strategy = json_result_file_parser
-
-        self.c = self._db.get_collection('apk')
+        self.collection = self._db.get_collection('apk')
 
         self.lookup = {
-            "owleye": "activity",
-            "storydisitiller": "activity",
-            "xbot": "activity",
+            "owleye": "activities",
+            "storydisitiller": "activities",
+            "xbot": "activities",
             "gifdroid": "gifdroid",
             "droidbot": "gifdroid",
         }
-
-
-    def insert_algorithm_result(self, uuid: str, algorithm: str, links_to_res: List, result_type: str, file_names: List) -> Tuple[ Dict[str, T], int]:
-        """
-        This function inserts the links to the algorithm results into the document matching uuid
-
-        Parameters:
-            uuid - uuid for the job which is the cluster of algorithms tasked to run
-            algorithm - the algorithm the result links for
-            links_to_res - the single link to result. NOTE that element in list is dynamically typed so it can be a string
-
-        Returns: Dictionary for the updated document and a bool if the method is successful.
-
-        """
-        ###############################################################################
-        #                             Convert file to json                            #
-        ###############################################################################
-        result_key_in_d = "results"
-
-        # Get document matching uuid ############################################
-        d = self._db.get_document(uuid, self.c)
-
-        # Get the results segment #####################################################
-        result = d[result_key_in_d]
-
-        # Change document and insert result link ######################################
-        prev = result[self.lookup[algorithm]][result_type]
-        parsed_json_for_schema = self._strategy.do_algorithm(uuid, links_to_res, file_names)
-
-        # Append new parsed json to schema ############################################
-        result[self.lookup[algorithm]][result_type] = prev + parsed_json_for_schema
-
-        # Update result back #####################################################
-        self._db.update_document(uuid, self.c, result_key_in_d, result)
-
-        return result, 200
-
 
     def get(self, uuid: str):
         """
@@ -81,7 +45,7 @@ class AlgorithmDataController(Generic[T], Controller):
             uuid (str) - The job uuid the identifies the cluster of algorithms to run
         """
 
-        return self._db.get_document(uuid=uuid, collection=self.c)
+        return self._db.get_document(uuid=uuid, collection=self.collection)
 
 
     def post(self, request_parameters: List, document: Dict) -> bool:
@@ -93,27 +57,75 @@ class AlgorithmDataController(Generic[T], Controller):
             request_parameters - request parameters that contain contents of document
         """
 
-        try:
-            ###############################################################################
-            #                         Add file metadata to mongodb                        #
-            ###############################################################################
+        for each_key, _ in document.items():
+            document[each_key] = request_parameters[each_key]
 
-            for each_key, _ in document.items():
-                document[each_key] = request_parameters[each_key]
+        document['uuid'] = unique_id_generator()
 
-            document['uuid'] = unique_id_generator()
+        self._db.insert_document(document, self.collection).inserted_id
 
-            self._db.insert_document(document, self.c).inserted_id
-
-            return True
-        except Exception as e:
-            ###############################################################################
-            #                                Error Handling                               #
-            ###############################################################################
-            raise IndexError(str(e))
+        return True
 
 
-    def get_result_of_algorithm(self, uuid: str, algorithm: str) -> Dict[str, T]:
+    def _insert_algorithm_result(self, uuid: str, data: Dict[str, List]) -> Dict[str, T]:
+        """
+        This function inserts the links to the algorithm results into the document matching uuid
+
+        Parameters:
+            uuid - uuid for the job which is the cluster of algorithms tasked to run
+            algorithm - the algorithm the result links for
+            links_to_res - the single link to result. NOTE that element in list is dynamically typed so it can be a string
+
+        Returns: Dictionary for the updated document and a bool if the method is successful.
+
+        """
+
+        document = self._db.get_document(uuid, self.collection)
+        results_key = "results"
+        result_schema = self._db.get_format(uuid)[results_key]
+        alg_results = dict(result_schema)
+
+        
+        new_gifdroid = alg_results['gifdroid']
+
+        for key, item in data.items():
+            if key == "ui-states":
+                new_activities = []
+                for each_activity in item:
+                    print(each_activity)
+                    new_activity = self._db.get_format(uuid)[results_key]['activities'][0]
+                    for name, data in each_activity.items():
+                        if name == 'activity-name':
+                            new_activity[name] = each_activity[name]
+                        elif name == 'structure-id':
+                            new_activity[name] = each_activity[name]
+                        elif name == 'base-image':
+                            new_activity[name] = each_activity[name]
+                        elif name == "xbot":
+                            new_activity[name]['image'] = each_activity[name]['image']
+                            new_activity[name]['description'] = each_activity[name]['description']
+                        elif name == "owleye":
+                            new_activity[name]['image'] = each_activity[name]['image']
+                        elif name == "tappable":
+                            # assert 'tappable' in new, "New must have tappable"
+                            # assert 'tappable' in each_activity, "Each activity must have tappable"
+                            new_activity[name]['image'] = each_activity[name]['image']
+                            new_activity[name]['description'] = each_activity[name]['description']
+                            new_activity[name]['heatmaps'] = each_activity[name]['heatmaps']      
+                    new_activities.append(new_activity)
+                    
+                if len(new_activities) > 0:
+                    alg_results['activities'] = new_activities
+
+            elif key == 'gifdroid':
+                for name, data in item.items():
+                    new_gifdroid[name] = data
+                    
+        self._db.update_document(uuid, self.collection, results_key, alg_results)
+        
+        return alg_results
+
+    def _get_result_of_algorithm(self, uuid: str, type: str) -> Dict[str, T]:
         """
         Method for getting a document from api
 
@@ -122,15 +134,16 @@ class AlgorithmDataController(Generic[T], Controller):
             algorithm - the algorithm
 
         Returns: The result slice in the schema for the algorithm
+
+        TODO: fix this method to return the correct result
+              Currently it returns the entire document and not just the results for the algorithm
         """
 
-        schema_result_key = 'results';
+        schema_result_key = 'results'
         document = self.get(uuid)
-        print(document)
-        result = document[schema_result_key][algorithm]
+        result = document[schema_result_key][type]
 
         return result
 
-
-    def get_lookup(self) -> Dict[str, str]:
+    def _get_lookup(self) -> Dict[str, str]:
         return self.lookup

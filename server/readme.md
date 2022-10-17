@@ -52,6 +52,12 @@ output = json
 aws --endpoint-url=http://localhost:4566 s3 mb s3://bucketname
 ```
 
+### Copy a folder into s3 bucket
+
+```shell
+aws --endpoint-url=http://localhost:4566 s3 cp ./folder s3://bucketname/ --recursive
+```
+
 ### List all files in bucket
 
 ```shell

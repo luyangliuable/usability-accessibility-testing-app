@@ -1,83 +1,28 @@
 import re
 import json
+import string
 import xmltodict
 import os
-from resources.resource import *
-from tasks.task import Task
 from typing import Callable, List
 
 
-class LayoutConverter(Task):
+class LayoutConverter():
     """Converts Xbot algorithm xml to json"""
     
-    def __init__(self, output_dir, dict):
-        super().__init__(output_dir, dict)
-        self.xml_lst = {}
-        input_type = self.get_input_types(cls)[0]
-        self._sub_to_input_types(input_type, self.xml_callback)
-
-    @classmethod
-    def get_name(cls) -> str:
-        return LayoutConverter.__name__
-
-    @classmethod
-    def get_input_types(cls) -> List[ResourceType]:
-        return [ResourceType.XML_LAYOUT]
-
-    @classmethod
-    def get_output_types(cls) -> List[ResourceType]:
-        return [ResourceType.JSON_LAYOUT]
-
-
-    
-    def _sub_to_input_types(self, input_type: ResourceType, callback_func: Callable) -> None:
-        """Get notified when new xml is added"""
-        if input_type in self.resource_dict:
-                self.resource_dict[input_type].subscribe(callback_func) 
-                
-    def xml_callback(self, new_xml: ResourceWrapper) -> None:
-         """Callback method to add xml and run converter method"""
-         if new_xml.get_path() not in self.xml_lst:
-             self._add_xml(new_xml)
-             self.process_xml()
-
-    def _add_xml(self, xml: ResourceWrapper) -> None:
-        """Add xml to xml list"""
-        xml_path = xml.get_path()
-        if xml_path not in self.xml_lst:
-            self.xml_lst[xml_path] = {"item": xml, "is_completed": False}
-            
-    def _get_next(self) -> ResourceWrapper:
-        """Get next xml from list which is uncompleted"""
-        xml_lst = [val["item"] for val in self.xml_lst.values() if not val["is_completed"]]
-        return xml_lst[0] if len(xml_lst) > 0 else None
-
-    def process_xml(self) -> None:
-        """Process xml and update completion"""
-        next_xml = self._get_next()
-        self._run(next_xml)
-        self.xml_lst[next_xml.get_path()]["is_completed"] = True # set complete
+    def __init__(self, output_dir, path, activity_name):
+        self.output_dir = output_dir
+        self.activity_name = activity_name
+        self.xml_path = path
         
-    def _run(self, item: ResourceWrapper) -> None:
+    def execute(self) -> string:
         """Converts xml to json and publishes new resource wrapper"""
         #convert xml to json
-        path = item.get_path()
-        item_metadata = item.get_metadata()
-        out_path = os.path.join(self.output_dir, item_metadata.get_img_name() + ".json")
-        self._convert_xml_to_json(path, out_path)
-
-        #add json path to metadata
-        item_metadata.set_json_path(out_path)
-
-        #add new resource wrapper
-        resource = ResourceWrapper(out_path, item.get_origin(), item_metadata)
-        for item in self.get_output_types(cls):
-            if item in self.resource_dict:
-                rg = self.resource_dict[item]
-                rg.publish(resource, False)
-            else:
-                rg = ResourceGroup(item)
-                rg.publish(resource, False)
+        out_path = os.path.join(self.output_dir, self.activity_name + ".json")
+        if os.path.exists(out_path):
+            return out_path
+        
+        self._convert_xml_to_json(self.xml_path, out_path)
+        return out_path
                 
     def _update_list(self, json_children: list) -> list:
         """Loops through list of children and calls update on individual dictionary"""
@@ -171,22 +116,3 @@ class LayoutConverter(Task):
         json_out = open(json_path, "w+")
         json_out.write(json_str)
         json_out.close()
-
-    def is_complete(self) -> bool:
-        """Checks if all xml in list have been convertered"""
-        if self._get_next() == None:
-            return True
-        else:
-            return False  
-        
-if __name__ == '__main__':
-    # make resource groups
-    xml_resource = ResourceGroup(ResourceType.XML_LAYOUT)
-    resource_dict = {} # make resource dict
-    resource_dict[ResourceType.XML_LAYOUT] = xml_resource
-    layout_converter = LayoutConverter('/Users/em.ily/Desktop/temp/img_converter', resource_dict)
-    
-    xml = ResourceWrapper('/Users/em.ily/Desktop/xbot/a2dp.Vol.main.xml', '', Screenshot('a2dp.Vol_.main','a2dp.Vol_.main',png_path='/Users/em.ily/Desktop/temp/a2dp.Vol_.main.png', xml_path='/Users/em.ily/Desktop/xbot/a2dp.Vol.main.xml'))
-    
-    xml_resource.publish(xml, False)
-    print(layout_converter.is_complete())

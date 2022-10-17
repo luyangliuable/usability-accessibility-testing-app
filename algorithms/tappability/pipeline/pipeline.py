@@ -12,6 +12,11 @@ import torchvision
 import json
 import sys
 import getopt
+import torch.nn as nn
+
+MODEL_PATH = os.path.join(os.getcwd(), "/home/pipeline/trained_models/resnet_v3.pt")
+DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+print(DEVICE)
 
 def pipeline(img_path, json_path, output_path, threshold):
     bounds = []
@@ -32,7 +37,9 @@ def pipeline(img_path, json_path, output_path, threshold):
 
     #Create model from saved state
     model = ResNet(18, Block, 4, 2)
-    model.load_state_dict(torch.load(os.getcwd() + "/trained_models/resnet_v3.pt", map_location=torch.device('cpu')))
+    model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device('cpu')))
+    model.to(DEVICE)
+    model = nn.DataParallel(model)
     model.eval()
 
     json_out = {}
@@ -58,7 +65,7 @@ def pipeline(img_path, json_path, output_path, threshold):
             else:
                 bounding_boxes.append(item['bounds'][i])
 
-        if index[0] == 1 and percentage[index[0]].item()>=threshold:
+        if index[0] == 1 and percentage[index[0]].item()<=threshold:
             colours.append("red")
             heatmap_path = heatmap.createHeatmap(item['bounds'], index[0], counter)
         else:
@@ -95,20 +102,20 @@ def run_pipeline(img_dir, json_dir, output_dir, threshold):
 
 if __name__=='__main__':
     args = sys.argv[1:]
-    options, args = getopt.getopt(args, "i:x:o:t:",
+    options, args = getopt.getopt(args, "i:j:o:t:",
                                ["image_dir =",
-                                "xml_dir =",
+                                "json_dir =",
                                 "output_dir =",
                                 "threshold ="])
-    image_dir, xml_dir, output_dir = "", "", ""
+    image_dir, json_dir, output_dir = "", "", ""
     threshold = 50
     for name, value in options:
         if name in ['-i', '--image_dir']:
             image_dir = value
-        elif name in ['-x', '--xml_dir']:
-            xml_dir = value
+        elif name in ['-j', '--json_dir']:
+            json_dir = value
         elif name in ['-o', '--output_dir']:
             output_dir = value
         elif name in ['-t', '--threshold']:
             threshold = int(value)
-    run_pipeline(image_dir, xml_dir, output_dir, threshold)
+    run_pipeline(image_dir, json_dir, output_dir, threshold)

@@ -57,7 +57,7 @@ class TestFileCtr(unittest.TestCase):
 
         expected = {'images': [{'name': 'google', 'link': 'google.com.aubdasdas', 'type': 'None', 's3_bucket': 'apk', 's3_key': os.path.join(self.uuid, 'report', 'google')}, {'name': 'finally_got_something', 'link': 'finally_got_something.org.au', 'type': 'None', 's3_bucket': 'apk', 's3_key': os.path.join(self.uuid, 'report', 'finally_got_something')}], 'json': []}
 
-        self.fc.insert_algorithm_result(self.uuid, 'gifdroid', result, 'images', names)
+        self.fc._insert_algorithm_result(self.uuid, 'gifdroid', result, 'images', names)
 
         r = self.db.get_document(self.uuid, self.tc)
 

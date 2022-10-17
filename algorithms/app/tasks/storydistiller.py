@@ -12,8 +12,8 @@ class Storydistiller(Task):
     _url = 'http://host.docker.internal:3002/execute'
 
     
-    def __init__(self, output_dir, resource_dict : Dict[ResourceType, ResourceGroup]) -> None:
-        super().__init__(output_dir, resource_dict)
+    def __init__(self, output_dir, resource_dict : Dict[ResourceType, ResourceGroup], execution_data: Dict[str, str]={}) -> None:
+        super().__init__(output_dir, resource_dict, execution_data)
 
         self.apk_queue = []
 

@@ -6,7 +6,7 @@ version: '3.8'
 
 # Inside docker
   # 3000 - react_ui
-  # 5000 - flask_backend
+  # 5005 - flask_backend
 
 # Algorithms
   # 3002 - storydistiller
@@ -21,10 +21,10 @@ services:
     image: bxer.flask_backend
     container_name: bxer.flask_backend
     ports:
-      - 5005:5000
-    command: python3 manage.py run -p 5000
-    volumes:
-      - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
+      - 5005:5005
+    command: python3 manage.py run -p 5005
+    # volumes:
+    #   - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
     environment:
       - FLASK_DEBUG=1
       - APP_SETTINGS=config.DevelopmentConfig
@@ -33,8 +33,18 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - MONGO_URL=mongodb://host.docker.internal:27017/
       - S3_URL=http://host.docker.internal:4566
+      - ANALYSIS=http://host.docker.internal:3050/begin_apk_analysis
+      # - STORYDISTILLER=http://host.docker.internal:3002/new_job
+      # - XBOT=http://host.docker.internal:3003/new_job
+      # - OWLEYE=http://host.docker.internal:3004/new_job
+      # - FLASK_BACKEND=http://host.docker.internal:5005
+      # - GIFDROID=http://host.docker.internal:3005/new_job
+      # - DROIDBOT=http://host.docker.internal:3008/new_job
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    volumes:
+      - "./server:/usr/src/app/server"
+      - './.data:/home/data'
     depends_on:
       - redis
       - mongodb
@@ -58,22 +68,16 @@ services:
   worker:
     build:
       context: ./server/
-    command: celery worker --app=tasks.celery --loglevel=info
+    command: celery worker --app=tasks.worker --loglevel=info
     container_name: bxer.task_queue
-    volumes:
-      - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/
     environment:
-      - FLASK_DEBUG=1
+      # - FLASK_DEBUG=1
       - APP_SETTINGS=server.config.DevelopmentConfig
       - CELERY_BROKER_URL=redis://redis:6379/0
       - CELERY_RESULT_BACKEND=redis://redis:6379/0
       - REDIS_URL=redis://redis:6379/0
-      - STORYDISTILLER=http://host.docker.internal:3002/new_job
-      - XBOT=http://host.docker.internal:3003/new_job
-      - OWLEYE=http://host.docker.internal:3004/new_job
-      - FLASK_BACKEND=http://host.docker.internal:5005
-      - GIFDROID=http://host.docker.internal:3005/new_job
-      # - MONGO_URL=mongodb://username:password@mongodb
+    volumes:
+      - "./server:/usr/src/app/server"
     depends_on:
       - flask_backend
       - redis
@@ -110,63 +114,119 @@ services:
       - './.localstack:/tmp/localstack'
       - '/var/run/docker.sock:/var/run/docker.sock'
 
-  # storydistiller:
-  #   build:
-  #     context: ./algorithms/storydistiller/
-  #   command: python3 app.py
-  #   container_name: bxer.storydistiller
-  #   ports:
-  #     - '3002:3002'
-  #   volumes:
-  #     - './algorithms/app/.data:/home/data'
 
-  # xbot:
-  #   build:
-  #     context: ./algorithms/xbot/
-  #   command: python3 app.py
-  #   container_name: bxer.xbot
-  #   ports:
-  #     - '3003:3003'
-  #   volumes:
-  #     - './algorithms/app/.data:/home/data'
+  analysis_app:
+    build:
+      context: ./algorithms/app/
+    command: python3 apk_analysis_api.py
+    container_name: bxer.analysis_app
+    ports:
+      - 3050:3050
+    volumes:
+      - ./.aws:/root/.aws:ro
+      - ./algorithms/app/:/opt/app/:ro
+      - ./.data:/home/data
+    environment:
+      - STATUS_CONTROLLER=http://host.docker.internal:5005/status/update/
+      - GIFDROID=http://host.docker.internal:3005/new_job
+      - DROIDBOT=http://host.docker.internal:3008/new_job
+      - OWLEYE=http://host.docker.internal:3004/execute
+    # stdin_open: true # docker run -i
+    # tty: true        # docker run -t
 
-  # owleye:
-  #   build:
-  #     context: ./algorithms/owleye/
-  #   command: python3 app.py
-  #   container_name: bxer.owleye
-  #   ports:
-  #     - '3004:3004'
-  #   volumes:
-  #     - './algorithms/app/.data:/home/data'
+  storydistiller:
+    build:
+      context: ./algorithms/storydistiller/
+    command: python3 app.py
+    container_name: bxer.storydistiller
+    ports:
+      - '3002:3002'
+    volumes:
+      - './.data:/home/data'
 
-  # tappability:
-  #   build:
-  #     context: ./algorithms/tappability/
-  #   command: python3 app.py
-  #   container_name: bxer.tappable
-  #   ports:
-  #     - '3007:3007'
-  #   volumes:
-  #     - './algorithms/app/.data:/home/data'
+  xbot:
+    build:
+      context: ./algorithms/xbot/
+    command: python3 app.py
+    container_name: bxer.xbot
+    ports:
+      - '3003:3003'
+    volumes:
+      - './.data:/home/data'
+
+  owleye:
+    build:
+      context: ./algorithms/owleye/
+    command: python3 app.py
+    container_name: bxer.owleye
+    ports:
+      - '3004:3004'
+    volumes:
+      - './.data:/home/data'
+
+  tappability:
+    build:
+      context: ./algorithms/tappability/
+    command: python3.8 app.py
+    container_name: bxer.tappability
+    ports:
+      - '3007:3007'
+    volumes:
+      - './.data:/home/data'
+
 
   gifdroid:
     build:
-      context: ./algorithms/docker_apps/gifdroid_app
+      context: ./algorithms/gifdroid
     command: python3 app.py
-    image: bwoa0001/gifdroid
     container_name: bxer.gifdroid
     ports:
       - '3005:3005'
     environment:
-    - FILE_API=http://host.docker.internal:5005/result/get
+    - FILE_API=http://host.docker.internal:5005/results/get
     - STATUS_API=http://host.docker.internal:5005/status
     - FLASK_BACKEND=http://host.docker.internal:5005
     - MONGO_URL=mongodb://host.docker.internal:27017/
     - S3_URL=http://host.docker.internal:4566
     - EMULATOR=host.docker.internal:5555
     volumes:
-    - './algorithms/app/.data:/home/data'
+    - './.data:/home/data'
+
+  droidbot:
+    build:
+      context: ./algorithms/droidbot
+    command: python3 app.py
+    # image: bwoa0001/gifdroid
+    container_name: bxer.droidbot
+    ports:
+      - '3008:3008'
+    environment:
+    - FILE_API=http://host.docker.internal:5005/results/get
+    - STATUS_API=http://host.docker.internal:5005/status
+    - FLASK_BACKEND=http://host.docker.internal:5005
+    - MONGO_URL=mongodb://host.docker.internal:27017/
+    - S3_URL=http://host.docker.internal:4566
+    - EMULATOR=host.docker.internal:5555
+    volumes:
+    - './.data:/home/data'
+
+  # gifdroid:
+  #   build:
+  #     context: ./algorithms/docker_apps/gifdroid_app
+  #   command: python3 app.py
+  #   image: bwoa0001/gifdroid
+  #   container_name: bxer.gifdroid
+  #   ports:
+  #     - '3005:3005'
+  #   environment:
+  #   - FILE_API=http://host.docker.internal:5005/result/get
+  #   - STATUS_API=http://host.docker.internal:5005/status
+  #   - FLASK_BACKEND=http://host.docker.internal:5005
+  #   - MONGO_URL=mongodb://host.docker.internal:27017/
+  #   - S3_URL=http://host.docker.internal:4566
+  #   - EMULATOR=host.docker.internal:5555
+  #   volumes:
+  #   - './algorithms/app/.data:/home/data'
 
   # ui_checker:
   #   build:
@@ -183,4 +243,4 @@ services:
   #   - mongo_url=mongodb://host.docker.internal:27017/
   #   - s3_url=http://host.docker.internal:4566
   #   - emulator=host.docker.internal:5555
-  #   - FILE_API=http://host.docker.internal:5005/file/get
+  #   - FILE_API=http://host.docker.internal:5005/results/get

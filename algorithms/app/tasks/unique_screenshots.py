@@ -26,12 +26,14 @@ class UniqueScreenshots(Task):
 
     @classmethod
     def get_input_types(cls) -> List[ResourceType]:
-        return [ResourceType.SCREENSHOT_JPEG, ResourceType.JSON_LAYOUT]
+        # return [ResourceType.SCREENSHOT_JPEG, ResourceType.JSON_LAYOUT]
+        pass
 
 
     @classmethod
     def get_output_types(cls) -> List[ResourceType]:
-        return [ResourceType.SCREENSHOT_UNIQUEPAIR]
+        # return [ResourceType.SCREENSHOT_UNIQUEPAIR]
+        pass
 
 
     

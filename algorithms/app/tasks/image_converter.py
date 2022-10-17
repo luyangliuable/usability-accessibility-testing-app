@@ -35,7 +35,9 @@ class ImageConverter(Task):
         #     return [ResourceType.SCREENSHOT_JPEG]
         # if self.png_type:
         #     return [ResourceType.SCREENSHOT_PNG]
-        return [ResourceType.SCREENSHOT_JPEG]
+        # return [ResourceType.SCREENSHOT_JPEG]
+        # TODO screenshot_jpeg no long available.
+        pass
 
 
 

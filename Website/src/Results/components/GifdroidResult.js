@@ -5,7 +5,7 @@ import "./TableStyle.css";
 
 const GifdroidResult = ({uuid}) => {
 
-    const link = "http://localhost:5005/file/get/" + uuid +"/gifdroid";
+    const link = "http://localhost:5005/result/get/" + uuid +"/gifdroid";
     const statusLink = "http://localhost:5005/status/get/" + uuid + "/gifdroid";
 
     // TODO can't get this link promise thing working

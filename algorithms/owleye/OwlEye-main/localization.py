@@ -10,7 +10,7 @@ import getdata
 import os
 import sys
 
-model_dir = './model/model.pth'
+model_dir = '/home/OwlEye-main/model/model.pth'
 
 class FeatureExtractor():
 
@@ -65,7 +65,7 @@ def localization_result(img, mask, image_num, output_dir):
     heatmap = np.float32(heatmap) / 255
     cam = heatmap + np.float32(img)
     cam = cam / np.max(cam)
-    cv2.imwrite(output_dir+"{0}.jpg".format(image_num), np.uint8(255 * cam))
+    cv2.imwrite(os.path.join(output_dir, "{0}.jpg".format(image_num)), np.uint8(255 * cam))
 
 class GradCam:
     def __init__(self, model, target_layer_names):
@@ -123,7 +123,7 @@ if __name__ == '__main__':
         print(file)
         (filename, extension) = os.path.splitext(file)
         image_num = filename
-        image_name = image_dir + file
+        image_path = os.path.join(image_dir, file)
 
         model = Net()
         model.cpu()
@@ -131,10 +131,10 @@ if __name__ == '__main__':
         model.load_state_dict(torch.load(model_dir, map_location=torch.device('cpu')))
 
         grad_cam = GradCam(model=model, target_layer_names=["40"])
-        img = cv2.imread(image_name, 1)
+        img = cv2.imread(image_path, 1)
         img = np.float32(cv2.resize(img, (448, 768))) /255
 
-        input = preprocess_image(image_name)
+        input = preprocess_image(image_path)
         target_index = None
         mask = grad_cam(input, target_index)
         localization_result(img, mask, image_num, output_dir)

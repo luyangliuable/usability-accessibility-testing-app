@@ -55,7 +55,7 @@ class TestDbManager(unittest.TestCase):
     def test_get_update_start_time_status(self):
         test_start_time = datetime.datetime(2018,1,1)
 
-        self.asc.update(self.uuid, start_time=test_start_time)
+        self.asc.post(self.uuid, start_time=test_start_time)
 
         r = self.db.get_document(self.uuid, self.tc)['overall-status']
 
@@ -70,7 +70,7 @@ class TestDbManager(unittest.TestCase):
     def test_get_update_job_status(self):
         new_status = Status.successful
 
-        self.asc.update(self.uuid, status=new_status)
+        self.asc.post(self.uuid, status=new_status)
 
         r = self.db.get_document(self.uuid, self.tc)['overall-status']
 

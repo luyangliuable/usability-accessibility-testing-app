@@ -39,6 +39,6 @@ RUN pip install -r requirements.txt
 COPY .aws /root/.aws
 
 # copy project
-COPY . .
+# COPY . .
 
 RUN echo env

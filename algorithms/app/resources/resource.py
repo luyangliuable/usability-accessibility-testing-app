@@ -15,22 +15,27 @@ class ResourceWrapper(Generic[T]):
         self._path = path
         self._origin = origin
         self._metadata = metadata
-
         self._released = None
+
+    def update_path(self, path: str) -> None:
+        self._path = path
 
     def get_path(self) -> str:
         return self._path
-    
+
     def get_origin(self) -> str:
         return self._origin
-    
+
     def get_metadata(self) -> T:
         return self._metadata
 
     def set_metadata(self, metadata : T):
         self._metadata = metadata
-    
-    
+
+
+    def __repr__(self):
+        return f'<<Resource Wrapper path={self._path}, released={self._released}, origin={self._origin}, metadata={self._metadata.__class__.__name__}>>'
+
 
     def lock(self, released):
         """
@@ -59,7 +64,6 @@ class ResourceGroup(Generic[T]):
 
     def __init__(self, type: ResourceType, usage: ResourceUsage = ResourceUsage.CONCURRENT):
         self._type = type
-
         self._resources = []
         self._subscribers = []
         self._providers = {}
@@ -68,14 +72,13 @@ class ResourceGroup(Generic[T]):
 
     def is_active(self) -> bool:
         ## TODO rework active status of resource group
-        done = True
+        for completed in self._providers.values():
+            if not completed:
+                return True
 
-        for (_, completed) in self._providers:
-            done = done and completed
+        return False
 
-        return not done
-    
-    
+
     def subscribe(self, callback : Callable[[ResourceWrapper[T]], None]) -> None:
         """
         Subscribe to the resource group
@@ -87,24 +90,26 @@ class ResourceGroup(Generic[T]):
         """
         Add a resource to the group and notify all subscribers
         """
-        
         self._providers[resource.get_origin()] = completed
+        print(f'{resource} added to group {self._type}.\nNum Resources: {len(self._resources)}.\nGroup Status: {self.is_active()}\n')
         self._resources.append(resource)
 
+        # TODO new utg class, callback for utg:
+        # Has data whether the utg finished building.
+        # TODO if the resource being publish is utg and with images from droidbot, ignore ones the same hash.
+
+        # TODO if the resource being published is utg, run trigger run to utg.
 
         ## TODO store dispatched resources in JSON or something and not just memory
-
-
         if self._usage is ResourceUsage.CONCURRENT:
             for sub in self._subscribers:
                 sub(resource)
 
-
         elif self._usage is ResourceUsage.SEQUENTIAL:
-            self.lock_resource(resource, 0)
-            
+            self._lock_resource(resource, 0)
 
-    def lock_resource(self, resource : ResourceWrapper[T], index : Number) -> None:
+
+    def _lock_resource(self, resource : ResourceWrapper[T], index : Number) -> None:
         """
         INTERNAL USE ONLY
         Place a sequential lock on a resource, allows a resource to be dispatches sequentially
@@ -113,5 +118,6 @@ class ResourceGroup(Generic[T]):
         if index >= len(self._subscribers):
             return
 
-        resource.lock(lambda x : self.lock_resource(x, index + 1))
+        resource.lock(lambda x : self._lock_resource(x, index + 1))
         self._subscribers[index](resource)
+ 

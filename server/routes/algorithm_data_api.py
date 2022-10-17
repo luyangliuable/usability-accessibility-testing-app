@@ -24,7 +24,7 @@ def get_result_of_algorithm(uuid: str, algorithm: str) -> Tuple[ Dict[str, str],
     Method for getting a document from api
     """
 
-    return algorithm_database_controller.get_result_of_algorithm(uuid, algorithm), 200
+    return algorithm_database_controller._get_result_of_algorithm(uuid, algorithm), 200
 
 
 @algorithm_data_blueprint.route("/result/get/<uuid>", methods=['GET'])
@@ -50,7 +50,7 @@ def result_add(uuid, algorithm) -> Tuple[str, int]:
         type = request.json["type"]
         file_names = request.json["names"]
 
-        algorithm_database_controller.insert_algorithm_result(uuid, algorithm, links, type, file_names)
+        algorithm_database_controller._insert_algorithm_result(uuid, algorithm, links, type, file_names)
 
         return "Done", 200
 

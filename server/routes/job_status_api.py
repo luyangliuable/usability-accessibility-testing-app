@@ -16,6 +16,22 @@ job_status_blueprint = Blueprint("job_status", __name__)
 DEFAULT_COLLECTION = 'apk'
 jsc = JobStatusController(DEFAULT_COLLECTION)
 
+###############################################################################
+#                        Disable annoying spam logging                        #
+###############################################################################
+import logging
+
+def filter_status_messages(record):
+    if record.getMessage().startswith('%s'):
+        return False
+    print(record.getMessage())
+    return True
+
+
+logger = logging.getLogger("werkzeug")
+logger.addFilter(filter_status_messages)
+# logger.disabled = True
+
 
 if t.TYPE_CHECKING:  # pragma: no cover
     from werkzeug.wrappers import Response as BaseResponse
@@ -37,7 +53,7 @@ def get(uuid: str) -> t.Tuple[str, int]:
     return "Invalid request", 400
 
 
-@job_status_blueprint.route("/status/update/<uuid>", methods=['GET', 'POST'])
+@job_status_blueprint.route("/status/update/<uuid>", methods=['POST'])
 @cross_origin()
 def update(uuid: str) -> t.Tuple[t.Dict, int]:
     """
@@ -45,7 +61,7 @@ def update(uuid: str) -> t.Tuple[t.Dict, int]:
     """
     if request.method == "POST":
         data = request.json
-        res = jsc.update(uuid, status=data.get('status'), progress=data.get('progress'), logs=data.get('logs'))
+        res = jsc.post(uuid, **data)
         return res, 200
     else:
         return {"error": request.method + " not valid" }, 400

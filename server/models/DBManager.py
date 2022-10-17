@@ -67,7 +67,8 @@ class DBManager:
                 "end_time": "",
                 "progress": 0,
                 "logs": [],
-                "ert": 0
+                "ert": 0,
+                "algorithms_to_run": [] # Required to calculate progress
             },
             "algorithm_status" : {
                 "storydistiller" : {
@@ -110,6 +111,16 @@ class DBManager:
                     "logs": [],
                     "ert": 0
                 },
+                "droidbot" : {
+                    "status" : "",
+                    "notes": "",
+                    "start_time" : "",
+                    "end_time" : "",
+                    "apk": "",
+                    "progress": 0,
+                    "logs": [],
+                    "ert": 0
+                },
                 "ui_checker" : {
                     "status" : "",
                     "notes": "",
@@ -128,27 +139,30 @@ class DBManager:
             "results" : {
                 "activities" : [
                     {
-                        "name" : "",
-                        "image" : [],
+                        "activity-name" : "",
+                        "structure-id": "",
+                        "base-image" : "",
                         "xbot" : {
                             "image" : "",
-                            "description" : ""
+                            "description" : []
                         },
                         "owleye" : {
-                            "image" : []
+                            "image" : ""
                         },
-                        "tapshoe" : {
-                            "image" : [],
-                            "description" : "",
-                            "heatmap" : "{link to heatmap image}"
+                        "tappable" : {
+                            "image" : "",
+                            "description" : [],
+                            "heatmaps" : []
                         }
                     }
                 ],
                 "gifdroid": {
-                    "images": [],
+                    "image": [],
                     "json": []
                 },
-                "uichecker": {}
+                "uichecker": {
+                    "summary": "",
+                }
             }
         }
 
@@ -265,9 +279,6 @@ class DBManager:
 
     def insert_document(self, document, collection: Collection):
         post_id = collection.insert_one(document)
-
-        print(post_id)
-
         return post_id
 
 

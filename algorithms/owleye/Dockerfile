@@ -1,3 +1,4 @@
+FROM trevinwadu/bxer:owleye AS builder-model
 FROM ubuntu:18.04 AS base
 
 # COPY ./requirements.txt .
@@ -20,10 +21,11 @@ RUN apt upgrade -y
 # Install pytorch
 RUN pip3 install --no-cache torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
 
-
 # Copy source code and run script
 WORKDIR /home
 COPY ./OwlEye-main ./OwlEye-main
+# copy model
+COPY --from=0 /home/OwlEye-main/model/model.pth /home/OwlEye-main/model/model.pth
 
 # API stage
 FROM base

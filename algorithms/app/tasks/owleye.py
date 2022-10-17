@@ -20,7 +20,6 @@ class Owleye(Task):
 
     def __init__(self, output_dir, resource_groups : Dict[ResourceType, ResourceGroup], uuid: str) -> None:
         super().__init__(output_dir, resource_groups, uuid)
-        self._thread=Thread(target=self.run)
         self.queue: list[Screenshot] = []         # list of unprocessed screenshots
         self.completed_states: set[str] = set()   # set of screenshot structure_ids that have been completed
         self.input_dir = os.path.join(self.output_dir, 'temp')
@@ -43,7 +42,7 @@ class Owleye(Task):
 
 
     @classmethod
-    def run(cls, image_dir: str, output_dir: str) -> str:
+    def run(cls, image_dir: str, output_dir: str) -> StatusEnum:
         """Runs owleye algorithm for images in image_dir and outputs to output_dir"""
         data = {
             "image_dir" : image_dir,
@@ -96,7 +95,7 @@ class Owleye(Task):
                     print(f'Owleye successfully proccessed image: {next_img}. Output: {result[0]}\n')
                     self._publish_issues(result)
             except Exception as err:
-                print(f"Error {err} in Owleye while trying to process image. \nOwleye continuing")
+                print(f"Error {err} in Owleye while trying to process image.\nOwleye continuing")
             
     
     def _prepare_inputs(self, images: list[Screenshot]) -> None:

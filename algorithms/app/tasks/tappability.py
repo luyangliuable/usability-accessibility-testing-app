@@ -6,6 +6,8 @@ from typing import List, Callable, Tuple
 import shutil
 import subprocess
 import json
+from tasks.enums.status_enum import *
+from time import sleep
 
 class Tappability(Task):
     """Class for managing Tappability algorithm"""
@@ -16,20 +18,16 @@ class Tappability(Task):
     
     def __init__(self, output_dir: str, resource_dict: dict[ResourceType, ResourceGroup], uuid: str) -> None:
         super().__init__(output_dir, resource_dict, uuid)
-        self.running = False
+        self.input_dir = os.path.join(self.output_dir, 'temp')
         self.queue: list[Screenshot] = []         # list of unprocessed screenshots
         self.completed_states: set[str] = set()   # set of screenshot structure_ids that have been completed
-        self.threshold = 50
+        self.threshold = 80
         self._sub_to_new_screenshots()
-    
-    @classmethod
-    def __name__(cls) -> str:
-        return "Tappable"
-        
+            
     @classmethod
     def get_name(cls) -> str:
         """Name of the task"""
-        return Tappability.__name__
+        return cls.__name__
     
     @classmethod
     def get_input_types(cls) -> List[ResourceType]:
@@ -40,7 +38,7 @@ class Tappability(Task):
         return Tappability._output_types
 
     @classmethod
-    def run(cls, image_dir: str, json_dir: str, output_dir: str, threshold: int) -> None:
+    def run(cls, image_dir: str, json_dir: str, output_dir: str, threshold: int) -> StatusEnum:
         """Runs Tappability algorithm.
         
         Attributes:
@@ -58,9 +56,12 @@ class Tappability(Task):
         
         response = Tappability.http_request(Tappability._url, data)
         
-        status = 'SUCCESSFUL' if response and response.status_code==200 else 'FAILED'
-        print("STATUS " + status)
-        
+        status = StatusEnum.successful if response and response.status_code==200 else StatusEnum.failed
+        print("STATUS " + str(status))
+        return status
+    
+    def is_complete(self) -> bool:
+        return (len(self.queue) == 0 and not self.resource_dict[ResourceType.SCREENSHOT].is_active())
         
     def _sub_to_new_screenshots(self) -> None:
         """Get notified when new activity is added"""
@@ -75,39 +76,57 @@ class Tappability(Task):
          if screenshot.structure_id not in self.completed_states:   # only add if similar UI structure not in list
              self.queue.append(screenshot)
              self.completed_states.add(screenshot.structure_id)
-             self._run()
-        
-    def _run(self) -> None:
-        """Run tappable on temp batch"""
-        if self.running:
+             if not self.status == StatusEnum.running:
+                self.start()
+             
+    def start(self) -> None:
+        """ Signal start thread for task."""
+        if self.status == StatusEnum.running:
             return
         
-        self.running = True
-        path = os.path.join(self.output_dir + "temp")
-        items = self._move_items(path)
+        self.status = StatusEnum.running
+        task = Thread(target=self._process_images);
+        task.start()
         
-        # run tappable
-        Tappability.run(path, path, self.output_dir, self.threshold)
+    def _process_images(self) -> None:
+        """Run Tappability on temp batch"""
+        print(f'Starting Tappability. Status: {self.status}') 
         
-        # generate and publish result data
-        result_list = self._get_results(items)
-        self.queue = [img for img in self.queue if img not in items]    # update queue
-        self._publish(result_list)
-        shutil.rmtree(path)
-        self.running = False
-    
-    def _move_items(self, path: str) -> list[Screenshot]:
+        while self.status == StatusEnum.running:
+            if self.is_complete():
+                self.status = StatusEnum.successful
+                break
+            if len(self.queue) == 0:
+                sleep(5.0)
+                continue
+            
+            try:
+                # get next screenshot from queue
+                next_img = self.queue.pop(0)
+                self._prepare_inputs([next_img])
+                print(f'Running Tappability for {next_img}')
+                response = Tappability.run(self.input_dir, self.input_dir, self.output_dir, self.threshold)
+                result = self._get_results([next_img])
+                if response == StatusEnum.successful and len(result) > 0:
+                    print(f'Tappability successfully proccessed image: {next_img}. Output: {result[0]}\n')
+                    self._publish(result)
+            except Exception as err:
+                print(f"Error {err} in Tappability while trying to process image.\Tappability continuing")
+            
+            
+    def _prepare_inputs(self, images: list[Screenshot]) -> None:
         """Move ready items into temp directory"""
-        if not os.path.exists(path):
-            os.makedirs(path)
-        item_ready = []
-        for screenshot in self.queue:
-            shutil.copy(screenshot.get_image_jpeg(), path)
+        if os.path.exists(self.input_dir):
+            shutil.rmtree(self.input_dir)
+        os.makedirs(self.input_dir)
+        for img in images:
+            img_path = img.get_image_jpeg()
+            json_path = img.get_layout_json()
+            shutil.copy(img_path, self.input_dir)
             # give json same filename as image
-            img_filename = os.path.splitext(os.path.basename(screenshot.image_path))[0]
-            shutil.copy(screenshot.get_layout_json(), os.path.join(path, img_filename + ".json"))
-            item_ready.append(screenshot)
-        return item_ready
+            img_filename = os.path.splitext(os.path.basename(img_path))[0]
+            shutil.copy(json_path, os.path.join(self.input_dir, f'{img_filename}.json'))
+
     
     def _get_results(self, screenshots: List[Screenshot]) -> List[dict]:
         """Get Tapability results for a list of screenshots. 
@@ -148,13 +167,13 @@ class Tappability(Task):
         return results       
         
     
-    def _publish(self, item_lst: List) -> None:
+    def _publish(self, item_lst: List[dict]) -> None:
         """publishes and updates item"""
         if not ResourceType.TAPPABILITY_PREDICTION in self.resource_dict:
             return
         
         for item in item_lst:
-            rw = ResourceWrapper(os.path.dirname(item[1]), self.get_name(), item)
+            rw = ResourceWrapper(item['screenshot'], self.__class__.__name__, item)
             self.resource_dict[ResourceType.TAPPABILITY_PREDICTION].publish(rw, self.is_complete())
         
     

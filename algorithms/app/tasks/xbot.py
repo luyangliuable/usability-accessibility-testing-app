@@ -10,7 +10,7 @@ class Xbot(Task):
     """Class for managing Xbot algorithm"""
 
     _input_types = [ResourceType.APK_FILE, ResourceType.EMULATOR]
-    _output_types = [ResourceType.ACCESSIBILITY_ISSUE]
+    _output_types = [ResourceType.SCREENSHOT, ResourceType.ACCESSIBILITY_ISSUE]
     _url = 'http://host.docker.internal:3003/execute'
 
     def __init__(self, output_dir, resource_dict : Dict[ResourceType, ResourceGroup], uuid: str) -> None:
@@ -145,11 +145,11 @@ class Xbot(Task):
             # if no issues found, create empty issue
             if issue_list is None:
                 image_path = screenshot.image_path
-                os.mkdirs(os.path.dirname(desc_path))
+                os.makedirs(os.path.dirname(desc_path))
                 issue_list = [{
-                    'issue_type': "\n",
-                    'component_type': "Xbot scan successful.",
-                    'issue_desc': "No accessibility issues were suggested."
+                    'issue_type': " ",
+                    'component_type': "No accessibility issues were suggested.",
+                    'issue_desc': " "
                 }]
                 with open(desc_path, 'w') as desc_file:
                     desc_file.writelines(issue_list[0].values())

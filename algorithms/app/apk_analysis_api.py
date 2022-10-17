@@ -1,5 +1,5 @@
 import shutil
-from apk_analysis import ApkAnalysis
+from apk_analysis import *
 from models.screenshot import Screenshot
 from resources.resource_types import ResourceType
 from resources.resource import *
@@ -8,9 +8,13 @@ import requests
 import os
 import json
 import boto3
-from tasks.xbot import Xbot
-from tasks.owleye import Owleye
 import time
+
+DIFF_NAMES = {'Tappability': 'Tappable', 'UiChecker': 'Venus'}
+for name in DIFF_NAMES:
+    if name in TaskFactory._tasks:
+        TaskFactory._tasks[DIFF_NAMES[name]] = TaskFactory._tasks[name]
+        del TaskFactory._tasks[name]
 
 RESULT_URL = 'http://host.docker.internal:5005/results/add/'
 STATUS_URL = 'http://host.docker.internal:5005/status/update/'
@@ -48,9 +52,8 @@ class ApkAnalysisApi(ApkAnalysis):
         self.results = {}
         self.running = set()
         self._init_results()
-
-
-
+        
+        
     def start_processing(self) -> None:
         for task in self.req_tasks:
             self._update_status("RUNNING", task.lower())

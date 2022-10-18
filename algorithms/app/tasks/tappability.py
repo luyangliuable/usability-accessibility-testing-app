@@ -141,21 +141,26 @@ class Tappability(Task):
             result_dir = os.path.join(self.output_dir, img_name)
             if not os.path.exists(result_dir):
                 continue
-            img_path = None
-            desc_path = None
+            img_path = os.path.join(result_dir, 'screenshot.jpg')
+            desc_path = os.path.join(result_dir, 'description.json')
             
             heatmap_paths = []
             for file in os.listdir(result_dir):
-                if file[-5:] == '.json':
-                    desc_path = os.path.join(result_dir, file)
+                if file[-5:] == 'description.json':
                     continue
                 if file == 'screenshot.jpg':
-                    img_path = os.path.join(result_dir, file)
                     continue
                 heatmap_paths.append(os.path.join(result_dir, file))
             
-            with open(desc_path) as f:
-                desc = json.loads(f.read())
+            desc = []
+            if os.path.exists(desc_path):
+                with open(desc_path) as f:
+                    desc_file = json.loads(f.read())
+                    for item in dict(desc_file).values():
+                        desc.append(item)     
+            
+            if not os.path.exists(img_path):
+                img_path = screenshot.image_path
                                 
             if img_path is not None and desc_path is not None:
                 results.append({"screenshot": screenshot, 
@@ -173,7 +178,8 @@ class Tappability(Task):
             return
         
         for item in item_lst:
-            rw = ResourceWrapper(item['screenshot'], self.__class__.__name__, item)
+            print('tappable publishing ' + str(item))
+            rw = ResourceWrapper(self.__class__.__name__, item)
             self.resource_dict[ResourceType.TAPPABILITY_PREDICTION].publish(rw, self.is_complete())
         
     

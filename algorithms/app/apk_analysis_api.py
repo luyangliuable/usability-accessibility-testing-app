@@ -38,7 +38,7 @@ class ApkAnalysisApi(ApkAnalysis):
     _result_types = {
         'Xbot': ResourceType.ACCESSIBILITY_ISSUE,
         'Owleye': ResourceType.DISPLAY_ISSUE,
-        'Tappability': ResourceType.TAPPABILITY_PREDICTION
+        'Tappable': ResourceType.TAPPABILITY_PREDICTION
     }
 
     def __init__(self, job_info) -> None:
@@ -139,7 +139,12 @@ class ApkAnalysisApi(ApkAnalysis):
         heatmaps = []
         for path in result["heatmap"]:
             heatmaps.append(self._upload_file(path))
-        result = {"image": img_url, "description": result["description"], "heatmaps": str(heatmaps)}
+        
+        desc_list = []
+        for item in result['description']:
+            desc_list.append(item)
+            
+        result = {"image": img_url, "description": desc_list, "heatmaps": heatmaps}
         self._add_result(screenshot, "tappable", result)
 
 

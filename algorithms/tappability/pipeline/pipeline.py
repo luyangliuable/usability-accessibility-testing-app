@@ -12,11 +12,8 @@ import torchvision
 import json
 import sys
 import getopt
-import torch.nn as nn
 
 MODEL_PATH = os.path.join(os.getcwd(), "/home/pipeline/trained_models/resnet_v3.pt")
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-print(DEVICE)
 
 def pipeline(img_path, json_path, output_path, threshold):
     bounds = []
@@ -38,8 +35,6 @@ def pipeline(img_path, json_path, output_path, threshold):
     #Create model from saved state
     model = ResNet(18, Block, 4, 2)
     model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device('cpu')))
-    model.to(DEVICE)
-    model = nn.DataParallel(model)
     model.eval()
 
     json_out = {}
@@ -65,7 +60,7 @@ def pipeline(img_path, json_path, output_path, threshold):
             else:
                 bounding_boxes.append(item['bounds'][i])
 
-        if index[0] == 1 and percentage[index[0]].item()<=threshold:
+        if index[0] == 1 and percentage[index[0]].item()>=threshold:
             colours.append("red")
             heatmap_path = heatmap.createHeatmap(item['bounds'], index[0], counter)
         else:
@@ -90,9 +85,11 @@ def pipeline(img_path, json_path, output_path, threshold):
 
 
 def run_pipeline(img_dir, json_dir, output_dir, threshold):
-    for images in os.listdir(img_dir):
-        img_path = os.path.join(img_dir, images)
-        img_name = images.strip('.jpeg')
+    for image in os.listdir(img_dir):
+        if image[-4:] != '.jpg':
+            continue
+        img_name = image.split('.jpg')[0]
+        img_path = os.path.join(img_dir, image)
         json_path = os.path.join(json_dir, img_name + '.json')
         if os.path.exists(json_path):
             output_path = os.path.join(output_dir, img_name)

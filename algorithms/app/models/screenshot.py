@@ -20,8 +20,8 @@ class Screenshot:
         self.image_path = image_path
         self.layout_path = layout_path
         self.metadata = metadata
+        self._set_state_id()
         self._set_structure_id()
-    
     
     def get_image_jpeg(self) -> str:
         """Returns path to JPEG image of screenshot"""
@@ -64,6 +64,7 @@ class Screenshot:
         img1.save(out_path)
         return out_path
     
+    
     def get_layout_json(self) -> str:
         """Returns path to layout file as JSON"""
         if self.layout_path[-5:] == '.json':
@@ -75,11 +76,12 @@ class Screenshot:
         converter = LayoutConverter(tempdir, self.layout_path, os.path.splitext(os.path.basename(self.layout_path))[0])
         return converter.execute()
     
+    
     def _set_structure_id(self) -> None:
         """Generates hash from layout of screenshot"""
         if self.layout_path is None or not os.path.exists(self.layout_path):
             self.structure_id = None
-            
+        
         if self.layout_path[-4:] == '.xml':
             self.structure_id = xmlToHash(self.layout_path).get_xml_hash()
             return
@@ -88,3 +90,35 @@ class Screenshot:
             self.structure_id = jsonToHash(self.layout_path).get_json_hash()
             return
 
+
+    def _set_state_id(self, ui_screen: str, views: dict) -> str:
+        view_signatures = set()
+        for view in views:
+            view_signature = self.get_view_signature(view)
+            if view_signature is not None:
+                view_signatures.add(view_signature)
+        
+        string = "%s{%s}" % (ui_screen, ",".join(sorted(view_signatures)))
+        return hashlib.md5(string.encode('utf-8')).hexdigest()
+    
+        
+    def _get_view_signature(self, view: dict) -> str:
+        if 'visible' in view and not view['visible']:
+            return
+            
+        view_dict = {}
+        for key in ('class', 'resource_id', 'text'):
+            view_dict[key] = view[key] if key in view else "None"
+        if view_dict['text'] is None or len(view_dict['text']) > 50:
+            view_dict['text'] = "None"
+        for key in ('enabled', 'checked', 'selected'):
+            view_dict[key] = key if key in view and view[key] else ""
+            
+        view_signature = "[class]%s[resource_id]%s[text]%s[%s,%s,%s]" % \
+            (view_dict['class'],
+            view_dict['resource_id'],
+            view_dict['text'],
+            view_dict['enabled'],
+            view_dict['checked'],
+            view_dict['selected'])
+        return view_signature

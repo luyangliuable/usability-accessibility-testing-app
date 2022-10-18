@@ -16,7 +16,7 @@ class FileWatcher():
 
     _status_controller = os.environ['STATUS_CONTROLLER']
 
-    def __init__(self, uuid: str, file_type: str, output_directory: str, task: Task, callback: t.Callable) -> None:
+    def __init__(self, uuid: str, file_type: str, output_directory: str, task: Task, callback: t.Callable[[list[str]], None]) -> None:
         """
         This class is responsible for checking an **output directory** every 3 seconds for new file of **file_type**.
 
@@ -30,7 +30,7 @@ class FileWatcher():
             output_directory - (str) The path to check for new files every 3 seconds
             resource_type - (ResourceType) The type of resource the file corresponds to
             task - (Task) The parent task that uses this.
-            callback - (Callable) After file watcher detects a new file, callback will be called.
+            callback - (Callable) Callback with list of each filename detected in check directory.
         """
         self.source_task = task
         self.callback = callback
@@ -76,15 +76,12 @@ class FileWatcher():
 
     def watch_for_new_files(self):
         """
-        Every 3 seconds check for new files then it log and publishes those files
+        Every 5 seconds check for new files then it log and publishes those files
         """
         check_path = self.task_output_directory
-
-        while(True):
-            if self.source_task.get_status() != StatusEnum.running:
-                print("Exiting file watcher.")
-                break
-
+        task_complete = False
+        while not task_complete:
+            task_complete = self.source_task.get_status() not in [StatusEnum.running, StatusEnum.none]
             if os.path.exists(check_path):
                 new_files = []
                 old = self.files
@@ -98,23 +95,23 @@ class FileWatcher():
                 self.callback(new_files)
             else:
                 print(f'{check_path} does not exist yet.')
-
             sleep(5)
 
+        print("Exiting file watcher.")
 
-    def _callback_on_new_files(self, new_files: t.List[str]) -> bool:
-        """
-        Calls a callback function determined by the task classes after a new file is detected.
+    # def _callback_on_new_files(self, new_files: t.List[str]) -> bool:
+    #     """
+    #     Calls a callback function determined by the task classes after a new file is detected.
 
-        new_files - (List) List of new files.
-        """
-        for each_file in new_files:
-            """
-            For each new file call the callback function
-            """
-            self.callback(each_file)
+    #     new_files - (List) List of new files.
+    #     """
+    #     for each_file in new_files:
+    #         """
+    #         For each new file call the callback function
+    #         """
+    #         self.callback(each_file)
 
-        return True
+    #     return True
 
     # def _publish_all_new_files(self, files: t.List[str], check_path: str, origin: str) -> bool:
     #     """
@@ -141,19 +138,19 @@ class FileWatcher():
     #     return True
 
 
-    def _create_new_resource_group(self) -> bool:
-        """
-        If the resource group is not yet inside, created it.
+    # def _create_new_resource_group(self) -> bool:
+    #     """
+    #     If the resource group is not yet inside, created it.
 
-        Parameters:
-            resource_wrapper - (ResourceWrapper) The wrapper for the new file detected by this watcher.
+    #     Parameters:
+    #         resource_wrapper - (ResourceWrapper) The wrapper for the new file detected by this watcher.
 
-        Returns: (bool) If the method was successful
-        """
-        if self.resource_type not in self.source_task.resource_dict:
-            self.source_task.resource_dict[self.resource_type] = ResourceGroup(self.resource_type)
+    #     Returns: (bool) If the method was successful
+    #     """
+    #     if self.resource_type not in self.source_task.resource_dict:
+    #         self.source_task.resource_dict[self.resource_type] = ResourceGroup(self.resource_type)
 
-        return True
+    #     return True
 
 
     def _list_image_files_in_dir(self, check_path: str) -> t.Tuple:

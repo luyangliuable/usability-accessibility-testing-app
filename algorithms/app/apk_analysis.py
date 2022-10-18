@@ -1,18 +1,17 @@
-from tasks.task import *
 from resources.resource import *
 from resources.resource_types import ResourceType
 from models.emulator import Emulator
 from models.screenshot import Screenshot
 from typing import Dict, List
 import os
-
+from tasks.task import *
 from tasks.xbot import *
 from tasks.owleye import *
-from tasks.tappability import *
+from tasks.tappability import Tappability
 from tasks.droidbot import *
 from tasks.gifdroid import *
 
-EMULATOR = Emulator("emulator-5556", "host.docker.internal:5557", (1920, 1080))
+EMULATOR = Emulator("emulator-5558", "host.docker.internal:5559", (1920, 1080))
 
 class ApkAnalysis:
     """This class runs all algorithms and generates the combined results"""

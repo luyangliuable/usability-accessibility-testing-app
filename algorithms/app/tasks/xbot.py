@@ -10,7 +10,7 @@ class Xbot(Task):
     """Class for managing Xbot algorithm"""
 
     _input_types = [ResourceType.APK_FILE, ResourceType.EMULATOR]
-    _output_types = [ResourceType.ACCESSIBILITY_ISSUE]
+    _output_types = [ResourceType.SCREENSHOT, ResourceType.ACCESSIBILITY_ISSUE]
     _url = 'http://host.docker.internal:3003/execute'
 
     def __init__(self, output_dir, resource_dict : Dict[ResourceType, ResourceGroup], uuid: str) -> None:
@@ -83,7 +83,6 @@ class Xbot(Task):
         print("XBOT COMPLETED")
 
 
-
     def apk_callback(self, new_apk : ResourceWrapper) -> None:
         """callback method to add apk and run algorithm"""
         if new_apk not in self.apk_queue:
@@ -142,14 +141,48 @@ class Xbot(Task):
             activity = screenshot.ui_screen
             image_path = os.path.join(issues_dir, activity, activity + ".png")
             desc_path = os.path.join(issues_dir, activity, activity + ".txt")
-            if not os.path.exists(image_path) or not os.path.exists(desc_path):
-                continue
-            if os.path.exists(image_path) and os.path.exists(desc_path):
-                issues.append({"screenshot": screenshot,
-                               "image_path": image_path,
-                               "description_path" : desc_path
-                               })
+            issue_list = self._get_issue_list(desc_path)
+            # if no issues found, create empty issue
+            if issue_list is None:
+                image_path = screenshot.image_path
+                os.makedirs(os.path.dirname(desc_path))
+                issue_list = [{
+                    'issue_type': " ",
+                    'component_type': "No accessibility issues were suggested.",
+                    'issue_desc': " "
+                }]
+                with open(desc_path, 'w') as desc_file:
+                    desc_file.writelines(issue_list[0].values())
+                    
+            issues.append({"screenshot": screenshot,            # original screenshot
+                            "image_path": image_path,           # annotated screenshot
+                            "description_path" : desc_path,     # issues text file
+                            "description": issue_list           # list of issues from text file
+                            })
         return issues
+    
+    def _get_issue_list(self, desc_path: str) -> list[str]:
+        """Reads issue text file and produces list of issues"""
+        issue_list = []
+        if not os.path.exists(desc_path):
+            return None  
+        with open(desc_path) as f:
+            desc = f.read()
+        # list of each issue description
+        desc = desc.split('\n\n')
+        for i in range(1, len(desc)):
+            issue = desc[i].split('\n')
+            if len(issue) != 3:
+                continue
+            element = issue[1]
+            if element[0] == '[':
+                element = f'Element at bounds {issue[1]}'
+            issue_list.append({
+                "issue_type": issue[0],
+                "component_type": element,
+                "issue_desc": issue[2]
+                    })
+        return issue_list
 
     def _get_screenshots(self) -> List[Screenshot]:
         """ Gets list of screenshot images and layouts from xbot output directory.

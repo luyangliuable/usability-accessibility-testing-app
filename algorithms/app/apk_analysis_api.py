@@ -1,5 +1,5 @@
 import shutil
-from apk_analysis import ApkAnalysis
+from apk_analysis import *
 from models.screenshot import Screenshot
 from resources.resource_types import ResourceType
 from resources.resource import *
@@ -8,9 +8,13 @@ import requests
 import os
 import json
 import boto3
-from tasks.xbot import Xbot
-from tasks.owleye import Owleye
 import time
+
+DIFF_NAMES = {'Tappability': 'Tappable', 'UiChecker': 'Venus'}
+for name in DIFF_NAMES:
+    if name in TaskFactory._tasks:
+        TaskFactory._tasks[DIFF_NAMES[name]] = TaskFactory._tasks[name]
+        del TaskFactory._tasks[name]
 
 RESULT_URL = 'http://host.docker.internal:5005/results/add/'
 STATUS_URL = 'http://host.docker.internal:5005/status/update/'
@@ -48,27 +52,26 @@ class ApkAnalysisApi(ApkAnalysis):
         self.results = {}
         self.running = set()
         self._init_results()
-
-
-
+        
+        
     def start_processing(self) -> None:
         for task in self.req_tasks:
             self._update_status("RUNNING", task.lower())
         super().start_processing(uuid=self.uuid)
 
-    ####################### TEMP
-    def test(self) -> None:
-        for task in self.req_tasks:
-            self._update_status("RUNNING", task.lower())
 
-        rg = ResourceGroup(ResourceType.APK_FILE)
-        self.resources[ResourceType.APK_FILE] = rg
-        rg.publish(self.apk_resource, True)
-        time.sleep(5.0)
-        xb = Xbot(os.path.join(self.output_dir, 'xbot'), self.resources, self.uuid)
-        shutil.copytree('/home/data/test/a2dp.Vol_133/', f'/home/data/{self.uuid}/', dirs_exist_ok=True)
-        ow = Owleye(os.path.join(self.output_dir, 'owleye'), self.resources, self.uuid)
-        xb._publish_outputs()
+    # def test(self) -> None:
+    #     for task in self.req_tasks:
+    #         self._update_status("RUNNING", task.lower())
+
+    #     rg = ResourceGroup(ResourceType.APK_FILE)
+    #     self.resources[ResourceType.APK_FILE] = rg
+    #     rg.publish(self.apk_resource, True)
+    #     time.sleep(5.0)
+    #     xb = Xbot(os.path.join(self.output_dir, 'xbot'), self.resources, self.uuid)
+    #     shutil.copytree('/home/data/test/a2dp.Vol_133/', f'/home/data/{self.uuid}/', dirs_exist_ok=True)
+    #     ow = Owleye(os.path.join(self.output_dir, 'owleye'), self.resources, self.uuid)
+    #     xb._publish_outputs()
 
     def _init_results(self) -> None:
         """Subscribe to results resource events."""
@@ -112,30 +115,14 @@ class ApkAnalysisApi(ApkAnalysis):
                 self.running.remove(name)
 
         if len(list(self.running))==0:
-            self._update_status("SUCCESSFUL")
+            self._update_status('SUCCESSFUL')
             print(self.results)
 
 
     def _add_xbot_result(self, result):
         screenshot = result["screenshot"]
         img_url = self._upload_file(result["image_path"])
-        with open(result["description_path"]) as f:
-            desc = f.read()
-        desc = desc.split('\n\n')
-        issues = []
-        for i in range(1, len(desc)):
-            issue = desc[i].split('\n')
-            if len(issue) != 3:
-                continue
-            element = issue[1]
-            if element[0] == '[':
-                element = f'Element at bounds {issue[1]}'
-            issues.append({
-                "issue_type": issue[0],
-                "component_type": element,
-                "issue_desc": issue[2]
-                    })
-        result = {"image": img_url, "description": issues}
+        result = {"image": img_url, "description": result["description"]}
         self._add_result(screenshot, "xbot", result)
 
     def _add_owleye_result(self, result):
@@ -149,12 +136,10 @@ class ApkAnalysisApi(ApkAnalysis):
         screenshot = result["screenshot"]
         # upload image file
         img_url = self._upload_file(result["image_path"])
-        with open(result["description_path"]) as f:
-            desc = json.loads(f.read())
         heatmaps = []
         for path in result["heatmap"]:
             heatmaps.append(self._upload_file(path))
-        result = {"image": img_url, "description": desc, "heatmaps": str(heatmaps)}
+        result = {"image": img_url, "description": result["description"], "heatmaps": str(heatmaps)}
         self._add_result(screenshot, "tappable", result)
 
 

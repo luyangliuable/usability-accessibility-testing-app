@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import ProgressBar from "../Upload/components/ProgressBar";
+import DroidbotResult from "../Results/components/DroidbotResult";
 
 import "./Results.css";
 import "../index.css";
@@ -175,6 +176,7 @@ const Results = () => {
         </Table>
         <div></div>
       </div>
+      <DroidbotResult/>
     </Container>
   );
 };

@@ -1,3 +1,4 @@
+from importlib import resources
 from resources.resource import *
 from resources.resource_types import ResourceType
 from models.emulator import Emulator
@@ -10,11 +11,25 @@ from tasks.owleye import *
 from tasks.tappability import Tappability
 from tasks.droidbot import *
 from tasks.gifdroid import *
+import re
 
 EMULATOR = Emulator("emulator-5558", "host.docker.internal:5559", (1920, 1080))
 
+DIFF_NAMES = {'Tappability': 'Tappable', 'UiChecker': 'Venus'}
+
+for name in DIFF_NAMES:
+    if name in TaskFactory._tasks:
+        TaskFactory._tasks[DIFF_NAMES[name]] = TaskFactory._tasks[name]
+        del TaskFactory._tasks[name]
+
 class ApkAnalysis:
     """This class runs all algorithms and generates the combined results"""
+    _result_types = {
+        'Xbot': ResourceType.ACCESSIBILITY_ISSUE,
+        'Owleye': ResourceType.DISPLAY_ISSUE,
+        'Tappable': ResourceType.TAPPABILITY_PREDICTION,
+        'Tappability': ResourceType.TAPPABILITY_PREDICTION
+    }
 
     def __init__(self, output_dir: str, apk_path: str, req_tasks: list[str], additional_files: Dict[str, Dict[str, str]]={}) -> None:
         self.output_dir = output_dir
@@ -25,9 +40,70 @@ class ApkAnalysis:
         self.req_tasks = req_tasks
         self.resources = {}
         self._init_resource_groups()
-        print(f'New APK Analysis.\nAPK file is {apk_path}')
+        self._init_results()
+        print(f'New APK Analysis.\nAPK file is {apk_path} \Req Results are {self.req_tasks}')
 
+    
+    def _init_results(self) -> None:
+        """Subscribe to results resource events."""
+        # sub to utg
+        self.utg = {'nodes': {}, 'edges': {}}
+        self.resources[ResourceType.UTG].subscribe(self._new_utg_callback)
+        
+        # sub to results
+        self.results = {}
+        for task in self.req_tasks:
+            self.results[task] = []
+            if task in ApkAnalysis._result_types:
+                self.resources[ApkAnalysis._result_types[task]].subscribe(self._new_result_callback)
 
+    def _new_utg_callback(self, resource: ResourceWrapper) -> None:
+        new_utg = resource.get_metadata()
+        self._update_utg(new_utg)
+        print("Updated UTG in APK Analysis")
+    
+    def _new_result_callback(self, resource: ResourceWrapper) -> None:
+        origin = resource.get_origin()
+        result = self._repl_filepaths(resource.get_metadata())
+        self._add_result(result, origin)
+        print(f"New result detected in APK Analysis from {resource.get_origin()}")
+    
+    def _update_utg(self, new_utg: dict) -> None:
+        for node in new_utg['nodes']:
+            node_id = node['id']
+            if node_id not in self.utg['nodes']:
+                self.utg['nodes'][node_id] = self._repl_filepaths(node)
+        for edge in new_utg['edges']:
+            edge_id = edge['id']
+            if edge_id not in self.utg['edges']:
+                self.utg['edges'][edge_id] = self._repl_filepaths(edge)
+        
+        for key, val in new_utg.items():
+            if key not in ['nodes', 'edges']:
+                self.utg[key] = val
+
+        with open(os.path.join(self.output_dir, 'utg.json'), "w+") as f:
+            f.write(json.dumps(self.utg, indent=2))
+            f.truncate()
+    
+    def _add_result(self, result: dict, origin: str) -> None:
+        self.results[origin].append(result)
+        with open(os.path.join(self.output_dir, 'results.json'), "w+") as f:
+            f.write(json.dumps(self.results, indent=2))
+            f.truncate()
+        
+    def _repl_filepaths(self, item: dict, _new_path: Callable[[str], str]=None) -> dict:
+        text = json.dumps(item)
+        output_dir = self.output_dir.rstrip('/')+'/'
+        re_text =  fr'(?<=")({output_dir}.*?)(?=")'
+        def _sub(match):
+            if _new_path:
+                return _new_path(match.group(1))
+            return match.group(1).removeprefix(output_dir)
+        new_item = re.sub(re_text, _sub , text)
+        return json.loads(new_item)
+        
+    
     def start_processing(self, uuid=None) -> None:
         """Creates required tasks and starts them"""
         self._create_tasks(uuid)
@@ -87,5 +163,5 @@ class ApkAnalysis:
                 print(f'Published resource type {resource_type} for {algorithm} with {file}.')
 
 if __name__ == '__main__':
-    a = ApkAnalysis('/home/data/test/a2dp.Vol_133/', '/home/data/test/a2dp.Vol_133/a2dp.Vol_133.apk', ["Xbot", "Owleye"])
+    a = ApkAnalysis('/home/data/test/a2dp.Vol_133/', '/home/data/test/a2dp.Vol_133/a2dp.Vol_133.apk', ["Owleye"])
     a.start_processing()

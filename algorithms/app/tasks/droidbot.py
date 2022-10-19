@@ -18,6 +18,7 @@ class Droidbot(Task, Thread):
 
     _input_types = [ResourceType.APK_FILE, ResourceType.EMULATOR]
     _output_types = [ResourceType.UTG, ResourceType.SCREENSHOT]
+    # _output_types = [ResourceType.UTG]
     _execute_url = os.environ['DROIDBOT']
     name = "Droidbot"
 
@@ -30,19 +31,15 @@ class Droidbot(Task, Thread):
             output_dir - (str) The output directory for the gifdroid result
             resource_dict - (dict) Dictionary of resource groups required by this algorithm # TODO try combine utg and gif into single resource group
             apk_queue - (list) List of apks yet to be processed, which have been published to resource group
-            states - (list) List of states in output_dir which have not been published
-            events - (list) List of events in output_dir which have not been published
-            state_map - (dict) Map of state_str to the published Screenshot object
+            _screenshot_dict - (list) List of states in output_dir which have not been published
 
         Returns: Nothing
         """
         super().__init__(output_dir, resource_dict, uuid)
         self._sub_to_apks()
         self._sub_to_emulators()
-        self.apk_queue = []
-        self.states = []    # string of state json filename
-        self.events = []    # string of event json filename
-        self.state_map: dict[str, Screenshot] = {}
+        self._apk_queue = []
+        self._states = []    # unpublished states
         self.check_new_state_directory = os.path.join(output_dir, 'states')
         self.resource_type = ResourceType.SCREENSHOT
         self._image_file_watcher = FileWatcher(uuid, 'json', self.check_new_state_directory, self, self._publish_all_new_files)
@@ -56,7 +53,7 @@ class Droidbot(Task, Thread):
         """
         for each_state in files:
             print("New file in Droidbot detected " + str(each_state))
-            self.states.append(each_state)
+            self._states.append(each_state)
             # resource_path = os.path.join(check_path, each_image)
             # self._create_new_resource_group()
             # # json_path = self.get_json(resource_path)
@@ -69,17 +66,21 @@ class Droidbot(Task, Thread):
             # complete = self.status != StatusEnum.running
             # self.resource_dict[self.resource_type].publish(img, complete)
         
-        
         self._publish_new_screenshots() # publish screenshots
-        self._publish_new_events()      # publish events
+        self._publish_utg()             # publish events
         
     
     def _publish_new_screenshots(self) -> None:
+        """Publishes new screenshots from states folder if the image and json files both exist"""
         published_items = []
-        for state_file in self.states:
+        for state_file in self._states:
             file_key = state_file.removeprefix('state_').removesuffix('.json')  # common key in jpeg and json
-            img_path = os.path.join(self.check_new_state_directory, f'screen_{file_key}.jpg')
             json_path = os.path.join(self.check_new_state_directory, state_file)
+            
+            # check both png and jpeg 
+            img_path = os.path.join(self.check_new_state_directory, f'screen_{file_key}.jpg')
+            if not os.path.exists(img_path):
+                img_path = os.path.join(self.check_new_state_directory, f'screen_{file_key}.png')
             
             # don't publish if image file not available
             if not os.path.exists(img_path):
@@ -88,9 +89,7 @@ class Droidbot(Task, Thread):
             with open(json_path) as f:
                 data = json.loads(f.read())
             ui_screen = data['foreground_activity']
-            state_str = data['state_str']
             screenshot = Screenshot(ui_screen, img_path, json_path)
-            self.state_map[state_str] = screenshot
             published_items.append(state_file)
             
             is_complete = self.status not in [StatusEnum.running, StatusEnum.none]
@@ -100,12 +99,27 @@ class Droidbot(Task, Thread):
         
         # removed published states from states list
         for item in published_items:
-            self.states.remove(item)
+            self._states.remove(item)
     
-    def _publish_new_events(self) -> None:
-        pass
+    def _publish_utg(self) -> None:
+        utg_path = os.path.join(self.output_dir, 'utg.js')
+        with open(utg_path) as utg_file:
+            new_utg = json.loads(utg_file.read().removeprefix('var utg = \n'))
+
+        for node in new_utg['nodes']:
+            if 'image' in node:
+                node['image'] = os.path.join(self.output_dir, node['image'])
         
-    
+        for edge in new_utg['edges']:
+            if 'events' in edge:
+                for event in edge['events']:
+                    if 'view_images' in event:
+                        for i in range(len(event['view_images'])):
+                            event['view_images'][i] = os.path.join(self.output_dir, event['view_images'][i])
+        
+        complete = self.status not in [StatusEnum.running, StatusEnum.none]
+        rw = ResourceWrapper(utg_path, 'Droidbot', new_utg)
+        self.resource_dict[ResourceType.UTG].publish(rw, complete)
 
     def _create_new_resource_group(self) -> bool:
         """
@@ -140,6 +154,9 @@ class Droidbot(Task, Thread):
 
 
     def update_algorithm_status(self, status: StatusEnum):
+        if not self.uuid:
+            return
+        
         self.status = status
 
         data = {
@@ -147,19 +164,18 @@ class Droidbot(Task, Thread):
             "logs": f'{ self.name } is {self.status.value.lower()}.'
         }
 
-        assert self.uuid != None, "No job UUID detected."
         algorithm_name = self.name[0].lower() + self.name[1:]
         url = os.path.join(self._status_controller, self.uuid, algorithm_name)
         response = requests.post(url, headers={"Content-Type": "application/json"}, json=data)
         print(f'Updated {algorithm_name} status on url {url} to {self.status}. {response}.')
 
 
-    def _publish_utg(self) -> bool:
-        utg = ResourceWrapper(self.output_dir, self.name)
-        self.resource_dict[ResourceType.UTG].publish(utg, True)
+    # def _publish_utg(self) -> bool:
+    #     utg = ResourceWrapper(self.output_dir, self.name)
+    #     self.resource_dict[ResourceType.UTG].publish(utg, True)
 
-        print(f'Published { utg } at {self.output_dir}.')
-        return True
+    #     print(f'Published { utg } at {self.output_dir}.')
+    #     return True
 
     def start(self):
         """
@@ -218,8 +234,8 @@ class Droidbot(Task, Thread):
 
     def apk_callback(self, new_apk : ResourceWrapper) -> None:
         """callback method to add apk and run algorithm"""
-        if new_apk not in self.apk_queue:
-            self.apk_queue.append(new_apk)
+        if new_apk not in self._apk_queue:
+            self._apk_queue.append(new_apk)
 
 
     def emulator_callback(self, emulator : ResourceWrapper) -> None:
@@ -229,8 +245,8 @@ class Droidbot(Task, Thread):
 
 
     def _process_apks(self) -> None:
-        while len(self.apk_queue) > 0:
-            apk = self.apk_queue.pop(0)
+        while len(self._apk_queue) > 0:
+            apk = self._apk_queue.pop(0)
             apk_path = apk.get_path()
             self.run(apk_path)
             apk.release()

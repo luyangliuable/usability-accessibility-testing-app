@@ -21,7 +21,7 @@ class Tappability(Task):
         self.input_dir = os.path.join(self.output_dir, 'temp')
         self.queue: list[Screenshot] = []         # list of unprocessed screenshots
         self.completed_states: set[str] = set()   # set of screenshot structure_ids that have been completed
-        self.threshold = 80
+        self.threshold = 50
         self._sub_to_new_screenshots()
             
     @classmethod
@@ -111,7 +111,7 @@ class Tappability(Task):
                     print(f'Tappability successfully proccessed image: {next_img}. Output: {result[0]}\n')
                     self._publish(result)
             except Exception as err:
-                print(f"Error {err} in Tappability while trying to process image.\Tappability continuing")
+                print(f"Error {err.__traceback__} in Tappability while trying to process image.\nTappability continuing")
             
             
     def _prepare_inputs(self, images: list[Screenshot]) -> None:
@@ -120,8 +120,8 @@ class Tappability(Task):
             shutil.rmtree(self.input_dir)
         os.makedirs(self.input_dir)
         for img in images:
-            img_path = img.get_image_jpeg()
-            json_path = img.get_layout_json()
+            img_path = img.get_image_path(file_type='jpg')
+            json_path = img.get_layout_path(file_type='json')
             shutil.copy(img_path, self.input_dir)
             # give json same filename as image
             img_filename = os.path.splitext(os.path.basename(img_path))[0]
@@ -144,31 +144,31 @@ class Tappability(Task):
             img_path = os.path.join(result_dir, 'screenshot.jpg')
             desc_path = os.path.join(result_dir, 'description.json')
             
-            heatmap_paths = []
-            for file in os.listdir(result_dir):
-                if file[-5:] == 'description.json':
-                    continue
-                if file == 'screenshot.jpg':
-                    continue
-                heatmap_paths.append(os.path.join(result_dir, file))
+            if not os.path.exists(img_path):
+                img_path = screenshot.image_path
             
             desc = []
+            heatmaps = []
             if os.path.exists(desc_path):
                 with open(desc_path) as f:
                     desc_file = json.loads(f.read())
-                    for item in dict(desc_file).values():
-                        desc.append(item)     
-            
-            if not os.path.exists(img_path):
-                img_path = screenshot.image_path
+                for key in desc_file:
+                    item = {'id': key}
+                    item.update(desc_file[key])
+                    desc.append(item)
+                    if 'heatmaps' in desc_file[key]:
+                        heatmaps.append(desc_file[key][heatmaps])
                                 
             if img_path is not None and desc_path is not None:
-                results.append({"screenshot": screenshot, 
-                                "image_path": img_path, 
-                                "description_path": desc_path,
-                                "description": desc, 
-                                "heatmaps": heatmap_paths
-                                })
+                results.append({
+                    "activity_name": screenshot.ui_screen,
+                    "screenshot_id": screenshot.screenshot_id,              # screenshot_id of input
+                    "state_id": screenshot.state_id,
+                    "structure_id": screenshot.structure_id, 
+                    "image": img_path, 
+                    "description": desc, 
+                    "heatmaps": heatmaps
+                    })
         return results       
         
     
@@ -179,11 +179,11 @@ class Tappability(Task):
         
         for item in item_lst:
             print('tappable publishing ' + str(item))
-            rw = ResourceWrapper(self.__class__.__name__, item)
+            rw = ResourceWrapper(os.path.join(self.output_dir), 'Tappable', item)
             self.resource_dict[ResourceType.TAPPABILITY_PREDICTION].publish(rw, self.is_complete())
         
     
 
     def is_complete(self):
         """Checks if all images in list have been convertered and resource group is no longer active"""
-        return len(self.queue) == 0 and not self.resource_dict[ResourceType.SCREENSHOT].is_active()
+        return (len(self.queue) == 0 and not self.resource_dict[ResourceType.SCREENSHOT].is_active())

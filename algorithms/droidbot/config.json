@@ -8,6 +8,6 @@
     "MONGO_DB": "",
     "DEFAULT_UTG_FILENAME": "utg.js",
     "NUM_OF_EVENT": "100",
-    "EMULATOR": "emulator-5554",
+    "EMULATOR": "emulator-5556",
     "OUTPUT_FILE": "gifdroid.json"
 }

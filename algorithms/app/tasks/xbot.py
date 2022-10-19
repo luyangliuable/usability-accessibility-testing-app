@@ -10,7 +10,8 @@ class Xbot(Task):
     """Class for managing Xbot algorithm"""
 
     _input_types = [ResourceType.APK_FILE, ResourceType.EMULATOR]
-    _output_types = [ResourceType.SCREENSHOT, ResourceType.ACCESSIBILITY_ISSUE]
+    _output_types = [ResourceType.ACCESSIBILITY_ISSUE]
+    # _output_types = [ResourceType.SCREENSHOT, ResourceType.ACCESSIBILITY_ISSUE]
     _url = 'http://host.docker.internal:3003/execute'
 
     def __init__(self, output_dir, resource_dict : Dict[ResourceType, ResourceGroup], uuid: str) -> None:
@@ -154,11 +155,14 @@ class Xbot(Task):
                 with open(desc_path, 'w') as desc_file:
                     desc_file.writelines(issue_list[0].values())
                     
-            issues.append({"screenshot": screenshot,            # original screenshot
-                            "image_path": image_path,           # annotated screenshot
-                            "description_path" : desc_path,     # issues text file
-                            "description": issue_list           # list of issues from text file
-                            })
+            issues.append({
+                "activity_name": screenshot.ui_screen,
+                "screenshot_id": screenshot.id,             # screenshot_id of input
+                "state_id": screenshot.state_id,
+                "structure_id": screenshot.structure_id,    
+                "image": image_path,                        # annotated screenshot
+                "description": issue_list                   # list of issues from text file
+                })
         return issues
     
     def _get_issue_list(self, desc_path: str) -> list[str]:

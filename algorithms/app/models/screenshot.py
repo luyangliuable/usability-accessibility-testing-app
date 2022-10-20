@@ -4,6 +4,7 @@ import os
 import xmltodict
 import json
 import hashlib
+import re
 
 
 @dataclass
@@ -81,7 +82,9 @@ class Screenshot:
         
         if cur_type == 'xml' and file_type == 'json':
             converter = LayoutConverter(self.layout_path, self.ui_screen)
-            return converter(output_path=self.layout_path.split('.')[-1]+'.json')    
+            json_path = os.path.join(tempdir, f'{filename}.json')
+            converter(output_path=json_path)
+            return json_path    
 
     
 

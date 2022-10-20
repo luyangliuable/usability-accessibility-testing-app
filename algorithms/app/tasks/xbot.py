@@ -10,14 +10,15 @@ class Xbot(Task):
     """Class for managing Xbot algorithm"""
 
     _input_types = [ResourceType.APK_FILE, ResourceType.EMULATOR]
-    _output_types = [ResourceType.ACCESSIBILITY_ISSUE]
-    # _output_types = [ResourceType.SCREENSHOT, ResourceType.ACCESSIBILITY_ISSUE]
+    # _output_types = [ResourceType.ACCESSIBILITY_ISSUE]
+    _output_types = [ResourceType.SCREENSHOT, ResourceType.ACCESSIBILITY_ISSUE]
     _url = 'http://host.docker.internal:3003/execute'
 
     def __init__(self, output_dir, resource_dict : Dict[ResourceType, ResourceGroup], uuid: str) -> None:
         super().__init__(output_dir, resource_dict, uuid)
         self.apk_queue = []
         self._sub_to_apks()
+        self.running = False
 
     @classmethod
     def get_name(cls) -> str:
@@ -71,8 +72,12 @@ class Xbot(Task):
 
     def _process_apks(self, emulator: Emulator) -> None:
         """Process apks"""
-
+        if self.running:
+            return
+        
+        self.running = True
         print("XBOT RUNNING, EMULATOR= " + str(emulator))
+        
 
         if len(self.apk_queue) > 0:                              # get next apk
             apk = self.apk_queue.pop(0)
@@ -82,6 +87,7 @@ class Xbot(Task):
             self._publish_outputs()                                # dispatch results
 
         print("XBOT COMPLETED")
+        self.running = False
 
 
     def apk_callback(self, new_apk : ResourceWrapper) -> None:
@@ -93,8 +99,9 @@ class Xbot(Task):
 
     def emulator_callback(self, emulator : ResourceWrapper) -> None:
         """callback method for using emulator"""
-
-        self._process_apks(emulator.get_metadata())
+        device: Emulator = emulator.get_metadata()
+        if device.can_use('Xbot') and len(self.apk_queue) > 0:
+            self._process_apks(emulator.get_metadata())
         emulator.release()
 
 
@@ -156,11 +163,11 @@ class Xbot(Task):
                     desc_file.writelines(issue_list[0].values())
                     
             issues.append({
-                "activity_name": screenshot.ui_screen,
-                "screenshot_id": screenshot.id,             # screenshot_id of input
+                "activity_name": screenshot.ui_screen,      # activity name 
+                "screenshot_id": screenshot.screenshot_id,  
                 "state_id": screenshot.state_id,
                 "structure_id": screenshot.structure_id,    
-                "image": image_path,                        # annotated screenshot
+                "image": image_path,                        # annotated screenshot file
                 "description": issue_list                   # list of issues from text file
                 })
         return issues

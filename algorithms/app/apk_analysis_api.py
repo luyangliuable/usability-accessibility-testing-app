@@ -43,6 +43,7 @@ class ApkAnalysisApi(ApkAnalysis):
     
       
     def start_processing(self) -> None:
+        """To start processing the equation"""
         for task in self.req_tasks:
             self._update_status("RUNNING", task.lower())
             self.running.add(task)
@@ -50,11 +51,13 @@ class ApkAnalysisApi(ApkAnalysis):
 
 
     def _update_utg(self, new_utg: dict) -> None:
+        """Updates the UTG to MongoDB"""
         super()._update_utg(new_utg)
         self._post_utg(self.utg)
     
     
     def _add_result(self, result: dict, origin: str) -> None:
+        """Uploads result to MongoDM and updates algorithm status"""
         super()._add_result(result, origin)
         self._post_task_result(result, origin)
         # update status
@@ -165,7 +168,6 @@ def begin_apk_analysis():
 
         job = ApkAnalysisApi(request.get_json())
         job.start_processing()
-        # job.test()
 
 
         return jsonify( {"result": "SUCCESS"} ), 200
@@ -175,91 +177,3 @@ def begin_apk_analysis():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=3050)
-
-
-    # def test(self) -> None:
-    #     for task in self.req_tasks:
-    #         self._update_status("RUNNING", task.lower())
-
-    #     rg = ResourceGroup(ResourceType.APK_FILE)
-    #     self.resources[ResourceType.APK_FILE] = rg
-    #     rg.publish(self.apk_resource, True)
-    #     time.sleep(5.0)
-    #     xb = Xbot(os.path.join(self.output_dir, 'xbot'), self.resources, self.uuid)
-    #     shutil.copytree('/home/data/test/a2dp.Vol_133/', f'/home/data/{self.uuid}/', dirs_exist_ok=True)
-    #     ow = Owleye(os.path.join(self.output_dir, 'owleye'), self.resources, self.uuid)
-    #     xb._publish_outputs()
-
-    # def _init_results(self) -> None:
-    #     """Subscribe to results resource events."""
-    #     self.results["ui-states"] = {}
-    #     for task in self.req_tasks:
-    #         if task in ApkAnalysisApi._result_types:
-    #             self.running.add(task)
-    #             self.resources[ApkAnalysisApi._result_types[task]].subscribe(self._new_result_callback)
-
-
-    # def _new_result_callback(self, resource: ResourceWrapper) -> None:
-    #     origin = resource.get_origin()
-    #     result = resource.get_metadata()
-
-    #     if origin == 'Xbot':
-    #         self._add_xbot_result(result)
-    #     if origin == 'Owleye':
-    #         self._add_owleye_result(result)
-    #     if origin == 'Tappable':
-    #         self._add_tappable_result(result)
-
-
-    # def _add_result(self, screenshot: Screenshot, name: str, result: dict) -> None:
-    #     result_key = (screenshot.ui_screen, screenshot.structure_id)
-
-    #     if result_key not in self.results["ui-states"]:
-    #         img_url = self._upload_file(screenshot.image_path)
-    #         fields = {"activity-name": screenshot.ui_screen,
-    #                   "structure-id": screenshot.structure_id,
-    #                   "base-image": img_url}
-    #         self.results["ui-states"][result_key] = fields
-
-    #     self.results["ui-states"][result_key][name] = result
-    #     self._post_results()
-
-    #     name = name[0].upper() + name[1:]
-    #     resource_type = ApkAnalysisApi._result_types[name]
-    #     if not self.resources[resource_type].is_active():
-    #         self._update_status("SUCCESSFUL", name.lower())
-    #         if name in self.running:
-    #             self.running.remove(name)
-
-    #     if len(list(self.running))==0:
-    #         self._update_status('SUCCESSFUL')
-    #         print(self.results)
-
-
-    # def _add_xbot_result(self, result):
-    #     screenshot = result["screenshot"]
-    #     img_url = self._upload_file(result["image_path"])
-    #     result = {"image": img_url, "description": result["description"]}
-    #     self._add_result(screenshot, "xbot", result)
-
-    # def _add_owleye_result(self, result):
-    #     screenshot = result["screenshot"]
-    #     # upload image file
-    #     img_url = self._upload_file(result["image_path"])
-    #     result = {"image": img_url}
-    #     self._add_result(screenshot, "owleye", result)
-
-    # def _add_tappable_result(self, result):
-    #     screenshot = result["screenshot"]
-    #     # upload image file
-    #     img_url = self._upload_file(result["image_path"])
-    #     heatmaps = []
-    #     for path in result["heatmap"]:
-    #         heatmaps.append(self._upload_file(path))
-        
-    #     desc_list = []
-    #     for item in result['description']:
-    #         desc_list.append(item)
-            
-    #     result = {"image": img_url, "description": desc_list, "heatmaps": heatmaps}
-    #     self._add_result(screenshot, "tappable", result)

@@ -11,6 +11,7 @@ import logging
 import os
 import json
 from models.screenshot import Screenshot
+from models.emulator import Emulator
 
 
 class Droidbot(Task, Thread):
@@ -243,7 +244,9 @@ class Droidbot(Task, Thread):
 
     def emulator_callback(self, emulator : ResourceWrapper) -> None:
         """callback method for using emulator"""
-        self._process_apks()
+        device: Emulator = emulator.get_metadata()
+        if device.can_use('Droidbot'):
+            self._process_apks()
         emulator.release()
 
 

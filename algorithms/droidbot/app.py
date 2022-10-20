@@ -31,29 +31,29 @@ def send_uid_and_signal_run() -> t.Tuple[t.Dict, int]:
 
     if request.method != "POST":
         return {"result": "FAILED", "message": "No HTTP POST method received"}, 400
-    
+
     apk_path = request.get_json()["apk_path"]
     output_dir = request.get_json()["output_dir"]
     # uuid = request.get_json()["uuid"]
-    
+
     # Execute droidbot ############################################################
     print(f"Droidbot container: Recieved request for {apk_path}. output_dir: {output_dir}")
     for attempt in range(3):
         _service_execute_droidbot(apk_path=apk_path, output_dir=output_dir)
-        
+
         # attempt to run droidbot 3 times
         if os.path.exists(os.path.join(output_dir, 'states')) and \
             len(os.listdir(os.path.join(output_dir, 'states'))) > 0:
             return {"result": "SUCCESS"}, 200
-        
+
         print("Attempt to run Droidbot failed, trying again")
         sleep(2)
-    
+
     return {"result": "FAILED"}, 500
 
-    
 
-    
+
+
 
 
 if __name__ == "__main__":

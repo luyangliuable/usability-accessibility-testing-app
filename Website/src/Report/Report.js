@@ -6,6 +6,7 @@ import Tabs from "react-bootstrap/Tabs";
 import Col from "react-bootstrap/Col";
 import ListGroup from "react-bootstrap/ListGroup";
 import Row from "react-bootstrap/Row";
+import DroidbotResult from "../Results/components/DroidbotResult";
 
 import "./Report.css";
 import "../index.css";
@@ -23,6 +24,7 @@ const Report = () => {
   const [xbotImage, setXbotImage] = useState("");
   const [tappableImage, setTappableImage] = useState("");
   const [tappableHeatmap, setTappableHeatmap] = useState("");
+  const [droidbotResult, setDroidbotResult] = useState("");
   const [selectedScreen, setSelectedScreen] = useState({});
   const [showIssues, setShowIssues] = useState(false);
 
@@ -187,9 +189,11 @@ const Report = () => {
             </Tabs>
           )}
         </div>
+      <DroidbotResult uuid={uuid}/>
       </div>
       {/* <DroidbotMap/> */}
     </Container>
+
   );
 };
 

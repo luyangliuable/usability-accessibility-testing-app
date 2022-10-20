@@ -30,15 +30,14 @@ input[type=text] {
 
 .droidbot-search {
     width: 30vw;
-    border-radius: 0.5vw;
-    padding: 5px;
-    transition: 0.2s width ease-in-out, 0.2s margin-right ease-in-out;
-    margin-right: 40vw;
+    border-radius: 0.1vw;
+    padding: 0.5vw;
+    transition: 0.2s background ease-in-out;
+    margin: 0vw 4vw 0 4vw;
 }
 
 .droidbot-search:focus {
-    width: 60vw;
-    margin-right: 13vw;
+    background: #1e90f;
 }
 
 ::-webkit-input-placeholder {
@@ -61,13 +60,37 @@ input[type=text] {
     z-index: 2;
     background: #1e1e1e;
     height: 3vw;
-    margin-bottom: 10.5px;
+    margin-up: 10vw;
     cursor: pointer;
+    display: flex;
+    align-items: center;
 }
 
 .search-container {
     display: flex;
     justify-content: space-around;
     align-items: center;
+    width: 40vw;
 }
 
+
+.cust_button_smaller {
+    margin-top: 0 !important;
+    width: 100px !important;
+    height: 35px !important;
+    /* font-weight: bold; */
+    color: #FFF !important;
+}
+
+div::-webkit-scrollbar {
+    width: 20px; 
+}
+
+div::-webkit-scrollbar-track {
+    background:  #1e1e1e;
+    border-radius: 12px;
+}
+
+div::-webkit-scrollbar-thumb {
+    box-shadow: 0px 0px 0px 100vh black;
+}

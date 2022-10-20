@@ -39,7 +39,7 @@ def send_uid_and_signal_run() -> t.Tuple[t.Dict, int]:
         _service_execute_gifdroid(droidbot_result_folder, gif_path, output_dir)
 
         return {"result": "SUCCESS"}, 200
-
+    
     return {"result": "FAILED", "message": "No HTTP POST method received"}, 400
 
 

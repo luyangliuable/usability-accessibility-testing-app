@@ -40,8 +40,8 @@ class ApkAnalysisApi(ApkAnalysis):
         super().__init__(output_dir, apk_path, req_tasks, additional_files)
         self.uploaded_files = set()
         self.running = set()
-    
-      
+
+
     def start_processing(self) -> None:
         """To start processing the equation"""
         for task in self.req_tasks:
@@ -54,8 +54,8 @@ class ApkAnalysisApi(ApkAnalysis):
         """Updates the UTG to MongoDB"""
         super()._update_utg(new_utg)
         self._post_utg(self.utg)
-    
-    
+
+
     def _add_result(self, result: dict, origin: str) -> None:
         """Uploads result to MongoDM and updates algorithm status"""
         super()._add_result(result, origin)
@@ -75,8 +75,8 @@ class ApkAnalysisApi(ApkAnalysis):
             
     def _repl_filepaths(self, item: dict, _new_path: Callable[[str], str]=None) -> dict:
         return super()._repl_filepaths(item, self._upload_file)
-    
-    
+
+
     def _upload_file(self, path: str) -> str:
         """Uploads file and returns S3 url"""
         try:
@@ -87,7 +87,7 @@ class ApkAnalysisApi(ApkAnalysis):
                 file_url = f'http://localhost:4566/{BUCKETNAME}/{key}'
                 print(f"Uploaded file {path} to S3 at {file_url}")
             return file_url
-            
+
         except:
             print('ERROR UPLOADING TO S3')
             return path
@@ -101,11 +101,11 @@ class ApkAnalysisApi(ApkAnalysis):
         try:
             request = requests.Session()
             response = request.post(url, headers={"Content-Type": "application/json"}, json=data)
-            
+
         except Exception as e:
             error = str(e)
             print("ERROR ON POST RESULTS REQUEST: " + error)
-            
+
         print(f"POST RESULTS. Response: {response}\n")
     
     def _post_utg(self, new_utg: dict) -> str:
@@ -117,11 +117,11 @@ class ApkAnalysisApi(ApkAnalysis):
         try:
             request = requests.Session()
             response = request.post(url, headers={"Content-Type": "application/json"}, json=data)
-            
+
         except Exception as e:
             error = str(e)
             print("ERROR ON POST RESULTS REQUEST: " + error)
-            
+
         print(f"POST RESULTS. Response: {response}\n")
     
     def _update_status(self, status: StatusEnum, algorithm: str=None, logs: str=None) -> None:

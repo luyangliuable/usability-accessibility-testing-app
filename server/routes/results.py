@@ -53,9 +53,6 @@ def get_result(uuid, type=None):
         algorithm: The algorithm to get the result of
     """
 
-    print("uuid: ", str(uuid))
-    print("algorithm: ", str(type))
-
     if request.method == "GET":
         if type is None:
             return algorithm_database_controller.get(uuid), 200

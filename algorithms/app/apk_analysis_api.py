@@ -41,8 +41,8 @@ class ApkAnalysisApi(ApkAnalysis):
         super().__init__(output_dir, apk_path, req_tasks, additional_files)
         self.uploaded_files = set()
         self.running = set()
-    
-      
+
+
     def start_processing(self) -> None:
         for task in self.req_tasks:
             self._update_status("RUNNING", task.lower())
@@ -53,8 +53,8 @@ class ApkAnalysisApi(ApkAnalysis):
     def _update_utg(self, new_utg: dict) -> None:
         super()._update_utg(new_utg)
         self._post_utg(self.utg)
-    
-    
+
+
     def _add_result(self, result: dict, origin: str) -> None:
         super()._add_result(result, origin)
         self._post_task_result(result, origin)
@@ -64,11 +64,11 @@ class ApkAnalysisApi(ApkAnalysis):
                 origin.remove(self.running)
         if len(list(self.running)) == 0:
             self._update_status(StatusEnum.successful)
-            
+
     def _repl_filepaths(self, item: dict, _new_path: Callable[[str], str]=None) -> dict:
         return super()._repl_filepaths(item, self._upload_file)
-    
-    
+
+
     def _upload_file(self, path: str) -> str:
         """Uploads file and returns S3 url"""
         try:
@@ -79,7 +79,7 @@ class ApkAnalysisApi(ApkAnalysis):
                 file_url = f'http://localhost:4566/{BUCKETNAME}/{key}'
                 print(f"Uploaded file {path} to S3 at {file_url}")
             return file_url
-            
+
         except:
             print('ERROR UPLOADING TO S3')
             return path
@@ -88,35 +88,35 @@ class ApkAnalysisApi(ApkAnalysis):
     def _post_task_result(self, result: dict, task: str) -> str:
         url = os.path.join(RESULT_URL, self.uuid, task)
         data = result
-        
+
         response = None
         error = None
         try:
             request = requests.Session()
             response = request.post(url, headers={"Content-Type": "application/json"}, json=data)
-            
+
         except Exception as e:
             error = str(e)
             print("ERROR ON POST RESULTS REQUEST: " + error)
-            
+
         print(f"POST RESULTS. Response: {response}\n")
-    
+
     def _post_utg(self) -> str:
         url = os.path.join(RESULT_URL, self.uuid, 'utg')
         data = self.utg
-        
+
         response = None
         error = None
         try:
             request = requests.Session()
             response = request.post(url, headers={"Content-Type": "application/json"}, json=data)
-            
+
         except Exception as e:
             error = str(e)
             print("ERROR ON POST RESULTS REQUEST: " + error)
-            
+
         print(f"POST RESULTS. Response: {response}\n")
-    
+
     def _update_status(self, status, logs: str=None, algorithm=None) -> None:
         url = f'{STATUS_URL}{self.uuid}'
         data = {
@@ -129,7 +129,7 @@ class ApkAnalysisApi(ApkAnalysis):
                 data["logs"] = f'{logs}'
             else:
                 logs = f'{algorithm} {status}'
-                
+
         response = None
         error = None
 
@@ -252,10 +252,10 @@ if __name__ == "__main__":
     #     heatmaps = []
     #     for path in result["heatmap"]:
     #         heatmaps.append(self._upload_file(path))
-        
+
     #     desc_list = []
     #     for item in result['description']:
     #         desc_list.append(item)
-            
+
     #     result = {"image": img_url, "description": desc_list, "heatmaps": heatmaps}
     #     self._add_result(screenshot, "tappable", result)

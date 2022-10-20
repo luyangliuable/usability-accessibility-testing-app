@@ -176,7 +176,7 @@ const Results = () => {
         </Table>
         <div></div>
       </div>
-      <DroidbotResult/>
+      <DroidbotResult uuid="00adedea-a7c1-48dc-a141-8ac8aa27dd5a"/>
     </Container>
   );
 };

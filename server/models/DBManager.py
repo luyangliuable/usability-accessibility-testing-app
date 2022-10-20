@@ -13,7 +13,6 @@ class DBManager:
 
     # https://www.mongodb.com/docs/manual/reference/bson-types/
 
-
     def __init__(self):
         """
         NOTE: DO NOT ALLOW initiation directly
@@ -137,25 +136,12 @@ class DBManager:
                 "xbot" : ""
             },
             "results" : {
-                "activities" : [
-                    {
-                        "activity-name" : "",
-                        "structure-id": "",
-                        "base-image" : "",
-                        "xbot" : {
-                            "image" : "",
-                            "description" : []
-                        },
-                        "owleye" : {
-                            "image" : ""
-                        },
-                        "tappable" : {
-                            "image" : "",
-                            "description" : [],
-                            "heatmaps" : []
-                        }
-                    }
-                ],
+                "utg": {},
+                "activities" : {
+                    # "image": [],
+                    "owleye": [],
+                    "tappable": [],
+                },
                 "gifdroid": {
                     "image": [],
                     "json": []
@@ -188,15 +174,12 @@ class DBManager:
 
     def get_document(self, uuid: str, collection: Collection):
         cursor = collection.find({"uuid": uuid})
+        result = list( cursor )
 
-        result = []
-        for document in cursor:
-            # Find document that match with current uuid.
-            if document["uuid"] == uuid:
-                # utg_filename = document['utg_files']
-                result.append(document)
+        if len(result) == 0:
+            raise KeyError("The uuid does not exist in the database")
 
-        # Assume only 1 result
+        # Assume uuid is unqiue so only one result
         return result[0]
 
 

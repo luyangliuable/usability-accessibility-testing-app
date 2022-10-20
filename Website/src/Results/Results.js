@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Table } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import ProgressBar from "../Upload/components/ProgressBar";
+import DroidbotResult from "../Results/components/DroidbotResult";
 
 import "./Results.css";
 import "../index.css";
@@ -19,14 +20,14 @@ const Results = () => {
   const [currReportKey, setCurrReportKey] = useState({});
   const [uniqueApkName, setUniqueApkName] = useState("");
 
-  var allReportDataArray = []
+  var allReportDataArray = [];
 
   useEffect(() => {
 
     var myNavbar = document.getElementById("myNavbar");
     myNavbar.classList.remove("sticky");
 
-    window.scrollTo(0, 0)
+      window.scrollTo(0, 0);
 
   }, []);
 
@@ -114,7 +115,7 @@ const Results = () => {
     for (var i = 0; i < reportKeys.length; i++) {
       getApkName(reportKeys[i].result_id, reportKeys[i])
     }
-  }, [reportKeys])
+  }, [reportKeys]);
 
   useEffect(() => {
     var finalObject = currReportKey + apkName
@@ -124,7 +125,7 @@ const Results = () => {
     console.log(apkName)
     // allReportDataArray.append()
     // setAllReportData()
-  }, [uniqueApkName])
+  }, [uniqueApkName]);
 
   return (
     <Container className="container-nav">
@@ -175,6 +176,7 @@ const Results = () => {
         </Table>
         <div></div>
       </div>
+      <DroidbotResult/>
     </Container>
   );
 };

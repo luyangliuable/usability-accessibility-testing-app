@@ -149,10 +149,21 @@ export function getTappableImage(stateId, UIStates, utg) {
     var node = getNode(stateId, utg);
     var structureId = node.structure_str;
     var result = "<hr><h2>Tappability Result</h2><hr/>\n";
+    result += "<table><th>";
 
     for (var i = 0; i < UIStates.tappable.length; i++) {
         console.log(UIStates.tappable[i].structure_id);
+        console.log(structureId);
         if (UIStates.tappable[i].structure_id == structureId) {
+            console.log(UIStates.tappable[i]);
+            for (var j = 0; j < UIStates.tappable[i].description.length; j++) {
+                const tmp = UIStates.tappable[i].description[j];
+                console.log(tmp);
+                if (tmp.heatmap != null) {
+                    result += "<img class=\"col-md-5\" src='" + tmp.heatmap + "'/>"
+                }
+            }
+
             return result + "<img class=\"col-md-5\" src='" + UIStates.tappable[i].image + "'/>";
         }
     }
@@ -161,17 +172,60 @@ export function getTappableImage(stateId, UIStates, utg) {
 }
 
 
+function getXbotTable(xbot_dict) {
+    const utg_details = document.getElementById("utg-details");
+    let newOne = "<table><th>Issue Type</th> <th>Component Type</th><th>Issue Desc</th>";
+    for (var i = 0; i < xbot_dict.description.length; i++) {
+        var issue =  xbot_dict.description[i].issue_type;
+        var componentType =  xbot_dict.description[i].component_type;
+        var issueDesc =  xbot_dict.description[i].issue_desc;
+        newOne += "<tr><th>" + issue + "</th><th>" + componentType + "</th><th>" + issueDesc + "</th></tr>";
+    }
+
+    return newOne;
+};
+
+
 export function getXbotImage(stateId, UIStates, utg) {
     var node = getNode(stateId, utg);
-    var structureId = node.structure_str;
+    var activity_name = node.activity_name;
     var result = "<hr><h2>Xbot Result</h2><hr/>\n";
-
     for (var i = 0; i < UIStates.xbot.length; i++) {
-        console.log(UIStates.xbot[i].structure_id);
-        if (UIStates.xbot[i].structure_id == structureId) {
+        if (UIStates.xbot[i].activity_name == activity_name) {
+            result += getXbotTable(UIStates.xbot[i]);
             return result + "<img class=\"col-md-5\" src='" + UIStates.xbot[i].image + "'/>";
         }
     }
 
     return "<hr><h2 style=\"color: white\">No Xbot Result</h2><hr/>\n";
+}
+export function clusterActivities(network, utg) {
+    network.setData(utg);
+    var activities = [];
+
+    for (var i = 0; i < utg.nodes.length; i++) {
+        var node = utg.nodes[i];
+        if (activities.indexOf(node.activity) < 0) {
+            activities.push(node.activity);
+        }
+    }
+
+    var clusterOptionsByData;
+    for (var i = 0; i < activities.length; i++) {
+        var activity = activities[i];
+        clusterOptionsByData = {
+            joinCondition: function (childOptions) {
+                return childOptions.activity == activity;
+            },
+            processProperties: function (clusterOptions, childNodes, childEdges) {
+                clusterOptions.title = childNodes[0].title;
+                clusterOptions.state_str = childNodes[0].state_str;
+                clusterOptions.label = childNodes[0].label;
+                clusterOptions.image = childNodes[0].image;
+                return clusterOptions;
+            },
+            clusterNodeProperties: {id: 'activity:' + activity, shape: 'image'}
+        };
+        network.cluster(clusterOptionsByData);
+    }
 }

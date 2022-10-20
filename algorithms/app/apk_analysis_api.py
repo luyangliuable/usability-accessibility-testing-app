@@ -79,12 +79,12 @@ class ApkAnalysisApi(ApkAnalysis):
 
     def _upload_file(self, path: str) -> str:
         """Uploads file and returns S3 url"""
+        key = path.removeprefix(self.output_dir).lstrip('/')
+        file_url = f'http://localhost:4566/{BUCKETNAME}/{key}'
         try:
             if path not in self.uploaded_files:
-                key = path.removeprefix(self.output_dir).lstrip('/')
                 s3_client.upload_file(path, BUCKETNAME, key)
                 self.uploaded_files.add(path)
-                file_url = f'http://localhost:4566/{BUCKETNAME}/{key}'
                 print(f"Uploaded file {path} to S3 at {file_url}")
             return file_url
 

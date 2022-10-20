@@ -140,16 +140,21 @@ class ApkAnalysis:
                 print(f'Published resource type {resource_type} for {algorithm} with {file}.')
     
     
-    def _update_utg(self, new_utg: dict) -> None:
+    def _update_utg(self, new_utg: dict[str, Screenshot]) -> None:
+        screenshot_map = self._screenshot_map()
         for node in new_utg['nodes']:
             node_id = node['id']
-            if node_id not in self.utg_nodes:
+            if node_id not in self.utg_nodes and node['image'] in screenshot_map:
                 self.utg_nodes.add(node_id)
-                self.utg['nodes'].append(self._repl_filepaths(node))
+                new_node = self._repl_filepaths(node)
+                new_node['structure_str'] = screenshot_map[node['image']].structure_id
+                new_node['screenshot_id'] = screenshot_map[node['image']].screenshot_id
+                new_node['activity_name'] = screenshot_map[node['image']].ui_screen
+                self.utg['nodes'].append(new_node)
                 
         for edge in new_utg['edges']:
             edge_id = edge['id']
-            if edge_id not in self.utg_edges:
+            if edge_id not in self.utg_edges and edge['to'] in self.utg_nodes and edge['from'] in self.utg_nodes:
                 self.utg_edges.add(edge_id)
                 self.utg['edges'].append(self._repl_filepaths(edge))
         
@@ -161,14 +166,21 @@ class ApkAnalysis:
             f.write(f'var utg = \n{json.dumps(self.utg, indent=2)}')
             f.truncate()
     
-    
+    def _screenshot_map(self) -> dict:
+        screenshot_map = {} # map of filepath to structure str
+        for resource in self.resources[ResourceType.SCREENSHOT]._resources:
+            screenshot: Screenshot = resource.get_metadata()
+            if screenshot.image_path not in screenshot_map:
+                screenshot_map[screenshot.image_path] = screenshot
+        return screenshot_map
+
     def _add_result(self, result: dict, origin: str) -> None:
         self.results[origin].append(result)
         with open(os.path.join(self.output_dir, 'results.js'), "w+") as f:
             f.write(f'var results = \n{json.dumps(self.results, indent=2)}')
             f.truncate()
-        
-        
+            
+         
     def _repl_filepaths(self, item: dict, _new_path: Callable[[str], str]=None) -> dict:
         text = json.dumps(item)
         output_dir = self.output_dir.rstrip('/')+'/'

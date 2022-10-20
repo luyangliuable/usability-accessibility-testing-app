@@ -68,7 +68,7 @@ def get_result(uuid, type=None):
 @results_blueprint.route('/add/<uuid>', defaults={'algorithm': None}, methods=['POST'])
 @results_blueprint.route('/add/<uuid>/<algorithm>', methods=['POST'])
 @cross_origin()
-def add_result(uuid, algorithm=None):
+def add_result(uuid, algorithm: str):
     """
     Add a result to the database
 
@@ -80,18 +80,21 @@ def add_result(uuid, algorithm=None):
         algorithm: The algorithm to add the result of
     Body:
         {
-            "files": [str],
-            "type": str,
-            "names": [str]
+            "owleye": [{
+    "screenshot_id": str,
+    "state_id": str,
+    "structure_id": str,
+    "image": str,
+    }],
+            "tappable": [Dict],
         }
     """
 
     if request.method == 'POST':
-        results = request.json
+        data = request.json
 
-        print(results)
-
-        updated_result = algorithm_database_controller._insert_algorithm_result(uuid, results)
+        # updated_result = algorithm_database_controller._insert_algorithm_result(uuid, results)
+        updated_result = algorithm_database_controller.post(uuid, algorithm, data);
 
         return updated_result, 200
 
@@ -104,18 +107,13 @@ def add_utg(uuid):
     """
     Add a result to the database
 
-    Path:
+    paths:
         /results/add/<uuid>             -> algorithm = None
         /results/add/<uuid>/<algorithm>
-    Vars:
+    parameters:
         uuid: The uuid of the result to add
         algorithm: The algorithm to add the result of
-    Body:
-        {
-            "files": [str],
-            "type": str,
-            "names": [str]
-        }
+    Body: the UTG json from from Droidbot utg.js file.
     """
 
 

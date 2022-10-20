@@ -256,7 +256,7 @@ class DBManager:
         )
 
 
-    def get_collection(self, collection_name:str):
+    def get_collection(self, collection_name:str) -> Collection:
         return self._db.get_collection(collection_name)
 
 

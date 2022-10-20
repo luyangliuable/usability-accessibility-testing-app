@@ -1,12 +1,12 @@
-import React, {Component, useEffect, useState, useRef} from 'react';
-import { getJSON } from './getJson.js';
-import "./TableStyle.css";
-import { utg } from "./functions/utg";
 import { getClusterDetails, getOverallResult, getNodeDetails, getEdgeDetails, searchUTG } from "./functions/droidbot_functions";
-import "./droidbot.css";
-import "./TableStyle.css";
-import Graph from "react-graph-vis";
+import React, {Component, useEffect, useState, useRef} from 'react';
+import ProgressBar from 'react-bootstrap/ProgressBar';
+import { getJSON } from './getJson.js';
+import { utg } from "./functions/utg";
 import { Network } from 'vis-network';
+import Graph from "react-graph-vis";
+import "./TableStyle.css";
+import "./droidbot.css";
 import $ from "jquery";
 
 
@@ -92,6 +92,7 @@ const DroidbotResult = ({uuid}) => {
             const {nodes, edges} = params;
             if (nodes.length > 0) {
                 utg_details.innerHTML = getNodeDetails(nodes[0], utg);
+                console.log(utg_details.innerHTML);
             } else if (edges.length > 0) {
                 utg_details.innerHTML = getEdgeDetails(edges[0], utg);
             } else {
@@ -101,24 +102,24 @@ const DroidbotResult = ({uuid}) => {
     };
 
     $(".mini-header").click(function(){
-        if (vis) {
-         $("#utg_graph").fadeOut(100, "linear");
-         $("#utg-details").fadeOut(100, "linear");
-        } else {
-            $("#utg_graph").show();
-            $("#utg-details").show();
-        }
+        // if (vis) {
+        //  $("#utg_graph").fadeOut(100, "linear");
+        //  $("#utg-details").fadeOut(100, "linear");
+        // } else {
+        //     $("#utg_graph").show();
+        //     $("#utg-details").show();
+        // }
 
-        updateVis(!vis);
+        // updateVis(!vis);
         console.log(vis);
     });
 
     return (
         <div>
           <div className="mini-header" style={{}}>
-            <p className="mini-header-title"> Droidbot Report </p>
+            <p className="mini-header-title"> Droidbot </p>
             <div className='search-container'>
-                <input className="droidbot-search" placeholder="Search" type='text' onChange={(e) => searchUTG(e.target.value, network, utg)} />
+              <input className="droidbot-search" placeholder="Search" type='text' onChange={(e) => searchUTG(e.target.value, network, utg)} />
             </div>
           </div>
 

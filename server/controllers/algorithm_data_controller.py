@@ -50,7 +50,7 @@ class AlgorithmDataController(Generic[T], Controller):
         return self._db.get_document(uuid=uuid, collection=self.collection)
 
 
-    def post(self, request_parameters: List, document: Dict) -> bool:
+    def post(self, uuid: str, algorithm: str, new_data: T) -> bool:
         """
         Add file metadata that matches the job uuid
 
@@ -59,14 +59,12 @@ class AlgorithmDataController(Generic[T], Controller):
             request_parameters - request parameters that contain contents of document
         """
 
-        for each_key, _ in document.items():
-            document[each_key] = request_parameters[each_key]
+        self.collection.update_one({"uuid": uuid}, {'$push': {f'results.activities.{ algorithm }': new_data}})
 
-        document['uuid'] = unique_id_generator()
+        result = self._db.get_document(uuid, self.collection)[self.results_key]['activities'][algorithm]
+        print(result);
 
-        self._db.insert_document(document, self.collection).inserted_id
-
-        return True
+        return result
 
 
     def _insert_utg_result(self, uuid: str, data: Dict) -> Dict[str, T]:
@@ -96,6 +94,7 @@ class AlgorithmDataController(Generic[T], Controller):
         results_key = "results"
         result_schema = self._db.get_format(uuid)[results_key]
         alg_results = dict(result_schema)
+
 
         new_gifdroid = alg_results['gifdroid']
 

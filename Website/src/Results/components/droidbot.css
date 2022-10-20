@@ -29,11 +29,19 @@ input[type=text] {
 }
 
 .droidbot-search {
-    width: 50vw;
+    width: 30vw;
+    border-radius: 0.5vw;
+    padding: 5px;
+    transition: 0.2s width ease-in-out, 0.2s margin-right ease-in-out;
+    margin-right: 40vw;
+}
+
+.droidbot-search:focus {
+    width: 60vw;
+    margin-right: 13vw;
 }
 
 ::-webkit-input-placeholder {
-    text-align: center;
     font-weight: bold;
 }
 
@@ -59,6 +67,7 @@ input[type=text] {
 
 .search-container {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-around;
     align-items: center;
 }
+

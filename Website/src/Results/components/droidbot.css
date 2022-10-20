@@ -76,9 +76,9 @@ input[type=text] {
 
 .cust_button_smaller {
     margin-top: 0 !important;
-    width: 7vw !important;
+    width: 9vw !important;
     height: 35px !important;
-    font-size: .55vw;
+    font-size: .75vw;
     /* font-weight: bold; */
     color: #FFF !important;
     margin-left: 1vw;

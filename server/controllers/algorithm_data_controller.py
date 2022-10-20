@@ -64,7 +64,7 @@ class AlgorithmDataController(Generic[T], Controller):
         # result = self._db.get_document(uuid, self.collection)[self.results_key]['ui-states'][algorithm]
 
         # return result
-        
+
 
         self._insert_algorithm_result(uuid, algorithm, new_data)
         return new_data
@@ -94,17 +94,17 @@ class AlgorithmDataController(Generic[T], Controller):
         """
         algorithm = algorithm.lower()
         alg_results = self._db.get_document(uuid, self.collection)[self.results_key]
-        
+
         ui_state_results = ['xbot', 'owleye', 'tappable']
         if algorithm in ui_state_results:
             alg_results['ui-states'][algorithm].append(data)
-        
-        new_gifdroid = alg_results['gifdroid']        
+
+        new_gifdroid = alg_results['gifdroid']
         if algorithm ==  'gifdroid':
             for name, data in data.items():
                 new_gifdroid[name] = data
             alg_results['gifdroid'] = new_gifdroid
-            
+
 
         self._db.update_document(uuid, self.collection, self.results_key, alg_results)
 

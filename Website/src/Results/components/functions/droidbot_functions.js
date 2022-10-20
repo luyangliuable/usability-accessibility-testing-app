@@ -161,10 +161,10 @@ export function getTappableImage(stateId, UIStates, utg) {
                 const tmp = UIStates.tappable[i].description[j];
                 console.log(tmp);
                 if (tmp.heatmap != null) {
-                    result += "<img class=\"col-md-5\" src='" + tmp.heatmap + "'/>"
+                    result += "<img class=\"col-md-5\" src='" + tmp.heatmap + "'/>";
                 }
             }
-            result += "</th></tr></table>"
+            result += "</th></tr></table>";
             return result;
         }
     }
@@ -200,6 +200,13 @@ export function getXbotImage(stateId, UIStates, utg) {
 
     return "<hr><h2 style=\"color: white\">No Xbot Result</h2><hr/>\n";
 }
+
+
+export function showOriginalUTG(network, utg) {
+    network.setData(utg);
+    network.redraw();
+}
+
 export function clusterActivities(network, utg) {
     network.setData(utg);
     var activities = [];

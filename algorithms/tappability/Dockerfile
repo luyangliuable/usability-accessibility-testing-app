@@ -22,14 +22,31 @@ RUN python3.8 -m pip install install scikit-image
 RUN python3.8 -m pip install install matplotlib
 RUN python3.8 -m pip install install saliency
 RUN python3.8 -m pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cpu
-# https://download.pytorch.org/whl/cu116
 
 # Copy source code and run script
 WORKDIR /home
 COPY ./pipeline ./pipeline
 
-# API stage
+
+
+# stage for gpu version
+FROM base AS base-cuda
+
+RUN python3.8 -m pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu116
+RUN python3.8 -m pip install Flask
+
+EXPOSE 3007
+
+WORKDIR /home
+COPY ./pipeline/pipeline-cuda/pipeline.py ./pipeline/pipeline.py
+COPY ./pipeline/pipeline-cuda/heatmap.py ./pipeline/heatmap.py
+COPY ./app.py ./app.py
+
+
+
+# API stage (cpu version)
 FROM base
+
 RUN python3.8 -m pip install Flask
 
 EXPOSE 3007

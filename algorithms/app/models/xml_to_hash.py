@@ -80,7 +80,7 @@ class jsonToHash():
         view_dict['content_free_signature'] = content_free_signature
         return content_free_signature
 
-    def _safe_dict_get(view_dict, key, default=None):
+    def _safe_dict_get(self, view_dict, key, default=None):
         """Helper function"""
         return view_dict[key] if (key in view_dict) else default
         

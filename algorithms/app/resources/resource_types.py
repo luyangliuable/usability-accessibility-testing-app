@@ -14,8 +14,11 @@ class ResourceType(Enum):
     ACCESSIBILITY_ISSUE = 5
     DISPLAY_ISSUE = 6
     TAPPABILITY_PREDICTION = 7
-    UI_RULES = 8
-    EXECUTION_TRACE = 9
+    UI_RULES = 8                    # UI rules for ui-checker (DL file)
+    UI_FACTS = 9                    # ui-checker output 
+    EXECUTION_TRACE = 10
+
+     
 
 
 

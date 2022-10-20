@@ -71,7 +71,7 @@ def _get_apk_name(uuid):
     return apk_name
 
 # get name of file stored where key==uuid in s3
-def _get_dl_naem(uuid):
+def _get_dl_name(uuid):
     response = s3_client.list_objects_v2(Bucket='dl-bucket', Prefix=uuid)
     contents = response['Contents']
     dl_name = contents[0]['Key'].replace(uuid+'/', '').replace('.dl', '')

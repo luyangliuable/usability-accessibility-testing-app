@@ -155,3 +155,6 @@ seed_data
 
 algorithms/owleye/OwlEye-main/model/model.pth
 algorithms/app/test.py
+algorithms/app/report
+algorithms/tappability/pipeline/pipeline-cuda
+algorithms/app/models/ui_event.py

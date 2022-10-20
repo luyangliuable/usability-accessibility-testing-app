@@ -204,6 +204,8 @@ if __name__ == '__main__':
             # copy output to destination
             if sys.argv[3] is not None:
                 os.system('cp -r %s/%s/. %s' % (results_outputs, apk_name, sys.argv[3]))
+                os.system('rm -r /home/Xbot-main/main-folder/*')
+                os.system('cp -r /home/Xbot-main/main-folder-copy/. /home/Xbot-main/main-folder/')
 
 #execute('/home/senchen/Desktop/storydroid_plus/apks/org.liberty.android.fantastischmemo_223.apk','org.liberty.android.fantastischmemo_223',
 #        '/home/senchen/Desktop/storydroid_plus/outputs/org.liberty.android.fantastischmemo_223')

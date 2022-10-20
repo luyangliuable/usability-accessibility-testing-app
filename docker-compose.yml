@@ -188,7 +188,7 @@ services:
     - FLASK_BACKEND=http://host.docker.internal:5005
     - MONGO_URL=mongodb://host.docker.internal:27017/
     - S3_URL=http://host.docker.internal:4566
-    - EMULATOR=host.docker.internal:5555
+    - EMULATOR=host.docker.internal:5557
     volumes:
     - './.data:/home/data'
 
@@ -206,7 +206,7 @@ services:
     - FLASK_BACKEND=http://host.docker.internal:5005
     - MONGO_URL=mongodb://host.docker.internal:27017/
     - S3_URL=http://host.docker.internal:4566
-    - EMULATOR=host.docker.internal:5555
+    - EMULATOR=host.docker.internal:5557
     volumes:
     - './.data:/home/data'
 

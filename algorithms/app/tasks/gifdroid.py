@@ -101,8 +101,9 @@ class Gifdroid(Task):
         """
         self.utg_path = utg.get_path()
         print('utg file ready for gifdroid')
-        self.run()
-        utg.release()
+        if not self.resource_dict[ResourceType.UTG].is_active():
+            self.run()
+            utg.release()
 
 
     def gif_callback(self, gif : ResourceWrapper) -> None:

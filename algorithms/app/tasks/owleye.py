@@ -111,7 +111,7 @@ class Owleye(Task):
 
         # copy screenshots to temp directory
         for img in images:
-            img_path = img.get_image_jpeg()
+            img_path = img.get_image_path(file_type='jpg')
             temp_path = os.path.join(self.input_dir, os.path.basename(img_path))
             shutil.copyfile(img_path, temp_path)
 
@@ -135,7 +135,7 @@ class Owleye(Task):
             return
 
         for issue in issues:
-            rw = ResourceWrapper(issue["image_path"], 'Owleye', issue)
+            rw = ResourceWrapper(issue["image"], 'Owleye', issue)
             self.resource_dict[ResourceType.DISPLAY_ISSUE].publish(rw, self.is_complete())
 
     def _get_display_issues(self, screenshots: list[Screenshot]) -> List[dict]:
@@ -146,9 +146,13 @@ class Owleye(Task):
         """
         heatmaps = []
         for screenshot in screenshots:
-            filename = os.path.basename(screenshot.get_image_jpeg())
+            filename = os.path.basename(screenshot.get_image_path(file_type='jpg'))
             if os.path.exists(os.path.join(self.output_dir, filename)):
-                heatmaps.append({"screenshot": screenshot,
-                                 "image_path": os.path.join(self.output_dir, filename)
-                                 })
+                heatmaps.append({
+                    "activity_name": screenshot.ui_screen,
+                    "screenshot_id": screenshot.screenshot_id,              # screenshot_id of input
+                    "state_id": screenshot.state_id,
+                    "structure_id": screenshot.structure_id,
+                    "image": os.path.join(self.output_dir, filename)
+                    })
         return heatmaps

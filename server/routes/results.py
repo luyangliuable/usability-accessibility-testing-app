@@ -78,16 +78,13 @@ def add_result(uuid, algorithm: str):
     Vars:
         uuid: The uuid of the result to add
         algorithm: The algorithm to add the result of
-    Body:
-        {
-            "owleye": [{
+    Body: (e.g owleye)
+    {
     "screenshot_id": str,
     "state_id": str,
     "structure_id": str,
     "image": str,
-    }],
-            "tappable": [Dict],
-        }
+    }
     """
 
     if request.method == 'POST':

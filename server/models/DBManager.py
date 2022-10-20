@@ -100,6 +100,16 @@ class DBManager:
                     "logs": [],
                     "ert": 0
                 },
+                "tappable" : {
+                    "status" : "",
+                    "notes": "",
+                    "start_time" : "",
+                    "end_time" : "",
+                    "apk": "",
+                    "progress": 0,
+                    "logs": [],
+                    "ert": 0
+                },
                 "gifdroid" : {
                     "status" : "",
                     "notes": "",
@@ -139,6 +149,7 @@ class DBManager:
                 "utg": {},
                 "ui-states" : {
                     # "image": [],
+                    "xbot": [],
                     "owleye": [],
                     "tappable": [],
                 },

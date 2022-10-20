@@ -103,6 +103,9 @@ class Droidbot(Task, Thread):
     
     def _publish_utg(self) -> None:
         utg_path = os.path.join(self.output_dir, 'utg.js')
+        if not os.path.exists(utg_path):
+            return
+        
         with open(utg_path) as utg_file:
             new_utg = json.loads(utg_file.read().removeprefix('var utg = \n'))
 

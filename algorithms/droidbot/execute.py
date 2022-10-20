@@ -15,6 +15,18 @@ def _service_execute_droidbot(apk_path: str, output_dir: str):
     ############################################################################
     #                      Run program with downloaded apk                     #
     ############################################################################
+    subprocess.run(['adb', 'connect', EMULATOR])
+    # subprocess.run(['adb', 'disconnect', EMULATOR])
+    # sleep(2)
+    # subprocess.run(['adb', 'kill-server'])
+    # sleep(2)
+    # subprocess.run(['adb', 'devices'])
+    # sleep(2)
+    # subprocess.run(['adb', 'connect', EMULATOR])
+    # sleep(2)
+    # subprocess.run(['adb', 'devices'])
+    # sleep(2)
+    
     subprocess.run([ "droidbot", 
                     "-count", config[ "NUM_OF_EVENT" ], 
                     "-a", apk_path, 

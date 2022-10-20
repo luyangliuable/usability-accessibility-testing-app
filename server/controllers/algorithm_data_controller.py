@@ -59,15 +59,19 @@ class AlgorithmDataController(Generic[T], Controller):
             request_parameters - request parameters that contain contents of document
         """
 
-        self.collection.update_one({"uuid": uuid}, {'$push': {f'results.ui-states.{ algorithm }': new_data}})
+        # self.collection.update_one({"uuid": uuid}, {'$push': {f'results.ui-states.{ algorithm }': new_data}})
 
-        result = self._db.get_document(uuid, self.collection)[self.results_key]['ui-states'][algorithm]
+        # result = self._db.get_document(uuid, self.collection)[self.results_key]['ui-states'][algorithm]
 
-        return result
+        # return result
+        
+
+        self._insert_algorithm_result(uuid, algorithm, new_data)
+        return new_data
 
 
     def _insert_utg_result(self, uuid: str, data: Dict) -> Dict[str, T]:
-        results_schema = self._db.get_format(uuid)[self.results_key]
+        results_schema = self._db.get_document(uuid, self.collection)[self.results_key]
 
         results_schema['utg'] = data;
 
@@ -76,7 +80,7 @@ class AlgorithmDataController(Generic[T], Controller):
         return results_schema;
 
 
-    def _insert_algorithm_result(self, uuid: str, data: Dict[str, List]) -> Dict[str, T]:
+    def _insert_algorithm_result(self, uuid: str, algorithm: str, data: dict) -> dict:
         """
         This function inserts the links to the algorithm results into the document matching uuid
 
@@ -88,50 +92,23 @@ class AlgorithmDataController(Generic[T], Controller):
         Returns: Dictionary for the updated document and a bool if the method is successful.
 
         """
+        algorithm = algorithm.lower()
+        alg_results = self._db.get_document(uuid, self.collection)[self.results_key]
+        
+        ui_state_results = ['xbot', 'owleye', 'tappable']
+        if algorithm in ui_state_results:
+            alg_results['ui-states'][algorithm].append(data)
+        
+        new_gifdroid = alg_results['gifdroid']        
+        if algorithm ==  'gifdroid':
+            for name, data in data.items():
+                new_gifdroid[name] = data
+            alg_results['gifdroid'] = new_gifdroid
+            
 
-        # document = self._db.get_document(uuid, self.collection)
-        results_key = "results"
-        result_schema = self._db.get_format(uuid)[results_key]
-        alg_results = dict(result_schema)
+        self._db.update_document(uuid, self.collection, self.results_key, alg_results)
 
-
-        new_gifdroid = alg_results['gifdroid']
-
-        for key, item in data.items():
-            if key == "ui-states":
-                new_activities = []
-                for each_activity in item:
-                    print(each_activity)
-                    new_activity = self._db.get_format(uuid)[results_key]['activities'][0]
-                    for name, data in each_activity.items():
-                        if name == 'activity-name':
-                            new_activity[name] = each_activity[name]
-                        elif name == 'structure-id':
-                            new_activity[name] = each_activity[name]
-                        elif name == 'base-image':
-                            new_activity[name] = each_activity[name]
-                        elif name == "xbot":
-                            new_activity[name]['image'] = each_activity[name]['image']
-                            new_activity[name]['description'] = each_activity[name]['description']
-                        elif name == "owleye":
-                            new_activity[name]['image'] = each_activity[name]['image']
-                        elif name == "tappable":
-                            # assert 'tappable' in new, "New must have tappable"
-                            # assert 'tappable' in each_activity, "Each activity must have tappable"
-                            new_activity[name]['image'] = each_activity[name]['image']
-                            new_activity[name]['description'] = each_activity[name]['description']
-                            new_activity[name]['heatmaps'] = each_activity[name]['heatmaps']
-                    new_activities.append(new_activity)
-
-                if len(new_activities) > 0:
-                    alg_results['activities'] = new_activities
-
-            elif key == 'gifdroid':
-                for name, data in item.items():
-                    new_gifdroid[name] = data
-
-        self._db.update_document(uuid, self.collection, results_key, alg_results)
-
+        print(alg_results['ui-states'])
         return alg_results
 
 

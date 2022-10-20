@@ -11,7 +11,6 @@ import boto3
 import time
 
 
-
 RESULT_URL = 'http://host.docker.internal:5005/results/add/'
 STATUS_URL = 'http://host.docker.internal:5005/status/update/'
 AWS_PROFILE = 'localstack'
@@ -58,13 +57,19 @@ class ApkAnalysisApi(ApkAnalysis):
     def _add_result(self, result: dict, origin: str) -> None:
         super()._add_result(result, origin)
         self._post_task_result(result, origin)
-        if not self.resources[ApkAnalysis._result_types[origin]].is_active():
-            self._update_status(StatusEnum.successful, origin)
+        # update status
+        r_type = ApkAnalysis._result_types[origin]
+        if r_type and not self.resources[r_type].is_active():
+            self._update_status(StatusEnum.successful, algorithm=origin)
             if origin in self.running:
                 origin.remove(self.running)
+        elif r_type:
+            logs = f'{origin} published new result'
+            self._update_status(StatusEnum.running, algorithm=origin, logs=logs)
         if len(list(self.running)) == 0:
             self._update_status(StatusEnum.successful)
-
+    
+            
     def _repl_filepaths(self, item: dict, _new_path: Callable[[str], str]=None) -> dict:
         return super()._repl_filepaths(item, self._upload_file)
 
@@ -86,9 +91,8 @@ class ApkAnalysisApi(ApkAnalysis):
 
 
     def _post_task_result(self, result: dict, task: str) -> str:
-        url = os.path.join(RESULT_URL, self.uuid, task)
+        url = os.path.join(RESULT_URL, self.uuid, task.lower())
         data = result
-
         response = None
         error = None
         try:
@@ -100,11 +104,11 @@ class ApkAnalysisApi(ApkAnalysis):
             print("ERROR ON POST RESULTS REQUEST: " + error)
 
         print(f"POST RESULTS. Response: {response}\n")
-
-    def _post_utg(self) -> str:
+    
+    def _post_utg(self, new_utg: dict) -> str:
         url = os.path.join(RESULT_URL, self.uuid, 'utg')
-        data = self.utg
-
+        data = new_utg
+        
         response = None
         error = None
         try:
@@ -116,20 +120,20 @@ class ApkAnalysisApi(ApkAnalysis):
             print("ERROR ON POST RESULTS REQUEST: " + error)
 
         print(f"POST RESULTS. Response: {response}\n")
-
-    def _update_status(self, status, logs: str=None, algorithm=None) -> None:
+    
+    def _update_status(self, status: StatusEnum, algorithm: str=None, logs: str=None) -> None:
         url = f'{STATUS_URL}{self.uuid}'
         data = {
             "status": status
             }
 
         if algorithm is not None:
-            url = url+f'/{algorithm}'
-            if logs:
+            url = url+f'/{algorithm.lower()}'
+            if logs is not None:
                 data["logs"] = f'{logs}'
             else:
-                logs = f'{algorithm} {status}'
-
+                data["logs"] = f'{algorithm.lower()} {status}'
+                
         response = None
         error = None
 

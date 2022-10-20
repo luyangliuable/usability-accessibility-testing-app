@@ -8,7 +8,7 @@
 
 #utg_details {
     overflow: auto;
-	  background-color:#eeeeee;	
+	  background-color:#eeeeee;
 }
 
 #utgSearchBar {
@@ -32,12 +32,13 @@ input[type=text] {
     width: 30vw;
     border-radius: 0.1vw;
     padding: 0.5vw;
-    transition: 0.2s background ease-in-out;
-    margin: 0vw 4vw 0 4vw;
+    transition: 0.2s width ease-in-out;
+    cursor: pointer;
+    /* margin: 0vw 4vw 0 4vw; */
 }
 
 .droidbot-search:focus {
-    background: #1e90f;
+    width: 100vw;
 }
 
 ::-webkit-input-placeholder {
@@ -55,7 +56,7 @@ input[type=text] {
 
 
 .mini-header {
-    padding: 5px;
+    padding: 2.5vw 0px 2.vw 0px;
     border-radius: 12px 12px 0px 0px;
     z-index: 2;
     background: #1e1e1e;
@@ -77,7 +78,7 @@ input[type=text] {
 .cust_button_smaller {
     margin-top: 0 !important;
     width: 9vw !important;
-    height: 35px !important;
+    height: 2.2vw !important;
     font-size: .75vw;
     /* font-weight: bold; */
     color: #FFF !important;
@@ -85,14 +86,23 @@ input[type=text] {
 }
 
 div::-webkit-scrollbar {
-    width: 20px; 
+    width: 20px;
 }
 
 div::-webkit-scrollbar-track {
     background:  #1e1e1e;
-    border-radius: 12px;
 }
 
 div::-webkit-scrollbar-thumb {
     box-shadow: 0px 0px 0px 100vh black;
+}
+
+.side-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+img {
+    margin-bottom: 1vw;
 }

@@ -19,7 +19,7 @@
     text-align: left;
     font-weight: 500;
     font-size: 10px;
-    color: #000;
+    color: #FFF;
     text-transform: uppercase;
 }
 
@@ -33,7 +33,7 @@
     text-align: left;
     vertical-align: middle;
     font-weight: 200;
-    color: #000;
+    color: #FFF;
     /* border-bottom: solid 1px rgba(255,255,255,0.5); */
     font-size: 14px !important;
     font-weight: 250;

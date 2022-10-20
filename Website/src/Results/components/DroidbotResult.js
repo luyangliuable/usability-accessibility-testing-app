@@ -33,8 +33,8 @@ const DroidbotResult = ({uuid}) => {
 
     const options = {
         autoResize: true,
-        width: '45vw',
-        height: '800px',
+        width: '50vw',
+        height: '700px',
         locale: 'an',
         nodes: {
             shapeProperties: {
@@ -157,7 +157,7 @@ const DroidbotResult = ({uuid}) => {
     return (
         <div>
           <div className="mini-header">
-            <div className="mini-header-title"> Droidbot </div>
+            <div className="mini-header-title"></div>
             <div className='search-container'>
               <input className="droidbot-search" placeholder="Search" type='text' onChange={(e) => {
                   utg.network && searchUTG(e.target.value, utg.network, utg.utg);
@@ -170,15 +170,16 @@ const DroidbotResult = ({uuid}) => {
           </div>
 
           <div style={{display: "flex", justifyContent: "space-evenly"}}>
-            { ( algorithmStatus === "RUNNING" || algorithmStatus === "SUCCESSFUL") && (<div id="utg_graph" ref={container} style={{ background: "white", "borderRadius": "1vw", "border": "0.1vw solid #1e90ff" }} />)}
+        { ( algorithmStatus === "RUNNING" || algorithmStatus === "SUCCESSFUL") && (<div id="utg_graph" ref={container} style={{ background: "#FFF", "borderRadius": "0.5vw", "border": "0.1vw solid #1e1e1e", "width": "60vw", height: "50vw" }} />)}
 
             <div id="utg-details" className="side-panel" style={{
-                background: "#888",
-                width: "30vw",
-                height: "65vw",
+                background: "#1f1f1f",
+                width: "40vw",
+                height: "50vw",
                 padding: "1vw",
                 "borderRadius": "4px",
-                "overflow-y": "scroll"
+                "overflow-y": "auto",
+                color: "#FFF"
             }}
             >
             </div>

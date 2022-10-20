@@ -13,7 +13,10 @@ from tasks.droidbot import *
 from tasks.gifdroid import *
 import re
 
-EMULATOR = Emulator("emulator-5558", "host.docker.internal:5559", (1920, 1080))
+EMULATORS = [
+    Emulator("emulator-5556", "host.docker.internal:5557", (1920, 1080), set(['Droidbot'])),
+    Emulator("emulator-5558", "host.docker.internal:5559", (1920, 1080), set(['Xbot']))
+]
 
 DIFF_NAMES = {'Tappability': 'Tappable', 'UiChecker': 'Venus'}
 
@@ -112,7 +115,8 @@ class ApkAnalysis:
         # publish apk
         self.resources[ResourceType.APK_FILE].publish(self.apk_resource, True)
         # publish emulator
-        self.resources[ResourceType.EMULATOR].publish(ResourceWrapper('', '', EMULATOR), True) #TODO: move this to singleton
+        for emulator in EMULATORS:
+             self.resources[ResourceType.EMULATOR].publish(ResourceWrapper(emulator.connection_str, 'apk_analysis', emulator), False)
         # publish additional_files
         print(self.upload_additional_files)
         for algorithm in self.upload_additional_files.keys():
@@ -136,16 +140,21 @@ class ApkAnalysis:
                 print(f'Published resource type {resource_type} for {algorithm} with {file}.')
     
     
-    def _update_utg(self, new_utg: dict) -> None:
+    def _update_utg(self, new_utg: dict[str, Screenshot]) -> None:
+        screenshot_map = self._screenshot_map()
         for node in new_utg['nodes']:
             node_id = node['id']
-            if node_id not in self.utg_nodes:
+            if node_id not in self.utg_nodes and node['image'] in screenshot_map:
                 self.utg_nodes.add(node_id)
-                self.utg['nodes'].append(self._repl_filepaths(node))
+                new_node = self._repl_filepaths(node)
+                new_node['structure_str'] = screenshot_map[node['image']].structure_id
+                new_node['screenshot_id'] = screenshot_map[node['image']].screenshot_id
+                new_node['activity_name'] = screenshot_map[node['image']].ui_screen
+                self.utg['nodes'].append(new_node)
                 
         for edge in new_utg['edges']:
             edge_id = edge['id']
-            if edge_id not in self.utg_edges:
+            if edge_id not in self.utg_edges and edge['to'] in self.utg_nodes and edge['from'] in self.utg_nodes:
                 self.utg_edges.add(edge_id)
                 self.utg['edges'].append(self._repl_filepaths(edge))
         
@@ -153,18 +162,25 @@ class ApkAnalysis:
             if key not in ['nodes', 'edges']:
                 self.utg[key] = val
 
-        with open(os.path.join(self.output_dir, 'utg.json'), "w+") as f:
-            f.write(json.dumps(self.utg, indent=2))
+        with open(os.path.join(self.output_dir, 'utg.js'), "w+") as f:
+            f.write(f'var utg = \n{json.dumps(self.utg, indent=2)}')
             f.truncate()
     
-    
+    def _screenshot_map(self) -> dict:
+        screenshot_map = {} # map of filepath to structure str
+        for resource in self.resources[ResourceType.SCREENSHOT]._resources:
+            screenshot: Screenshot = resource.get_metadata()
+            if screenshot.image_path not in screenshot_map:
+                screenshot_map[screenshot.image_path] = screenshot
+        return screenshot_map
+
     def _add_result(self, result: dict, origin: str) -> None:
         self.results[origin].append(result)
-        with open(os.path.join(self.output_dir, 'results.json'), "w+") as f:
-            f.write(json.dumps(self.results, indent=2))
+        with open(os.path.join(self.output_dir, 'results.js'), "w+") as f:
+            f.write(f'var results = \n{json.dumps(self.results, indent=2)}')
             f.truncate()
-        
-        
+            
+         
     def _repl_filepaths(self, item: dict, _new_path: Callable[[str], str]=None) -> dict:
         text = json.dumps(item)
         output_dir = self.output_dir.rstrip('/')+'/'
@@ -175,7 +191,7 @@ class ApkAnalysis:
             return match.group(1).removeprefix(output_dir)
         new_item = re.sub(re_text, _sub , text)
         return json.loads(new_item)
-        
+    
 
 if __name__ == '__main__':
     a = ApkAnalysis('/home/data/test/a2dp.Vol_133/', '/home/data/test/a2dp.Vol_133/a2dp.Vol_133.apk', ["Owleye"])

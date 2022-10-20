@@ -52,6 +52,7 @@ services:
   react_ui:
     build:
       context: ./Website
+    command: npm start /usr/src/FIT3170_Usability_Accessibility_Testing_App/Website
     ports:
       - "3001:3001"
     environment:
@@ -63,7 +64,7 @@ services:
     stdin_open: true
     volumes:
        - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/Website
-       - .:/usr/src/FIT3170_Usability_Accessibility_Testing_App/Website/node_modules
+       - ./node_modules:/usr/src/FIT3170_Usability_Accessibility_Testing_App/Website/node_modules
 
   worker:
     build:
@@ -173,7 +174,8 @@ services:
       - '3007:3007'
     volumes:
       - './.data:/home/data'
-
+    cpu_percent: 30
+    
 
   gifdroid:
     build:

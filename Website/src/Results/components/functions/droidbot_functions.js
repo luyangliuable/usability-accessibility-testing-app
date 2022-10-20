@@ -149,11 +149,23 @@ export function getTappableImage(stateId, UIStates, utg) {
     var node = getNode(stateId, utg);
     var structureId = node.structure_str;
     var result = "<hr><h2>Tappability Result</h2><hr/>\n";
+    result += "<table><tr><th>Scanned Elements</th><th>Saliency Analysis</th></tr>";
 
     for (var i = 0; i < UIStates.tappable.length; i++) {
         console.log(UIStates.tappable[i].structure_id);
+        console.log(structureId);
         if (UIStates.tappable[i].structure_id == structureId) {
-            return result + "<img class=\"col-md-5\" src='" + UIStates.tappable[i].image + "'/>";
+            console.log(UIStates.tappable[i]);
+            result += "<tr><th><img class=\"col-md-5\" src='" + UIStates.tappable[i].image + "'/></th><th>";
+            for (var j = 0; j < UIStates.tappable[i].description.length; j++) {
+                const tmp = UIStates.tappable[i].description[j];
+                console.log(tmp);
+                if (tmp.heatmap != null) {
+                    result += "<img class=\"col-md-5\" src='" + tmp.heatmap + "'/>"
+                }
+            }
+            result += "</th></tr></table>"
+            return result;
         }
     }
 
@@ -161,8 +173,33 @@ export function getTappableImage(stateId, UIStates, utg) {
 }
 
 
+function getXbotTable(xbot_dict) {
+    const utg_details = document.getElementById("utg-details");
+    let newOne = "<table><th>Issue Type</th> <th>Component Type</th><th>Issue Desc</th>";
+    for (var i = 0; i < xbot_dict.description.length; i++) {
+        var issue =  xbot_dict.description[i].issue_type;
+        var componentType =  xbot_dict.description[i].component_type;
+        var issueDesc =  xbot_dict.description[i].issue_desc;
+        newOne += "<tr><th>" + issue + "</th><th>" + componentType + "</th><th>" + issueDesc + "</th></tr>";
+    }
+
+    return newOne;
+};
 
 
+export function getXbotImage(stateId, UIStates, utg) {
+    var node = getNode(stateId, utg);
+    var activity_name = node.activity_name;
+    var result = "<hr><h2>Xbot Result</h2><hr/>\n";
+    for (var i = 0; i < UIStates.xbot.length; i++) {
+        if (UIStates.xbot[i].activity_name == activity_name) {
+            result += getXbotTable(UIStates.xbot[i]);
+            return result + "<img class=\"col-md-5\" src='" + UIStates.xbot[i].image + "'/>";
+        }
+    }
+
+    return "<hr><h2 style=\"color: white\">No Xbot Result</h2><hr/>\n";
+}
 export function clusterActivities(network, utg) {
     network.setData(utg);
     var activities = [];
@@ -192,44 +229,4 @@ export function clusterActivities(network, utg) {
         };
         network.cluster(clusterOptionsByData);
     }
-}
-
-
-function getXbotTable(xbot_dict) {
-    const utg_details = document.getElementById("utg-details");
-    let newOne = "<table><th>Issue Type</th> <th>Component Type</th><th>Issue Desc</th>";
-    for (var i = 0; i < xbot_dict.description.length; i++) {
-        var issue =  xbot_dict.description[i].issue_type;
-        var componentType =  xbot_dict.description[i].component_type;
-        var issueDesc =  xbot_dict.description[i].issue_desc;
-        newOne += "<tr><th>" + issue + "</th><th>" + componentType + "</th><th>" + issueDesc + "</th></tr>";
-    }
-
-    return newOne;
-};
-
-
-export function getXbotImage(stateId, UIStates, utg, xbot) {
-    var node = getNode(stateId, utg);
-    var structureId = node.structure_str;
-    var result = "<hr><h2>Xbot Result</h2><hr/>\n";
-
-    for (var i = 0; i < UIStates.xbot.length; i++) {
-        console.log(UIStates.xbot[i].structure_id);
-        if (UIStates.xbot[i].structure_id == structureId) {
-            result += getXbotTable(UIStates.xbot[i]);
-            result += "<table><tr>Issue Type</tr> <tr>Component Type</tr><tr>Issue Desc</tr></table>";
-            for (const eachDict of xbot) {
-            }
-            return result + "<img class=\"col-md-5\" src='" + UIStates.xbot[i].image + "'/>";
-        }
-    }
-
-    return "<hr><h2 style=\"color: white\">No Xbot Result</h2><hr/>\n";
-}
-
-
-export function showOriginalUTG(network, utg) {
-    network.setData(utg);
-    network.redraw();
 }

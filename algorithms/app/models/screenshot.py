@@ -4,6 +4,7 @@ import os
 import xmltodict
 import json
 import hashlib
+import re
 
 
 @dataclass
@@ -19,7 +20,7 @@ class Screenshot:
     metadata: dict = field(default_factory=dict)
     
     def __init__(self, ui_screen: str, image_path: str, layout_path: str=None, metadata: dict={}) -> None:
-        self.ui_screen = ui_screen
+        self.ui_screen = ui_screen.replace('/', '')
         self.image_path = image_path
         self.layout_path = layout_path
         self.metadata = metadata
@@ -81,7 +82,9 @@ class Screenshot:
         
         if cur_type == 'xml' and file_type == 'json':
             converter = LayoutConverter(self.layout_path, self.ui_screen)
-            return converter(output_path=self.layout_path.split('.')[-1]+'.json')    
+            json_path = os.path.join(tempdir, f'{filename}.json')
+            converter(output_path=json_path)
+            return json_path    
 
     
 
@@ -206,6 +209,7 @@ class LayoutHash():
     def __init__(self, json_path: str, activity_name: str):
         self.json_path = json_path
         self.activity_name = activity_name
+        self.state_id = None
         self.views = None
         self._get_views()
         
@@ -219,6 +223,8 @@ class LayoutHash():
         return hashlib.md5(state_str.encode('utf-8')).hexdigest()
     
     def get_state_id(self) -> str:
+        if self.state_id:
+            return self.state_id
         view_signatures = set()
         for view in self.views:
             view_signature = self._get_view_signature(view)
@@ -244,7 +250,9 @@ class LayoutHash():
         if not self.views:
             with open(self.json_path) as f:
                 layout = json.loads(f.read())
-                self.views = layout['views']
+            self.views = layout['views']
+            if 'state_str' in layout:
+                self.state_id = layout['state_str']
         return self.views
          
     def _get_view_signature(self, view_dict: dict, filter_views=False) -> str:

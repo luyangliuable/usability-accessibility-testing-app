@@ -1,4 +1,4 @@
-import { getClusterDetails, getOverallResult, getNodeDetails, getEdgeDetails, searchUTG, getOwleyeImage } from "./functions/droidbot_functions";
+import { getClusterDetails, getOverallResult, getNodeDetails, getEdgeDetails, searchUTG, getOwleyeImage, getTappableImage, getXbotImage } from "./functions/droidbot_functions";
 import React, {Component, useEffect, useState, useRef} from 'react';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import { getJSON } from './getJson.js';
@@ -147,6 +147,8 @@ const options = {
             if (nodes.length > 0) {
                 utg_details.innerHTML = getNodeDetails(nodes[0], utg.utg);
                 utg_details.innerHTML += getOwleyeImage(nodes[0], utg.UIStates, utg.utg);
+                utg_details.innerHTML += getTappableImage(nodes[0], utg.UIStates, utg.utg);
+                utg_details.innerHTML += getXbotImage(nodes[0], utg.UIStates, utg.utg);
             } else if (edges.length > 0) {
                 utg_details.innerHTML = getEdgeDetails(edges[0], utg.utg);
             } else {
@@ -156,17 +158,18 @@ const options = {
 
     };
 
-
     // if (algorithmStatus === "RUNNING" || algorithmStatus === "SUCCESSFUL") {
     return (
         <div>
-          <div className="mini-header" style={{}}>
-            <p className="mini-header-title"> Droidbot </p>
+          <div className="mini-header">
+            <div className="mini-header-title"> Droidbot </div>
             <div className='search-container'>
               <input className="droidbot-search" placeholder="Search" type='text' onChange={(e) => {
                   utg.network && searchUTG(e.target.value, utg.network, utg.utg);
               }} />
-              <button className="cust_button cust_button_smaller" onClick={() => getOwleyeImage("asdasd", utg.UIStates)}>Owleye</button>
+            </div>
+            <div className="button-container">
+                <button className="cust_button cust_button_smaller" onClick={() => getOwleyeImage("asdasd", utg.UIStates)}>Owleye</button>
             </div>
           </div>
 

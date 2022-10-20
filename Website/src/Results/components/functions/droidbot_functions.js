@@ -133,15 +133,45 @@ export function searchUTG(searchKeyword, network, utg) {
 export function getOwleyeImage(stateId, UIStates, utg) {
     var node = getNode(stateId, utg);
     var structureId = node.structure_str;
-    console.log(structureId);
     var result = "<hr><h2>Owleye Result</h2><hr/>\n";
 
     for (var i = 0; i < UIStates.owleye.length; i++) {
-        console.log(UIStates.owleye[i].structure_id);
         if (UIStates.owleye[i].structure_id == structureId) {
             return result + "<img class=\"col-md-5\" src='" + UIStates.owleye[i].image + "'/>";
         }
     }
 
-    return "<p>No Owleye Image</p>";
+    return "<hr><h2 style=\"color: white\">No Owleye Result</h2><hr/>\n";
+}
+
+
+export function getTappableImage(stateId, UIStates, utg) {
+    var node = getNode(stateId, utg);
+    var structureId = node.structure_str;
+    var result = "<hr><h2>Tappability Result</h2><hr/>\n";
+
+    for (var i = 0; i < UIStates.tappable.length; i++) {
+        console.log(UIStates.tappable[i].structure_id);
+        if (UIStates.tappable[i].structure_id == structureId) {
+            return result + "<img class=\"col-md-5\" src='" + UIStates.tappable[i].image + "'/>";
+        }
+    }
+
+    return "<hr><h2 style=\"color: white\">No Tappability Result</h2><hr/>\n";
+}
+
+
+export function getXbotImage(stateId, UIStates, utg) {
+    var node = getNode(stateId, utg);
+    var structureId = node.structure_str;
+    var result = "<hr><h2>Xbot Result</h2><hr/>\n";
+
+    for (var i = 0; i < UIStates.xbot.length; i++) {
+        console.log(UIStates.xbot[i].structure_id);
+        if (UIStates.xbot[i].structure_id == structureId) {
+            return result + "<img class=\"col-md-5\" src='" + UIStates.xbot[i].image + "'/>";
+        }
+    }
+
+    return "<hr><h2 style=\"color: white\">No Xbot Result</h2><hr/>\n";
 }

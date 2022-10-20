@@ -49,12 +49,15 @@ class ApkAnalysisApi(ApkAnalysis):
             self.running.add(task)
         super().start_processing(uuid=self.uuid)
 
+
     def _update_utg(self, new_utg: dict) -> None:
-        return super()._update_utg(new_utg)
+        super()._update_utg(new_utg)
+        self._post_utg(self.utg)
+    
     
     def _add_result(self, result: dict, origin: str) -> None:
         super()._add_result(result, origin)
-        self._post_results()
+        self._post_task_result(result, origin)
         if not self.resources[ApkAnalysis._result_types[origin]].is_active():
             self._update_status(StatusEnum.successful, origin)
             if origin in self.running:
@@ -64,6 +67,7 @@ class ApkAnalysisApi(ApkAnalysis):
             
     def _repl_filepaths(self, item: dict, _new_path: Callable[[str], str]=None) -> dict:
         return super()._repl_filepaths(item, self._upload_file)
+    
     
     def _upload_file(self, path: str) -> str:
         """Uploads file and returns S3 url"""
@@ -81,9 +85,9 @@ class ApkAnalysisApi(ApkAnalysis):
             return path
 
 
-    def _post_results(self) -> str:
-        url = RESULT_URL+self.uuid
-        data = self.results
+    def _post_task_result(self, result: dict, task: str) -> str:
+        url = os.path.join(RESULT_URL, self.uuid, task)
+        data = result
         
         response = None
         error = None
@@ -98,7 +102,20 @@ class ApkAnalysisApi(ApkAnalysis):
         print(f"POST RESULTS. Response: {response}\n")
     
     def _post_utg(self) -> str:
-        pass
+        url = os.path.join(RESULT_URL, self.uuid, 'utg')
+        data = self.utg
+        
+        response = None
+        error = None
+        try:
+            request = requests.Session()
+            response = request.post(url, headers={"Content-Type": "application/json"}, json=data)
+            
+        except Exception as e:
+            error = str(e)
+            print("ERROR ON POST RESULTS REQUEST: " + error)
+            
+        print(f"POST RESULTS. Response: {response}\n")
     
     def _update_status(self, status, logs: str=None, algorithm=None) -> None:
         url = f'{STATUS_URL}{self.uuid}'

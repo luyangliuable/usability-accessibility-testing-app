@@ -149,13 +149,14 @@ export function getTappableImage(stateId, UIStates, utg) {
     var node = getNode(stateId, utg);
     var structureId = node.structure_str;
     var result = "<hr><h2>Tappability Result</h2><hr/>\n";
-    result += "<table><th>";
+    result += "<table><tr><th>Scanned Elements</th><th>Saliency Analysis</th></tr>";
 
     for (var i = 0; i < UIStates.tappable.length; i++) {
         console.log(UIStates.tappable[i].structure_id);
         console.log(structureId);
         if (UIStates.tappable[i].structure_id == structureId) {
             console.log(UIStates.tappable[i]);
+            result += "<tr><th><img class=\"col-md-5\" src='" + UIStates.tappable[i].image + "'/></th><th>";
             for (var j = 0; j < UIStates.tappable[i].description.length; j++) {
                 const tmp = UIStates.tappable[i].description[j];
                 console.log(tmp);
@@ -163,8 +164,8 @@ export function getTappableImage(stateId, UIStates, utg) {
                     result += "<img class=\"col-md-5\" src='" + tmp.heatmap + "'/>"
                 }
             }
-
-            return result + "<img class=\"col-md-5\" src='" + UIStates.tappable[i].image + "'/>";
+            result += "</th></tr></table>"
+            return result;
         }
     }
 

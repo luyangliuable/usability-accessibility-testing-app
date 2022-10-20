@@ -6,17 +6,16 @@
 }
 
 .cust_button {
-  color: black !important;
-  background: #;
+  color: #000;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   width: var(--button-width);
   height: var(--button-height);
+  background: var(--darkmode-color);
   border-radius: 5px;
   margin-top: 25px;
-  background: var(--darkmode-color);
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px;
   -ms-border-radius: 5px;
@@ -27,9 +26,7 @@
   user-select: none;
   -webkit-user-select: none;
   border: 0px;
-  /*Safari*/
   -moz-user-select: none;
-  /*Firefox*/
 }
 
 .cust_button:hover {

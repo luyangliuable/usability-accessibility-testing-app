@@ -100,7 +100,7 @@ function getEdge(edgeId, utg) {
         }
     }
     console.log("cannot find edge: " + edgeId);
-}
+};
 
 
 export function searchUTG(searchKeyword, network, utg) {
@@ -127,4 +127,21 @@ export function searchUTG(searchKeyword, network, utg) {
         // console.log("Selecting: " + selectedNodes)
         network.selectNodes(selectedNodes, false);
     }
+}
+
+
+export function getOwleyeImage(stateId, UIStates, utg) {
+    var node = getNode(stateId, utg);
+    var structureId = node.structure_str;
+    console.log(structureId);
+    var result = "<hr><h2>Owleye Result</h2><hr/>\n";
+
+    for (var i = 0; i < UIStates.owleye.length; i++) {
+        console.log(UIStates.owleye[i].structure_id);
+        if (UIStates.owleye[i].structure_id == structureId) {
+            return result + "<img class=\"col-md-5\" src='" + UIStates.owleye[i].image + "'/>";
+        }
+    }
+
+    return "<p>No Owleye Image</p>";
 }

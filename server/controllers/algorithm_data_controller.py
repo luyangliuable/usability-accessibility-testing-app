@@ -15,6 +15,8 @@ class AlgorithmDataController(Generic[T], Controller):
     This controller class is used to update metadata for files on mongodb for traceability purpose.
     """
 
+    results_key = "results"
+
     def __init__(self, collection_name: str) -> None:
         """
         This controller class is used to update metadata for files on mongodb for traceability purpose.
@@ -67,6 +69,16 @@ class AlgorithmDataController(Generic[T], Controller):
         return True
 
 
+    def _insert_utg_result(self, uuid: str, data: Dict) -> Dict[str, T]:
+        results_schema = self._db.get_format(uuid)[self.results_key]
+
+        results_schema['utg'] = data;
+
+        self._db.update_document(uuid, self.collection, self.results_key, results_schema)
+
+        return results_schema;
+
+
     def _insert_algorithm_result(self, uuid: str, data: Dict[str, List]) -> Dict[str, T]:
         """
         This function inserts the links to the algorithm results into the document matching uuid
@@ -80,12 +92,11 @@ class AlgorithmDataController(Generic[T], Controller):
 
         """
 
-        document = self._db.get_document(uuid, self.collection)
+        # document = self._db.get_document(uuid, self.collection)
         results_key = "results"
         result_schema = self._db.get_format(uuid)[results_key]
         alg_results = dict(result_schema)
 
-        
         new_gifdroid = alg_results['gifdroid']
 
         for key, item in data.items():
@@ -111,19 +122,38 @@ class AlgorithmDataController(Generic[T], Controller):
                             # assert 'tappable' in each_activity, "Each activity must have tappable"
                             new_activity[name]['image'] = each_activity[name]['image']
                             new_activity[name]['description'] = each_activity[name]['description']
-                            new_activity[name]['heatmaps'] = each_activity[name]['heatmaps']      
+                            new_activity[name]['heatmaps'] = each_activity[name]['heatmaps']
                     new_activities.append(new_activity)
-                    
+
                 if len(new_activities) > 0:
                     alg_results['activities'] = new_activities
 
             elif key == 'gifdroid':
                 for name, data in item.items():
                     new_gifdroid[name] = data
-                    
+
         self._db.update_document(uuid, self.collection, results_key, alg_results)
-        
+
         return alg_results
+
+
+    def _get_utg(self, uuid: str) -> Dict[str, T]:
+        """
+        Method for getting a document from api
+
+        Parameters:
+            uuid - the unique id for the job containing algorithm run.
+            algorithm - the algorithm
+
+        Returns: The result slice in the schema for the algorithm
+
+        """
+
+        document = self.get(uuid)
+        result = document[self.results_key]['utg']
+
+        return result
+
 
     def _get_result_of_algorithm(self, uuid: str, type: str) -> Dict[str, T]:
         """

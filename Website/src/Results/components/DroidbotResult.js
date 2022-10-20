@@ -2,11 +2,12 @@ import React, {Component, useEffect, useState, useRef} from 'react';
 import { getJSON } from './getJson.js';
 import "./TableStyle.css";
 import { utg } from "./functions/utg";
-import { getClusterDetails, getOverallResult, getNodeDetails } from "./functions/droidbot_functions";
+import { getClusterDetails, getOverallResult, getNodeDetails, getEdgeDetails, searchUTG } from "./functions/droidbot_functions";
 import "./droidbot.css";
 import "./TableStyle.css";
 import Graph from "react-graph-vis";
 import { Network } from 'vis-network';
+import $ from "jquery";
 
 
 const DroidbotResult = ({uuid}) => {
@@ -16,6 +17,8 @@ const DroidbotResult = ({uuid}) => {
     };
 
     const [ network, updateNetwork ] = useState();
+    const [ vis, updateVis ] = useState(1);
+
 
     const container = useRef(null);
 
@@ -29,8 +32,8 @@ const DroidbotResult = ({uuid}) => {
 
     var options = {
         autoResize: true,
-        height: '900px',
-        width: '900px',
+        height: '800px',
+        width: '1000px',
         locale: 'en',
         nodes: {
             shapeProperties: {
@@ -57,7 +60,7 @@ const DroidbotResult = ({uuid}) => {
             }
         },
         edges: {
-            color: 'white',
+            color: '#888',
             arrows: {
                 to: {
                     enabled: true,
@@ -87,22 +90,52 @@ const DroidbotResult = ({uuid}) => {
         network.on("click", function (params) {
             const utg_details = document.getElementById("utg-details");
             const {nodes, edges} = params;
-            // utg_details.innerHTML = getClusterDetails(nodes[0], network, utg);
             if (nodes.length > 0) {
                 utg_details.innerHTML = getNodeDetails(nodes[0], utg);
+            } else if (edges.length > 0) {
+                utg_details.innerHTML = getEdgeDetails(edges[0], utg);
+            } else {
+                utg_details.innerHTML = getOverallResult(utg);
             }
         });
     };
 
+    $(".mini-header").click(function(){
+        if (vis) {
+         $("#utg_graph").fadeOut(100, "linear");
+         $("#utg-details").fadeOut(100, "linear");
+        } else {
+            $("#utg_graph").show();
+            $("#utg-details").show();
+        }
+
+        updateVis(!vis);
+        console.log(vis);
+    });
+
     return (
-        <>
-          <div style={{display: "flex", justifyContent: "space-evenly"}}>
-            <div style={{background: "#888"}} id="utg_div utg_details"
-                 ref={container} style={{ height: '500px', width: '800px' }} />
-            <div id="utg-details" className="side-panel" style={{background: "#888", width: "400px", height: "800px"}}>
+        <div>
+          <div className="mini-header" style={{}}>
+            <p className="mini-header-title"> Droidbot Report </p>
+            <div className='search-container'>
+                <input className="droidbot-search" placeholder="Search" type='text' onChange={(e) => searchUTG(e.target.value, network, utg)} />
             </div>
           </div>
-        </>
+
+          <div style={{display: "flex", justifyContent: "space-evenly"}}>
+            <div id="utg_graph" ref={container} style={{ background: "white", "borderRadius": "1vw", "border": "0.1vw solid #1e90ff" }} />
+
+            <div id="utg-details" className="side-panel" style={{
+                background: "#888",
+                width: "400px",
+                height: "800px",
+                padding: "1vw",
+                "borderRadius": "12px"}}
+            >
+
+            </div>
+          </div>
+        </div>
     );
 };
 

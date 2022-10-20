@@ -59,3 +59,72 @@ export function getNodeDetails(nodeId, utg) {
     stateInfo += selectedNode.title;
     return stateInfo;
 }
+
+
+export function getEdgeDetails(edgeId, utg) {
+    var selectedEdge = getEdge(edgeId, utg);
+    var edgeInfo = "<h2>Transition Details</h2><hr/>\n";
+    var fromState = getNode(selectedEdge.from, utg);
+    var toState = getNode(selectedEdge.to, utg);
+    edgeInfo += "<img class=\"col-md-5\" src=\"" + fromState.image + "\">\n";
+    edgeInfo += "<div class=\"col-md-2 text-center\">TO</div>\n";
+    edgeInfo += "<img class=\"col-md-5\" src=\"" + toState.image + "\">\n";
+    edgeInfo += "<table class=\"table table-striped\">\n";
+    edgeInfo += "<tr class=\"active\"><th colspan=\"4\"><h4>Events</h4></th></tr>\n";;
+
+    var i;
+    edgeInfo += "<tr><th>id</th><th>type</th><th>view</th><th>event_str</th></tr>\n";
+    for (i = 0; i < selectedEdge.events.length; i++) {
+        var event = selectedEdge.events[i];
+        var eventStr = event.event_str;
+        var viewImg = "";
+        if (event.view_images != null) {
+            var j;
+            for (j = 0; j < event.view_images.length; j++) {
+                viewImg += "<img class=\"viewImg\" src=\"" + event.view_images[j] + "\">\n";
+            }
+        }
+        edgeInfo += "<tr><td>" + event.event_id + "</td><td>" + event.event_type + "</td><td>" + viewImg + "</td><td>" + event.event_str + "</td></tr>";
+    }
+    edgeInfo += "</table>\n";
+    return edgeInfo;
+}
+
+
+function getEdge(edgeId, utg) {
+    var i, numEdges;
+    numEdges = utg.edges.length;
+    for (i = 0; i < numEdges; i++) {
+        if (utg.edges[i].id == edgeId) {
+            return utg.edges[i];
+        }
+    }
+    console.log("cannot find edge: " + edgeId);
+}
+
+
+export function searchUTG(searchKeyword, network, utg) {
+    // var searchKeyword = document.getElementById("utgSearchBar").value.toUpperCase();
+
+    searchKeyword = searchKeyword.toUpperCase();
+    console.log(searchKeyword);
+
+    if (searchKeyword == null || searchKeyword == "") {
+        network.unselectAll();
+    } else {
+        var i, numNodes;
+        var nodes = utg.nodes;
+        numNodes = nodes.length;
+        var selectedNodes = [];
+        for (i = 0; i < numNodes; i++) {
+            // console.log(nodes[i].content.toUpperCase());
+            if (nodes[i].content.toUpperCase().indexOf(searchKeyword) > -1) {
+                selectedNodes.push(nodes[i].id);
+            }
+        }
+        // console.log(selectedNodes);
+        network.unselectAll();
+        // console.log("Selecting: " + selectedNodes)
+        network.selectNodes(selectedNodes, false);
+    }
+}

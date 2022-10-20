@@ -1,4 +1,4 @@
-import { getClusterDetails, getOverallResult, getNodeDetails, getEdgeDetails, searchUTG, getOwleyeImage, getTappableImage, getXbotImage } from "./functions/droidbot_functions";
+import { getClusterDetails, getOverallResult, getNodeDetails, getEdgeDetails, searchUTG, getOwleyeImage, getTappableImage, getXbotImage, clusterActivities } from "./functions/droidbot_functions";
 import React, {Component, useEffect, useState, useRef} from 'react';
 import ProgressBar from 'react-bootstrap/ProgressBar';
 import { getJSON } from './getJson.js';
@@ -169,7 +169,8 @@ const options = {
               }} />
             </div>
             <div className="button-container">
-                <button className="cust_button cust_button_smaller" onClick={() => getOwleyeImage("asdasd", utg.UIStates)}>Owleye</button>
+              <button className="cust_button cust_button_smaller" onClick={() => clusterActivities(utg.network, utg.utg)}>Cluster Results</button>
+              <button className="cust_button cust_button_smaller" onClick={() => getOwleyeImage("asdasd", utg.UIStates)}>Show Original Utg</button>
             </div>
           </div>
 

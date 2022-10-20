@@ -59,10 +59,9 @@ class AlgorithmDataController(Generic[T], Controller):
             request_parameters - request parameters that contain contents of document
         """
 
-        self.collection.update_one({"uuid": uuid}, {'$push': {f'results.activities.{ algorithm }': new_data}})
+        self.collection.update_one({"uuid": uuid}, {'$push': {f'results.ui-states.{ algorithm }': new_data}})
 
-        result = self._db.get_document(uuid, self.collection)[self.results_key]['activities'][algorithm]
-        print(result);
+        result = self._db.get_document(uuid, self.collection)[self.results_key]['ui-states'][algorithm]
 
         return result
 

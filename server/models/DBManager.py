@@ -137,7 +137,7 @@ class DBManager:
             },
             "results" : {
                 "utg": {},
-                "activities" : {
+                "ui-states" : {
                     # "image": [],
                     "owleye": [],
                     "tappable": [],

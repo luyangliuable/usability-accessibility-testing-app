@@ -93,36 +93,10 @@ def add_result(uuid, algorithm: str):
     if request.method == 'POST':
         data = request.json
 
-        # updated_result = algorithm_database_controller._insert_algorithm_result(uuid, results)
-        updated_result = algorithm_database_controller.post(uuid, algorithm, data);
-
-        return updated_result, 200
-
-    return "Fail", 500
-
-
-@results_blueprint.route('/add/<uuid>/utg', methods=['POST'])
-@cross_origin()
-def add_utg(uuid):
-    """
-    Add a result to the database
-
-    paths:
-        /results/add/<uuid>             -> algorithm = None
-        /results/add/<uuid>/<algorithm>
-    parameters:
-        uuid: The uuid of the result to add
-        algorithm: The algorithm to add the result of
-    Body: the UTG json from from Droidbot utg.js file.
-    """
-
-
-    if request.method == 'POST':
-        utg = request.json
-
-        print(utg)
-
-        updated_result = algorithm_database_controller._insert_utg_result(uuid, utg)
+        if algorithm == 'utg':
+            updated_result = algorithm_database_controller._insert_utg_result(uuid, data)
+        else:
+            updated_result = algorithm_database_controller.post(uuid, algorithm, data);
 
         return updated_result, 200
 

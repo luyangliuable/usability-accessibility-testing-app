@@ -46,24 +46,39 @@ class ApkAnalysisApi(ApkAnalysis):
     def start_processing(self) -> None:
         for task in self.req_tasks:
             self._update_status("RUNNING", task.lower())
+            self.running.add(task)
         super().start_processing(uuid=self.uuid)
 
     def _update_utg(self, new_utg: dict) -> None:
         return super()._update_utg(new_utg)
     
     def _add_result(self, result: dict, origin: str) -> None:
-        return super()._add_result(result, origin)
-
+        super()._add_result(result, origin)
+        self._post_results()
+        if not self.resources[ApkAnalysis._result_types[origin]].is_active():
+            self._update_status(StatusEnum.successful, origin)
+            if origin in self.running:
+                origin.remove(self.running)
+        if len(list(self.running)) == 0:
+            self._update_status(StatusEnum.successful)
+            
     def _repl_filepaths(self, item: dict, _new_path: Callable[[str], str]=None) -> dict:
         return super()._repl_filepaths(item, self._upload_file)
     
     def _upload_file(self, path: str) -> str:
         """Uploads file and returns S3 url"""
-        if path not in self.uploaded_files:
-            key = path.removeprefix(self.output_dir).lstrip('/')
-            s3_client.upload_file(path, BUCKETNAME, key)
-            self.uploaded_files.add(path)
-        return f'http://localhost:4566/{BUCKETNAME}/{key}'
+        try:
+            if path not in self.uploaded_files:
+                key = path.removeprefix(self.output_dir).lstrip('/')
+                s3_client.upload_file(path, BUCKETNAME, key)
+                self.uploaded_files.add(path)
+                file_url = f'http://localhost:4566/{BUCKETNAME}/{key}'
+                print(f"Uploaded file {path} to S3 at {file_url}")
+            return file_url
+            
+        except:
+            print('ERROR UPLOADING TO S3')
+            return path
 
 
     def _post_results(self) -> str:
@@ -81,9 +96,11 @@ class ApkAnalysisApi(ApkAnalysis):
             print("ERROR ON POST RESULTS REQUEST: " + error)
             
         print(f"POST RESULTS. Response: {response}\n")
-
     
-    def _update_status(self, status, algorithm=None) -> None:
+    def _post_utg(self) -> str:
+        pass
+    
+    def _update_status(self, status, logs: str=None, algorithm=None) -> None:
         url = f'{STATUS_URL}{self.uuid}'
         data = {
             "status": status
@@ -91,8 +108,11 @@ class ApkAnalysisApi(ApkAnalysis):
 
         if algorithm is not None:
             url = url+f'/{algorithm}'
-            data["logs"] = f'{algorithm} {status.lower()}'
-
+            if logs:
+                data["logs"] = f'{logs}'
+            else:
+                logs = f'{algorithm} {status}'
+                
         response = None
         error = None
 

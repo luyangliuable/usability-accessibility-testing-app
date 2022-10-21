@@ -208,7 +208,11 @@ Zhongxun Pan
 ## Algorithms information
 
 ### Gifdroid
+Gifdroid is a light-weight image-processing approach to automatically replay the video
+(GIF) based bug reports for Android apps
 ### Owleye
+Owleye is a tool to automatically detect and localize UI display issues in the screenshots of the
+application under test.
 ### StoryDistiller
 StoryDistiller automatically generates the storyboard for an application with rich kinds of features through reverse engineering, and assists different roles to review and analyze apps efficiently.
 ### Xbot

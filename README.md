@@ -62,15 +62,19 @@ This is important because there are Api endpoints involved in this application m
 
 ### Git flow
 * Release branch
-* Contains release versions of the code
+  * Contains release versions of the code
+  * Naming convention: release@ver##.##
 * Feature branch
-* Development branch on working on a new feature
-* Naming convention:
+  * Development branch on wor:wking on a new feature
+  * Naming convention: feature/<new_feature>
 * Main branch
-* Contains the most up to date and stable code.
-* Deployment will be performed using ci/cd on main branch
+  * Contains the most up to date and stable code.
+  * Deployment will be performed using ci/cd on main branch
+* Temporary branches
+  * Contains spikes or act as a placeholder for possible changes
+  * Naming convention: #<branch_name>
 * Hotfix
-* When a major fault occurs in the main and deployed application. The branch is spun off to hotfix to be fixed immediately and put back
+  * When a major fault occurs in the main and deployed application. The branch is spun off to hotfix to be fixed immediately and put back
 
 ![git flow](https://www.gitkraken.com/wp-content/uploads/2021/03/git-flow-4.svg)
 

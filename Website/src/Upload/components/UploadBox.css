@@ -1,8 +1,9 @@
 .upload-box-root {
   height: 100%;
   width: 100%;
-  background-color: #e2e2e2;
-  border: 1px solid #000000;
+  background-color: #DDD;
+  /* border: 1px solid #000000; */
+  border-radius: max(10px, 1vw);
   padding-top: 40px;
   padding-bottom: 40px;
 }
@@ -20,8 +21,17 @@
   margin-right: auto;
 }
 
+.android-icon {
+    width: 100px;
+    height: 100px;
+}
+
 .upload-box-full-width {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
+  background: 'yellow';
   display: inline-flex;
   align-content: center;
   align-items: center;
@@ -38,6 +48,7 @@
   width: 110px;
   height: 2px;
   background-color: #0d0d0d;
+  background-color: rgba(13, 13, 13, 0.5);
   margin-top: 15px;
   display: inline-flex;
 }
@@ -64,6 +75,7 @@
 .upload-box-text-20 {
   font-size: 20px;
   color: #000000;
+  color: rgba(13, 13, 13, 0.5);
 }
 
 .upload-text-center {

@@ -1,6 +1,7 @@
 .accordion {
     border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: 2px;
+    margin-left: 5vw;
 }
 
 .accordion__item {
@@ -66,10 +67,51 @@ input.bigCheckbox {
     width: 40px;
     float: right;
     display:block;
-    margin-top:-5.5%;
-    margin-right: -100px;
+    /* margin-top:-5.5%; */
+    /* margin-right: -100px; */
 }
 
+.accordion-grid {
+    display: grid;
+    grid-template-columns: auto auto auto;
+    padding: 5px;
+}
+
+.accordion-grid-item {
+    grid-column-start: 1;
+    grid-column-end: 14;
+    padding: 10px;
+}
+
+
+.first-grid-item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 10px;
+    grid-column-start: 1;
+    grid-column-end: 2;
+}
+
+.last-grid-item {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 10px;
+    grid-column-start: 14;
+    grid-column-end: 15;
+}
+
+.checkbox-grid-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    margin: 2px;
+    grid-column-start: 14;
+    grid-column-end: 15;
+}
 
 /* -------------------------------------------------- */
 /* ---------------- Animation part ------------------ */

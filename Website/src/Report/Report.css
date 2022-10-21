@@ -26,7 +26,7 @@
 }
 
 .horizontal-scroll-card {
-	background: #ffffff;
+	/* background: #ffffff; */
 	box-shadow: "4px 4px 8px #EEAAB";
 	padding: 10px;
 	border-radius: 10px;
@@ -38,8 +38,9 @@
 
 .horizontal-scroll-internal {
 	display: flex;
-	justify-content: flex-start;
+	justify-content: center;
 	align-items: center;
+	padding: 20px;
 
 	height: 100%;
 
@@ -48,7 +49,16 @@
 	overflow-x: auto;
 }
 
-.report_img {
+.base_img {
+	width: 200px;
+	height: 300px;
+	margin-left: 20px;
+	margin-right: 20px;
+	border: 1px solid black;
+	cursor: pointer;
+}
+
+.issue_img {
 	width: 200px;
 	height: 300px;
 	margin-left: 20px;
@@ -73,4 +83,68 @@
 	height: 300px;
 	overflow-y: auto;
   padding-left: 20px;
+}
+
+.tab-class {
+	color: white;
+  }
+
+.tab-class:hover {
+	color: white;
+}
+  
+.nav-tabs .nav-item.show .nav-link, 
+.nav-tabs .nav-link.active.tab-class {
+	color: #1c7497;
+}
+
+.tab-content>.active {
+    display: block;
+    background-color: white;
+	border-bottom-left-radius: 10px;
+	border-bottom-right-radius: 10px;
+}
+
+.list-group>.active {
+	background-color: #1c7497;
+	border-color: #1c7497;
+}
+
+.tab-container {
+	background-color: #ffffff;
+}
+
+.tab-div {
+	height: 400px;
+	width: 100%;
+	padding: 15px;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.xbot-tab-div {
+	height: 400px;
+	width: 40%;
+	padding: 15px;
+
+	display: inline-flex;
+	justify-content: center;
+	float: left;
+}
+
+.xbot-issues {
+	padding-top: 15px;
+	margin-right: 50px;
+
+	overflow-wrap: break-word;
+	float: right;
+	width: 55%;
+	height: 400px;
+}
+
+
+.root {
+    width: 90vw !important;
 }

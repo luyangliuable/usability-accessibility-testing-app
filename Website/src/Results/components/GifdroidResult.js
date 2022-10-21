@@ -5,7 +5,7 @@ import "./TableStyle.css";
 
 const GifdroidResult = ({uuid}) => {
 
-    const link = "http://localhost:5005/file/get/" + uuid +"/gifdroid";
+    const link = "http://localhost:5005/result/get/" + uuid +"/gifdroid";
     const statusLink = "http://localhost:5005/status/get/" + uuid + "/gifdroid";
 
     // TODO can't get this link promise thing working
@@ -66,7 +66,7 @@ const GifdroidResult = ({uuid}) => {
                         return (
                             <div style={style.c_div}>
                               <img className="disabledrag attenuateimg" src={results.images[i].link} style={{height: "auto", width: "40%"}}/>
-                              <table className="gtable" style={{fontSize: 8, width: "50%"}}>
+                              <table className="gifdroid-table" style={{width: "50%"}}>
                                 {/* screen details */}
                                 <tr className="gifdroid-tr">
                                   <td className="gifdroid-td gifdroid-attribute">screen id</td>
@@ -118,7 +118,8 @@ const style = {
         display: "flex",
         justifyContent: "space-between",
         flexDirection: "row",
-        marginRight: "5%"
+        marginRight: "5%",
+        cursor: "pointer"
     },
 
     carousel_config: {

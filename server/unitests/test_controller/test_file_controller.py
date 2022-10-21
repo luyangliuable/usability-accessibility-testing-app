@@ -1,5 +1,5 @@
-import os
 from pickle import bytes_types
+import os
 import sys
 import json
 import uuid
@@ -17,7 +17,7 @@ sys.path.insert(0, parentdir)
 
 # relative import ends ########################################################
 
-from controllers.update_document_controller import *
+from controllers.algorithm_data_controller import *
 from download_parsers.gifdroid_json_parser import gifdroidJsonParser
 from models.DBManager import *
 
@@ -32,15 +32,14 @@ class TestFileCtr(unittest.TestCase):
         self.uuid = unique_id_generator()
 
         format = DBManager.get_format(self.uuid)
-        self.fc = UpdateDocumentController(self.tcn, gifdroidJsonParser)
+        self.fc = AlgorithmDataController(self.tcn, gifdroidJsonParser)
 
         self.td = self.db.insert_document(format, self.tc)
 
 
     def test_get_file(self):
         headers = {'Content-type': 'application/json', 'Accept': 'application/json'}
-        # data = requests.get("http://localhost:5005/file/get", data=json.dumps( {"uuid": self.uuid} ), headers=headers).json()
-        data = self.fc.get_document(self.uuid)
+        data = self.fc.get(self.uuid)
         write_to_view("view.txt", data)
 
         data.pop('date')
@@ -48,10 +47,6 @@ class TestFileCtr(unittest.TestCase):
 
         expected = DBManager.get_format(self.uuid)
         expected.pop('date')
-
-        # Get file route
-        print(data)
-
 
         self.assertEqual(expected, data)
 
@@ -62,7 +57,7 @@ class TestFileCtr(unittest.TestCase):
 
         expected = {'images': [{'name': 'google', 'link': 'google.com.aubdasdas', 'type': 'None', 's3_bucket': 'apk', 's3_key': os.path.join(self.uuid, 'report', 'google')}, {'name': 'finally_got_something', 'link': 'finally_got_something.org.au', 'type': 'None', 's3_bucket': 'apk', 's3_key': os.path.join(self.uuid, 'report', 'finally_got_something')}], 'json': []}
 
-        self.fc.insert_algorithm_result(self.uuid, 'gifdroid', result, 'images', names)
+        self.fc._insert_algorithm_result(self.uuid, 'gifdroid', result, 'images', names)
 
         r = self.db.get_document(self.uuid, self.tc)
 

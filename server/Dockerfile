@@ -10,6 +10,15 @@ RUN apk add --update --no-cache python3 && ln -sf python3 /usr/bin/python
 RUN python3 -m ensurepip
 RUN pip3 install --no-cache --upgrade pip setuptools
 
+RUN pip install pip==22.2.2
+
+RUN pip install --upgrade pip \
+    && pip install --no-cache-dir \
+        awscli \
+    && rm -rf /var/cache/apk/*
+
+RUN aws --version   # Just to make sure its installed alright
+
 ENV FLASK_APP=app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 # ENV REDIS_URL=redis://redis:6379/0
@@ -24,12 +33,12 @@ ENV FLASK_ENV=development
 
 RUN pip3 install --upgrade pip
 COPY ./requirements.txt .
-RUN pip3 install -r requirements.txt
+RUN pip install -r requirements.txt
 
 # aws 
 COPY .aws /root/.aws
 
 # copy project
-COPY . .
+# COPY . .
 
 RUN echo env

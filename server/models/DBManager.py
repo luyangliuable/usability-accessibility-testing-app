@@ -1,8 +1,8 @@
 import pymongo
 from pymongo.database import Collection
 import datetime
-import json
 import os
+from enums.status_enum import *
 
 class DBManager:
     """
@@ -12,7 +12,6 @@ class DBManager:
     _instance = None  # _ means it is private
 
     # https://www.mongodb.com/docs/manual/reference/bson-types/
-
 
     def __init__(self):
         """
@@ -61,42 +60,85 @@ class DBManager:
                 "s3_key": ""
             },
             "additional_files" : [],
-            "status" : "",
+            "overall-status" : {
+                "status": StatusEnum.none,
+                "start_time": "",
+                "end_time": "",
+                "progress": 0,
+                "logs": [],
+                "ert": 0,
+                "algorithms_to_run": [] # Required to calculate progress
+            },
             "algorithm_status" : {
                 "storydistiller" : {
                     "status" : "",
                     "notes": "",
                     "start_time" : "",
                     "end_time" : "",
-                    "apk": ""
+                    "apk": "",
+                    "progress": 0,
+                    "logs": [],
+                    "ert": 0
                 },
                 "owleye" : {
                     "status" : "",
                     "notes": "",
                     "start_time" : "",
                     "end_time" : "",
-                    "apk": ""
+                    "apk": "",
+                    "progress": 0,
+                    "logs": [],
+                    "ert": 0
                 },
                 "xbot" : {
                     "status" : "",
                     "notes": "",
                     "start_time" : "",
                     "end_time" : "",
-                    "apk": ""
+                    "apk": "",
+                    "progress": 0,
+                    "logs": [],
+                    "ert": 0
+                },
+                "tappable" : {
+                    "status" : "",
+                    "notes": "",
+                    "start_time" : "",
+                    "end_time" : "",
+                    "apk": "",
+                    "progress": 0,
+                    "logs": [],
+                    "ert": 0
                 },
                 "gifdroid" : {
                     "status" : "",
                     "notes": "",
                     "start_time" : "",
                     "end_time" : "",
-                    "apk": ""
+                    "apk": "",
+                    "progress": 0,
+                    "logs": [],
+                    "ert": 0
+                },
+                "droidbot" : {
+                    "status" : "",
+                    "notes": "",
+                    "start_time" : "",
+                    "end_time" : "",
+                    "apk": "",
+                    "progress": 0,
+                    "logs": [],
+                    "ert": 0
                 },
                 "ui_checker" : {
                     "status" : "",
                     "notes": "",
                     "start_time" : "",
                     "end_time" : "",
-                    "apk": ""
+                    "apk": "",
+                    "progress": 0,
+                    "logs": [],
+                    "ert": 0
                 }
             },
             "algorithm_outputs" : {
@@ -104,35 +146,22 @@ class DBManager:
                 "xbot" : ""
             },
             "results" : {
-                "activities" : [
-                    {
-                        "name" : "",
-                        "image" : "",
-                        "xbot" : {
-                            "image" : "",
-                            "description" : ""
-                        },
-                        "owleye" : {
-                            "image" : ""
-                        },
-                        "tapshoe" : {
-                            "image" : "",
-                            "description" : "",
-                            "heatmap" : "{link to heatmap image}"
-                        }
-                    }
-                ],
+                "utg": {},
+                "ui-states" : {
+                    # "image": [],
+                    "xbot": [],
+                    "owleye": [],
+                    "tappable": [],
+                },
                 "gifdroid": {
-                    "images": [],
+                    "image": [],
                     "json": []
                 },
-                "uichecker": {}
+                "uichecker": {
+                    "summary": "",
+                }
             }
         }
-
-
-        # with open("document_format.json", "r") as f:
-        #     data = json.load(f)
 
         data['uuid'] = uuid
         data['date'] = datetime.datetime.now()
@@ -156,15 +185,12 @@ class DBManager:
 
     def get_document(self, uuid: str, collection: Collection):
         cursor = collection.find({"uuid": uuid})
+        result = list( cursor )
 
-        result = []
-        for document in cursor:
-            # Find document that match with current uuid.
-            if document["uuid"] == uuid:
-                # utg_filename = document['utg_files']
-                result.append(document)
+        if len(result) == 0:
+            raise KeyError("The uuid does not exist in the database")
 
-        # Assume only 1 result
+        # Assume uuid is unqiue so only one result
         return result[0]
 
 
@@ -241,15 +267,12 @@ class DBManager:
         )
 
 
-    def get_collection(self, collection_name:str):
+    def get_collection(self, collection_name:str) -> Collection:
         return self._db.get_collection(collection_name)
 
 
     def insert_document(self, document, collection: Collection):
         post_id = collection.insert_one(document)
-
-        print(post_id)
-
         return post_id
 
 

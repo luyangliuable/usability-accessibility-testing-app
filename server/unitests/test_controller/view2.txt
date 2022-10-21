@@ -1,1 +1,0 @@
-{'gifdroid': {'status': '', 'notes': 'random_notes for testing', 'start_time': '', 'end_time': '', 'apk': ''}}

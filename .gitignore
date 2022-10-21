@@ -130,7 +130,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-#vscode 
+#vscode
 .vscode
 .idea
 
@@ -143,3 +143,17 @@ dmypy.json
 node_modules
 .localstack\data\startup_info.json
 .localstack\data\recorded_api_calls.json
+
+
+# FIT3170
+seed_data
+
+
+# docker container folders
+.data
+.aws
+
+algorithms/owleye/OwlEye-main/model/model.pth
+algorithms/app/test.py
+algorithms/app/report
+

@@ -21,7 +21,7 @@ export default function SignUp() {
 
     console.log(jsonData);
 
-    var response = postForm(jsonData, "http://localhost:5005/signUp");
+    var response = postForm(jsonData, "http://localhost:5005/user/signup");
 
     console.log(response);
     response.then((data) => {

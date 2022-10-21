@@ -1,0 +1,49 @@
+{
+  "tag": "2022-09-11_014037",
+  "event": {
+    "event_type": "touch",
+    "log_lines": null,
+    "x": null,
+    "y": null,
+    "view": {
+      "package": "a2dp.Vol",
+      "visible": true,
+      "checkable": false,
+      "child_count": 0,
+      "editable": false,
+      "clickable": true,
+      "is_password": false,
+      "focusable": true,
+      "enabled": true,
+      "content_description": "More options",
+      "children": [],
+      "focused": false,
+      "bounds": [
+        [
+          975,
+          73
+        ],
+        [
+          1080,
+          199
+        ]
+      ],
+      "resource_id": null,
+      "checked": false,
+      "text": null,
+      "class": "android.widget.ImageButton",
+      "scrollable": false,
+      "selected": false,
+      "long_clickable": true,
+      "parent": 6,
+      "temp_id": 7,
+      "size": "105*126",
+      "signature": "[class]android.widget.ImageButton[resource_id]None[text]None[enabled,,]",
+      "view_str": "c44bf56d7b2f6a3e21fc057b04b35074",
+      "content_free_signature": "[class]android.widget.ImageButton[resource_id]None"
+    }
+  },
+  "start_state": "aa8f2077fe6ca9e3d206b28857606368",
+  "stop_state": "5c311fb3940d45ddade6d860843f1dc4",
+  "event_str": "TouchEvent(state=aa8f2077fe6ca9e3d206b28857606368, view=c44bf56d7b2f6a3e21fc057b04b35074(PackagesChooser/ImageButton-))"
+}

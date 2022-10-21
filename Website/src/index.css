@@ -16,6 +16,10 @@ h3 {
   color: #f2f2f2;
 }
 
+.content {
+  padding: 16px;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -23,10 +27,13 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  vertial-overflow: hidden;
+
   /* /\* look into *\/ overflow: hidden; */
   overflow-x: hidden;
+  scrollbar-gutter: stable both-edges;
 }
+
+
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
@@ -74,7 +81,7 @@ a:active {
   font-size: max(4vmin, 30px);
   color: #ffffff;
   letter-spacing: 3px;
-} 
+}
 
 .text-sub-header {
   font-size: max(3.3vmin, 24px);
@@ -84,13 +91,13 @@ a:active {
 .text {
   font-size: max(2.2vmin, 18px);
   color: #ffffff;
-  font-weight: 120; 
+  font-weight: 120;
 }
 
 .text-caption {
   font-size: max(2vmin, 12px);
   color: #c0c0c0;
-  font-weight: 300; 
+  font-weight: 300;
 }
 
 .text-centre {

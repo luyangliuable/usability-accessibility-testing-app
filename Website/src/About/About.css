@@ -15,3 +15,8 @@
   align-content: center;
   display: inline-flex;
 }
+
+.container-nav{
+  padding-top: 100px;
+}
+

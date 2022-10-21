@@ -65,7 +65,7 @@ class ApkAnalysisApi(ApkAnalysis):
         if r_type and not self.resources[r_type].is_active():
             self._update_status(StatusEnum.successful, algorithm=origin)
             if origin in self.running:
-                origin.remove(self.running)
+                self.running.remove(origin)
         elif r_type:
             logs = f'{origin} published new result'
             self._update_status(StatusEnum.running, algorithm=origin, logs=logs)
@@ -79,7 +79,7 @@ class ApkAnalysisApi(ApkAnalysis):
 
     def _upload_file(self, path: str) -> str:
         """Uploads file and returns S3 url"""
-        key = path.removeprefix(self.output_dir).lstrip('/')
+        key = os.path.join(self.uuid, path.removeprefix(self.output_dir).lstrip('/'))
         file_url = f'http://localhost:4566/{BUCKETNAME}/{key}'
         try:
             if path not in self.uploaded_files:

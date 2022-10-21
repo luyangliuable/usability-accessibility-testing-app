@@ -31,7 +31,7 @@ def _service_execute_droidbot(apk_path: str, output_dir: str):
                     "-count", config[ "NUM_OF_EVENT" ], 
                     "-a", apk_path, 
                     "-o", output_dir,
-                    "-grant_perm",
+                    # "-grant_perm",
                     "-is_emulator",
                     "-accessibility_auto",
                     "-keep_env",

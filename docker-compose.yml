@@ -174,7 +174,7 @@ services:
       - '3007:3007'
     volumes:
       - './.data:/home/data'
-    cpu_percent: 30
+    cpu_percent: 10
     
 
   gifdroid:

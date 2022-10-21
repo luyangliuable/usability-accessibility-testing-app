@@ -161,7 +161,7 @@ export function getTappableImage(stateId, UIStates, utg) {
                 const tmp = UIStates.tappable[i].description[j];
                 console.log(tmp);
                 if (tmp.heatmap != null) {
-                    result += "<img class=\"col-md-5\" src='" + tmp.heatmap + "'/>";
+                    result += "<img style='width: 400px' class=\"col-md-5\" src='" + tmp.heatmap + "'/>";
                 }
             }
             result += "</th></tr></table>";
